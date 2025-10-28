@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - Experimental Build Only
 
 ### Added
+- **Version Navigation Badges**
+  - Added amber "Experimental" badge in top-right corner of stable build (index.html) to easily access experimental features
+  - Added green "Stable" badge in header of experimental build to return to stable version
+  - Badges include hover effects and tooltips for better UX
+
 - **Deviance Rating System**
   - New rating system (0-10 scale) showing how closely matched FFXIV dyes match the mathematically ideal harmony colors
   - Base color always has a deviance rating of 0 (exact match)
