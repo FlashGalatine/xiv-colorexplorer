@@ -103,6 +103,16 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Author
+
+Created by **Flash Galatine** (Balmung)
+
+- [Lodestone](https://na.finalfantasyxiv.com/lodestone/character/7677106/)
+- [GitHub](https://github.com/FlashGalatine)
+- [X / Twitter](https://x.com/AsheJunius)
+- [Twitch](https://www.twitch.tv/flashgalatine)
+- [BlueSky](https://bsky.app/profile/flashgalatine.bsky.social)
+
 ## Acknowledgments
 
 - Color harmony algorithms based on traditional color theory
