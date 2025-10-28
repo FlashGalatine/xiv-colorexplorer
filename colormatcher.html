@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFXIV Dye Color Matcher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .color-swatch {
+            width: 100px;
+            height: 100px;
+            border-radius: 0.5rem;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        #imageCanvas {
+            cursor: crosshair;
+        }
+        #eyedropperPreview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px black, 0 4px 8px rgba(0,0,0,0.2);
+            position: absolute;
+            pointer-events: none;
+            display: none;
+            z-index: 10;
+        }
+        .drag-over {
+            border: 4px dashed #3b82f6; /* blue-500 */
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <div id="mainContainer" class="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 transition-all duration-300">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">FFXIV Dye Color Matcher</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">Pick a color or upload an image to find the closest dye match.</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
+            <div class="flex items-center gap-4 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                <label for="colorPicker" class="font-medium text-lg">Your Color:</label>
+                <input type="color" id="colorPicker" value="#8A2BE2" class="w-14 h-14 p-1 bg-white rounded-md cursor-pointer">
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="grid md:grid-cols-2 gap-8 text-center">
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+                <h2 class="text-2xl font-semibold mb-4">Your Pick</h2>
+                <div id="userColor" class="color-swatch mx-auto mb-4"></div>
+                <p id="userHex" class="font-mono text-lg"></p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+                <h2 class="text-2xl font-semibold mb-4">Closest Dye Match</h2>
+                <div id="matchedColor" class="color-swatch mx-auto mb-4"></div>
+                <p id="matchedName" class="text-lg font-medium"></p>
+                <p id="matchedHex" class="font-mono text-lg"></p>
+            </div>
+        </div>
+        
+        <!-- Image Uploader and Eyedropper Section -->
+        <div class="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <h2 class="text-2xl font-semibold text-center mb-4">Or... Pick from an Image</h2>
+            <div id="upload-prompt" class="text-center text-gray-500 dark:text-gray-400">
+                <p>Drag & drop an image anywhere, or</p>
+            </div>
+            <div class="flex flex-col items-center gap-4 mt-2">
+                <div class="w-full max-w-md">
+                   <label for="imageLoader" class="sr-only">Choose a file</label>
+                   <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 dark:file:bg-blue-800 file:text-blue-700 dark:file:text-blue-200 hover:file:bg-blue-200 dark:hover:file:bg-blue-700 cursor-pointer"/>
+                </div>
+                <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 mt-2">
+                    <div class="flex items-center gap-2">
+                        <label for="sampleSize" class="font-medium">Sample Size:</label>
+                        <select id="sampleSize" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md p-2">
+                            <option value="1">1x1</option>
+                            <option value="2">2x2</option>
+                            <option value="4">4x4</option>
+                            <option value="16" selected>16x16</option>
+                            <option value="32">32x32</option>
+                            <option value="64">64x64</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="excludeMetallic" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="excludeMetallic" class="font-medium">Exclude Metallic Dyes</label>
+                    </div>
+                </div>
+            </div>
+            <div id="imageContainer" class="mt-4 w-full relative" style="display: none;">
+                <p class="text-center text-gray-500 mb-2">Hover and click on the image to pick a color.</p>
+                <canvas id="imageCanvas" class="w-full h-auto rounded-lg shadow-md"></canvas>
+                <div id="eyedropperPreview"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // This variable will hold the color data once it's fetched.
+        let ffxivDyes = [];
+
+        // --- DOM Elements ---
+        const mainContainer = document.getElementById('mainContainer');
+        const colorPicker = document.getElementById('colorPicker');
+        const resultsDiv = document.getElementById('results');
+        const userColorDiv = document.getElementById('userColor');
+        const userHexP = document.getElementById('userHex');
+        const matchedColorDiv = document.getElementById('matchedColor');
+        const matchedNameP = document.getElementById('matchedName');
+        const matchedHexP = document.getElementById('matchedHex');
+        
+        const imageLoader = document.getElementById('imageLoader');
+        const imageContainer = document.getElementById('imageContainer');
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const sampleSizeSelect = document.getElementById('sampleSize');
+        const eyedropperPreview = document.getElementById('eyedropperPreview');
+        const excludeMetallicCheckbox = document.getElementById('excludeMetallic');
+
+        // --- Core Functions ---
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        }
+
+        function rgbToHex(r, g, b) {
+            const componentToHex = (c) => ('0' + Math.round(c).toString(16)).slice(-2);
+            return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+        }
+
+        function colorDistance(rgb1, rgb2) {
+            const rDiff = rgb1.r - rgb2.r;
+            const gDiff = rgb1.g - rgb2.g;
+            const bDiff = rgb1.b - rgb2.b;
+            return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+        }
+
+        function findClosestMatch() {
+            if (ffxivDyes.length === 0) {
+                console.log("Color data not loaded yet.");
+                return; // Don't run if data isn't loaded
+            }
+
+            const userHex = colorPicker.value;
+            const userRgb = hexToRgb(userHex);
+            if (!userRgb) return;
+
+            const isMetallicExcluded = excludeMetallicCheckbox.checked;
+            const dyesToSearch = isMetallicExcluded 
+                ? ffxivDyes.filter(dye => !dye.name.toLowerCase().includes('metallic')) 
+                : ffxivDyes;
+
+            let closestColor = null;
+            let smallestDistance = Infinity;
+
+            dyesToSearch.forEach(dye => {
+                const dyeRgb = hexToRgb(dye.hex);
+                if (dyeRgb) {
+                    const distance = colorDistance(userRgb, dyeRgb);
+                    if (distance < smallestDistance) {
+                        smallestDistance = distance;
+                        closestColor = dye;
+                    }
+                }
+            });
+            updateResultsUI(userHex, closestColor);
+        }
+        
+        function updateResultsUI(userHex, matchedDye) {
+            userColorDiv.style.backgroundColor = userHex;
+            userHexP.textContent = userHex.toUpperCase();
+            if (matchedDye) {
+                matchedColorDiv.style.backgroundColor = matchedDye.hex;
+                matchedNameP.textContent = matchedDye.name;
+                matchedHexP.textContent = matchedDye.hex.toUpperCase();
+            } else {
+                matchedColorDiv.style.backgroundColor = '#FFFFFF';
+                matchedNameP.textContent = 'No Match Found';
+                matchedHexP.textContent = '';
+            }
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // --- Image & Eyedropper Functions ---
+        function processImageFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                console.error("File is not a valid image.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    imageContainer.style.display = 'block';
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getAverageColor(x, y) {
+            const size = parseInt(sampleSizeSelect.value, 10);
+            const halfSize = Math.floor(size / 2);
+            const startX = Math.max(0, Math.floor(x - halfSize));
+            const startY = Math.max(0, Math.floor(y - halfSize));
+            const endX = Math.min(ctx.canvas.width, startX + size);
+            const endY = Math.min(ctx.canvas.height, startY + size);
+            const sampleWidth = endX - startX;
+            const sampleHeight = endY - startY;
+
+            if (sampleWidth <= 0 || sampleHeight <= 0) return '#000000';
+
+            const imageData = ctx.getImageData(startX, startY, sampleWidth, sampleHeight);
+            const data = imageData.data;
+            let r = 0, g = 0, b = 0;
+            const numPixels = sampleWidth * sampleHeight;
+
+            for (let i = 0; i < data.length; i += 4) {
+                r += data[i]; g += data[i+1]; b += data[i+2];
+            }
+            return rgbToHex(r / numPixels, g / numPixels, b / numPixels);
+        }
+        
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return { 
+                x: (e.clientX - rect.left) * scaleX, 
+                y: (e.clientY - rect.top) * scaleY 
+            };
+        }
+
+        function handleCanvasMouseMove(e) {
+            const { x, y } = getCanvasCoordinates(e);
+            const avgColorHex = getAverageColor(x, y);
+            
+            eyedropperPreview.style.backgroundColor = avgColorHex;
+            eyedropperPreview.style.left = `${e.clientX - mainContainer.getBoundingClientRect().left - 40}px`;
+            eyedropperPreview.style.top = `${e.clientY - mainContainer.getBoundingClientRect().top - 40}px`;
+        }
+        
+        function handleCanvasClick(e) {
+            const { x, y } = getCanvasCoordinates(e);
+            colorPicker.value = getAverageColor(x, y);
+            findClosestMatch();
+        }
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            colorPicker.addEventListener('input', findClosestMatch);
+            imageLoader.addEventListener('change', (e) => processImageFile(e.target.files[0]));
+            excludeMetallicCheckbox.addEventListener('change', findClosestMatch);
+            
+            let rect;
+            canvas.addEventListener('mouseenter', () => {
+                rect = canvas.getBoundingClientRect();
+                eyedropperPreview.style.display = 'block';
+            });
+            canvas.addEventListener('mouseleave', () => eyedropperPreview.style.display = 'none');
+            canvas.addEventListener('mousemove', handleCanvasMouseMove);
+            canvas.addEventListener('click', handleCanvasClick);
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                document.body.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                document.body.addEventListener(eventName, () => mainContainer.classList.add('drag-over'));
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                document.body.addEventListener(eventName, () => mainContainer.classList.remove('drag-over'));
+            });
+
+            document.body.addEventListener('drop', (e) => {
+                const file = e.dataTransfer.files[0];
+                processImageFile(file);
+            });
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('./assets/json/colors_xiv.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    ffxivDyes = data; // Load data into the global variable
+                    console.log('Color data loaded successfully.');
+                    setupEventListeners(); // Set up event listeners after data is loaded
+                    findClosestMatch();   // Perform initial match
+                })
+                .catch(error => {
+                    console.error('Error loading color data:', error);
+                    alert('Could not load color data. Please make sure colors_xiv.json is in the assets/json directory.');
+                });
+        });
+
+    </script>
+</body>
+</html>
