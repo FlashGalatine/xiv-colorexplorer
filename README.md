@@ -108,10 +108,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Created by **Flash Galatine** (Balmung)
 
 - [Lodestone](https://na.finalfantasyxiv.com/lodestone/character/7677106/)
+- [Blog](https://blog.projectgalatine.com/)
 - [GitHub](https://github.com/FlashGalatine)
 - [X / Twitter](https://x.com/AsheJunius)
 - [Twitch](https://www.twitch.tv/flashgalatine)
 - [BlueSky](https://bsky.app/profile/flashgalatine.bsky.social)
+- [Patreon](https://patreon.com/ProjectGalatine)
 
 ## Acknowledgments
 
