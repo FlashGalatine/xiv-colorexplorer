@@ -48,11 +48,11 @@ Toggle between light and dark themes with persistent preference storage.
 ## Getting Started
 
 ### Online Access
-Simply open `colorexplorer_stable.html` in any modern web browser. No installation or server required!
+Simply open `index.html` in any modern web browser. No installation or server required!
 
 ### Local Development
 1. Clone this repository
-2. Open `colorexplorer_stable.html` in your browser
+2. Open `index.html` in your browser
 3. For development, edit `colorexplorer_experimental.html` instead
 
 The application is entirely client-side and requires no build process.
