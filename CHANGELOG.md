@@ -5,6 +5,57 @@ All notable changes to the FFXIV Color Explorer project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - Experimental Build Only
+
+### Added
+- **Deviance Rating System**
+  - New rating system (0-10 scale) showing how closely matched FFXIV dyes match the mathematically ideal harmony colors
+  - Base color always has a deviance rating of 0 (exact match)
+  - Visual color-coded badges on each harmony color:
+    - Green badge (0-3): Excellent match with black text for readability
+    - Yellow badge (3-6): Good match with black text for readability
+    - Red badge (6-10): Poor match with white text for contrast
+    - Rating of 0 displays "Perfect" instead of numeric value
+  - Uses RGB Euclidean distance to calculate color deviation
+  - Helps users understand when a suggested dye significantly deviates from the ideal color theory recommendation
+
+- **Two-Column Layout UI Overhaul**
+  - Complete redesign of the interface for better use of screen space
+  - Left sidebar (380px fixed width) contains all configuration controls:
+    - Color search and selection
+    - Acquisition filtering
+    - Market board server selection
+    - Market price settings (compact design)
+    - Exclude options (metallic, facewear, extremes)
+  - Right content area displays:
+    - Selected color display at top
+    - Color harmony results in 2-column grid layout
+    - Export options below harmony panels
+  - Left sidebar is sticky and scrollable for easy access to controls
+  - Optimized for 1080p displays (1920x1080) to show maximum content without scrolling
+  - Responsive design: automatically switches to single-column layout on smaller screens (< 1024px)
+  - Full dark mode support for both sidebar and content areas
+
+### Changed
+- Reduced padding and spacing throughout interface for more compact design
+- Harmony results grid changed from 3 columns to 2 columns for better readability on wide screens
+- Market price settings panel made more compact with smaller text and tighter spacing
+- Configuration section labels shortened for sidebar (e.g., "Jet Black & Pure White" instead of "Exclude Jet Black and Pure White")
+- Dark mode toggle moved from header to bottom of left sidebar as a full-width button with icon and label
+- Toggle switch animation improved with smooth slide effect using ease timing function
+
+### Technical Details
+- New `calculateDevianceRating()` function converts RGB distance to 0-10 scale
+- Enhanced `generateHarmony()` to return objects containing:
+  - Ideal RGB values (mathematically perfect harmony color)
+  - Matched FFXIV dye color (closest available)
+  - Distance between ideal and matched colors
+  - Calculated deviance rating
+- Updated `createColorSwatchHTML()` to accept and display optional deviance ratings with color-coded badges
+- Added flexbox-based two-column layout with `.app-container`, `.left-sidebar`, and `.right-content` classes
+- Sidebar uses `position: sticky` for persistent visibility while scrolling
+- Responsive breakpoint at 1024px switches to stacked layout for tablets and mobile devices
+
 ## [1.0.0] - 2025-10-28
 
 ### Added
