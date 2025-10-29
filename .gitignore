@@ -36,8 +36,7 @@ yarn-error.log*
 *~
 
 # Documentation Drafts (keep final versions)
-Feedback.md
-example.json
+Feedback.*
 GIT_SETUP.md
 DEPLOYMENT_SUMMARY.md
 CLAUDE.md
