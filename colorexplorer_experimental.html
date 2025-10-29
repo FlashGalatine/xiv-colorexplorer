@@ -115,6 +115,17 @@
             white-space: nowrap;
         }
 
+        /* Color wheel dot highlight */
+        .color-dot {
+            transition: all 0.2s ease;
+        }
+
+        .color-dot.highlighted {
+            r: 16;
+            filter: drop-shadow(0 0 8px currentColor) brightness(1.3);
+            stroke-width: 4;
+        }
+
         /* Two-column layout */
         .app-container {
             display: flex;
@@ -440,6 +451,47 @@
         }
 
         /**
+         * Highlights a color dot on the color wheel
+         */
+        function highlightColorDot(hex, harmonyType) {
+            // Find the color wheel for this specific harmony type
+            const colorWheel = document.querySelector(`.color-wheel[data-harmony-type="${harmonyType}"]`);
+            if (!colorWheel) return;
+
+            // Find the dot within this specific color wheel
+            const dot = colorWheel.querySelector(`.color-dot[data-hex="${hex}"]`);
+            if (dot) {
+                // Store original values if not already stored
+                if (!dot.dataset.originalR) {
+                    dot.dataset.originalR = dot.getAttribute('r');
+                    dot.dataset.originalStrokeWidth = dot.getAttribute('stroke-width');
+                }
+                // Apply highlight effects
+                dot.setAttribute('r', '16');
+                dot.setAttribute('stroke-width', '4');
+                dot.style.filter = 'drop-shadow(0 0 8px currentColor) brightness(1.3)';
+            }
+        }
+
+        /**
+         * Removes highlight from a color dot on the color wheel
+         */
+        function unhighlightColorDot(hex, harmonyType) {
+            // Find the color wheel for this specific harmony type
+            const colorWheel = document.querySelector(`.color-wheel[data-harmony-type="${harmonyType}"]`);
+            if (!colorWheel) return;
+
+            // Find the dot within this specific color wheel
+            const dot = colorWheel.querySelector(`.color-dot[data-hex="${hex}"]`);
+            if (dot && dot.dataset.originalR) {
+                // Restore original values
+                dot.setAttribute('r', dot.dataset.originalR);
+                dot.setAttribute('stroke-width', dot.dataset.originalStrokeWidth);
+                dot.style.filter = '';
+            }
+        }
+
+        /**
          * Shows a toast notification
          */
         function showToast(message, type = 'success') {
@@ -527,7 +579,7 @@
             const center = size / 2;
             const radius = 60;
             const innerRadius = 44;
-            
+
             const getPointOnCircle = (hue, r) => {
                 const angle = (hue - 90) * (Math.PI / 180);
                 return {
@@ -535,12 +587,12 @@
                     y: center + r * Math.sin(angle)
                 };
             };
-            
+
             const baseHue = hexToHue(baseColor.hex);
             const basePoint = getPointOnCircle(baseHue, radius);
-            
-            let svg = `<svg width="${size}" height="${size}" class="mx-auto mb-4">`;
-            
+
+            let svg = `<svg width="${size}" height="${size}" class="mx-auto mb-4 color-wheel" data-harmony-type="${harmonyType}">`;
+
             // Reduced to 120 segments for better performance
             const segments = 120;
             for (let i = 0; i < segments; i++) {
@@ -570,16 +622,16 @@
             // Related color dots with hover events
             relatedColors.forEach(color => {
                 const point = getPointOnCircle(hexToHue(color.hex), radius);
-                svg += `<circle cx="${point.x}" cy="${point.y}" r="10" fill="${color.hex}" 
-                    stroke="#fff" stroke-width="2" class="color-dot" data-name="${color.name}" 
-                    onmousemove="showTooltip('${color.name}', event.pageX, event.pageY)" 
+                svg += `<circle cx="${point.x}" cy="${point.y}" r="10" fill="${color.hex}"
+                    stroke="#fff" stroke-width="2" class="color-dot" data-name="${color.name}" data-hex="${color.hex}"
+                    onmousemove="showTooltip('${color.name}', event.pageX, event.pageY)"
                     onmouseout="hideTooltip()" style="cursor: pointer;" />`;
             });
-            
+
             // Base color dot (larger) with hover event
-            svg += `<circle cx="${basePoint.x}" cy="${basePoint.y}" r="14" fill="${baseColor.hex}" 
-                stroke="#fff" stroke-width="3" class="color-dot" data-name="${baseColor.name}"
-                onmousemove="showTooltip('${baseColor.name} (Base)', event.pageX, event.pageY)" 
+            svg += `<circle cx="${basePoint.x}" cy="${basePoint.y}" r="14" fill="${baseColor.hex}"
+                stroke="#fff" stroke-width="3" class="color-dot" data-name="${baseColor.name}" data-hex="${baseColor.hex}"
+                onmousemove="showTooltip('${baseColor.name} (Base)', event.pageX, event.pageY)"
                 onmouseout="hideTooltip()" style="cursor: pointer;" />`;
             
             svg += '</svg>';
@@ -1104,7 +1156,7 @@
         /**
          * Creates a color swatch with copy button and optional deviance rating
          */
-        function createColorSwatchHTML(color, devianceRating = null) {
+        function createColorSwatchHTML(color, devianceRating = null, harmonyType = null) {
             const textColor = (color.rgb.r * 0.299 + color.rgb.g * 0.587 + color.rgb.b * 0.114) > 186 ? 'text-black' : 'text-white';
 
             const acquisitionText = getAcquisitionText(color);
@@ -1135,7 +1187,10 @@
 
             return `
                 <div class="flex items-center p-3 rounded-lg group relative" style="background-color: ${color.hex};">
-                    <div class="w-8 h-8 rounded-md border-2 ${textColor === 'text-black' ? 'border-gray-300' : 'border-gray-500'}" style="background-color: ${color.hex};"></div>
+                    <div class="w-8 h-8 rounded-md border-2 ${textColor === 'text-black' ? 'border-gray-300' : 'border-gray-500'}"
+                         style="background-color: ${color.hex}; cursor: pointer;"
+                         onmouseenter="highlightColorDot('${color.hex}', '${harmonyType}')"
+                         onmouseleave="unhighlightColorDot('${color.hex}', '${harmonyType}')"></div>
                     <div class="ml-4 flex-grow ${textColor}">
                         <div class="flex items-center gap-2">
                             <span class="font-semibold">${color.name}</span>
@@ -1206,7 +1261,7 @@
                 const colorWheel = createColorWheel(baseColor, paletteColors, harmony.type);
                 // Create swatches with deviance ratings
                 let swatchesHTML = harmonyResults.map(result =>
-                    createColorSwatchHTML(result.matchedColor, result.devianceRating)
+                    createColorSwatchHTML(result.matchedColor, result.devianceRating, harmony.type)
                 ).join('<div class="my-2"></div>');
 
                 section.innerHTML = `

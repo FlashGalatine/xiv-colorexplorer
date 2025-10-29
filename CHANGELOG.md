@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - Experimental Build Only
 
 ### Added
+- **Interactive Color Wheel Highlighting**
+  - Hovering over a color swatch now illuminates the corresponding dot on its color wheel
+  - Highlighted dots grow larger (radius increases from 10px to 16px)
+  - Enhanced stroke width (2px to 4px) and glow effect with brightness increase
+  - Smooth CSS transitions for all hover animations
+  - Properly scoped to each harmony section to prevent cross-highlighting when duplicate colors appear in multiple palettes
+  - Visual feedback helps users understand the relationship between swatches and their position on the color spectrum
+
 - **Version Navigation Badges**
   - Added amber "Experimental" badge in top-right corner of stable build (index.html) to easily access experimental features
   - Added green "Stable" badge in header of experimental build to return to stable version
@@ -50,6 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Toggle switch animation improved with smooth slide effect using ease timing function
 
 ### Technical Details
+- New `highlightColorDot(hex, harmonyType)` and `unhighlightColorDot(hex, harmonyType)` functions for color wheel interaction
+  - Scoped querySelector searches to specific harmony type using `data-harmony-type` attribute
+  - Stores original SVG circle attributes (`r`, `stroke-width`) in dataset for restoration
+  - Dynamically modifies SVG circle attributes and applies CSS filters on hover
+- Color wheels now include `data-harmony-type` attribute for proper scoping
+- Color dots include `data-hex` attribute for identification
+- `createColorSwatchHTML()` updated to accept `harmonyType` parameter and bind hover events
 - New `calculateDevianceRating()` function converts RGB distance to 0-10 scale
 - Enhanced `generateHarmony()` to return objects containing:
   - Ideal RGB values (mathematically perfect harmony color)
