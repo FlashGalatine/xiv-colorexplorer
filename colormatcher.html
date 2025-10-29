@@ -3,12 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFXIV Dye Color Matcher</title>
+    <title>FFXIV Dye Color Matcher v1.1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+        body.dark-mode {
+            background-color: #1f2937;
+            color: #f9fafb;
+        }
+        body.dark-mode .bg-white {
+            background-color: #374151;
+        }
+        body.dark-mode .text-gray-800 {
+            color: #f9fafb;
+        }
+        body.dark-mode .text-gray-900 {
+            color: #f9fafb;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #d1d5db;
+        }
+        body.dark-mode .text-gray-500 {
+            color: #9ca3af;
+        }
+        body.dark-mode h1 .text-gray-500 {
+            color: #6b7280;
+        }
+        body.dark-mode .text-indigo-600 {
+            color: #818cf8;
+        }
+        body.dark-mode .text-indigo-600:hover {
+            color: #a5b4fc;
+        }
+        body.dark-mode .border-gray-300 {
+            border-color: #4b5563;
+        }
+        body.dark-mode .border-gray-200 {
+            border-color: #4b5563;
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #4b5563;
+        }
+        body.dark-mode .bg-gray-100 {
+            background-color: #374151;
+        }
+        body.dark-mode #dark-mode-toggle {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+        body.dark-mode #dark-mode-toggle:hover {
+            background-color: #374151;
+        }
+        body.dark-mode #imageLoader {
+            color: #d1d5db;
+        }
+        body.dark-mode #imageLoader::file-selector-button {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+        body.dark-mode #imageLoader::file-selector-button:hover {
+            background-color: #374151;
+        }
+        body.dark-mode #clearImageBtn {
+            background-color: #7f1d1d;
+            color: #fca5a5;
+        }
+        body.dark-mode #clearImageBtn:hover {
+            background-color: #991b1b;
+        }
+        body.dark-mode #zoomInBtn,
+        body.dark-mode #zoomOutBtn,
+        body.dark-mode #zoomToFitBtn,
+        body.dark-mode #zoomToWidthBtn,
+        body.dark-mode #resetZoomBtn {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+        body.dark-mode #zoomInBtn:hover,
+        body.dark-mode #zoomOutBtn:hover,
+        body.dark-mode #zoomToFitBtn:hover,
+        body.dark-mode #zoomToWidthBtn:hover,
+        body.dark-mode #resetZoomBtn:hover {
+            background-color: #374151;
+        }
+        body.dark-mode #zoomLevel {
+            color: #f9fafb;
+        }
+        body.dark-mode #canvasWrapper {
+            background-color: #1f2937;
+        }
+        #canvasWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         .color-swatch {
             width: 100px;
@@ -36,18 +126,30 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div id="mainContainer" class="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 transition-all duration-300">
+    <div id="mainContainer" class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 md:p-8 transition-all duration-300">
         
         <div class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">FFXIV Dye Color Matcher</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Pick a color or upload an image to find the closest dye match.</p>
+            <div class="flex justify-center items-center gap-4 mb-2">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl md:text-3xl text-gray-500">v1.1.0</span></h1>
+                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-600 mt-2">
+                Pick a color or upload an image to find the closest dye match.
+                <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition ml-4" title="Explore color harmonies">
+                    ← Color Explorer
+                </a>
+            </p>
         </div>
 
         <!-- Input Section -->
         <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-            <div class="flex items-center gap-4 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+            <div class="flex items-center gap-4 bg-gray-100 p-3 rounded-lg">
                 <label for="colorPicker" class="font-medium text-lg">Your Color:</label>
                 <input type="color" id="colorPicker" value="#8A2BE2" class="w-14 h-14 p-1 bg-white rounded-md cursor-pointer">
             </div>
@@ -55,34 +157,34 @@
 
         <!-- Results Section -->
         <div id="results" class="grid md:grid-cols-2 gap-8 text-center">
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+            <div class="bg-gray-50 p-6 rounded-lg">
                 <h2 class="text-2xl font-semibold mb-4">Your Pick</h2>
                 <div id="userColor" class="color-swatch mx-auto mb-4"></div>
                 <p id="userHex" class="font-mono text-lg"></p>
             </div>
-            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+            <div class="bg-gray-50 p-6 rounded-lg">
                 <h2 class="text-2xl font-semibold mb-4">Closest Dye Match</h2>
                 <div id="matchedColor" class="color-swatch mx-auto mb-4"></div>
                 <p id="matchedName" class="text-lg font-medium"></p>
                 <p id="matchedHex" class="font-mono text-lg"></p>
             </div>
         </div>
-        
+
         <!-- Image Uploader and Eyedropper Section -->
-        <div class="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div class="mt-10 pt-8 border-t border-gray-200">
             <h2 class="text-2xl font-semibold text-center mb-4">Or... Pick from an Image</h2>
-            <div id="upload-prompt" class="text-center text-gray-500 dark:text-gray-400">
+            <div id="upload-prompt" class="text-center text-gray-500">
                 <p>Drag & drop an image anywhere, or</p>
             </div>
             <div class="flex flex-col items-center gap-4 mt-2">
                 <div class="w-full max-w-md">
                    <label for="imageLoader" class="sr-only">Choose a file</label>
-                   <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 dark:file:bg-blue-800 file:text-blue-700 dark:file:text-blue-200 hover:file:bg-blue-200 dark:hover:file:bg-blue-700 cursor-pointer"/>
+                   <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer"/>
                 </div>
                 <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 mt-2">
                     <div class="flex items-center gap-2">
                         <label for="sampleSize" class="font-medium">Sample Size:</label>
-                        <select id="sampleSize" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md p-2">
+                        <select id="sampleSize" class="bg-gray-100 border border-gray-300 rounded-md p-2">
                             <option value="1">1x1</option>
                             <option value="2">2x2</option>
                             <option value="4">4x4</option>
@@ -92,19 +194,85 @@
                         </select>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="excludeMetallic" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <input type="checkbox" id="excludeMetallic" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
                         <label for="excludeMetallic" class="font-medium">Exclude Metallic Dyes</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="excludeExtremes" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                        <label for="excludeExtremes" class="font-medium">Exclude Pure White & Jet Black</label>
                     </div>
                 </div>
             </div>
             <div id="imageContainer" class="mt-4 w-full relative" style="display: none;">
-                <p class="text-center text-gray-500 mb-2">Hover and click on the image to pick a color.</p>
-                <canvas id="imageCanvas" class="w-full h-auto rounded-lg shadow-md"></canvas>
+                <div class="flex justify-center items-center gap-3 mb-4">
+                    <button id="clearImageBtn" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium text-sm">
+                        Clear Image
+                    </button>
+                    <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
+                        <button id="zoomOutBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom Out (- or Shift+MouseWheel)">
+                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
+                            </svg>
+                        </button>
+                        <span id="zoomLevel" class="text-sm font-medium text-gray-700 min-w-[60px] text-center">100%</span>
+                        <button id="zoomInBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom In (+ or Shift+MouseWheel)">
+                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                            </svg>
+                        </button>
+                        <button id="zoomToFitBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom to Fit (Shift+MiddleClick)">
+                            Fit
+                        </button>
+                        <button id="zoomToWidthBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom to Width (W)">
+                            Width
+                        </button>
+                        <button id="resetZoomBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Reset Zoom (R or Shift+RightClick)">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+                <p class="text-center text-gray-500 mb-2">Hover and click on the image to pick a color. Use Shift+Left Drag to pan, Shift+Wheel to zoom.</p>
+                <div id="canvasWrapper" class="w-full overflow-auto rounded-lg shadow-md" style="max-height: 700px;">
+                    <canvas id="imageCanvas" class=""></canvas>
+                </div>
                 <div id="eyedropperPreview"></div>
             </div>
         </div>
 
     </div>
+
+    <!-- Footer Credits -->
+    <footer class="text-center mt-12 mb-8 text-sm text-gray-500">
+        <p>Built with love for Eorzea's fashionistas.</p>
+        <p class="mt-2">
+            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
+        </p>
+        <p class="mt-2 flex justify-center gap-4 flex-wrap">
+            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                Blog
+            </a>
+            <span class="text-gray-400">•</span>
+            <a href="https://github.com/FlashGalatine/xiv-colorexplorer" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                GitHub
+            </a>
+            <span class="text-gray-400">•</span>
+            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                X / Twitter
+            </a>
+            <span class="text-gray-400">•</span>
+            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                Twitch
+            </a>
+            <span class="text-gray-400">•</span>
+            <a href="https://bsky.app/profile/flashgalatine.bsky.social" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                BlueSky
+            </a>
+            <span class="text-gray-400">•</span>
+            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
+                Patreon
+            </a>
+        </p>
+    </footer>
 
     <script>
         // This variable will hold the color data once it's fetched.
@@ -124,9 +292,131 @@
         const imageContainer = document.getElementById('imageContainer');
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const canvasWrapper = document.getElementById('canvasWrapper');
         const sampleSizeSelect = document.getElementById('sampleSize');
         const eyedropperPreview = document.getElementById('eyedropperPreview');
         const excludeMetallicCheckbox = document.getElementById('excludeMetallic');
+        const excludeExtremesCheckbox = document.getElementById('excludeExtremes');
+        const clearImageBtn = document.getElementById('clearImageBtn');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomToFitBtn = document.getElementById('zoomToFitBtn');
+        const zoomToWidthBtn = document.getElementById('zoomToWidthBtn');
+        const resetZoomBtn = document.getElementById('resetZoomBtn');
+        const zoomLevelSpan = document.getElementById('zoomLevel');
+
+        // Zoom and pan state
+        let zoomScale = 1.0;
+        let originalImageWidth = 0;
+        let originalImageHeight = 0;
+        let currentImage = null;
+        let isPanning = false;
+        let startPanX = 0;
+        let startPanY = 0;
+
+        /**
+         * Initializes dark mode
+         */
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            });
+        }
+
+        /**
+         * Updates the canvas display based on current zoom
+         */
+        function updateCanvasZoom() {
+            if (!currentImage) return;
+
+            const newWidth = originalImageWidth * zoomScale;
+            const newHeight = originalImageHeight * zoomScale;
+
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(currentImage, 0, 0, newWidth, newHeight);
+
+            zoomLevelSpan.textContent = Math.round(zoomScale * 100) + '%';
+        }
+
+        /**
+         * Zooms in on the image
+         */
+        function zoomIn() {
+            zoomScale = Math.min(zoomScale * 1.25, 10); // Max 10x zoom
+            updateCanvasZoom();
+        }
+
+        /**
+         * Zooms out on the image
+         */
+        function zoomOut() {
+            zoomScale = Math.max(zoomScale / 1.25, 0.25); // Min 0.25x zoom
+            updateCanvasZoom();
+        }
+
+        /**
+         * Resets zoom to 100%
+         */
+        function resetZoom() {
+            zoomScale = 1.0;
+            updateCanvasZoom();
+            canvasWrapper.scrollLeft = 0;
+            canvasWrapper.scrollTop = 0;
+        }
+
+        /**
+         * Zooms to fit the image in the canvas wrapper
+         */
+        function zoomToFit() {
+            if (!currentImage) return;
+
+            const wrapperWidth = canvasWrapper.clientWidth;
+            const wrapperHeight = canvasWrapper.clientHeight;
+
+            const scaleX = wrapperWidth / originalImageWidth;
+            const scaleY = wrapperHeight / originalImageHeight;
+
+            // Use the smaller scale to ensure the entire image fits
+            zoomScale = Math.min(scaleX, scaleY, 1.0); // Don't zoom in beyond 100%
+            updateCanvasZoom();
+            canvasWrapper.scrollLeft = 0;
+            canvasWrapper.scrollTop = 0;
+        }
+
+        /**
+         * Zooms to fit the image width in the canvas wrapper
+         */
+        function zoomToWidth() {
+            if (!currentImage) return;
+
+            const wrapperWidth = canvasWrapper.clientWidth;
+            zoomScale = wrapperWidth / originalImageWidth;
+            updateCanvasZoom();
+            canvasWrapper.scrollLeft = 0;
+            canvasWrapper.scrollTop = 0;
+        }
+
+        /**
+         * Clears the loaded image
+         */
+        function clearImage() {
+            currentImage = null;
+            zoomScale = 1.0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            imageContainer.style.display = 'none';
+            imageLoader.value = '';
+        }
 
         // --- Core Functions ---
         function hexToRgb(hex) {
@@ -157,9 +447,21 @@
             if (!userRgb) return;
 
             const isMetallicExcluded = excludeMetallicCheckbox.checked;
-            const dyesToSearch = isMetallicExcluded 
-                ? ffxivDyes.filter(dye => !dye.name.toLowerCase().includes('metallic')) 
-                : ffxivDyes;
+            const isExtremesExcluded = excludeExtremesCheckbox.checked;
+
+            // Apply all filters
+            let dyesToSearch = ffxivDyes.filter(dye => {
+                // Always exclude Facewear colors
+                if (dye.category === 'Facewear') return false;
+
+                // Exclude metallic if checkbox is checked
+                if (isMetallicExcluded && dye.name.toLowerCase().includes('metallic')) return false;
+
+                // Exclude Pure White and Jet Black if checkbox is checked
+                if (isExtremesExcluded && (dye.name === 'Pure White' || dye.name === 'Jet Black')) return false;
+
+                return true;
+            });
 
             let closestColor = null;
             let smallestDistance = Infinity;
@@ -202,10 +504,20 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+                    currentImage = img;
+                    originalImageWidth = img.width;
+                    originalImageHeight = img.height;
+                    zoomScale = 1.0;
                     imageContainer.style.display = 'block';
+
+                    // Auto zoom to fit if image is larger than wrapper
+                    const wrapperWidth = canvasWrapper.clientWidth;
+                    const wrapperHeight = canvasWrapper.clientHeight;
+                    if (img.width > wrapperWidth || img.height > wrapperHeight) {
+                        zoomToFit();
+                    } else {
+                        updateCanvasZoom();
+                    }
                 };
                 img.src = event.target.result;
             };
@@ -265,7 +577,89 @@
             colorPicker.addEventListener('input', findClosestMatch);
             imageLoader.addEventListener('change', (e) => processImageFile(e.target.files[0]));
             excludeMetallicCheckbox.addEventListener('change', findClosestMatch);
-            
+            excludeExtremesCheckbox.addEventListener('change', findClosestMatch);
+
+            // Zoom and clear buttons
+            zoomInBtn.addEventListener('click', zoomIn);
+            zoomOutBtn.addEventListener('click', zoomOut);
+            zoomToFitBtn.addEventListener('click', zoomToFit);
+            zoomToWidthBtn.addEventListener('click', zoomToWidth);
+            resetZoomBtn.addEventListener('click', resetZoom);
+            clearImageBtn.addEventListener('click', clearImage);
+
+            // Keyboard shortcuts for zoom
+            document.addEventListener('keydown', (e) => {
+                if (imageContainer.style.display === 'none') return;
+
+                if (e.key === '+' || e.key === '=') {
+                    e.preventDefault();
+                    zoomIn();
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    zoomOut();
+                } else if (e.key === 'w' || e.key === 'W') {
+                    e.preventDefault();
+                    zoomToWidth();
+                } else if (e.key === 'r' || e.key === 'R') {
+                    e.preventDefault();
+                    resetZoom();
+                }
+            });
+
+            // Shift+MouseWheel for zoom
+            canvasWrapper.addEventListener('wheel', (e) => {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    if (e.deltaY < 0) {
+                        zoomIn();
+                    } else {
+                        zoomOut();
+                    }
+                }
+            }, { passive: false });
+
+            // Shift+LeftClickDrag for panning
+            canvasWrapper.addEventListener('mousedown', (e) => {
+                if (e.shiftKey && e.button === 0) {
+                    // Shift+LeftClick
+                    e.preventDefault();
+                    isPanning = true;
+                    startPanX = e.clientX + canvasWrapper.scrollLeft;
+                    startPanY = e.clientY + canvasWrapper.scrollTop;
+                    canvasWrapper.style.cursor = 'grabbing';
+                } else if (e.shiftKey && e.button === 1) {
+                    // Shift+MiddleClick - Zoom to Fit
+                    e.preventDefault();
+                    zoomToFit();
+                } else if (e.shiftKey && e.button === 2) {
+                    // Shift+RightClick - Reset Zoom
+                    e.preventDefault();
+                    resetZoom();
+                }
+            });
+
+            // Prevent context menu on Shift+RightClick
+            canvasWrapper.addEventListener('contextmenu', (e) => {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isPanning) {
+                    isPanning = false;
+                    canvasWrapper.style.cursor = '';
+                }
+            });
+
+            canvasWrapper.addEventListener('mousemove', (e) => {
+                if (isPanning) {
+                    e.preventDefault();
+                    canvasWrapper.scrollLeft = startPanX - e.clientX;
+                    canvasWrapper.scrollTop = startPanY - e.clientY;
+                }
+            });
+
             let rect;
             canvas.addEventListener('mouseenter', () => {
                 rect = canvas.getBoundingClientRect();
@@ -298,6 +692,9 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize dark mode
+            initializeDarkMode();
+
             fetch('./assets/json/colors_xiv.json')
                 .then(response => {
                     if (!response.ok) {
@@ -319,36 +716,5 @@
 
     </script>
 
-    <footer class="text-center mt-12 text-sm text-gray-500">
-        <p>Built with love for Eorzea's fashionistas.</p>
-        <p class="mt-2">
-            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
-        </p>
-        <p class="mt-2 flex justify-center gap-4 flex-wrap">
-            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Blog
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://github.com/FlashGalatine/xiv-colorexplorer" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                GitHub
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                X / Twitter
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Twitch
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://bsky.app/profile/flashgalatine.bsky.social" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                BlueSky
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Patreon
-            </a>
-        </p>
-    </footer>
 </body>
 </html>

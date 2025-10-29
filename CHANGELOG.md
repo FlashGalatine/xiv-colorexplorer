@@ -79,6 +79,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Responsive design: automatically switches to single-column layout on smaller screens (< 1024px)
   - Full dark mode support for both sidebar and content areas
 
+- **Color Matcher Tool Enhancements** (`colormatcher.html`)
+  - **Dark Mode Support**
+    - Toggle button with moon icon in header
+    - Persists preference in localStorage
+    - Matches Color Explorer's dark mode color scheme (#1f2937 background, #374151 containers)
+    - All controls properly styled for both light and dark modes
+    - File browser button darkens appropriately in dark mode
+  - **Exclusion Filters**
+    - Facewear colors automatically excluded from all suggestions (always on)
+    - "Exclude Metallic Dyes" checkbox (optional)
+    - "Exclude Pure White & Jet Black" checkbox (default: OFF)
+    - All filters apply to color matching algorithm
+  - **Advanced Zoom and Pan Controls**
+    - Zoom In/Out buttons with live zoom percentage display (25% to 1000%)
+    - **Zoom to Fit**: Scales image to fit entirely within wrapper (max 100%)
+    - **Zoom to Width**: Scales image to fill wrapper width (ideal for portrait images)
+    - Reset Zoom button returns to 100%
+    - Keyboard shortcuts: `+` (zoom in), `-` (zoom out), `W` (zoom to width), `R` (reset)
+    - Auto zoom to fit when loading large images (>wrapper dimensions)
+  - **Mouse Controls**
+    - **Shift+MouseWheel**: Zoom in/out smoothly
+    - **Shift+LeftClickDrag**: Pan around zoomed images
+    - **Shift+MiddleClick**: Zoom to fit
+    - **Shift+RightClick**: Reset zoom to 100%
+    - Cursor changes to "grabbing" during pan operations
+    - Context menu suppressed during Shift+RightClick
+  - **Image Management**
+    - Clear Image button to remove loaded image
+    - Canvas wrapper with flexbox centering for proper image alignment
+    - Max canvas height: 700px (optimized for 1080p displays)
+    - High-quality image smoothing for zoomed views
+  - **UI/UX Improvements**
+    - Footer moved outside main container to bottom of page
+    - Container expanded to max-w-6xl (1152px) for better 1080p optimization
+    - Updated instructions: "Hover and click on the image to pick a color. Use Shift+Left Drag to pan, Shift+Wheel to zoom."
+    - All tooltips updated with keyboard/mouse shortcuts
+    - Centered canvas alignment prevents left-aligned images in portrait mode
+
 ### Changed
 - Reduced padding and spacing throughout interface for more compact design
 - Harmony results grid changed from 3 columns to 2 columns for better readability on wide screens
