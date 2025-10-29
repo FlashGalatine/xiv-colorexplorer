@@ -5,7 +5,7 @@ All notable changes to the FFXIV Color Explorer project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - Experimental Build Only
+## [1.1.0] - 2025-10-29
 
 ### Added
 - **Interactive Color Wheel Highlighting**
@@ -31,6 +31,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Rating of 0 displays "Perfect" instead of numeric value
   - Uses RGB Euclidean distance to calculate color deviation
   - Helps users understand when a suggested dye significantly deviates from the ideal color theory recommendation
+
+- **Interactive Deviance Line Visualization**
+  - Hovering over a deviance badge now draws a line on the color wheel
+  - Line connects from the base color dot to the matched color dot
+  - Line color dynamically matches the badge color for semantic consistency:
+    - Green line (#22c55e) for excellent matches (deviance 0-3)
+    - Yellow line (#eab308) for good matches (deviance 3.1-6)
+    - Red line (#ef4444) for poor matches (deviance 6.1+)
+  - Line appears behind color dots to maintain visibility
+  - Helps users visually understand which ideal harmony target the matched dye deviated from
+  - Provides intuitive feedback about color relationships on the wheel
+
+- **Zoom Functionality for Harmony Containers**
+  - New Zoom In/Out buttons on each harmony section
+  - Clicking Zoom In enlarges the harmony container to fill 90% of viewport (max 1200px width)
+  - Background darkens with 80% opacity overlay and 4px blur effect
+  - Color wheel automatically scales from 160px to 240px (50% larger) when zoomed using responsive SVG viewBox
+  - Multiple ways to exit zoom:
+    - Click Zoom Out button
+    - Click anywhere on darkened backdrop
+    - Press Escape key
+  - Smooth animations (0.3s ease-out) for entering and exiting zoom
+  - Body scroll disabled while zoomed to prevent confusion
+  - All interactive features work correctly in zoomed view:
+    - Color wheel tooltips display above zoomed content (z-index: 1002)
+    - Deviance line visualization
+    - Color wheel dot highlighting
+    - Copy buttons and all interactions
+  - Fully responsive with adjusted sizing for mobile devices (95vw on screens < 1024px)
+  - Dark mode compatible with proper styling for backdrop and shadows
 
 - **Two-Column Layout UI Overhaul**
   - Complete redesign of the interface for better use of screen space
@@ -62,9 +92,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Scoped querySelector searches to specific harmony type using `data-harmony-type` attribute
   - Stores original SVG circle attributes (`r`, `stroke-width`) in dataset for restoration
   - Dynamically modifies SVG circle attributes and applies CSS filters on hover
+- New `showDevianceLine(hex, harmonyType, strokeColor)` and `hideDevianceLine(harmonyType)` functions for deviance line visualization
+  - Creates SVG line element dynamically using `document.createElementNS()`
+  - Positions line between base color dot and matched color dot using SVG circle coordinates
+  - Accepts dynamic stroke color parameter to match badge color
+  - Line inserted before color dots in DOM to maintain proper z-ordering
+  - Removes any existing deviance line before creating new one to prevent duplicates
+- New `zoomIn(harmonyType)` and `zoomOut()` functions for harmony container zoom
+  - Uses CSS classes and fixed positioning to create modal-like zoom effect
+  - Manipulates `overflow` property on body element to disable scrolling
+  - Toggles visibility of zoom buttons using inline styles
+  - Event listeners: onclick for backdrop, onkeydown (Escape key) for exiting zoom
+- SVG color wheel updated to use `viewBox` instead of hardcoded width/height attributes
+  - Enables responsive scaling with CSS while maintaining coordinate system
+  - Inline styles provide default sizing that can be overridden by CSS
+- CSS animations and transitions:
+  - `.zoom-backdrop` with `fadeIn` keyframe animation (0.3s)
+  - `.harmony-section.zoomed` with `zoomIn` keyframe animation (0.3s)
+  - Color wheel CSS transitions for smooth scaling
+  - Z-index layering: backdrop (1000), zoomed section (1001), tooltip (1002)
 - Color wheels now include `data-harmony-type` attribute for proper scoping
 - Color dots include `data-hex` attribute for identification
+- Harmony sections include `.harmony-section` class and `data-harmony-type` attribute for zoom targeting
 - `createColorSwatchHTML()` updated to accept `harmonyType` parameter and bind hover events
+  - Deviance badges now include hover events (`onmouseenter`/`onmouseleave`) that trigger line visualization
+  - Badge stroke color variable matches Tailwind CSS color values (green-500, yellow-500, red-500)
 - New `calculateDevianceRating()` function converts RGB distance to 0-10 scale
 - Enhanced `generateHarmony()` to return objects containing:
   - Ideal RGB values (mathematically perfect harmony color)
