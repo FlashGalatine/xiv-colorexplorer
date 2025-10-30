@@ -70,24 +70,45 @@ Upload an image or pick a color to find the closest matching FFXIV dye with an i
 - Matches Color Explorer's dark mode theme
 - All controls styled for both light and dark modes including dropdowns
 
-### ⚖️ Dye Comparison (v1.0.0)
-Compare up to 4 FFXIV dyes side-by-side for detailed analysis:
+### ⚖️ Dye Comparison (v1.1.0)
+Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
+
+**Core Comparison Features:**
 - View complete dye information: name, category, hex code, RGB, HSV, acquisition method, and price
 - **Color Distance Matrix** - Visual analysis of color similarities and differences
   - Green: Very similar colors (distance < 50)
   - Yellow: Similar colors (distance 50-99)
   - Red: Dissimilar colors (distance ≥ 100)
 - Smart categorized dropdown with dyes organized by type (Neutral, Colors A-Z, Special, Facewear)
-- **Export & Share**
-  - Export comparison as JSON file with timestamp
-  - Generate CSS variables for selected dyes
-  - Copy hex codes with dye names to clipboard
-  - Copy formatted summary with color distances
-- **HSV Values for Other Games**
-  - HSV values can be used in other games like Monster Hunter Wilds
-  - Hover over "HSV:" label to see helpful tooltip
-- **Dark Mode Support**
-  - Full dark mode styling for all elements
+
+**Color Chart Visualization (NEW - v1.1.0):**
+- **Hue-Saturation Chart** - 2D visualization showing:
+  - Dye positions plotted on hue (horizontal) and saturation (vertical) axes
+  - Colored circles indicating actual dye colors
+  - Saturation percentages (0-100%) marked on left axis
+  - Interactive gradient background showing color space
+  - 1080p optimized canvas rendering (1000×750px)
+- **Brightness Chart** - 1D visualization showing:
+  - Vertical lines for each selected dye at their brightness position
+  - Scale from Black (0%) to White (100%)
+  - Colored lines using actual dye hex colors
+  - 1080p optimized canvas rendering (1000×750px)
+- **Dynamic Updates** - Charts automatically refresh when dyes are selected or deselected
+
+**Export & Share**
+- Export comparison as JSON file with timestamp
+- Generate CSS variables for selected dyes
+- Copy hex codes with dye names to clipboard
+- Copy formatted summary with color distances
+
+**HSV Values for Other Games**
+- HSV values can be used in other games like Monster Hunter Wilds
+- Hover over "HSV:" label to see helpful tooltip
+
+**Display & Optimization**
+- 1080p display optimization with responsive typography
+- Dark Mode Support
+  - Full dark mode styling for all elements including color charts
   - Persistent preference storage
   - All controls properly themed
 
@@ -128,8 +149,8 @@ Toggle between light and dark themes with persistent preference storage. Availab
   - Feature highlights and navigation
 - **Color Harmony Explorer (Stable v1.1.0)**: Open `colorexplorer_stable.html` for the main tool
 - **Color Harmony Explorer (Experimental v1.2.0-dev)**: Open `colorexplorer_experimental.html` for latest features
-- **Color Matcher (Stable v1.2.0)**: Open `colormatcher.html` for image-based color matching with intelligent auto zoom
-- **Dye Comparison (Stable v1.0.0)**: Open `dyecomparison.html` for side-by-side dye analysis
+- **Color Matcher (Stable v1.2.0)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
+- **Dye Comparison (Stable v1.1.0)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
 
 No installation or server required! All tools work directly in your browser.
@@ -154,8 +175,8 @@ To get a local copy of the project, follow these steps:
    - Open `index.html` to access the main portal with all tools
    - Or open individual tool files directly:
      - `colorexplorer_stable.html` - Color Harmony Explorer
-     - `colormatcher.html` - Color Matcher
-     - `dyecomparison.html` - Dye Comparison
+     - `colormatcher_stable.html` - Color Matcher
+     - `dyecomparison_stable.html` - Dye Comparison
 
 That's it! No installation or build process needed.
 
@@ -165,7 +186,7 @@ That's it! No installation or build process needed.
 3. **Access all three tools** from the portal:
    - Color Harmony Explorer (v1.1.0)
    - Color Matcher (v1.2.0)
-   - Dye Comparison (v1.0.0)
+   - Dye Comparison (v1.1.0)
 4. **Develop new features**: Edit `colorexplorer_experimental.html` for testing new functionality
 5. **Deploy to production**: Copy tested features from the experimental version to the main tool files
 
@@ -208,20 +229,29 @@ All three main tools are production-ready stable versions with full feature supp
    - Use dropdown menus to select up to 4 dyes (first 2 required, last 2 optional)
    - Dyes are organized by category for easy browsing
    - View complete information for each selected dye (name, category, hex, RGB, HSV, acquisition, price)
-3. **Analyze Colors**:
+3. **Visualize Colors** (NEW - v1.1.0):
+   - **Hue-Saturation Chart** - Shows where each dye sits in 2D color space
+     - X-axis represents hue (color)
+     - Y-axis represents saturation (color intensity, 0-100%)
+     - Colored circles indicate actual dye colors
+   - **Brightness Chart** - Shows brightness distribution (0-100%)
+     - Vertical lines indicate each dye's brightness position
+     - Colored lines use actual dye colors for visual reference
+     - Scales from Black (0%) to White (100%)
+4. **Analyze Colors**:
    - Color Distance Matrix automatically shows color similarities
    - Green values indicate very similar colors (distance < 50)
    - Yellow values indicate similar colors (distance 50-99)
    - Red values indicate dissimilar colors (distance ≥ 100)
-4. **Export & Share**:
+5. **Export & Share**:
    - Export as JSON for archiving or sharing data
    - Export as CSS to use in stylesheets (generates CSS variables)
    - Copy hex codes with names to clipboard for quick reference
    - Copy summary with all color information and distances
-5. **HSV for Other Games**:
+6. **HSV for Other Games**:
    - HSV values can be used in other games like Monster Hunter Wilds
    - Hover over "HSV:" label to see the helpful tooltip
-6. **Dark Mode** - Toggle dark mode with button in header for comfortable viewing
+7. **Dark Mode** - Toggle dark mode with button in header for comfortable viewing (charts adapt automatically)
 
 ## Data Sources
 

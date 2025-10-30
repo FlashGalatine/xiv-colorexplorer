@@ -5,6 +5,91 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-10-30
+
+### Added
+- **Dye Comparison v1.1.0 - Color Chart Visualization**
+  - **Hue-Saturation 2D Color Chart**
+    - Canvas-based visualization showing dye positions in 2D color space
+    - X-axis: Hue (0-360°) showing color spectrum
+    - Y-axis: Saturation (0-100%) showing color intensity
+    - Colored circles mark actual dye positions using their hex colors
+    - Interactive gradient background displays full color space
+    - Saturation percentages labeled on left axis (0%, 25%, 50%, 75%, 100%)
+    - 1080p optimized with 1000×750px canvas resolution
+    - Responsive padding: 70px left, 40px other sides
+    - Dark mode support with background color adaptation
+
+  - **Brightness 1D Chart**
+    - Linear visualization of dye brightness/value distribution
+    - Y-axis scale: Black (0%) to White (100%)
+    - Vertical colored lines indicate each dye's brightness position
+    - Lines use actual dye hex colors for visual reference
+    - 1080p optimized with 1000×750px canvas resolution
+    - Responsive padding: 50px left/right, 40px top/bottom
+    - Dark mode support with background color adaptation
+
+  - **Dynamic Chart Updates**
+    - Charts automatically render when dyes are selected
+    - Charts update in real-time as dyes are added/removed
+    - Smooth transitions between chart states
+    - Proper alignment of chart bottom edges (fixed padding issues)
+
+  - **1080p Display Optimization**
+    - Canvas resolution increased from 400x300 to 1000x750 for both charts
+    - Responsive typography with 2xl breakpoints
+    - Increased padding and spacing for larger screens
+    - Better visual hierarchy and grid layouts
+    - Optimized font sizing for readability at 1920x1080
+
+  - **Color Quality Improvements**
+    - Circles and lines now display using actual dye hex colors
+    - Replaced fixed color palette with dynamic color values
+    - More accurate visual representation of actual FFXIV dyes
+    - Improved color accuracy for color theory understanding
+
+### Changed
+- Updated Dye Comparison from v1.0.0 to v1.1.0
+- Created `dyecomparison_stable.html` as primary stable version
+- Updated all tool navigation dropdowns to reference `dyecomparison_stable.html`
+  - Updated in `index.html`
+  - Updated in `colorexplorer_stable.html`
+  - Updated in `colormatcher_stable.html`
+  - Updated in `dyecomparison_stable.html`
+
+### Technical Details
+- New `drawHueSaturationChart()` function:
+  - Creates 2D canvas with gradient color space representation
+  - Converts dye HSV values to canvas coordinates
+  - Draws circles at precise hue-saturation positions
+  - Implements proper padding calculations for label display
+  - Uses requestAnimationFrame for smooth rendering
+
+- New `drawBrightnessChart()` function:
+  - Creates 1D linear canvas visualization
+  - Maps brightness values (0-100) to Y-axis coordinates
+  - Draws vertical lines for each selected dye
+  - Implements padding management for proper spacing
+
+- New `hsvToRgb(h, s, v)` helper function:
+  - Converts HSV color space to RGB for canvas rendering
+  - Handles edge cases (achromatic colors, gray values)
+  - Produces accurate RGB values for gradient backgrounds
+
+- New `updateColorCharts()` function:
+  - Coordinates visibility and rendering of both charts
+  - Controls chart display based on selected dyes
+  - Triggers re-rendering on dye selection changes
+
+- Canvas context properties optimized for 1080p:
+  - Font size: 14px (previously smaller)
+  - Line width: 2px for better visibility
+  - Font family: 'Inter', sans-serif for consistency
+
+- Chart positioning uses margin and padding to ensure proper alignment:
+  - Removed individual padding from brightness-container
+  - Unified padding approach across both charts
+
 ## [1.2.1] - 2025-10-30
 
 ### Added
