@@ -40,6 +40,8 @@ Feedback.*
 GIT_SETUP.md
 DEPLOYMENT_SUMMARY.md
 CLAUDE.md
+example_many_dyes.json
+example_one_dye.json
 
 # Node modules (if any dependencies are added in future)
 node_modules/

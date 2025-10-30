@@ -1,9 +1,142 @@
 # Changelog
 
-All notable changes to the FFXIV Color Explorer project will be documented in this file.
+All notable changes to the XIV Dye Tools project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.2.1] - 2025-10-30
+
+### Added
+- **Color Matcher v1.2.0 Enhancements**
+  - **Dark Mode Support for Market Board Server Dropdown**
+    - Market Board Server dropdown now properly darkens in dark mode
+    - Dropdown options and option groups styled for dark theme
+    - Improved dark mode consistency across all Market Board controls
+
+  - **Intelligent Image Zoom System**
+    - Auto-detects portrait-oriented images and extra large images
+    - Automatically applies "Zoom to Width" for portrait images (height > width)
+    - Automatically applies "Zoom to Width" for images significantly taller than wrapper (height > 1.5x wrapper height)
+    - Uses "Zoom to Fit" for landscape and standard aspect ratio images
+    - Provides optimal viewing experience without manual zoom adjustments
+
+### Fixed
+- Market Board Server dropdown styling in dark mode on Color Matcher
+- Image zoom detection logic for various image orientations and sizes
+
+## [1.2.0] - 2025-10-30
+
+### Released
+- **Color Matcher** (v1.1.0) - Stable release
+- **Dye Comparison** (v1.0.0) - New tool, stable release
+- **Color Harmony Explorer** (v1.1.0) - Stable release
+
+### Added
+- **Dye Comparison Tool** (`dyecomparison.html`) - v1.0.0
+  - New tool to compare up to 4 FFXIV dyes side-by-side
+  - Compare complete dye information: name, category, hex, RGB, HSV, acquisition method, and price
+  - **Color Distance Matrix** - Visual representation of color similarities between selected dyes
+    - Green cells: Distance < 50 (very similar colors)
+    - Yellow cells: Distance 50-99 (similar colors)
+    - Red cells: Distance ≥ 100 (dissimilar colors)
+    - Uses RGB Euclidean distance algorithm
+  - **Smart Dropdown with Category Organization**
+    - Dyes organized by category using `<optgroup>` elements
+    - Category order: Neutral → Colors (alphabetical) → Special → Facewear
+    - All dyes alphabetically sorted within each category
+    - Matches sorting style of Color Harmony Explorer for consistency
+  - **Export Options**
+    - Export as JSON: Download complete dye comparison data with timestamp
+    - Export as CSS: Generate CSS custom properties (variables) for selected dyes
+    - Copy Summary: Copy formatted text summary to clipboard
+    - Copy Hex Codes: Copy dye names with hex codes to clipboard
+  - **Dark Mode Support**
+    - Full dark mode styling for all elements
+    - Dropdown menus properly darkened in dark mode
+    - Color Distance Matrix background and borders adapted for dark theme
+    - Persistent preference storage in localStorage
+  - **HSV Value Tooltips**
+    - Hover over "HSV:" label shows tooltip: "HSV values can be used in other games like Monster Hunter Wilds"
+    - Cursor changes to help icon on hover for better UX
+  - **UI/UX Features**
+    - Disabled state for export/clear buttons until dyes are selected
+    - Toast notifications for successful exports (green notification, 3-second timeout)
+    - Clear All button to reset all selections
+    - Disabled export buttons enable automatically when dyes are selected
+    - Complete footer with creator attribution and social links
+
+- **Portal Landing Page** (`index.html`)
+  - New index.html serves as central hub for all XIV Dye Tools
+  - 3-column grid layout showcasing all available tools:
+    - Color Harmony Explorer (v1.1.0)
+    - Color Matcher (v1.1.0)
+    - Dye Comparison (v1.0.0)
+  - "Try Experimental Features" section with link to experimental Color Harmony Explorer
+  - "All Tools Feature" highlights section showcasing shared features
+  - Dark mode support with persistent preference
+  - Portal navigation: Experimental version notice, feature highlights, footer with all social links
+
+- **Navigation Dropdown System**
+  - Replaced inline navigation links with dropdown menu on all tools
+  - Dropdown button labeled "Tools ▼" appears in header of each tool
+  - Dropdown menu includes links to all stable tools:
+    - Color Harmony Explorer
+    - Color Matcher
+    - Dye Comparison
+    - All Tools (portal page)
+  - Dropdown styling:
+    - Indigo button color (matches theme)
+    - Auto-closes when clicking outside dropdown
+    - Smooth animations and transitions
+    - Full dark mode support
+  - Implemented on all three tools:
+    - colorexplorer_stable.html
+    - colormatcher.html
+    - dyecomparison.html
+
+### Changed
+- Updated project name from "FFXIV Color Explorer" to "XIV Dye Tools" (comprehensive toolset brand)
+- Fixed dye count in portal from 228 to 125 (correctly excludes 11 Facewear colors)
+- Improved dark mode styling throughout all tools:
+  - "How to use" tooltip box properly darkened in dyecomparison.html
+  - Color Distance Matrix empty cells now have dark backgrounds in dark mode
+  - "Try Experimental Features" box styled for dark mode in portal
+  - "All Tools Feature" box bright in light mode, properly darkened in dark mode
+
+### Fixed
+- Fixed HSV value display in dyecomparison.html to show as integers (no decimal places)
+  - Hue (H): Rounded to nearest integer
+  - Saturation (S): Rounded to nearest integer
+  - Value (V): Rounded to nearest integer
+- Fixed dropdown menu styling for dark mode in dyecomparison.html
+  - Select elements now properly styled with dark backgrounds
+  - Optgroup elements styled appropriately
+  - Option items have proper dark mode colors
+- Fixed dark mode styling for portal page elements
+  - Amber alert box (Experimental Features) properly darkened
+  - Feature highlights section background properly applied
+- Fixed navigation consistency across all tools
+  - All tools now use consistent dropdown navigation
+  - Tools link to stable builds (colorexplorer_stable.html)
+
+### Technical Details
+- New `toggleDropdown()` function for dropdown menu interaction
+  - Toggles visibility class on dropdown menu
+  - Auto-closes dropdown when clicking outside using event delegation
+  - Implemented globally in all three tools
+- Dye Comparison dropdown implementation:
+  - `populateDropdowns()` sorts dyes using category priority system
+  - Creates optgroup elements for each category
+  - Implements same sorting logic as Color Harmony Explorer for consistency
+- Dye Comparison export functions:
+  - `exportAsJSON()`: Creates Blob with JSON data, triggers download
+  - `exportAsCSS()`: Generates CSS with sanitized dye names as custom properties
+  - `copyHexCodes()`: Formats dye names with uppercase hex codes for clipboard
+  - `copySummary()`: Creates formatted text summary with color distances
+- Portal layout uses responsive 3-column grid (`md:grid-cols-3`)
+- Container width expanded to `max-w-7xl` to accommodate three columns
+- Dropdown styling uses custom CSS classes with Tailwind fallbacks for dark mode
 
 ## [1.1.0] - 2025-10-29
 

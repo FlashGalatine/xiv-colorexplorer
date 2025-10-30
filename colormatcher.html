@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFXIV Dye Color Matcher v1.1.0</title>
+    <title>FFXIV Dye Color Matcher v1.2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -124,6 +124,115 @@
             border: 4px dashed #3b82f6; /* blue-500 */
             background-color: rgba(59, 130, 246, 0.1);
         }
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .nav-dropdown-toggle {
+            background-color: transparent;
+            border: none;
+            color: #4f46e5;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.2s;
+        }
+        .nav-dropdown-toggle:hover {
+            color: #4338ca;
+        }
+        body.dark-mode .nav-dropdown-toggle {
+            color: #818cf8;
+        }
+        body.dark-mode .nav-dropdown-toggle:hover {
+            color: #a5b4fc;
+        }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            margin-top: 0.5rem;
+        }
+        body.dark-mode .nav-dropdown-menu {
+            background-color: #374151;
+            border-color: #4b5563;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+        .nav-dropdown-menu.show {
+            display: block;
+        }
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #1f2937;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+        }
+        .nav-dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+        body.dark-mode .nav-dropdown-item {
+            color: #f9fafb;
+        }
+        body.dark-mode .nav-dropdown-item:hover {
+            background-color: #4b5563;
+        }
+        .nav-dropdown-item:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        body.dark-mode .nav-dropdown-item:not(:last-child) {
+            border-bottom-color: #4b5563;
+        }
+        /* Toggle switch styles */
+        .toggle-bg {
+            background-color: #d1d5db;
+            transition: background-color 0.3s ease;
+        }
+        input:checked + .toggle-bg {
+            background-color: #4f46e5;
+        }
+        .toggle-dot {
+            transition: left 0.3s ease;
+        }
+        input:checked + .toggle-bg + .toggle-dot {
+            left: calc(100% - 1.25rem);
+        }
+        body.dark-mode .toggle-bg {
+            background-color: #4b5563;
+        }
+        body.dark-mode input:checked + .toggle-bg {
+            background-color: #6366f1;
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #4b5563;
+        }
+        body.dark-mode .bg-gray-50 .text-gray-700 {
+            color: #e5e7eb;
+        }
+        /* Market Board Server Select Dark Mode */
+        body.dark-mode #mb-server-select {
+            background-color: #374151;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        body.dark-mode #mb-server-select option {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        body.dark-mode #mb-server-select optgroup {
+            background-color: #374151;
+            color: #f9fafb;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
@@ -132,7 +241,7 @@
         
         <div class="text-center mb-8">
             <div class="flex justify-center items-center gap-4 mb-2">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl md:text-3xl text-gray-500">v1.1.0</span></h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl md:text-3xl text-gray-500">v1.2.0</span></h1>
                 <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
@@ -141,9 +250,17 @@
             </div>
             <p class="text-gray-600 mt-2">
                 Pick a color or upload an image to find the closest dye match.
-                <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition ml-4" title="Explore color harmonies">
-                    ← Color Explorer
-                </a>
+                <div class="nav-dropdown inline-block ml-4">
+                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
+                        Tools ▼
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+                        <a href="colormatcher.html" class="nav-dropdown-item">Color Matcher</a>
+                        <a href="dyecomparison.html" class="nav-dropdown-item">Dye Comparison</a>
+                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
+                    </div>
+                </div>
             </p>
         </div>
 
@@ -167,6 +284,59 @@
                 <div id="matchedColor" class="color-swatch mx-auto mb-4"></div>
                 <p id="matchedName" class="text-lg font-medium"></p>
                 <p id="matchedHex" class="font-mono text-lg"></p>
+            </div>
+        </div>
+
+        <!-- Market Board Section -->
+        <div class="mt-10 pt-8 border-t border-gray-200">
+            <div class="mb-8">
+                <label for="mb-server-select" class="block text-lg font-semibold text-gray-900 mb-3">Market Board Server:</label>
+                <select id="mb-server-select" class="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+
+            <!-- Price Data Controls -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700">Market Prices</h3>
+                    <label class="flex items-center cursor-pointer">
+                        <span class="mr-2 text-xs text-gray-600">Show</span>
+                        <div class="relative">
+                            <input id="show-mb-prices-toggle" type="checkbox" class="sr-only" checked>
+                            <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner"></div>
+                            <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 transition"></div>
+                        </div>
+                    </label>
+                </div>
+                <div id="mb-price-settings">
+                    <div class="space-y-1.5 mb-3">
+                        <div class="flex items-center">
+                            <input id="mb-price-base" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                            <label for="mb-price-base" class="ml-2 block text-xs text-gray-700">Base Dyes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="mb-price-craft" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                            <label for="mb-price-craft" class="ml-2 block text-xs text-gray-700">Craft Dyes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="mb-price-beast" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                            <label for="mb-price-beast" class="ml-2 block text-xs text-gray-700">Beast Tribe Dyes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="mb-price-cosmic" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                            <label for="mb-price-cosmic" class="ml-2 block text-xs text-gray-700">Cosmic Dyes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="mb-price-special" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                            <label for="mb-price-special" class="ml-2 block text-xs text-gray-700">Special Dyes</label>
+                        </div>
+                    </div>
+                    <button id="mb-refresh-btn" onclick="refreshMarketPricesMatcher()" class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" disabled>
+                        Refresh Prices
+                    </button>
+                    <div id="mb-price-status" class="mt-2 text-xs text-gray-500 text-center"></div>
+                </div>
             </div>
         </div>
 
@@ -275,8 +445,34 @@
     </footer>
 
     <script>
+        /**
+         * Toggle dropdown menu
+         */
+        function toggleDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            dropdown.classList.toggle('show');
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.nav-dropdown')) {
+                    dropdown.classList.remove('show');
+                }
+            }, { once: true });
+        }
+
+        // Market Board price categories
+        const PRICE_CATEGORIES = {
+            'baseDyes': { name: 'Base Dyes', acquisitions: ['Dye Vendor', 'Ixali Vendor'], default: false },
+            'craftDyes': { name: 'Craft Dyes', acquisitions: ['Crafting'], default: true },
+            'beastTribeDyes': { name: 'Beast Tribe Dyes', acquisitions: ['Amalj\'aa Vendor', 'Sahagin Vendor', 'Kobold Vendor', 'Sylphic Vendor'], default: false },
+            'cosmicDyes': { name: 'Cosmic Dyes', acquisitions: ['Cosmic Exploration', 'Cosmic Fortunes'], default: true },
+            'specialDyes': { name: 'Special Dyes', category: 'Special', default: true }
+        };
+
         // This variable will hold the color data once it's fetched.
         let ffxivDyes = [];
+        let mbPriceCache = {};
+        let mbLastPriceUpdate = null;
 
         // --- DOM Elements ---
         const mainContainer = document.getElementById('mainContainer');
@@ -485,7 +681,16 @@
             if (matchedDye) {
                 matchedColorDiv.style.backgroundColor = matchedDye.hex;
                 matchedNameP.textContent = matchedDye.name;
-                matchedHexP.textContent = matchedDye.hex.toUpperCase();
+
+                // Display hex and price
+                let hexDisplay = matchedDye.hex.toUpperCase();
+                if (document.getElementById('show-mb-prices-toggle').checked && shouldFetchPriceMatcher(matchedDye)) {
+                    const itemIdKey = matchedDye.itemID.toString();
+                    if (mbPriceCache[itemIdKey]) {
+                        hexDisplay += ` • ${mbPriceCache[itemIdKey].toLocaleString()} Gil`;
+                    }
+                }
+                matchedHexP.textContent = hexDisplay;
             } else {
                 matchedColorDiv.style.backgroundColor = '#FFFFFF';
                 matchedNameP.textContent = 'No Match Found';
@@ -510,11 +715,16 @@
                     zoomScale = 1.0;
                     imageContainer.style.display = 'block';
 
-                    // Auto zoom to fit if image is larger than wrapper
+                    // Auto zoom handling for large images
                     const wrapperWidth = canvasWrapper.clientWidth;
                     const wrapperHeight = canvasWrapper.clientHeight;
                     if (img.width > wrapperWidth || img.height > wrapperHeight) {
-                        zoomToFit();
+                        // For portrait images or images significantly taller than the wrapper, use zoom to width
+                        if (img.height > img.width || img.height > wrapperHeight * 1.5) {
+                            zoomToWidth();
+                        } else {
+                            zoomToFit();
+                        }
                     } else {
                         updateCanvasZoom();
                     }
@@ -690,10 +900,229 @@
             });
         }
 
+        /**
+         * Check if a dye should have its price fetched
+         */
+        function shouldFetchPriceMatcher(color) {
+            if (!color.itemID) return false;
+
+            const baseDyes = document.getElementById('mb-price-base').checked;
+            const craftDyes = document.getElementById('mb-price-craft').checked;
+            const beastTribeDyes = document.getElementById('mb-price-beast').checked;
+            const cosmicDyes = document.getElementById('mb-price-cosmic').checked;
+            const specialDyes = document.getElementById('mb-price-special').checked;
+
+            if (specialDyes && color.category === 'Special') return true;
+
+            if (baseDyes && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
+            if (craftDyes && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
+            if (beastTribeDyes && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
+            if (cosmicDyes && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
+
+            return false;
+        }
+
+        /**
+         * Fetches market prices from Universalis API
+         */
+        async function fetchMarketPricesMatcher(itemIds, server) {
+            if (itemIds.length === 0) return {};
+
+            const serverValue = server.startsWith('DC:') ? server.substring(3) : server.substring(6);
+            const itemIdsString = itemIds.join(',');
+            const url = `https://universalis.app/api/v2/aggregated/${serverValue}/${itemIdsString}`;
+
+            try {
+                console.log(`Fetching prices from: ${url}`);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`API returned status ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const prices = {};
+
+                if (data.results && Array.isArray(data.results)) {
+                    data.results.forEach(result => {
+                        const itemId = result.itemId.toString();
+
+                        if (result.nq && result.nq.minListing) {
+                            let price = null;
+
+                            if (server.startsWith('DC:') && result.nq.minListing.dc && result.nq.minListing.dc.price) {
+                                price = result.nq.minListing.dc.price;
+                            }
+                            else if (server.startsWith('WORLD:')) {
+                                if (result.nq.minListing.world && result.nq.minListing.world.price) {
+                                    price = result.nq.minListing.world.price;
+                                } else if (result.nq.minListing.dc && result.nq.minListing.dc.price) {
+                                    price = result.nq.minListing.dc.price;
+                                }
+                            }
+
+                            if (!price && result.nq.minListing.region && result.nq.minListing.region.price) {
+                                price = result.nq.minListing.region.price;
+                            }
+
+                            if (price) {
+                                prices[itemId] = price;
+                            }
+                        }
+                    });
+                }
+
+                console.log(`Successfully fetched prices for ${Object.keys(prices).length} items`);
+                return prices;
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+                throw error;
+            }
+        }
+
+        /**
+         * Refreshes market prices
+         */
+        async function refreshMarketPricesMatcher() {
+            const refreshBtn = document.getElementById('mb-refresh-btn');
+            const statusDiv = document.getElementById('mb-price-status');
+            const serverSelect = document.getElementById('mb-server-select');
+
+            // Validate server is selected
+            const server = serverSelect.value;
+            if (!server || server === '') {
+                statusDiv.textContent = 'Please select a server first.';
+                return;
+            }
+
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = 'Fetching Prices...';
+            statusDiv.textContent = 'Connecting to Universalis API...';
+
+            try {
+
+                // Get the matched dye
+                const matchedName = document.getElementById('matchedName').textContent;
+                if (!matchedName) {
+                    statusDiv.textContent = 'Select a color first to fetch prices.';
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = 'Refresh Prices';
+                    return;
+                }
+
+                const matchedDye = ffxivDyes.find(d => d.name === matchedName);
+                if (!matchedDye || !shouldFetchPriceMatcher(matchedDye)) {
+                    statusDiv.textContent = 'No prices available for this dye.';
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = 'Refresh Prices';
+                    return;
+                }
+
+                const itemIds = [matchedDye.itemID];
+                const newPrices = await fetchMarketPricesMatcher(itemIds, server);
+
+                mbPriceCache = { ...mbPriceCache, ...newPrices };
+                mbLastPriceUpdate = new Date();
+
+                // Update the display
+                updateResultsUI(document.getElementById('userHex').textContent, matchedDye);
+
+                statusDiv.textContent = `Updated at ${mbLastPriceUpdate.toLocaleTimeString()}`;
+
+            } catch (error) {
+                if (mbLastPriceUpdate) {
+                    statusDiv.textContent = `Using cached data. Error: Cannot connect to Universalis API.`;
+                } else {
+                    statusDiv.textContent = 'Cannot connect to Universalis API.';
+                }
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = 'Refresh Prices';
+            }
+        }
+
+        /**
+         * Initialize Market Board server select
+         */
+        async function initializeMarketBoard() {
+            try {
+                const [dcResponse, worldsResponse] = await Promise.all([
+                    fetch('./assets/json/data-centers.json'),
+                    fetch('./assets/json/worlds.json')
+                ]);
+
+                const dataCenters = await dcResponse.json();
+                const worlds = await worldsResponse.json();
+
+                const serverSelect = document.getElementById('mb-server-select');
+                serverSelect.innerHTML = '';
+
+                // Add Data Centers
+                const dcOptgroup = document.createElement('optgroup');
+                dcOptgroup.label = 'Data Centers';
+                dataCenters.forEach(dc => {
+                    const option = document.createElement('option');
+                    option.value = `DC:${dc.name}`;
+                    option.textContent = `${dc.name} (${dc.region})`;
+                    if (dc.name === 'Crystal') {
+                        option.selected = true;
+                    }
+                    dcOptgroup.appendChild(option);
+                });
+                serverSelect.appendChild(dcOptgroup);
+
+                // Add Worlds
+                dataCenters.forEach(dc => {
+                    const worldOptgroup = document.createElement('optgroup');
+                    worldOptgroup.label = `${dc.name} Worlds`;
+
+                    const dcWorlds = worlds
+                        .filter(w => dc.worlds.includes(w.id))
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                    dcWorlds.forEach(world => {
+                        const option = document.createElement('option');
+                        option.value = `WORLD:${world.id}`;
+                        option.textContent = world.name;
+                        worldOptgroup.appendChild(option);
+                    });
+
+                    serverSelect.appendChild(worldOptgroup);
+                });
+
+                // Setup toggle listener
+                const priceToggle = document.getElementById('show-mb-prices-toggle');
+                const priceSettings = document.getElementById('mb-price-settings');
+
+                priceToggle.addEventListener('change', () => {
+                    priceSettings.style.display = priceToggle.checked ? 'block' : 'none';
+                    // Update the matched color display to show/hide price
+                    const matchedName = document.getElementById('matchedName').textContent;
+                    if (matchedName && matchedName !== 'No Match Found') {
+                        const matchedDye = ffxivDyes.find(d => d.name === matchedName);
+                        if (matchedDye) {
+                            updateResultsUI(document.getElementById('userHex').textContent, matchedDye);
+                        }
+                    }
+                });
+
+                // Enable refresh button now that data is loaded
+                const refreshBtn = document.getElementById('mb-refresh-btn');
+                refreshBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Error initializing market board:', error);
+                const statusDiv = document.getElementById('mb-price-status');
+                statusDiv.textContent = 'Error loading server data.';
+            }
+        }
+
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize dark mode
             initializeDarkMode();
+
+            // Initialize market board
+            initializeMarketBoard();
 
             fetch('./assets/json/colors_xiv.json')
                 .then(response => {
