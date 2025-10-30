@@ -1,0 +1,32 @@
+name = "xiv-dye-tools-discord-bot"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+
+# Environment variables
+[env.production]
+name = "xiv-dye-tools-discord-bot"
+routes = [
+  { pattern = "*", zone_name = "example.com" }
+]
+
+[build]
+command = "npm install"
+cwd = "."
+
+# KV namespace bindings for caching
+[[kv_namespaces]]
+binding = "COLORS_KV"
+id = "your-kv-namespace-id"
+preview_id = "your-kv-preview-id"
+
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "your-cache-namespace-id"
+preview_id = "your-cache-preview-id"
+
+# Secrets (set via wrangler secret put)
+[vars]
+# These will be set via environment
+# DISCORD_PUBLIC_KEY = "set via wrangler secret"
+# DISCORD_TOKEN = "set via wrangler secret"
+UNIVERSALIS_API = "https://universalis.app/api/v2"
