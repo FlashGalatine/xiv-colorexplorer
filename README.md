@@ -9,7 +9,7 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### 🎨 Color Harmony Explorer (v1.1.0)
+### 🎨 Color Harmony Explorer (v1.2.0)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
 - **Complementary** - Colors opposite on the color wheel
 - **Analogous** - Colors adjacent on the color wheel
@@ -24,7 +24,7 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Deviance Line Visualization** - Hover over deviance badges to see lines connecting base colors to matched colors on the wheel
 - **Zoom Functionality** - Enlarge any harmony section for detailed viewing with Zoom In/Out buttons, Escape key to exit, or click backdrop
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
-- **Version Display** - Shows v1.1.0 (stable) or v1.2.0-dev (experimental) in page header
+- **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
 ### 🔍 Color Matcher (v1.2.0)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
@@ -147,8 +147,8 @@ Toggle between light and dark themes with persistent preference storage. Availab
   - Showcases all three released stable tools in a beautiful 3-column grid
   - Quick access to experimental features
   - Feature highlights and navigation
-- **Color Harmony Explorer (Stable v1.1.0)**: Open `colorexplorer_stable.html` for the main tool
-- **Color Harmony Explorer (Experimental v1.2.0-dev)**: Open `colorexplorer_experimental.html` for latest features
+- **Color Harmony Explorer (Stable v1.2.0)**: Open `colorexplorer_stable.html` for the main tool
+- **Color Harmony Explorer (Experimental v1.2.0-dev)**: Open `colorexplorer_experimental.html` for testing new features
 - **Color Matcher (Stable v1.2.0)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
 - **Dye Comparison (Stable v1.1.0)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
@@ -184,7 +184,7 @@ That's it! No installation or build process needed.
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
 3. **Access all three tools** from the portal:
-   - Color Harmony Explorer (v1.1.0)
+   - Color Harmony Explorer (v1.2.0)
    - Color Matcher (v1.2.0)
    - Dye Comparison (v1.1.0)
 4. **Develop new features**: Edit `colorexplorer_experimental.html` for testing new functionality
