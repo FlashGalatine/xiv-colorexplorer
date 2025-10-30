@@ -28,11 +28,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2025-10-30
 
 ### Released
-- **Color Matcher** (v1.1.0) - Stable release
-- **Dye Comparison** (v1.0.0) - New tool, stable release
+- **Color Matcher** (v1.2.0) - Stable release with major UI overhaul
+- **Dye Comparison** (v1.0.0) - Stable release
 - **Color Harmony Explorer** (v1.1.0) - Stable release
 
 ### Added
+- **Color Matcher v1.2.0 UI Overhaul** (`colormatcher.html`)
+  - **Two-Column Layout Redesign**
+    - Left panel (380px fixed width) contains all dye information and controls:
+      - Color picker with hex display
+      - Closest match results with category and acquisition info
+      - Exclusion filters (metallic, facewear, extremes)
+      - Market Board server selection and price settings
+    - Right panel displays image upload, sample size selector, image canvas, and empty state
+    - Sticky left panel remains accessible when scrolling through tall images
+    - Optimized for 1080p displays (1920x1080) with minimal scrolling
+    - Responsive design switches to single-column on smaller screens (<1024px)
+  - **Dark Mode Fixes**
+    - Sample Size dropdown properly darkens in dark mode with readable text
+    - Text colors for filter labels and "Pick Your Color" now readable in dark mode
+    - All dropdowns and input fields properly styled for both light and dark themes
+  - **Eyedropper Preview Positioning**
+    - Fixed eyedropper preview circle positioning to follow cursor accurately
+    - Uses correct positioning reference (imageContainer) for precise placement
+    - 40px offset maintains consistent visual feedback
+  - **Empty State Display**
+    - Empty state message only displays when no image is loaded
+    - Properly hides when image is successfully uploaded
+    - Restores when image is cleared
+  - **1080p Optimization**
+    - Removed max-width constraints allowing full use of available screen space
+    - Reduced padding and margins for more compact interface
+    - Optimized heading sizes and typography
+    - Compact zoom control buttons
+    - All interactive elements properly sized and spaced for 1080p displays
+  - **Layout and Spacing Refinements**
+    - Body padding reduced for tighter vertical spacing
+    - Panel padding optimized for compact display
+    - Improved visual hierarchy with adjusted margins and gaps
+    - Better alignment of all UI elements
+
 - **Dye Comparison Tool** (`dyecomparison.html`) - v1.0.0
   - New tool to compare up to 4 FFXIV dyes side-by-side
   - Compare complete dye information: name, category, hex, RGB, HSV, acquisition method, and price

@@ -6,13 +6,13 @@
     <title>FFXIV Dye Color Matcher v1.2.0</title>
     <!-- Open Graph / Discord embeds -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colormatcher.html">
+    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colormatcher_stable.html">
     <meta property="og:title" content="Color Matcher">
     <meta property="og:description" content="Upload images or pick colors to find the closest matching FFXIV dye. Powered by RGB Euclidean distance algorithm with intelligent auto-zoom and eyedropper tool.">
     <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
     <!-- Twitter / X embeds -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colormatcher.html">
+    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colormatcher_stable.html">
     <meta property="twitter:title" content="Color Matcher">
     <meta property="twitter:description" content="Upload images or pick colors to find the closest matching FFXIV dye. Powered by RGB Euclidean distance algorithm with intelligent auto-zoom and eyedropper tool.">
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
@@ -113,6 +113,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            position: relative;
         }
         .color-swatch {
             width: 100px;
@@ -233,6 +234,19 @@
         body.dark-mode .bg-gray-50 .text-gray-700 {
             color: #e5e7eb;
         }
+        /* Dark mode text color overrides */
+        body.dark-mode .text-gray-700 {
+            color: #e5e7eb !important;
+        }
+        body.dark-mode .text-gray-900 {
+            color: #f9fafb !important;
+        }
+        body.dark-mode .bg-white {
+            background-color: #374151;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #d1d5db;
+        }
         /* Market Board Server Select Dark Mode */
         body.dark-mode #mb-server-select {
             background-color: #374151;
@@ -247,24 +261,50 @@
             background-color: #374151;
             color: #f9fafb;
         }
+        /* Sample Size Select Dark Mode */
+        body.dark-mode #sampleSize {
+            background-color: #374151;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        body.dark-mode #sampleSize option {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        /* Sticky left panel for 1080p optimization */
+        #mainContainer > div:first-child {
+            position: sticky;
+            top: 1rem;
+            height: fit-content;
+            max-height: calc(100vh - 6rem);
+            overflow-y: auto;
+        }
+        /* Reduce padding on 1080p */
+        .bg-white.rounded-xl {
+            padding: 1.25rem;
+        }
+        /* Optimize text sizes for compact display */
+        h2 {
+            font-size: 1.375rem;
+            margin-bottom: 1rem;
+        }
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen p-3">
 
-    <div id="mainContainer" class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 md:p-8 transition-all duration-300">
-        
-        <div class="text-center mb-8">
-            <div class="flex justify-center items-center gap-4 mb-2">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl md:text-3xl text-gray-500">v1.2.0</span></h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
+    <!-- Header -->
+    <div class="w-full mb-4">
+        <div class="flex justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.2.0</span></h1>
+                <p class="text-sm text-gray-600 mt-1">Pick a color or upload an image to find the closest dye match.</p>
             </div>
-            <p class="text-gray-600 mt-2">
-                Pick a color or upload an image to find the closest dye match.
-                <div class="nav-dropdown inline-block ml-4">
+            <div class="flex items-center gap-3">
+                <div class="nav-dropdown inline-block">
                     <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
                         Tools ▼
                     </button>
@@ -275,151 +315,176 @@
                         <a href="index.html" class="nav-dropdown-item">All Tools</a>
                     </div>
                 </div>
-            </p>
-        </div>
-
-        <!-- Input Section -->
-        <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-            <div class="flex items-center gap-4 bg-gray-100 p-3 rounded-lg">
-                <label for="colorPicker" class="font-medium text-lg">Your Color:</label>
-                <input type="color" id="colorPicker" value="#8A2BE2" class="w-14 h-14 p-1 bg-white rounded-md cursor-pointer">
+                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Results Section -->
-        <div id="results" class="grid md:grid-cols-2 gap-8 text-center">
-            <div class="bg-gray-50 p-6 rounded-lg">
-                <h2 class="text-2xl font-semibold mb-4">Your Pick</h2>
-                <div id="userColor" class="color-swatch mx-auto mb-4"></div>
-                <p id="userHex" class="font-mono text-lg"></p>
-            </div>
-            <div class="bg-gray-50 p-6 rounded-lg">
-                <h2 class="text-2xl font-semibold mb-4">Closest Dye Match</h2>
-                <div id="matchedColor" class="color-swatch mx-auto mb-4"></div>
-                <p id="matchedName" class="text-lg font-medium"></p>
-                <p id="matchedHex" class="font-mono text-lg"></p>
-            </div>
-        </div>
+    <!-- Two Column Layout - Optimized for 1080p -->
+    <div id="mainContainer" class="w-full flex-1 grid grid-cols-3 gap-4" style="grid-template-columns: 380px 1fr;">
 
-        <!-- Market Board Section -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <div class="mb-8">
-                <label for="mb-server-select" class="block text-lg font-semibold text-gray-900 mb-3">Market Board Server:</label>
-                <select id="mb-server-select" class="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                    <!-- Options will be populated by JavaScript -->
-                </select>
-            </div>
+        <!-- LEFT COLUMN: Dye Information -->
+        <div class="bg-white rounded-xl shadow-lg p-5 flex flex-col">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900">Dye Matcher</h2>
 
-            <!-- Price Data Controls -->
-            <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-semibold text-gray-700">Market Prices</h3>
-                    <label class="flex items-center cursor-pointer">
-                        <span class="mr-2 text-xs text-gray-600">Show</span>
-                        <div class="relative">
-                            <input id="show-mb-prices-toggle" type="checkbox" class="sr-only" checked>
-                            <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-                            <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 transition"></div>
-                        </div>
-                    </label>
-                </div>
-                <div id="mb-price-settings">
-                    <div class="space-y-1.5 mb-3">
-                        <div class="flex items-center">
-                            <input id="mb-price-base" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                            <label for="mb-price-base" class="ml-2 block text-xs text-gray-700">Base Dyes</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="mb-price-craft" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                            <label for="mb-price-craft" class="ml-2 block text-xs text-gray-700">Craft Dyes</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="mb-price-beast" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                            <label for="mb-price-beast" class="ml-2 block text-xs text-gray-700">Beast Tribe Dyes</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="mb-price-cosmic" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                            <label for="mb-price-cosmic" class="ml-2 block text-xs text-gray-700">Cosmic Dyes</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="mb-price-special" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                            <label for="mb-price-special" class="ml-2 block text-xs text-gray-700">Special Dyes</label>
-                        </div>
+            <!-- Color Picker Section -->
+            <div class="mb-4">
+                <label for="colorPicker" class="block text-xs font-semibold text-gray-700 mb-2">Pick Your Color:</label>
+                <div class="flex items-center gap-4">
+                    <input type="color" id="colorPicker" value="#8A2BE2" class="w-20 h-20 p-1 bg-white rounded-lg cursor-pointer border-2 border-gray-300">
+                    <div class="flex-1">
+                        <p id="userHex" class="font-mono text-lg font-semibold text-gray-900"></p>
+                        <p class="text-sm text-gray-500">Your color</p>
                     </div>
-                    <button id="mb-refresh-btn" onclick="refreshMarketPricesMatcher()" class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" disabled>
-                        Refresh Prices
-                    </button>
-                    <div id="mb-price-status" class="mt-2 text-xs text-gray-500 text-center"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Image Uploader and Eyedropper Section -->
-        <div class="mt-10 pt-8 border-t border-gray-200">
-            <h2 class="text-2xl font-semibold text-center mb-4">Or... Pick from an Image</h2>
-            <div id="upload-prompt" class="text-center text-gray-500">
-                <p>Drag & drop an image anywhere, or</p>
-            </div>
-            <div class="flex flex-col items-center gap-4 mt-2">
-                <div class="w-full max-w-md">
-                   <label for="imageLoader" class="sr-only">Choose a file</label>
-                   <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer"/>
+            <!-- Results Section -->
+            <div class="mb-4 pb-4 border-b border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Closest Match</h3>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div id="matchedColor" class="w-full h-32 rounded-lg mb-4 border-2 border-gray-200 shadow-sm"></div>
+                    <p id="matchedName" class="text-xl font-semibold text-gray-900 mb-2"></p>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600"><span class="font-medium">Hex:</span> <span id="matchedHex" class="font-mono"></span></p>
+                        <p class="text-gray-600"><span class="font-medium">Category:</span> <span id="matchedCategory"></span></p>
+                        <p class="text-gray-600"><span class="font-medium">Acquisition:</span> <span id="matchedAcquisition"></span></p>
+                        <p id="matchedPrice" class="text-gray-600" style="display: none;"><span class="font-medium">Market Price:</span> <span id="matchedPriceValue" class="font-mono"></span></p>
+                    </div>
                 </div>
-                <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 mt-2">
-                    <div class="flex items-center gap-2">
-                        <label for="sampleSize" class="font-medium">Sample Size:</label>
-                        <select id="sampleSize" class="bg-gray-100 border border-gray-300 rounded-md p-2">
-                            <option value="1">1x1</option>
-                            <option value="2">2x2</option>
-                            <option value="4">4x4</option>
-                            <option value="16" selected>16x16</option>
-                            <option value="32">32x32</option>
-                            <option value="64">64x64</option>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="mb-4 pb-4 border-b border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Filters</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="excludeMetallic" class="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-2">
+                        <label for="excludeMetallic" class="text-sm text-gray-700">Exclude Metallic Dyes</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="excludeExtremes" class="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-2">
+                        <label for="excludeExtremes" class="text-sm text-gray-700">Exclude Pure White & Jet Black</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Board Section -->
+            <div class="flex-1">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Market Board</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="mb-server-select" class="block text-sm font-medium text-gray-700 mb-2">Server:</label>
+                        <select id="mb-server-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm">
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="excludeMetallic" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                        <label for="excludeMetallic" class="font-medium">Exclude Metallic Dyes</label>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="excludeExtremes" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                        <label for="excludeExtremes" class="font-medium">Exclude Pure White & Jet Black</label>
+
+                    <!-- Price Categories -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-sm font-semibold text-gray-700">Show Prices</label>
+                            <label class="flex items-center cursor-pointer">
+                                <input id="show-mb-prices-toggle" type="checkbox" class="sr-only" checked>
+                                <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner"></div>
+                                <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 transition"></div>
+                            </label>
+                        </div>
+                        <div id="mb-price-settings" class="space-y-2">
+                            <div class="text-xs space-y-2">
+                                <div class="flex items-center">
+                                    <input id="mb-price-base" type="checkbox" class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                                    <label for="mb-price-base" class="ml-2 text-gray-600">Base Dyes</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="mb-price-craft" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                                    <label for="mb-price-craft" class="ml-2 text-gray-600">Craft Dyes</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="mb-price-beast" type="checkbox" class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                                    <label for="mb-price-beast" class="ml-2 text-gray-600">Beast Tribe Dyes</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="mb-price-cosmic" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                                    <label for="mb-price-cosmic" class="ml-2 text-gray-600">Cosmic Dyes</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="mb-price-special" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                                    <label for="mb-price-special" class="ml-2 text-gray-600">Special Dyes</label>
+                                </div>
+                            </div>
+                            <button id="mb-refresh-btn" onclick="refreshMarketPricesMatcher()" class="w-full px-3 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium mt-3" disabled>
+                                Refresh Prices
+                            </button>
+                            <div id="mb-price-status" class="mt-2 text-xs text-gray-500 text-center"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="imageContainer" class="mt-4 w-full relative" style="display: none;">
-                <div class="flex justify-center items-center gap-3 mb-4">
-                    <button id="clearImageBtn" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium text-sm">
+        </div>
+
+        <!-- RIGHT COLUMN: Image Matching -->
+        <div class="bg-white rounded-xl shadow-lg p-5 flex flex-col">
+            <h2 class="text-xl font-semibold mb-4 text-gray-900">Match from Image</h2>
+
+            <!-- Image Upload -->
+            <div class="mb-4">
+                <label for="imageLoader" class="sr-only">Choose a file</label>
+                <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 cursor-pointer"/>
+                <p class="text-xs text-gray-500 mt-1">Drag & drop or click to browse</p>
+            </div>
+
+            <!-- Sample Size Control -->
+            <div class="mb-4 pb-4 border-b border-gray-200">
+                <label for="sampleSize" class="block text-xs font-semibold text-gray-700 mb-2">Sample Size:</label>
+                <select id="sampleSize" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="1">1x1 (Most Precise)</option>
+                    <option value="2">2x2</option>
+                    <option value="4">4x4</option>
+                    <option value="16" selected>16x16 (Default)</option>
+                    <option value="32">32x32</option>
+                    <option value="64">64x64 (Most Averaged)</option>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Larger = smoother, Smaller = accurate</p>
+            </div>
+
+            <!-- Image Canvas Area -->
+            <div id="imageContainer" class="flex-1 flex flex-col relative" style="display: none;">
+                <!-- Zoom Controls -->
+                <div class="flex items-center justify-between gap-1 mb-3">
+                    <button id="clearImageBtn" class="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition font-medium text-xs">
                         Clear Image
                     </button>
-                    <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
-                        <button id="zoomOutBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom Out (- or Shift+MouseWheel)">
-                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
-                            </svg>
-                        </button>
-                        <span id="zoomLevel" class="text-sm font-medium text-gray-700 min-w-[60px] text-center">100%</span>
-                        <button id="zoomInBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom In (+ or Shift+MouseWheel)">
-                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                            </svg>
-                        </button>
-                        <button id="zoomToFitBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom to Fit (Shift+MiddleClick)">
-                            Fit
-                        </button>
-                        <button id="zoomToWidthBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Zoom to Width (W)">
-                            Width
-                        </button>
-                        <button id="resetZoomBtn" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-sm" title="Reset Zoom (R or Shift+RightClick)">
-                            Reset
-                        </button>
+                    <div class="flex items-center gap-1 bg-gray-100 p-1 rounded">
+                        <button id="zoomOutBtn" class="px-1.5 py-0.5 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-xs" title="Zoom Out (-)">−</button>
+                        <span id="zoomLevel" class="text-xs font-medium text-gray-700 min-w-[45px] text-center">100%</span>
+                        <button id="zoomInBtn" class="px-1.5 py-0.5 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-xs" title="Zoom In (+)">+</button>
+                        <span class="text-gray-300 text-xs">•</span>
+                        <button id="zoomToFitBtn" class="px-1.5 py-0.5 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-xs" title="Fit">F</button>
+                        <button id="zoomToWidthBtn" class="px-1.5 py-0.5 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-xs" title="Width">W</button>
+                        <button id="resetZoomBtn" class="px-1.5 py-0.5 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700 font-medium text-xs" title="Reset">R</button>
                     </div>
                 </div>
-                <p class="text-center text-gray-500 mb-2">Hover and click on the image to pick a color. Use Shift+Left Drag to pan, Shift+Wheel to zoom.</p>
-                <div id="canvasWrapper" class="w-full overflow-auto rounded-lg shadow-md" style="max-height: 700px;">
-                    <canvas id="imageCanvas" class=""></canvas>
+
+                <!-- Canvas -->
+                <div id="canvasWrapper" class="flex-1 overflow-auto rounded-lg shadow-md border border-gray-200 bg-gray-50 flex items-center justify-center mt-2">
+                    <canvas id="imageCanvas"></canvas>
                 </div>
+                <p class="text-xs text-gray-500 mt-2 text-center">Click • Shift+Wheel zoom • Shift+Drag pan</p>
                 <div id="eyedropperPreview"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="upload-prompt" class="flex-1 flex flex-col items-center justify-center text-center py-8">
+                <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <p class="text-gray-600 font-medium text-sm">No image loaded</p>
+                <p class="text-xs text-gray-500 mt-1">Upload to start matching</p>
             </div>
         </div>
 
@@ -499,13 +564,10 @@
         // --- DOM Elements ---
         const mainContainer = document.getElementById('mainContainer');
         const colorPicker = document.getElementById('colorPicker');
-        const resultsDiv = document.getElementById('results');
-        const userColorDiv = document.getElementById('userColor');
         const userHexP = document.getElementById('userHex');
         const matchedColorDiv = document.getElementById('matchedColor');
         const matchedNameP = document.getElementById('matchedName');
-        const matchedHexP = document.getElementById('matchedHex');
-        
+
         const imageLoader = document.getElementById('imageLoader');
         const imageContainer = document.getElementById('imageContainer');
         const canvas = document.getElementById('imageCanvas');
@@ -633,6 +695,7 @@
             zoomScale = 1.0;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             imageContainer.style.display = 'none';
+            document.getElementById('upload-prompt').style.display = 'flex';
             imageLoader.value = '';
         }
 
@@ -696,29 +759,38 @@
             });
             updateResultsUI(userHex, closestColor);
         }
-        
+
         function updateResultsUI(userHex, matchedDye) {
-            userColorDiv.style.backgroundColor = userHex;
             userHexP.textContent = userHex.toUpperCase();
             if (matchedDye) {
                 matchedColorDiv.style.backgroundColor = matchedDye.hex;
                 matchedNameP.textContent = matchedDye.name;
+                document.getElementById('matchedHex').textContent = matchedDye.hex.toUpperCase();
+                document.getElementById('matchedCategory').textContent = matchedDye.category || 'Unknown';
+                document.getElementById('matchedAcquisition').textContent = matchedDye.acquisition || 'Unknown';
 
-                // Display hex and price
-                let hexDisplay = matchedDye.hex.toUpperCase();
+                // Display market price if applicable
+                const priceElement = document.getElementById('matchedPrice');
+                const priceValueElement = document.getElementById('matchedPriceValue');
                 if (document.getElementById('show-mb-prices-toggle').checked && shouldFetchPriceMatcher(matchedDye)) {
                     const itemIdKey = matchedDye.itemID.toString();
                     if (mbPriceCache[itemIdKey]) {
-                        hexDisplay += ` • ${mbPriceCache[itemIdKey].toLocaleString()} Gil`;
+                        priceValueElement.textContent = `${mbPriceCache[itemIdKey].toLocaleString()} Gil`;
+                        priceElement.style.display = 'block';
+                    } else {
+                        priceElement.style.display = 'none';
                     }
+                } else {
+                    priceElement.style.display = 'none';
                 }
-                matchedHexP.textContent = hexDisplay;
             } else {
                 matchedColorDiv.style.backgroundColor = '#FFFFFF';
                 matchedNameP.textContent = 'No Match Found';
-                matchedHexP.textContent = '';
+                document.getElementById('matchedHex').textContent = '';
+                document.getElementById('matchedCategory').textContent = '';
+                document.getElementById('matchedAcquisition').textContent = '';
+                document.getElementById('matchedPrice').style.display = 'none';
             }
-            resultsDiv.classList.remove('hidden');
         }
 
         // --- Image & Eyedropper Functions ---
@@ -736,6 +808,7 @@
                     originalImageHeight = img.height;
                     zoomScale = 1.0;
                     imageContainer.style.display = 'block';
+                    document.getElementById('upload-prompt').style.display = 'none';
 
                     // Auto zoom handling for large images
                     const wrapperWidth = canvasWrapper.clientWidth;
@@ -778,26 +851,27 @@
             }
             return rgbToHex(r / numPixels, g / numPixels, b / numPixels);
         }
-        
+
         function getCanvasCoordinates(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
-            return { 
-                x: (e.clientX - rect.left) * scaleX, 
-                y: (e.clientY - rect.top) * scaleY 
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
             };
         }
 
         function handleCanvasMouseMove(e) {
             const { x, y } = getCanvasCoordinates(e);
             const avgColorHex = getAverageColor(x, y);
-            
+
             eyedropperPreview.style.backgroundColor = avgColorHex;
-            eyedropperPreview.style.left = `${e.clientX - mainContainer.getBoundingClientRect().left - 40}px`;
-            eyedropperPreview.style.top = `${e.clientY - mainContainer.getBoundingClientRect().top - 40}px`;
+            const imageContainerRect = imageContainer.getBoundingClientRect();
+            eyedropperPreview.style.left = `${e.clientX - imageContainerRect.left - 40}px`;
+            eyedropperPreview.style.top = `${e.clientY - imageContainerRect.top - 40}px`;
         }
-        
+
         function handleCanvasClick(e) {
             const { x, y } = getCanvasCoordinates(e);
             colorPicker.value = getAverageColor(x, y);
@@ -1045,8 +1119,9 @@
                 mbPriceCache = { ...mbPriceCache, ...newPrices };
                 mbLastPriceUpdate = new Date();
 
-                // Update the display
-                updateResultsUI(document.getElementById('userHex').textContent, matchedDye);
+                // Update the display with the matched dye
+                const userHex = document.getElementById('userHex').textContent;
+                updateResultsUI(userHex, matchedDye);
 
                 statusDiv.textContent = `Updated at ${mbLastPriceUpdate.toLocaleTimeString()}`;
 
@@ -1122,7 +1197,8 @@
                     if (matchedName && matchedName !== 'No Match Found') {
                         const matchedDye = ffxivDyes.find(d => d.name === matchedName);
                         if (matchedDye) {
-                            updateResultsUI(document.getElementById('userHex').textContent, matchedDye);
+                            const userHex = document.getElementById('userHex').textContent;
+                            updateResultsUI(userHex, matchedDye);
                         }
                     }
                 });

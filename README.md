@@ -27,11 +27,26 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Version Display** - Shows v1.1.0 (stable) or v1.2.0-dev (experimental) in page header
 
 ### 🔍 Color Matcher (v1.2.0)
-Upload an image or pick a color to find the closest matching FFXIV dye:
+Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
+
+**Two-Column Layout (NEW):**
+- **Left Panel (Sticky)** - All dye matching controls and results:
+  - Direct color picker with hex display
+  - Closest match results with category and acquisition info
+  - Exclusion filters and Market Board settings
+  - Remains visible when scrolling through tall images
+- **Right Panel** - Image matching workspace:
+  - Image upload with drag-and-drop support
+  - Configurable sample size (1x1 to 64x64 pixels) for color averaging
+  - Image canvas with precise eyedropper tool
+- Optimized for 1080p displays with minimal scrolling
+- Responsive design switches to single-column on smaller screens
+
+**Core Features:**
 - Direct color picker for precise color selection
 - Image upload with eyedropper tool (drag-and-drop supported)
-- Configurable sample size (1x1 to 64x64 pixels) for color averaging
 - RGB Euclidean distance algorithm for accurate matching
+- Configurable sample size (1x1 to 64x64 pixels) for color averaging
 
 **Advanced Image Controls:**
 - **Zoom Controls** - Zoom In/Out (25%-1000%), Zoom to Fit, Zoom to Width (ideal for portrait images), Reset to 100%
@@ -53,8 +68,7 @@ Upload an image or pick a color to find the closest matching FFXIV dye:
 - Toggle button with moon icon in header
 - Persistent preference storage
 - Matches Color Explorer's dark mode theme
-- All controls styled for both light and dark modes
-- Market Board Server dropdown properly darkened in dark mode
+- All controls styled for both light and dark modes including dropdowns
 
 ### ⚖️ Dye Comparison (v1.0.0)
 Compare up to 4 FFXIV dyes side-by-side for detailed analysis:
