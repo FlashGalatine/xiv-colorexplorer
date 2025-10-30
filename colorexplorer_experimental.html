@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFXIV Color Harmony Explorer v1.2.0-dev</title>
+    <title>FFXIV Color Harmony Explorer v1.2.0</title>
     <!-- Open Graph / Discord embeds -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colorexplorer_experimental.html">
-    <meta property="og:title" content="Color Harmony Explorer (Experimental)">
-    <meta property="og:description" content="Try the latest experimental features for generating color harmony palettes from FFXIV dyes. Features may be unstable - for stable version, visit the main Color Harmony Explorer.">
+    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colorexplorer_stable.html">
+    <meta property="og:title" content="Color Harmony Explorer">
+    <meta property="og:description" content="Generate complementary, analogous, triadic, and other color harmony palettes based on FFXIV dyes. Perfect for finding the perfect dye combinations for your gear and housing.">
     <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
     <!-- Twitter / X embeds -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colorexplorer_experimental.html">
-    <meta property="twitter:title" content="Color Harmony Explorer (Experimental)">
-    <meta property="twitter:description" content="Try the latest experimental features for generating color harmony palettes from FFXIV dyes. Features may be unstable - for stable version, visit the main Color Harmony Explorer.">
+    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colorexplorer_stable.html">
+    <meta property="twitter:title" content="Color Harmony Explorer">
+    <meta property="twitter:description" content="Generate complementary, analogous, triadic, and other color harmony palettes based on FFXIV dyes. Perfect for finding the perfect dye combinations for your gear and housing.">
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
@@ -308,6 +308,89 @@
                 max-height: 95vh;
             }
         }
+
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-dropdown-toggle {
+            background-color: transparent;
+            border: none;
+            color: #4f46e5;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .nav-dropdown-toggle:hover {
+            color: #4338ca;
+        }
+
+        body.dark-mode .nav-dropdown-toggle {
+            color: #818cf8;
+        }
+
+        body.dark-mode .nav-dropdown-toggle:hover {
+            color: #a5b4fc;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .nav-dropdown-menu {
+            background-color: #374151;
+            border-color: #4b5563;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-dropdown-menu.show {
+            display: block;
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #1f2937;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        body.dark-mode .nav-dropdown-item {
+            color: #f9fafb;
+        }
+
+        body.dark-mode .nav-dropdown-item:hover {
+            background-color: #4b5563;
+        }
+
+        .nav-dropdown-item:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        body.dark-mode .nav-dropdown-item:not(:last-child) {
+            border-bottom-color: #4b5563;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -315,16 +398,21 @@
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-6">
             <div class="flex justify-center items-center gap-3 mb-4">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-amber-500">v1.2.0-dev</span></h1>
-                <a href="colorexplorer_stable.html" class="px-3 py-1.5 text-xs font-semibold bg-green-500 text-white rounded-full hover:bg-green-600 transition" title="Return to stable version">
-                    Stable
-                </a>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v1.2.0</span></h1>
             </div>
             <p class="text-md text-gray-600 mt-2">
                 Discover color harmonies using the FFXIV dye palette.
-                <a href="colormatcher.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition ml-4" title="Match colors from images">
-                    Color Matcher Tool →
-                </a>
+                <div class="nav-dropdown inline-block ml-4">
+                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
+                        Tools ▼
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+                        <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
+                        <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
+                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
+                    </div>
+                </div>
             </p>
         </header>
 
@@ -501,6 +589,21 @@
     <div id="zoom-backdrop" class="zoom-backdrop" onclick="zoomOut()"></div>
 
     <script>
+        /**
+         * Toggle dropdown menu
+         */
+        function toggleDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            dropdown.classList.toggle('show');
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.nav-dropdown')) {
+                    dropdown.classList.remove('show');
+                }
+            }, { once: true });
+        }
+
         let colorData = [];
         let currentPalettes = {};
         let tooltip = null;
@@ -1672,7 +1775,26 @@
 
                 const checkbox = document.getElementById('exclude-metallic-checkbox');
                 checkbox.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
@@ -1683,7 +1805,26 @@
 
                 const extremesCheckbox = document.getElementById('exclude-extremes-checkbox');
                 extremesCheckbox.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
@@ -1691,7 +1832,26 @@
 
                 const acquisitionFilter = document.getElementById('acquisition-filter');
                 acquisitionFilter.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
