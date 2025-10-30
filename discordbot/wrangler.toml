@@ -2,31 +2,33 @@ name = "xiv-dye-tools-discord-bot"
 main = "src/worker.js"
 compatibility_date = "2024-01-01"
 
-# Environment variables
-[env.production]
-name = "xiv-dye-tools-discord-bot"
-routes = [
-  { pattern = "*", zone_name = "example.com" }
-]
+# Cloudflare account configuration
+account_id = ""  # Set this after first deploy
 
 [build]
 command = "npm install"
 cwd = "."
 
-# KV namespace bindings for caching
-[[kv_namespaces]]
-binding = "COLORS_KV"
-id = "your-kv-namespace-id"
-preview_id = "your-kv-preview-id"
-
-[[kv_namespaces]]
-binding = "CACHE_KV"
-id = "your-cache-namespace-id"
-preview_id = "your-cache-preview-id"
-
-# Secrets (set via wrangler secret put)
+# Environment variables (public)
 [vars]
-# These will be set via environment
-# DISCORD_PUBLIC_KEY = "set via wrangler secret"
-# DISCORD_TOKEN = "set via wrangler secret"
+DISCORD_APP_ID = "1433508594426445878"
 UNIVERSALIS_API = "https://universalis.app/api/v2"
+
+# Secrets (sensitive - set via wrangler secret put)
+# Set these via:
+# wrangler secret put DISCORD_PUBLIC_KEY
+# wrangler secret put DISCORD_TOKEN
+#
+# DISCORD_PUBLIC_KEY = "b5c2cf83215f815b2dec238236a9ac00a6ad1cd9d4576fdaaa8f0afc77192a14"
+# DISCORD_TOKEN = "your-bot-token-here"
+
+# KV namespace bindings for caching (optional, for future use)
+# [[kv_namespaces]]
+# binding = "COLORS_KV"
+# id = "your-kv-namespace-id"
+# preview_id = "your-kv-preview-id"
+
+# [[kv_namespaces]]
+# binding = "CACHE_KV"
+# id = "your-cache-namespace-id"
+# preview_id = "your-cache-preview-id"

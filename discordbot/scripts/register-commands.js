@@ -9,17 +9,35 @@
  * - /dye
  *
  * Run with: node scripts/register-commands.js
+ *
+ * Requires DISCORD_TOKEN to be set as an environment variable or in .env file
+ * DISCORD_APP_ID is hardcoded or can come from wrangler.toml
  */
 
-import { config } from 'dotenv';
-config();
+// Try to load from .env for convenience
+try {
+  const { config } = await import('dotenv');
+  config();
+} catch (e) {
+  // dotenv not available, that's ok
+}
 
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const DISCORD_APP_ID = process.env.DISCORD_APP_ID;
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN || '';
+const DISCORD_APP_ID = '1433508594426445878'; // Hardcoded application ID
 
-if (!DISCORD_TOKEN || !DISCORD_APP_ID) {
-  console.error('Error: DISCORD_TOKEN and DISCORD_APP_ID environment variables are required');
-  console.error('Set these in your .env file');
+if (!DISCORD_TOKEN) {
+  console.error('Error: DISCORD_TOKEN environment variable is required');
+  console.error('');
+  console.error('To get your token:');
+  console.error('1. Go to Discord Developer Portal');
+  console.error('2. Select your application');
+  console.error('3. Go to Bot section');
+  console.error('4. Copy the token');
+  console.error('');
+  console.error('Then run:');
+  console.error('  export DISCORD_TOKEN="your_token_here"');
+  console.error('  node scripts/register-commands.js');
+  console.error('');
   process.exit(1);
 }
 

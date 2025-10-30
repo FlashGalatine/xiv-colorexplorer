@@ -27,7 +27,13 @@ export default {
       const body = await request.text();
 
       // Verify Discord signature for security
-      if (!verifyDiscordSignature(body, signature, timestamp, env.DISCORD_PUBLIC_KEY)) {
+      const publicKey = env.DISCORD_PUBLIC_KEY;
+      if (!publicKey) {
+        console.error('DISCORD_PUBLIC_KEY environment variable not set');
+        return new Response('Internal Server Error', { status: 500 });
+      }
+
+      if (!verifyDiscordSignature(body, signature, timestamp, publicKey)) {
         console.warn('Invalid Discord signature');
         return new Response('Unauthorized', { status: 401 });
       }
