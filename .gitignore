@@ -43,6 +43,9 @@ CLAUDE.md
 example_many_dyes.json
 example_one_dye.json
 
+# Discord Bot (maintained in separate repository)
+discordbot/
+
 # Node modules (if any dependencies are added in future)
 node_modules/
 package-lock.json
