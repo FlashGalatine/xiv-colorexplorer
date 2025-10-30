@@ -291,7 +291,7 @@ Created by **Flash Galatine** (Balmung)
 - [GitHub](https://github.com/FlashGalatine)
 - [X / Twitter](https://x.com/AsheJunius)
 - [Twitch](https://www.twitch.tv/flashgalatine)
-- [BlueSky](https://bsky.app/profile/flashgalatine.bsky.social)
+- [BlueSky](https://bsky.app/profile/projectgalatine.com)
 - [Patreon](https://patreon.com/ProjectGalatine)
 
 ## Acknowledgments
