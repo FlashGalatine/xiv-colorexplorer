@@ -120,17 +120,42 @@ Toggle between light and dark themes with persistent preference storage. Availab
 
 No installation or server required! All tools work directly in your browser.
 
+### Cloning the Repository
+
+To get a local copy of the project, follow these steps:
+
+1. **Open your terminal or command prompt**
+
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/FlashGalatine/xivdyetools.git
+   ```
+
+3. **Navigate to the project directory**:
+   ```bash
+   cd xivdyetools
+   ```
+
+4. **Open the tools in your browser**:
+   - Open `index.html` to access the main portal with all tools
+   - Or open individual tool files directly:
+     - `colorexplorer_stable.html` - Color Harmony Explorer
+     - `colormatcher.html` - Color Matcher
+     - `dyecomparison.html` - Dye Comparison
+
+That's it! No installation or build process needed.
+
 ### Local Development
-1. Clone this repository
-2. Open `index.html` in your browser to access the XIV Dye Tools portal
-3. From the portal, access all three released stable tools:
+1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
+2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
+3. **Access all three tools** from the portal:
    - Color Harmony Explorer (v1.1.0)
    - Color Matcher (v1.2.0)
    - Dye Comparison (v1.0.0)
-4. For development of new features, edit `colorexplorer_experimental.html`
-5. All three main tools are production-ready stable versions with full feature support
+4. **Develop new features**: Edit `colorexplorer_experimental.html` for testing new functionality
+5. **Deploy to production**: Copy tested features from the experimental version to the main tool files
 
-The application is entirely client-side and requires no build process or dependencies.
+All three main tools are production-ready stable versions with full feature support. The application is entirely client-side and requires no build process or dependencies.
 
 ## Usage
 
