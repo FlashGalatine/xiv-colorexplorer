@@ -1775,7 +1775,26 @@
 
                 const checkbox = document.getElementById('exclude-metallic-checkbox');
                 checkbox.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
@@ -1786,7 +1805,26 @@
 
                 const extremesCheckbox = document.getElementById('exclude-extremes-checkbox');
                 extremesCheckbox.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
@@ -1794,7 +1832,26 @@
 
                 const acquisitionFilter = document.getElementById('acquisition-filter');
                 acquisitionFilter.addEventListener('change', () => {
+                    // Store the currently selected dye name
+                    const currentSelectedIndex = select.value;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
+
+                    // Repopulate dropdown with new filters
                     populateDropdown();
+
+                    // Restore the previously selected dye if it still exists
+                    if (currentDyeName) {
+                        const newIndex = Array.from(select.options).findIndex(opt =>
+                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                        );
+                        if (newIndex !== -1) {
+                            select.value = select.options[newIndex].value;
+                        } else if (select.options.length > 0) {
+                            select.value = select.options[0].value;
+                        }
+                    }
+
                     if (select.options.length > 0) {
                         updateUI();
                     }
