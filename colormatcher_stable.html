@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFXIV Dye Color Matcher v1.2.0</title>
+    <title>FFXIV Dye Color Matcher v1.2.0-dev</title>
     <!-- Open Graph / Discord embeds -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colormatcher_stable.html">
-    <meta property="og:title" content="Color Matcher">
-    <meta property="og:description" content="Upload images or pick colors to find the closest matching FFXIV dye. Powered by RGB Euclidean distance algorithm with intelligent auto-zoom and eyedropper tool.">
+    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/colormatcher_experimental.html">
+    <meta property="og:title" content="Color Matcher (Experimental)">
+    <meta property="og:description" content="Try the latest experimental features for matching FFXIV dyes from colors and images. Features may be unstable - for stable version, visit the main Color Matcher.">
     <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
     <!-- Twitter / X embeds -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colormatcher_stable.html">
-    <meta property="twitter:title" content="Color Matcher">
-    <meta property="twitter:description" content="Upload images or pick colors to find the closest matching FFXIV dye. Powered by RGB Euclidean distance algorithm with intelligent auto-zoom and eyedropper tool.">
+    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/colormatcher_experimental.html">
+    <meta property="twitter:title" content="Color Matcher (Experimental)">
+    <meta property="twitter:description" content="Try the latest experimental features for matching FFXIV dyes from colors and images. Features may be unstable - for stable version, visit the main Color Matcher.">
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
@@ -300,7 +300,7 @@
     <div class="w-full mb-4">
         <div class="flex justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.2.0</span></h1>
+                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.2.0-dev</span></h1>
                 <p class="text-sm text-gray-600 mt-1">Pick a color or upload an image to find the closest dye match.</p>
             </div>
             <div class="flex items-center gap-3">
@@ -309,9 +309,9 @@
                         Tools ▼
                     </button>
                     <div class="nav-dropdown-menu">
-                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
-                        <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
-                        <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
+                        <a href="colorexplorer_experimental.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+                        <a href="colormatcher_experimental.html" class="nav-dropdown-item">Color Matcher</a>
+                        <a href="dyecomparison.html" class="nav-dropdown-item">Dye Comparison</a>
                         <a href="index.html" class="nav-dropdown-item">All Tools</a>
                     </div>
                 </div>
@@ -1153,10 +1153,13 @@
                 const serverSelect = document.getElementById('mb-server-select');
                 serverSelect.innerHTML = '';
 
+                // Sort Data Centers alphabetically by name
+                const sortedDataCenters = [...dataCenters].sort((a, b) => a.name.localeCompare(b.name));
+
                 // Add Data Centers
                 const dcOptgroup = document.createElement('optgroup');
                 dcOptgroup.label = 'Data Centers';
-                dataCenters.forEach(dc => {
+                sortedDataCenters.forEach(dc => {
                     const option = document.createElement('option');
                     option.value = `DC:${dc.name}`;
                     option.textContent = `${dc.name} (${dc.region})`;
@@ -1168,7 +1171,7 @@
                 serverSelect.appendChild(dcOptgroup);
 
                 // Add Worlds
-                dataCenters.forEach(dc => {
+                sortedDataCenters.forEach(dc => {
                     const worldOptgroup = document.createElement('optgroup');
                     worldOptgroup.label = `${dc.name} Worlds`;
 

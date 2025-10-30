@@ -5,6 +5,24 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-10-30
+
+### Added
+- **Market Board Data Center Alphabetization**
+  - Data Centers in Market Board Server dropdown now display in alphabetical order across all tools
+  - Applied to all three stable versions for consistency:
+    - Color Harmony Explorer (v1.2.0)
+    - Color Matcher (v1.2.0)
+    - Dye Comparison (v1.1.0)
+
+### Changed
+- Data Center dropdown entries now sorted alphabetically by name before display
+- Improved Market Board server selection usability with consistent ordering
+
+### Technical Details
+- Added `sort((a, b) => a.name.localeCompare(b.name))` to Data Center array in `loadServerData()` and `initializeMarketBoard()` functions
+- Used consistent sorting approach across all three tools for unified user experience
+
 ## [1.2.2] - 2025-10-30
 
 ### Added

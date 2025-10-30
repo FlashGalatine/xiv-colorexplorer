@@ -971,14 +971,17 @@
                 
                 const dataCenters = await dcResponse.json();
                 const worlds = await worldsResponse.json();
-                
+
                 const serverSelect = document.getElementById('server-select');
                 serverSelect.innerHTML = '';
-                
+
+                // Sort Data Centers alphabetically by name
+                const sortedDataCenters = [...dataCenters].sort((a, b) => a.name.localeCompare(b.name));
+
                 // Add Data Centers
                 const dcOptgroup = document.createElement('optgroup');
                 dcOptgroup.label = 'Data Centers';
-                dataCenters.forEach(dc => {
+                sortedDataCenters.forEach(dc => {
                     const option = document.createElement('option');
                     option.value = `DC:${dc.name}`;
                     option.textContent = `${dc.name} (${dc.region})`;
@@ -988,9 +991,9 @@
                     dcOptgroup.appendChild(option);
                 });
                 serverSelect.appendChild(dcOptgroup);
-                
+
                 // Add Worlds grouped by Data Center
-                dataCenters.forEach(dc => {
+                sortedDataCenters.forEach(dc => {
                     const worldOptgroup = document.createElement('optgroup');
                     worldOptgroup.label = `${dc.name} Worlds`;
                     
