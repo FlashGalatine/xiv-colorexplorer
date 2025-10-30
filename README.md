@@ -105,6 +105,9 @@ Toggle between light and dark themes with persistent preference storage. Availab
 ## Getting Started
 
 ### Online Access
+- **XIV Dye Tools Official Website**: [https://xivdyetools.projectgalatine.com/](https://xivdyetools.projectgalatine.com/)
+  - Access all tools online without any installation
+  - Live version with latest features and updates
 - **XIV Dye Tools Portal** (Home): Open `index.html` in any modern web browser to access all tools
   - Showcases all three released stable tools in a beautiful 3-column grid
   - Quick access to experimental features
