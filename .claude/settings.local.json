@@ -3,7 +3,10 @@
     "allow": [
       "Bash(git commit:*)",
       "Bash(git reset:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(wrangler secret put:*)"
     ],
     "deny": [],
     "ask": []
