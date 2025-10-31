@@ -10,8 +10,10 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### ♿ Color Accessibility Checker (v1.0.1)
+### ♿ Color Accessibility Checker (v1.0.1 - BETA)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
+
+> **⚠ BETA Notice:** This tool uses scientific colorblindness simulation algorithms (Brettel 1997), but has not been validated with actual colorblind players. We recommend testing with real users for critical designs. Feedback from users with colorblindness experience is greatly appreciated!
 
 **Vision Type Simulations:**
 - **Deuteranopia** (red-green colorblindness, ~1% of population)

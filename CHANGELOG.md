@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.1] - 2025-10-31
 
+### Changed - Color Accessibility Checker v1.0.1
+- **BETA Status Badge**
+  - Marked Color Accessibility Checker as BETA in portal (index.html) with amber badge
+  - Added BETA badge to tool header indicating early/experimental status
+  - Added prominent BETA notice banner on tool page with scientific disclaimer
+  - Clarifies that tool uses Brettel 1997 algorithms but hasn't been validated with actual colorblind players
+  - Encourages real user testing and feedback for critical design decisions
+
+- **Footer and Contact Information**
+  - Added complete footer with creator attribution (Flash Galatine - Balmung)
+  - Includes links to all social media and contact information:
+    - Blog, GitHub, X/Twitter, Twitch, BlueSky, Patreon, License
+  - Full dark mode styling for footer elements with proper color contrast
+  - Matches footer design from other three tools for consistency
+
 ### Fixed - Color Accessibility Checker v1.0.1
 - **Dark Mode Styling Fixes**
   - "Clear All" button now properly darkens to #4b5563 in dark mode with white text
