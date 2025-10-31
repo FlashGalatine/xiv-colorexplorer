@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFXIV Color Accessibility Checker - Simulate Colorblindness | XIV Dye Tools</title>
+    <meta name="description" content="Check how FFXIV dyes appear to players with colorblindness. Simulate deuteranopia, protanopia, tritanopia, and achromatopsia. Compare dye distinguishability and get accessibility scores for glamour outfits.">
+    <meta name="keywords" content="FFXIV colorblindness simulator, dye accessibility, color contrast, colorblind simulation, deuteranopia, protanopia, tritanopia, accessibility checker, XIV dyes, FF14">
+    <!-- Open Graph / Discord embeds -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/coloraccessibility_stable.html">
+    <meta property="og:title" content="FFXIV Color Accessibility Checker">
+    <meta property="og:description" content="Simulate colorblindness and check how your dye combinations appear to all players. Features deuteranopia, protanopia, tritanopia, and monochrome simulations.">
+    <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
+    <!-- Twitter / X embeds -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/coloraccessibility_stable.html">
+    <meta property="twitter:title" content="FFXIV Color Accessibility Checker">
+    <meta property="twitter:description" content="Simulate colorblindness and check how your dye combinations appear to all players.">
+    <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="embed_icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        body.dark-mode {
+            background-color: #1f2937;
+            color: #f9fafb;
+        }
+        body.dark-mode .bg-white {
+            background-color: #374151;
+        }
+        body.dark-mode .text-gray-900 {
+            color: #f9fafb;
+        }
+        body.dark-mode .text-gray-700 {
+            color: #e5e7eb;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #d1d5db;
+        }
+        body.dark-mode .text-gray-500 {
+            color: #9ca3af;
+        }
+        body.dark-mode h1 .text-gray-500 {
+            color: #6b7280;
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #4b5563;
+        }
+        body.dark-mode .bg-gray-100 {
+            background-color: #374151;
+        }
+        body.dark-mode .border-gray-200 {
+            border-color: #4b5563;
+        }
+        body.dark-mode .border-gray-300 {
+            border-color: #4b5563;
+        }
+        body.dark-mode select {
+            background-color: #374151;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        body.dark-mode select option {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        body.dark-mode optgroup {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+        body.dark-mode #dark-mode-toggle {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+        body.dark-mode #dark-mode-toggle:hover {
+            background-color: #374151;
+        }
+        body.dark-mode .bg-blue-50 {
+            background-color: #1e3a5f;
+        }
+        body.dark-mode .border-blue-200 {
+            border-color: #1e5f8f;
+        }
+        body.dark-mode .text-blue-800 {
+            color: #93c5fd;
+        }
+        body.dark-mode .bg-amber-50 {
+            background-color: #2a2512;
+        }
+        body.dark-mode .border-amber-200 {
+            border-color: #5d3a1a;
+        }
+        body.dark-mode .text-amber-800 {
+            color: #fca5a5;
+        }
+
+        .dye-swatch {
+            width: 100%;
+            height: 80px;
+            border-radius: 0.5rem;
+            border: 2px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
+
+        body.dark-mode .dye-swatch {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .nav-dropdown-toggle {
+            background-color: transparent;
+            border: none;
+            color: #4f46e5;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.2s;
+        }
+        .nav-dropdown-toggle:hover {
+            color: #4338ca;
+        }
+        body.dark-mode .nav-dropdown-toggle {
+            color: #818cf8;
+        }
+        body.dark-mode .nav-dropdown-toggle:hover {
+            color: #a5b4fc;
+        }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            margin-top: 0.5rem;
+        }
+        body.dark-mode .nav-dropdown-menu {
+            background-color: #374151;
+            border-color: #4b5563;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+        .nav-dropdown-menu.show {
+            display: block;
+        }
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #1f2937;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+        }
+        .nav-dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+        body.dark-mode .nav-dropdown-item {
+            color: #f9fafb;
+        }
+        body.dark-mode .nav-dropdown-item:hover {
+            background-color: #4b5563;
+        }
+        .nav-dropdown-item:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        body.dark-mode .nav-dropdown-item:not(:last-child) {
+            border-bottom-color: #4b5563;
+        }
+
+        /* Toggle switch styles */
+        .toggle-bg {
+            background-color: #d1d5db;
+            transition: background-color 0.3s ease;
+        }
+        input:checked + .toggle-bg {
+            background-color: #4f46e5;
+        }
+        .toggle-dot {
+            transition: left 0.3s ease;
+        }
+        input:checked + .toggle-bg + .toggle-dot {
+            left: calc(100% - 1.25rem);
+        }
+        body.dark-mode .toggle-bg {
+            background-color: #4b5563;
+        }
+        body.dark-mode input:checked + .toggle-bg {
+            background-color: #6366f1;
+        }
+
+        .experimental-badge {
+            display: inline-block;
+            background-color: #fbbf24;
+            color: #78350f;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Palette grid */
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .palette-item {
+            text-align: center;
+        }
+
+        .palette-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .palette-label {
+            color: #d1d5db;
+        }
+
+        /* Vision simulation comparison */
+        .vision-comparison {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .vision-type {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        body.dark-mode .vision-type {
+            border-color: #4b5563;
+            background-color: #2d3748;
+        }
+
+        .vision-header {
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        body.dark-mode .vision-header {
+            background-color: #374151;
+            border-bottom-color: #4b5563;
+        }
+
+        .vision-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1f2937;
+        }
+
+        body.dark-mode .vision-title {
+            color: #f9fafb;
+        }
+
+        .vision-content {
+            padding: 1rem;
+        }
+
+        .vision-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .vision-swatch {
+            height: 60px;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .vision-swatch {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        /* Accessibility score */
+        .score-card {
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            margin-bottom: 1.5rem;
+        }
+
+        body.dark-mode .score-card {
+            background-color: #1e3a5f;
+            border-color: #1e5f8f;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0369a1;
+        }
+
+        body.dark-mode .score-value {
+            color: #93c5fd;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            color: #0c4a6e;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .score-label {
+            color: #e0f2fe;
+        }
+
+        /* Warnings */
+        .warning-card {
+            border-radius: 0.75rem;
+            padding: 1rem;
+            background-color: #fef3c7;
+            border: 1px solid #fcd34d;
+            margin-bottom: 0.75rem;
+        }
+
+        body.dark-mode .warning-card {
+            background-color: #3a2812;
+            border-color: #78350f;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .warning-title {
+            color: #fbbf24;
+        }
+
+        /* Contrast matrix */
+        .contrast-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .contrast-table th,
+        .contrast-table td {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        body.dark-mode .contrast-table th,
+        body.dark-mode .contrast-table td {
+            border-color: #4b5563;
+        }
+
+        .contrast-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        body.dark-mode .contrast-table th {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+
+        .contrast-value {
+            font-weight: 600;
+        }
+
+        .contrast-low {
+            background-color: #fecaca;
+            color: #991b1b;
+        }
+
+        body.dark-mode .contrast-low {
+            background-color: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        .contrast-medium {
+            background-color: #fde047;
+            color: #713f12;
+        }
+
+        body.dark-mode .contrast-medium {
+            background-color: #3a2812;
+            color: #fbbf24;
+        }
+
+        .contrast-high {
+            background-color: #bbf7d0;
+            color: #065f46;
+        }
+
+        body.dark-mode .contrast-high {
+            background-color: #064e3b;
+            color: #6ee7b7;
+        }
+
+        /* Clear All and slot clear buttons */
+        button.clear-button {
+            background-color: #d1d5db;
+            color: #1f2937;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        button.clear-button:hover {
+            background-color: #9ca3af;
+        }
+
+        body.dark-mode button.clear-button {
+            background-color: #4b5563;
+            color: #f9fafb;
+        }
+
+        body.dark-mode button.clear-button:hover {
+            background-color: #6b7280;
+        }
+
+        /* Warnings header */
+        #warnings-header {
+            background-color: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+
+        body.dark-mode #warnings-header {
+            background-color: #7c2d12;
+            border-left-color: #d97706;
+        }
+
+        body.dark-mode #warnings-header:hover {
+            background-color: #92400e;
+        }
+
+        #warnings-header h2 {
+            color: #d97706;
+        }
+
+        #warnings-header p {
+            color: #d97706;
+        }
+
+        body.dark-mode #warnings-header h2 {
+            color: #fbbf24;
+        }
+
+        body.dark-mode #warnings-header p {
+            color: #fbbf24;
+        }
+
+        #warnings-toggle {
+            color: #d97706;
+        }
+
+        body.dark-mode #warnings-toggle {
+            color: #fbbf24;
+        }
+
+        /* Suggestions section */
+        #suggestions-container > div {
+            background-color: white;
+            border-color: #d1d5db;
+        }
+
+        body.dark-mode #suggestions-container > div {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+
+        #suggestions-container h3 {
+            color: #1f2937;
+        }
+
+        body.dark-mode #suggestions-container h3 {
+            color: #f9fafb;
+        }
+
+        #suggestions-container p.font-medium {
+            color: #1f2937;
+        }
+
+        body.dark-mode #suggestions-container p.font-medium {
+            color: #f9fafb;
+        }
+
+        #suggestions-container p.text-xs {
+            color: #6b7280;
+        }
+
+        body.dark-mode #suggestions-container p.text-xs {
+            color: #d1d5db;
+        }
+
+        /* 1080p Optimization */
+        @media (min-width: 1920px) {
+            body {
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 3rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+            .container {
+                max-width: 1600px;
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+            main {
+                max-width: 1800px;
+            }
+            button {
+                padding: 0.65rem 1.25rem;
+                font-size: 1rem;
+            }
+            select {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+            label {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-8 flex-grow">
+        <header class="text-center mb-8 2xl:mb-12">
+            <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
+                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Color Accessibility Checker <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v1.0.0</span></h1>
+                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-600 mt-2 2xl:text-lg">
+                Plan accessible glamour outfits by simulating how your dye combinations appear to colorblind players.
+                <div class="nav-dropdown inline-block ml-4">
+                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
+                        Tools ▼
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+                        <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
+                        <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
+                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
+                    </div>
+                </div>
+            </p>
+        </header>
+
+
+        <main class="max-w-7xl 2xl:max-w-screen-2xl mx-auto">
+
+            <!-- Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 2xl:p-6 mb-6 2xl:mb-8">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-sm 2xl:text-base text-blue-800">
+                        <strong>How to use:</strong> Select up to 8 dyes representing your outfit (one per armor slot). The tool will simulate how colorblind players see your colors and highlight potential accessibility issues.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Two-column layout: Left (controls) and Right (results) -->
+            <div class="grid lg:grid-cols-3 gap-8 mb-8">
+
+                <!-- LEFT PANEL: Controls -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-8 space-y-6">
+
+                        <!-- Dye Selection Section -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-gray-900">Select Outfit Dyes</h2>
+                                <label class="flex items-center cursor-pointer gap-2">
+                                    <span class="text-xs font-medium text-gray-600">Dual Dyes</span>
+                                    <div class="relative">
+                                        <input id="enable-secondary-dyes" type="checkbox" class="sr-only">
+                                        <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner"></div>
+                                        <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 transition"></div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div id="dye-slots-container" class="space-y-3">
+                                <!-- Slots will be populated by JavaScript -->
+                            </div>
+
+                            <button onclick="clearAllDyes()" class="w-full mt-4 px-3 py-2 rounded-lg transition font-medium clear-button">
+                                Clear All
+                            </button>
+                        </div>
+
+                        <!-- Vision Simulation Controls -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Vision Type Simulation</h2>
+
+                            <div class="space-y-4">
+                                <!-- Deuteranopia -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Deuteranopia (Red-Green)
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <input id="deuteranopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
+                                        <span id="deuteranopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Protanopia -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Protanopia (Red-Green)
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <input id="protanopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
+                                        <span id="protanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tritanopia -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Tritanopia (Blue-Yellow)
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <input id="tritanopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
+                                        <span id="tritanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Analysis Options -->
+                                <div class="pt-4 border-t border-gray-200 space-y-2">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input id="show-warnings" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                        <span class="ml-2 text-sm text-gray-700">Show warnings</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input id="show-contrast" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                        <span class="ml-2 text-sm text-gray-700">Show contrast ratios</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input id="show-suggestions" type="checkbox" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                        <span class="ml-2 text-sm text-gray-700">Show suggestions</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: Results -->
+                <div class="lg:col-span-2 space-y-8">
+
+                    <!-- Accessibility Score -->
+                    <div id="score-section" class="hidden">
+                        <div class="score-card">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="score-value" id="score-number">0</div>
+                                    <div class="score-label">Overall Accessibility Score</div>
+                                </div>
+                                <div id="score-rating" class="text-sm font-semibold text-right"></div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-700 space-y-1" id="score-details">
+                                <!-- Details populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Original Palette -->
+                    <div id="palette-section" class="hidden">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Original Palette</h2>
+                        <div class="palette-grid" id="original-palette-grid">
+                            <!-- Swatches populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Vision Simulations -->
+                    <div id="simulations-section" class="hidden">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">How Colorblind Players See Your Colors</h2>
+                        <div class="vision-comparison" id="vision-comparison">
+                            <!-- Vision simulations populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Warnings -->
+                    <div id="warnings-section" class="hidden">
+                        <div id="warnings-header" class="cursor-pointer p-4 bg-amber-50 border-l-4 border-amber-500 rounded-lg transition mb-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-lg font-semibold">⚠ Accessibility Issues</h2>
+                                    <p class="text-sm mt-1" id="warnings-summary">You have 0 issues</p>
+                                </div>
+                                <span id="warnings-toggle" class="text-xl">▼</span>
+                            </div>
+                        </div>
+                        <div id="warnings-container" class="space-y-3">
+                            <!-- Warnings populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Contrast Ratios -->
+                    <div id="contrast-section" class="hidden">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Color Distance Matrix</h2>
+                        <div id="contrast-container" class="overflow-x-auto">
+                            <!-- Contrast table populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div id="suggestions-section" class="hidden">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Dye Suggestions</h2>
+                        <div id="suggestions-container">
+                            <!-- Suggestions populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Global state
+        let ffxivDyes = [];
+        let secondaryDyesEnabled = false;
+        let selectedDyes = [
+            { primary: null, secondary: null },
+            { primary: null, secondary: null },
+            { primary: null, secondary: null },
+            { primary: null, secondary: null },
+            { primary: null, secondary: null },
+            { primary: null, secondary: null }
+        ];
+        const dyeSlots = ['Head', 'Body', 'Hands', 'Legs', 'Feet', 'Weapon'];
+
+        // Colorblindness transformation matrices (Brettel 1997)
+        const colorblindMatrices = {
+            normal: [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ],
+            deuteranopia: [
+                [0.625, 0.375, 0],
+                [0.7, 0.3, 0],
+                [0, 0.3, 0.7]
+            ],
+            protanopia: [
+                [0.567, 0.433, 0],
+                [0.558, 0.442, 0],
+                [0, 0.242, 0.758]
+            ],
+            tritanopia: [
+                [0.95, 0.05, 0],
+                [0, 0.433, 0.567],
+                [0, 0.475, 0.525]
+            ]
+        };
+
+        /**
+         * Initialize dark mode
+         */
+        function initializeDarkMode() {
+            const saved = localStorage.getItem('darkMode');
+            if (saved !== null) {
+                document.body.classList.toggle('dark-mode', JSON.parse(saved));
+            }
+
+            document.getElementById('dark-mode-toggle').addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            });
+        }
+
+        /**
+         * Toggle tools dropdown
+         */
+        function toggleDropdown(button) {
+            const menu = button.nextElementSibling;
+            menu.classList.toggle('show');
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.nav-dropdown')) {
+                    menu.classList.remove('show');
+                }
+            });
+        }
+
+        /**
+         * RGB to HSV conversion
+         */
+        function rgbToHsv(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const delta = max - min;
+
+            let h = 0;
+            if (delta === 0) h = 0;
+            else if (max === r) h = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+            else if (max === g) h = ((b - r) / delta + 2) / 6;
+            else h = ((r - g) / delta + 4) / 6;
+
+            const s = max === 0 ? 0 : delta / max;
+            const v = max;
+
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                v: Math.round(v * 100)
+            };
+        }
+
+        /**
+         * Hex to RGB conversion
+         */
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        }
+
+        /**
+         * RGB to Hex conversion
+         */
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        /**
+         * Apply colorblindness transformation to RGB color
+         */
+        function applyColorblindness(hex, visionType, intensity) {
+            const rgb = hexToRgb(hex);
+            const matrix = colorblindMatrices[visionType];
+
+            // Normalize to 0-1 range
+            let r = rgb.r / 255;
+            let g = rgb.g / 255;
+            let b = rgb.b / 255;
+
+            // Apply transformation matrix
+            const newR = matrix[0][0] * r + matrix[0][1] * g + matrix[0][2] * b;
+            const newG = matrix[1][0] * r + matrix[1][1] * g + matrix[1][2] * b;
+            const newB = matrix[2][0] * r + matrix[2][1] * g + matrix[2][2] * b;
+
+            // Interpolate based on intensity
+            const intensityFraction = intensity / 100;
+            const finalR = r * (1 - intensityFraction) + newR * intensityFraction;
+            const finalG = g * (1 - intensityFraction) + newG * intensityFraction;
+            const finalB = b * (1 - intensityFraction) + newB * intensityFraction;
+
+            // Convert back to 0-255 range and to hex
+            return rgbToHex(
+                Math.round(finalR * 255),
+                Math.round(finalG * 255),
+                Math.round(finalB * 255)
+            );
+        }
+
+        /**
+         * Apply achromatopsia (monochrome) transformation
+         */
+        function applyAchromatopsia(hex, intensity) {
+            const rgb = hexToRgb(hex);
+
+            // Calculate luminance
+            const luminance = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+
+            // Interpolate based on intensity
+            const intensityFraction = intensity / 100;
+            const finalR = rgb.r * (1 - intensityFraction) + luminance * intensityFraction;
+            const finalG = rgb.g * (1 - intensityFraction) + luminance * intensityFraction;
+            const finalB = rgb.b * (1 - intensityFraction) + luminance * intensityFraction;
+
+            return rgbToHex(
+                Math.round(finalR),
+                Math.round(finalG),
+                Math.round(finalB)
+            );
+        }
+
+        /**
+         * Calculate relative luminance for contrast ratio
+         */
+        function getRelativeLuminance(hex) {
+            const rgb = hexToRgb(hex);
+            let r = rgb.r / 255;
+            let g = rgb.g / 255;
+            let b = rgb.b / 255;
+
+            r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+            g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+            b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        /**
+         * Calculate contrast ratio between two colors
+         */
+        function getContrastRatio(hex1, hex2) {
+            const l1 = getRelativeLuminance(hex1);
+            const l2 = getRelativeLuminance(hex2);
+
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        /**
+         * Calculate Euclidean color distance
+         */
+        function getColorDistance(hex1, hex2) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+
+            const dr = rgb1.r - rgb2.r;
+            const dg = rgb1.g - rgb2.g;
+            const db = rgb1.b - rgb2.b;
+
+            return Math.sqrt(dr * dr + dg * dg + db * db);
+        }
+
+        /**
+         * Initialize dye slot selectors
+         */
+        function initializeDyeSlots() {
+            const container = document.getElementById('dye-slots-container');
+            container.innerHTML = '';
+
+            dyeSlots.forEach((slot, index) => {
+                const div = document.createElement('div');
+                div.className = 'dye-slot';
+                div.innerHTML = `
+                    <label class="block text-sm font-medium text-gray-700 mb-2">${slot}</label>
+                    <div class="flex gap-2 mb-2">
+                        <select id="dye-slot-${index}-primary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Primary...</option>
+                        </select>
+                        <button onclick="clearDyeSlot(${index}, 'primary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                    </div>
+                    <div id="dye-secondary-${index}" class="flex gap-2 mb-2 hidden">
+                        <select id="dye-slot-${index}-secondary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Secondary...</option>
+                        </select>
+                        <button onclick="clearDyeSlot(${index}, 'secondary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                    </div>
+                    <div id="dye-preview-${index}" class="mt-2 hidden">
+                        <div class="dye-swatch" id="dye-swatch-${index}"></div>
+                        <p class="text-xs text-gray-600 mt-1" id="dye-name-${index}"></p>
+                    </div>
+                `;
+                container.appendChild(div);
+
+                const primarySelect = document.getElementById(`dye-slot-${index}-primary`);
+                const secondarySelect = document.getElementById(`dye-slot-${index}-secondary`);
+                populateDyeDropdown(primarySelect);
+                populateDyeDropdown(secondarySelect);
+
+                primarySelect.addEventListener('change', () => handleDyeSelection(index, 'primary'));
+                secondarySelect.addEventListener('change', () => handleDyeSelection(index, 'secondary'));
+            });
+
+            updateSecondaryDyeVisibility();
+        }
+
+        /**
+         * Toggle secondary dye visibility
+         */
+        function updateSecondaryDyeVisibility() {
+            dyeSlots.forEach((_, index) => {
+                const secondaryDiv = document.getElementById(`dye-secondary-${index}`);
+                if (secondaryDyesEnabled) {
+                    secondaryDiv.classList.remove('hidden');
+                } else {
+                    secondaryDiv.classList.add('hidden');
+                }
+            });
+        }
+
+        /**
+         * Populate a dye dropdown with organized categories
+         */
+        function populateDyeDropdown(select) {
+            // Sort dyes by category and name
+            const sortedDyes = [...ffxivDyes].sort((a, b) => {
+                const categoryOrder = {
+                    'Facewear': 99,
+                    'Neutral': 1,
+                    'Special': 3
+                };
+                const aOrder = categoryOrder[a.category] || 2;
+                const bOrder = categoryOrder[b.category] || 2;
+
+                if (aOrder !== bOrder) {
+                    return aOrder - bOrder;
+                }
+
+                const categoryComparison = a.category.localeCompare(b.category);
+                if (categoryComparison !== 0) {
+                    return categoryComparison;
+                }
+
+                return a.name.localeCompare(b.name);
+            });
+
+            // Group by category
+            const dyesByCategory = {};
+            sortedDyes.forEach(dye => {
+                if (!dyesByCategory[dye.category]) {
+                    dyesByCategory[dye.category] = [];
+                }
+                dyesByCategory[dye.category].push(dye);
+            });
+
+            // Get category order for consistent display
+            const categoryOrder = {
+                'Neutral': 1,
+                'Special': 3,
+                'Facewear': 99
+            };
+
+            // Get categories in order
+            const categories = Object.keys(dyesByCategory).sort((a, b) => {
+                const aOrder = categoryOrder[a] || 2;
+                const bOrder = categoryOrder[b] || 2;
+                if (aOrder !== bOrder) return aOrder - bOrder;
+                return a.localeCompare(b);
+            });
+
+            // Add optgroups for each category
+            categories.forEach(category => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category;
+
+                dyesByCategory[category].forEach(dye => {
+                    const option = document.createElement('option');
+                    option.value = dye.itemID;
+                    option.textContent = dye.name;
+                    optgroup.appendChild(option);
+                });
+
+                select.appendChild(optgroup);
+            });
+        }
+
+        /**
+         * Handle dye selection change
+         */
+        function handleDyeSelection(slotIndex, dyeType) {
+            const select = document.getElementById(`dye-slot-${slotIndex}-${dyeType}`);
+            const itemId = select.value;
+
+            if (!itemId) {
+                selectedDyes[slotIndex][dyeType] = null;
+            } else {
+                const dye = ffxivDyes.find(d => d.itemID == itemId);
+                if (dye) {
+                    selectedDyes[slotIndex][dyeType] = dye;
+                }
+            }
+
+            displayDyePreview(slotIndex);
+            updateVisualization();
+        }
+
+        /**
+         * Display dye preview
+         */
+        function displayDyePreview(slotIndex) {
+            const preview = document.getElementById(`dye-preview-${slotIndex}`);
+            const swatch = document.getElementById(`dye-swatch-${slotIndex}`);
+            const name = document.getElementById(`dye-name-${slotIndex}`);
+            const primary = selectedDyes[slotIndex].primary;
+            const secondary = selectedDyes[slotIndex].secondary;
+
+            if (!primary && !secondary) {
+                preview.classList.add('hidden');
+                return;
+            }
+
+            // Create split swatch if both dyes exist
+            if (primary && secondary) {
+                swatch.style.background = `linear-gradient(to right, ${primary.hex} 50%, ${secondary.hex} 50%)`;
+                name.textContent = `${primary.name} / ${secondary.name}`;
+            } else if (primary) {
+                swatch.style.backgroundColor = primary.hex;
+                name.textContent = primary.name;
+            } else if (secondary) {
+                swatch.style.backgroundColor = secondary.hex;
+                name.textContent = secondary.name;
+            }
+
+            swatch.textContent = '';
+            preview.classList.remove('hidden');
+        }
+
+        /**
+         * Clear single dye slot
+         */
+        function clearDyeSlot(slotIndex, dyeType) {
+            document.getElementById(`dye-slot-${slotIndex}-${dyeType}`).value = '';
+            selectedDyes[slotIndex][dyeType] = null;
+            displayDyePreview(slotIndex);
+            updateVisualization();
+        }
+
+        /**
+         * Clear all dyes
+         */
+        function clearAllDyes() {
+            selectedDyes.forEach((_, index) => {
+                document.getElementById(`dye-slot-${index}-primary`).value = '';
+                document.getElementById(`dye-slot-${index}-secondary`).value = '';
+                selectedDyes[index].primary = null;
+                selectedDyes[index].secondary = null;
+                document.getElementById(`dye-preview-${index}`).classList.add('hidden');
+            });
+            updateVisualization();
+        }
+
+        /**
+         * Get all active dyes (both primary and secondary)
+         */
+        function getActiveDyes() {
+            const dyes = [];
+            selectedDyes.forEach(slot => {
+                if (slot.primary) dyes.push(slot.primary);
+                if (slot.secondary) dyes.push(slot.secondary);
+            });
+            return dyes;
+        }
+
+        /**
+         * Update visualization based on selected dyes and settings
+         */
+        function updateVisualization() {
+            const activeDyes = getActiveDyes();
+
+            if (activeDyes.length === 0) {
+                document.getElementById('score-section').classList.add('hidden');
+                document.getElementById('palette-section').classList.add('hidden');
+                document.getElementById('simulations-section').classList.add('hidden');
+                document.getElementById('warnings-section').classList.add('hidden');
+                document.getElementById('contrast-section').classList.add('hidden');
+                document.getElementById('suggestions-section').classList.add('hidden');
+                return;
+            }
+
+            // Show sections
+            document.getElementById('palette-section').classList.remove('hidden');
+            document.getElementById('simulations-section').classList.remove('hidden');
+            if (document.getElementById('show-contrast').checked) {
+                document.getElementById('contrast-section').classList.remove('hidden');
+            }
+
+            // Update palettes
+            updateOriginalPalette();
+            updateVisionSimulations();
+
+            if (document.getElementById('show-warnings').checked) {
+                updateWarnings();
+                // updateWarnings() handles showing/hiding the section based on whether there are warnings
+            } else {
+                document.getElementById('warnings-section').classList.add('hidden');
+            }
+
+            if (document.getElementById('show-contrast').checked) {
+                updateContrastMatrix();
+            }
+
+            // Update score
+            updateAccessibilityScore();
+
+            if (document.getElementById('show-suggestions').checked) {
+                updateSuggestions();
+                document.getElementById('suggestions-section').classList.remove('hidden');
+            } else {
+                document.getElementById('suggestions-section').classList.add('hidden');
+            }
+        }
+
+        /**
+         * Update original palette display
+         */
+        function updateOriginalPalette() {
+            const activeDyes = getActiveDyes();
+            const grid = document.getElementById('original-palette-grid');
+            grid.innerHTML = '';
+
+            activeDyes.forEach(dye => {
+                const div = document.createElement('div');
+                div.className = 'palette-item';
+                div.innerHTML = `
+                    <div class="dye-swatch" style="background-color: ${dye.hex}; display: block; height: 100px; border-radius: 0.5rem;"></div>
+                    <div class="palette-label">${dye.name}</div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        /**
+         * Update vision simulations
+         */
+        function updateVisionSimulations() {
+            const activeDyes = getActiveDyes();
+            const container = document.getElementById('vision-comparison');
+            container.innerHTML = '';
+
+            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
+            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
+            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+
+            const visions = [
+                { name: 'Deuteranopia (Red-Green)', type: 'deuteranopia', intensity: deuteranopiaIntensity },
+                { name: 'Protanopia (Red-Green)', type: 'protanopia', intensity: protanopiaIntensity },
+                { name: 'Tritanopia (Blue-Yellow)', type: 'tritanopia', intensity: tritanopiaIntensity },
+                { name: 'Achromatopsia (Monochrome)', type: 'achromatopsia', intensity: 100 }
+            ];
+
+            visions.forEach(vision => {
+                const div = document.createElement('div');
+                div.className = 'vision-type';
+
+                const header = document.createElement('div');
+                header.className = 'vision-header';
+                header.innerHTML = `<div class="vision-title">${vision.name}</div>`;
+                div.appendChild(header);
+
+                const content = document.createElement('div');
+                content.className = 'vision-content';
+
+                const palette = document.createElement('div');
+                palette.className = 'vision-palette';
+
+                activeDyes.forEach(dye => {
+                    let simulated;
+                    if (vision.type === 'achromatopsia') {
+                        simulated = applyAchromatopsia(dye.hex, 100);
+                    } else {
+                        simulated = applyColorblindness(dye.hex, vision.type, vision.intensity);
+                    }
+
+                    const swatch = document.createElement('div');
+                    swatch.className = 'vision-swatch';
+                    swatch.style.backgroundColor = simulated;
+                    palette.appendChild(swatch);
+                });
+
+                content.appendChild(palette);
+                div.appendChild(content);
+                container.appendChild(div);
+            });
+        }
+
+        /**
+         * Update warnings
+         */
+        function updateWarnings() {
+            const activeDyes = getActiveDyes();
+            const container = document.getElementById('warnings-container');
+            const warningsSection = document.getElementById('warnings-section');
+            const warningsSummary = document.getElementById('warnings-summary');
+            const warningsHeader = document.getElementById('warnings-header');
+            container.innerHTML = '';
+
+            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
+            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
+            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+
+            const warnings = [];
+
+            // Check distinguishability for each vision type
+            if (deuteranopiaIntensity > 0) {
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, 'deuteranopia', deuteranopiaIntensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, 'deuteranopia', deuteranopiaIntensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            warnings.push({
+                                type: 'deuteranopia',
+                                dye1: activeDyes[i].name,
+                                dye2: activeDyes[j].name,
+                                distance: distance
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (protanopiaIntensity > 0) {
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, 'protanopia', protanopiaIntensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, 'protanopia', protanopiaIntensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            warnings.push({
+                                type: 'protanopia',
+                                dye1: activeDyes[i].name,
+                                dye2: activeDyes[j].name,
+                                distance: distance
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (tritanopiaIntensity > 0) {
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, 'tritanopia', tritanopiaIntensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, 'tritanopia', tritanopiaIntensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            warnings.push({
+                                type: 'tritanopia',
+                                dye1: activeDyes[i].name,
+                                dye2: activeDyes[j].name,
+                                distance: distance
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (warnings.length === 0) {
+                // Hide warnings section if no issues
+                warningsSection.classList.add('hidden');
+            } else {
+                // Show warnings section and update summary text with issue count
+                warningsSection.classList.remove('hidden');
+                const issueCount = warnings.length;
+                warningsSummary.textContent = `You have ${issueCount} issue${issueCount !== 1 ? 's' : ''}`;
+
+                // Populate warnings with default collapsed state
+                warnings.forEach(warning => {
+                    const div = document.createElement('div');
+                    div.className = 'warning-card';
+                    div.innerHTML = `
+                        <div class="warning-title">⚠ ${warning.dye1} and ${warning.dye2}</div>
+                        <p class="text-sm text-gray-700">These colors are too similar for ${warning.type} players (distance: ${warning.distance.toFixed(1)}). Consider using more contrasting dyes.</p>
+                    `;
+                    container.appendChild(div);
+                });
+
+                // Start collapsed
+                container.classList.add('hidden');
+
+                // Add click handler to toggle
+                warningsHeader.onclick = function(e) {
+                    e.preventDefault();
+                    container.classList.toggle('hidden');
+                    const toggle = document.getElementById('warnings-toggle');
+                    toggle.textContent = container.classList.contains('hidden') ? '▶' : '▼';
+                };
+            }
+        }
+
+        /**
+         * Update contrast matrix
+         */
+        function updateContrastMatrix() {
+            const activeDyes = getActiveDyes();
+            const container = document.getElementById('contrast-container');
+
+            if (activeDyes.length < 2) {
+                container.innerHTML = '<p class="text-sm text-gray-600">Select at least 2 dyes to see color distances.</p>';
+                return;
+            }
+
+            let html = '<table class="contrast-table"><thead><tr><th>Dye</th>';
+
+            activeDyes.forEach(dye => {
+                html += `<th>${dye.name}</th>`;
+            });
+
+            html += '</tr></thead><tbody>';
+
+            activeDyes.forEach((dyeA, i) => {
+                html += `<tr><td class="font-medium">${dyeA.name}</td>`;
+
+                activeDyes.forEach((dyeB, j) => {
+                    if (i === j) {
+                        html += '<td>-</td>';
+                    } else {
+                        const distance = getColorDistance(dyeA.hex, dyeB.hex);
+                        let className = 'contrast-value contrast-low';
+
+                        if (distance > 60) {
+                            className = 'contrast-value contrast-high';
+                        } else if (distance > 30) {
+                            className = 'contrast-value contrast-medium';
+                        }
+
+                        html += `<td class="${className}">${distance.toFixed(0)}</td>`;
+                    }
+                });
+
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        /**
+         * Update accessibility score
+         */
+        function updateAccessibilityScore() {
+            const activeDyes = getActiveDyes();
+
+            if (activeDyes.length < 2) {
+                document.getElementById('score-section').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('score-section').classList.remove('hidden');
+
+            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
+            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
+            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+
+            let distinguishabilityScore = 100;
+            const visionTypes = [
+                { type: 'deuteranopia', intensity: deuteranopiaIntensity },
+                { type: 'protanopia', intensity: protanopiaIntensity },
+                { type: 'tritanopia', intensity: tritanopiaIntensity }
+            ];
+
+            // Check pairs in each vision type
+            visionTypes.forEach(vision => {
+                if (vision.intensity === 0) return;
+
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, vision.type, vision.intensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, vision.type, vision.intensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            distinguishabilityScore -= 10;
+                        } else if (distance < 60) {
+                            distinguishabilityScore -= 2;
+                        }
+                    }
+                }
+            });
+
+            const score = Math.max(0, Math.min(100, distinguishabilityScore));
+
+            document.getElementById('score-number').textContent = score;
+
+            let rating = '🟢 Excellent';
+            let ratingColor = '#059669';
+            if (score < 40) {
+                rating = '🔴 Poor';
+                ratingColor = '#dc2626';
+            } else if (score < 60) {
+                rating = '🟠 Fair';
+                ratingColor = '#ea580c';
+            } else if (score < 80) {
+                rating = '🟡 Good';
+                ratingColor = '#ca8a04';
+            }
+
+            document.getElementById('score-rating').innerHTML = `<div style="color: ${ratingColor}; font-weight: 600;">${rating}</div>`;
+
+            const details = document.getElementById('score-details');
+            details.innerHTML = `
+                <div><strong>Distinguishability:</strong> ${score}/100 across all vision types</div>
+                <div><strong>Dyes selected:</strong> ${activeDyes.length}</div>
+                <div><strong>Simulation intensity:</strong> D: ${deuteranopiaIntensity}%, P: ${protanopiaIntensity}%, T: ${tritanopiaIntensity}%</div>
+            `;
+        }
+
+        /**
+         * Find dyes with distinguishability issues
+         */
+        function findProblematicPairs() {
+            const activeDyes = getActiveDyes();
+            const problematic = new Set();
+
+            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
+            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
+            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+
+            const visionTypes = [
+                { type: 'deuteranopia', intensity: deuteranopiaIntensity },
+                { type: 'protanopia', intensity: protanopiaIntensity },
+                { type: 'tritanopia', intensity: tritanopiaIntensity }
+            ];
+
+            visionTypes.forEach(vision => {
+                if (vision.intensity === 0) return;
+
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, vision.type, vision.intensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, vision.type, vision.intensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            problematic.add(i);
+                            problematic.add(j);
+                        }
+                    }
+                }
+            });
+
+            return Array.from(problematic);
+        }
+
+        /**
+         * Find similar dyes based on hue/saturation
+         */
+        function findSimilarDyes(targetDye, maxDistance = 50) {
+            const targetHsv = targetDye.hsv;
+            const similar = [];
+
+            ffxivDyes.forEach(dye => {
+                if (dye.itemID === targetDye.itemID) return; // Skip the dye itself
+
+                const dHue = Math.abs(dye.hsv.h - targetHsv.h);
+                const dSat = Math.abs(dye.hsv.s - targetHsv.s);
+
+                // Find dyes with similar hue (wrapping around 360)
+                const minHueDiff = Math.min(dHue, 360 - dHue);
+
+                const distanceScore = Math.sqrt(minHueDiff * minHueDiff + dSat * dSat);
+
+                if (distanceScore < maxDistance) {
+                    similar.push({
+                        dye: dye,
+                        similarity: distanceScore
+                    });
+                }
+            });
+
+            return similar.sort((a, b) => a.similarity - b.similarity);
+        }
+
+        /**
+         * Update suggestions
+         */
+        function updateSuggestions() {
+            const activeDyes = getActiveDyes();
+            const container = document.getElementById('suggestions-container');
+
+            if (activeDyes.length === 0) {
+                document.getElementById('suggestions-section').classList.add('hidden');
+                return;
+            }
+
+            const problematicPairs = [];
+            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
+            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
+            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+
+            const visionTypes = [
+                { type: 'deuteranopia', intensity: deuteranopiaIntensity },
+                { type: 'protanopia', intensity: protanopiaIntensity },
+                { type: 'tritanopia', intensity: tritanopiaIntensity }
+            ];
+
+            // Find problematic dyes with their slot locations
+            visionTypes.forEach(vision => {
+                if (vision.intensity === 0) return;
+
+                for (let i = 0; i < activeDyes.length; i++) {
+                    for (let j = i + 1; j < activeDyes.length; j++) {
+                        const c1 = applyColorblindness(activeDyes[i].hex, vision.type, vision.intensity);
+                        const c2 = applyColorblindness(activeDyes[j].hex, vision.type, vision.intensity);
+                        const distance = getColorDistance(c1, c2);
+
+                        if (distance < 30) {
+                            problematicPairs.push(activeDyes[i]);
+                            problematicPairs.push(activeDyes[j]);
+                        }
+                    }
+                }
+            });
+
+            if (problematicPairs.length === 0) {
+                container.innerHTML = '<p class="text-sm text-green-700 font-medium">✓ All dyes have good distinguishability!</p>';
+                return;
+            }
+
+            // Get unique problematic dyes
+            const uniqueProblematicDyes = [];
+            const seenItemIds = new Set();
+            problematicPairs.forEach(dye => {
+                if (!seenItemIds.has(dye.itemID)) {
+                    uniqueProblematicDyes.push(dye);
+                    seenItemIds.add(dye.itemID);
+                }
+            });
+
+            let html = '';
+
+            uniqueProblematicDyes.forEach(problematicDye => {
+                // Find which slot(s) contain this dye
+                const slots = [];
+                selectedDyes.forEach((slot, slotIndex) => {
+                    if (slot.primary && slot.primary.itemID === problematicDye.itemID) {
+                        slots.push({ slotIndex, type: 'primary' });
+                    }
+                    if (slot.secondary && slot.secondary.itemID === problematicDye.itemID) {
+                        slots.push({ slotIndex, type: 'secondary' });
+                    }
+                });
+
+                const similar = findSimilarDyes(problematicDye, 40).slice(0, 3);
+
+                if (similar.length > 0) {
+                    html += `
+                        <div class="mb-6 p-4 border border-gray-300 rounded-lg bg-white">
+                            <h3 class="font-semibold text-gray-900 mb-2">
+                                Suggestions for: <span style="color: ${problematicDye.hex}">${problematicDye.name}</span>
+                            </h3>
+                            <div class="space-y-3">
+                    `;
+
+                    similar.forEach(({ dye }) => {
+                        const slotInfo = slots.length > 0 ? slots[0] : null;
+                        if (slotInfo) {
+                            html += `
+                                <div class="flex gap-3 items-center">
+                                    <div class="w-16 h-16 rounded flex-shrink-0" style="background-color: ${dye.hex}; border: 2px solid rgba(0,0,0,0.1);"></div>
+                                    <div class="flex-grow">
+                                        <p class="font-medium text-gray-900">${dye.name}</p>
+                                        <p class="text-xs text-gray-600">${dye.category} • ${dye.acquisition}</p>
+                                    </div>
+                                    <button onclick="replaceDye(${slotInfo.slotIndex}, '${dye.itemID}')" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                        Use
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    html += `</div></div>`;
+                }
+            });
+
+            container.innerHTML = html || '<p class="text-sm text-gray-600">No suggestions available.</p>';
+        }
+
+        /**
+         * Replace dye in a slot
+         */
+        function replaceDye(slotIndex, itemId) {
+            const dye = ffxivDyes.find(d => d.itemID == itemId);
+            if (dye) {
+                document.getElementById(`dye-slot-${slotIndex}-primary`).value = itemId;
+                selectedDyes[slotIndex].primary = dye;
+                displayDyePreview(slotIndex);
+                updateVisualization();
+            }
+        }
+
+        /**
+         * Load dyes from URL parameters
+         */
+        function loadDyesFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const dyeParam = params.get('dyes');
+
+            if (!dyeParam) return false;
+
+            const itemIds = dyeParam.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+
+            itemIds.forEach((itemId, index) => {
+                if (index >= 6) return; // Max 6 slots
+                const dye = ffxivDyes.find(d => d.itemID == itemId);
+                if (dye) {
+                    document.getElementById(`dye-slot-${index}-primary`).value = itemId;
+                    selectedDyes[index].primary = dye;
+                    displayDyePreview(index);
+                }
+            });
+
+            if (itemIds.length > 0) {
+                updateVisualization();
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Import from Dye Comparison tool
+         */
+        function importFromDyeComparison() {
+            // Look for dyes in order from Dye Comparison slots
+            for (let i = 1; i <= 4; i++) {
+                const selectId = `dye-select-${i}`;
+                const select = document.getElementById(selectId);
+                if (select && select.value) {
+                    const itemId = parseInt(select.value);
+                    const dye = ffxivDyes.find(d => d.itemID == itemId);
+                    if (dye && selectedDyes[i - 1].primary === null) {
+                        document.getElementById(`dye-slot-${i - 1}-primary`).value = itemId;
+                        selectedDyes[i - 1].primary = dye;
+                        displayDyePreview(i - 1);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Save current dye selection to localStorage for other tools
+         */
+        function saveDyesToStorage() {
+            const activeDyes = getActiveDyes();
+            const itemIds = activeDyes.map(d => d.itemID);
+            localStorage.setItem('colorAccessibilityDyes', JSON.stringify(itemIds));
+        }
+
+        /**
+         * Handle slider changes
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDarkMode();
+
+            // Load dye data
+            fetch('./assets/json/colors_xiv.json')
+                .then(response => response.json())
+                .then(data => {
+                    ffxivDyes = data;
+                    initializeDyeSlots();
+
+                    // Load dyes from URL parameters if available
+                    loadDyesFromUrl();
+
+                    // Setup slider listeners
+                    ['deuteranopia', 'protanopia', 'tritanopia'].forEach(vision => {
+                        const slider = document.getElementById(`${vision}-slider`);
+                        const value = document.getElementById(`${vision}-value`);
+
+                        slider.addEventListener('input', (e) => {
+                            value.textContent = e.target.value + '%';
+                            updateVisualization();
+                        });
+                    });
+
+                    // Load secondary dyes preference from localStorage
+                    const savedSecondaryDyesState = localStorage.getItem('secondaryDyesEnabled');
+                    if (savedSecondaryDyesState !== null) {
+                        secondaryDyesEnabled = JSON.parse(savedSecondaryDyesState);
+                        document.getElementById('enable-secondary-dyes').checked = secondaryDyesEnabled;
+                        updateSecondaryDyeVisibility();
+                    }
+
+                    // Setup secondary dyes toggle
+                    document.getElementById('enable-secondary-dyes').addEventListener('change', (e) => {
+                        secondaryDyesEnabled = e.target.checked;
+                        localStorage.setItem('secondaryDyesEnabled', JSON.stringify(secondaryDyesEnabled));
+                        updateSecondaryDyeVisibility();
+                    });
+
+                    // Setup checkbox listeners
+                    ['show-warnings', 'show-contrast', 'show-suggestions'].forEach(id => {
+                        document.getElementById(id).addEventListener('change', updateVisualization);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading dyes:', error);
+                    document.getElementById('dye-slots-container').innerHTML = '<p class="text-red-600">Error loading dye data.</p>';
+                });
+        });
+    </script>
+</body>
+</html>

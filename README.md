@@ -1,13 +1,46 @@
 # XIV Dye Tools
 
-A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, and compare dyes side-by-side for in-game gear and housing projects.
+A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-**Three Powerful Tools:**
+**Four Powerful Tools:**
+- **Color Accessibility Checker** - Simulate colorblindness and ensure your glamour is accessible to everyone
 - **Color Harmony Explorer** - Generate color palettes based on color theory principles
 - **Color Matcher** - Upload images and find the closest matching FFXIV dyes
-- **Dye Comparison** - Compare up to 4 dyes side-by-side with detailed analysis
+- **Dye Comparison** - Compare up to 4 dyes side-by-side with detailed color visualization
 
 ## Features
+
+### ♿ Color Accessibility Checker (v1.0.1)
+Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
+
+**Vision Type Simulations:**
+- **Deuteranopia** (red-green colorblindness, ~1% of population)
+- **Protanopia** (red-green colorblindness, ~1% of population)
+- **Tritanopia** (blue-yellow colorblindness, ~0.001% of population)
+- **Achromatopsia** (complete color blindness, ~0.003% of population)
+
+**Adjustable Features:**
+- **Intensity Sliders** - Control severity level (0-100%) for Deuteranopia, Protanopia, and Tritanopia
+- **Real-time Updates** - See how your color choices change as you adjust sliders
+- **Outfit Planning** - Support for up to 6+ dyes representing complete outfit (Head, Body, Hands, Legs, Feet, Weapon)
+- **Dual Dyes Support** - Toggle on to assign both primary and secondary dyes to each armor slot
+- **Toggle Persistence** - Dual Dyes toggle state persists across page refreshes
+
+**Accessibility Analysis:**
+- **Distinguishability Warnings** - Automatically detects color pairs that become indistinguishable for specific vision types
+- **Accessibility Score** (0-100) - Rates overall palette accessibility across all colorblindness types
+- **Color Distance Matrix** - Shows Euclidean distances between selected dyes
+- **Contrast Ratio Calculation** - Evaluates contrast between dye colors
+
+**Smart Recommendations:**
+- **Dye Suggestions** - Suggests alternative dyes for flagged colors while maintaining aesthetic similarity
+- **One-Click Replacement** - Replace problematic dyes with suggestions and watch the issue count update automatically
+- **Hue-Saturation Matching** - Finds similar dyes based on color space to preserve intended color scheme
+
+**Dark Mode Support:**
+- Comprehensive dark mode styling for all UI elements
+- Proper dark mode colors for buttons, banners, and containers
+- Persistent preference storage
 
 ### 🎨 Color Harmony Explorer (v1.2.0 - Updated v1.2.3)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
@@ -145,9 +178,10 @@ Toggle between light and dark themes with persistent preference storage. Availab
   - Access all tools online without any installation
   - Live version with latest features and updates
 - **XIV Dye Tools Portal** (Home): Open `index.html` in any modern web browser to access all tools
-  - Showcases all three released stable tools in a beautiful 3-column grid
+  - Showcases all four released stable tools in a beautiful grid layout
   - Quick access to experimental features
   - Feature highlights and navigation
+- **Color Accessibility Checker (Stable v1.0.1)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
 - **Color Harmony Explorer (Stable v1.2.0 - v1.2.3)**: Open `colorexplorer_stable.html` for the main tool
 - **Color Harmony Explorer (Experimental v1.2.0-dev)**: Open `colorexplorer_experimental.html` for testing new features
 - **Color Matcher (Stable v1.2.0 - v1.2.3)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
@@ -175,6 +209,7 @@ To get a local copy of the project, follow these steps:
 4. **Open the tools in your browser**:
    - Open `index.html` to access the main portal with all tools
    - Or open individual tool files directly:
+     - `coloraccessibility_stable.html` - Color Accessibility Checker
      - `colorexplorer_stable.html` - Color Harmony Explorer
      - `colormatcher_stable.html` - Color Matcher
      - `dyecomparison_stable.html` - Dye Comparison
@@ -184,16 +219,47 @@ That's it! No installation or build process needed.
 ### Local Development
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
-3. **Access all three tools** from the portal:
+3. **Access all four tools** from the portal:
+   - Color Accessibility Checker (v1.0.1)
    - Color Harmony Explorer (v1.2.0 - v1.2.3)
    - Color Matcher (v1.2.0 - v1.2.3)
    - Dye Comparison (v1.1.0 - v1.2.3)
-4. **Develop new features**: Edit `colorexplorer_experimental.html` for testing new functionality
-5. **Deploy to production**: Copy tested features from the experimental version to the main tool files
+4. **Develop new features**:
+   - Edit `colorexplorer_experimental.html` for testing Color Harmony Explorer enhancements
+   - Edit `coloraccessibility_experimental.html` for testing Color Accessibility Checker enhancements
+5. **Deploy to production**: Copy tested features from the experimental version to the corresponding stable version
 
-All three main tools are production-ready stable versions with full feature support. The application is entirely client-side and requires no build process or dependencies.
+All four main tools are production-ready stable versions with full feature support. The application is entirely client-side and requires no build process or dependencies.
 
 ## Usage
+
+### Checking Dye Accessibility for Colorblind Players
+1. **Access Tool** - From the portal, click "Color Accessibility Checker" card, or use "Tools ▼" dropdown
+2. **Enable Dual Dyes** (Optional) - Toggle "Dual Dyes" to assign primary and secondary dyes to each armor slot
+3. **Select Your Outfit Dyes**:
+   - Choose up to 6+ dyes representing your outfit (Head, Body, Hands, Legs, Feet, Weapon)
+   - Primary dyes are always available; secondary dyes visible when "Dual Dyes" is enabled
+   - Dyes are organized by category in the dropdown for easy browsing
+4. **Adjust Vision Simulation Intensity**:
+   - Set Deuteranopia intensity (0-100%)
+   - Set Protanopia intensity (0-100%)
+   - Set Tritanopia intensity (0-100%)
+   - Watch color simulations update in real-time
+5. **Review Accessibility Analysis**:
+   - **Accessibility Score** shows overall rating (0-100, with emoji ratings)
+   - **Original Palette** displays your selected dyes
+   - **Vision Simulations** shows how each colorblindness type sees your colors
+   - **Color Distance Matrix** analyzes color similarities between dyes
+6. **Address Accessibility Issues**:
+   - Review "Accessibility Issues" banner showing problem areas
+   - Click on issues to expand and see details
+   - View suggested alternative dyes with "Use" buttons
+   - Click "Use" to replace problematic dyes and watch issue count update
+7. **Toggle Analysis Options**:
+   - Show/hide warnings for accessibility issues
+   - Show/hide color distance matrix
+   - Show/hide dye suggestions
+8. **Clear Selections** - Click "Clear All" button to reset all dye selections
 
 ### Finding Color Harmonies
 1. **Select a Base Color** - Choose from the dropdown or use the search bar in the left sidebar

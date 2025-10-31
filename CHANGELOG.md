@@ -5,6 +5,88 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-10-31
+
+### Fixed - Color Accessibility Checker v1.0.1
+- **Dark Mode Styling Fixes**
+  - "Clear All" button now properly darkens to #4b5563 in dark mode with white text
+  - X buttons next to dye slots now properly dark mode styled (previously appeared white)
+  - "Accessibility Issues" banner now properly darkens in dark mode with amber background (#7c2d12) instead of bright red
+  - Fixed invalid Tailwind `dark-mode:` prefix syntax throughout the component
+  - Added proper CSS dark mode selectors using `body.dark-mode` for all affected elements
+
+- **Accessibility Issues Count Bug Fix**
+  - Resolving all distinguishability issues by replacing dyes now properly updates the issue count to 0
+  - The "Accessibility Issues" section now correctly hides when all warnings are resolved
+  - Fixed logic in `updateVisualization()` that was forcing the warnings section to remain visible
+
+- **Dual Dyes Toggle Persistence**
+  - "Dual Dyes" toggle state now persists across page refreshes using localStorage
+  - Toggle visual state and secondary dye field visibility now always synchronize
+  - Resolves issue where toggle appeared enabled but secondary dyes remained hidden after refresh
+
+- **Warning Card Text Styling**
+  - Removed invalid `dark-mode:` text color attributes from warning card descriptions
+  - Text now uses proper CSS selectors for dark mode support
+
+- **Suggestions Section Dark Mode Support**
+  - Added comprehensive dark mode styling for suggestions container and all child elements
+  - Suggestion cards now properly darken with #374151 background in dark mode
+  - Text colors properly contrast in both light and dark modes
+  - "Use" buttons properly styled for dark mode
+
+### Technical Details
+- Implemented localStorage with key `secondaryDyesEnabled` for toggle state persistence
+- Fixed warning section visibility logic in `updateWarnings()` function
+- Added 35+ CSS rules for dark mode selectors covering buttons, banners, and containers
+- Replaced dynamic class-based styling with proper CSS selector hierarchy
+
+## [1.3.0] - 2025-10-31
+
+### Added
+- **New Tool: Color Accessibility Checker v1.0.0**
+  - Simulate how FFXIV dyes appear to players with various types of colorblindness
+  - **Vision Type Simulations:**
+    - Deuteranopia (red-green colorblindness, ~1% of population)
+    - Protanopia (red-green colorblindness, ~1% of population)
+    - Tritanopia (blue-yellow colorblindness, ~0.001% of population)
+    - Achromatopsia (complete color blindness, ~0.003% of population)
+  - **Adjustable Intensity Sliders:**
+    - Control severity level (0-100%) for Deuteranopia, Protanopia, and Tritanopia
+    - Interpolates between normal vision and full colorblind simulation for realistic representation
+  - **Accessibility Analysis:**
+    - Color Distinguishability Warnings: Automatically detects color pairs that become indistinguishable for specific vision types
+    - Accessibility Score (0-100): Rates overall palette accessibility across all colorblindness types
+    - Color Distance Matrix: Shows Euclidean distances between selected dyes
+    - WCAG Contrast Ratio Calculation: Evaluates contrast between dye colors
+  - **Smart Recommendations:**
+    - Suggests alternative dyes for flagged colors while maintaining aesthetic similarity
+    - Finds similar dyes based on hue and saturation to preserve intended color scheme
+  - **Outfit Planning:**
+    - Support for up to 8 dyes representing complete outfit (Head, Body, Hands, Legs, Feet, Weapon, Accessories)
+    - Side-by-side vision comparison showing how each colorblind type sees the palette
+  - **Integration Features:**
+    - Import dye selections from other tools via URL parameters (`?dyes=5029,5030,5031`)
+    - One-click replacement of problematic dyes with suggested alternatives
+    - Full dark mode support
+  - **UI/UX:**
+    - Two-column layout with sticky controls (left) and scrollable results (right)
+    - Real-time updates as you adjust sliders and select dyes
+    - Comprehensive tooltips and help text for accessibility concepts
+
+### Changed
+- Updated Portal (index.html) to feature new Color Accessibility Checker as 4th tool
+- Updated Tools dropdown menus in all existing tools to include Color Accessibility Checker link
+- Portal grid now uses `md:grid-cols-2 lg:grid-cols-3` for better responsive layout with 4 tools
+
+### Technical Details
+- New files: `coloraccessibility_stable.html`, `coloraccessibility_experimental.html`
+- Uses color transformation matrices (Brettel 1997 algorithm) for accurate colorblindness simulation
+- Implements Euclidean color distance calculations in RGB color space
+- Uses luminance-based grayscale conversion for achromatopsia simulation
+- localStorage support for persistent user preferences and color selections
+- No new dependencies; uses existing pattern of standalone HTML with embedded JS/Tailwind CSS
+
 ## [1.2.3] - 2025-10-30
 
 ### Added
