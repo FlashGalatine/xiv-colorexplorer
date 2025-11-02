@@ -6,7 +6,11 @@
       "Bash(git add:*)",
       "Bash(npm install)",
       "Bash(npm install:*)",
-      "Bash(wrangler secret put:*)"
+      "Bash(wrangler secret put:*)",
+      "Bash(for file in colorexplorer.html colormatcher.html dyecomparison.html)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(wc:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

@@ -362,6 +362,7 @@ Created by **Flash Galatine** (Balmung)
 - [Twitch](https://www.twitch.tv/flashgalatine)
 - [BlueSky](https://bsky.app/profile/projectgalatine.com)
 - [Patreon](https://patreon.com/ProjectGalatine)
+- [Discord](https://discord.gg/5VUSKTZCe5)
 
 ## Acknowledgments
 
