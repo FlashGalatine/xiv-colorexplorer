@@ -61,10 +61,28 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v1.2.0 - Updated v1.2.3)
+### 🔍 Color Matcher (v1.3.0)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
-**Two-Column Layout (NEW):**
+**New in v1.3.0:**
+- **Clipboard Image Paste** - Paste images directly using Ctrl+V (Windows/Linux) or Cmd+V (Mac)
+  - Seamlessly integrates with existing drag-and-drop and file picker methods
+  - Perfect for quickly testing screenshots and clipboard images
+- **Toast Notifications** - Real-time feedback for all actions:
+  - Success: Image loaded, image cleared
+  - Errors: Invalid files, read failures, corruption, clipboard issues
+  - Warnings: File size alerts
+  - Auto-dismiss with smooth animations
+- **Keyboard Shortcuts Help** - New (?) button in header shows all shortcuts:
+  - Image Input: Paste (Ctrl+V / Cmd+V)
+  - Zoom Controls: +, −, W (width), F (fit), R (reset)
+  - Canvas: Shift+Wheel (zoom), Shift+Drag (pan), Shift+MiddleClick (fit), Shift+RightClick (reset), Click (pick color)
+- **Floating Zoom Controls** - Zoom buttons now fixed in top-left corner:
+  - Always visible even with extreme zoom levels
+  - Prevents controls from being pushed off-screen with 4K+ images
+  - Works perfectly with any image size
+
+**Two-Column Layout:**
 - **Left Panel (Sticky)** - All dye matching controls and results:
   - Direct color picker with hex display
   - Closest match results with category and acquisition info

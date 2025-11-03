@@ -5,6 +5,110 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - Color Matcher v1.3.0
+
+### Added - Color Matcher v1.3.0
+- **Clipboard Image Paste Support**
+  - Users can now paste images directly using Ctrl+V (Windows/Linux) or Cmd+V (Mac)
+  - Seamlessly integrates with existing image loading pipeline (drag-and-drop, file picker)
+  - Updated help text to indicate paste capability: "Drag & drop • Click to browse • Paste (Ctrl+V)"
+
+- **Toast Notification System**
+  - Success notifications: Image loaded successfully, image cleared
+  - Error notifications: Invalid file types, file read failures, image corruption, clipboard access errors
+  - Info notifications: File size warnings (>10MB), general status messages
+  - Visual design with colored borders (green/red/blue), icons, and messages
+  - Auto-dismiss after 3 seconds with smooth slide-in/out animations
+  - Positioned fixed in top-right corner, always visible
+  - Full dark mode support with appropriate color contrast
+
+- **Keyboard Shortcuts Help Modal**
+  - New help button (?) in header next to dark mode toggle
+  - Organized shortcuts reference modal showing:
+    - Image Input: Paste (Ctrl+V / Cmd+V)
+    - Zoom Controls: +, −, W, F, R
+    - Canvas Interactions: Shift+Wheel, Shift+Drag, Shift+MiddleClick, Shift+RightClick, Left Click
+  - Multiple ways to close: X button, ESC key, click outside modal
+  - Full dark mode support with readable text and proper contrast
+
+- **Floating Zoom Controls Toolbar**
+  - Zoom controls now fixed in top-left corner of canvas area
+  - Always visible even when image is extremely zoomed or scrolled
+  - Prevents controls from being pushed off-screen with large images
+  - Clear button, zoom in/out buttons, zoom percentage display
+  - Zoom to Fit (F), Zoom to Width (W), Reset (R) buttons
+  - Responsive design with flex-wrap for smaller screens
+
+- **Enhanced Error Handling**
+  - Comprehensive validation for image files (type checking, size warnings)
+  - File read error handling with user-friendly messages
+  - Image corruption detection with error toast
+  - Clipboard access error handling
+  - Try-catch blocks throughout image processing pipeline
+
+- **Improved Zoom Calculation for Large Images**
+  - Fixed "Zoom to Fit" and "Zoom to Width" functions for 4K+ resolution images
+  - Properly accounts for all layout spacing:
+    - Body padding (p-3): 24px total
+    - Grid layout: 380px left + 16px gap
+    - Right column padding (p-5): 40px total
+    - Page scrollbar width detection
+  - Functions use setTimeout to ensure layout is fully settled before calculating
+  - Works correctly with multi-frame animation rendering
+  - Tested with 4K (4000x4000px) images and larger
+
+### Changed - Color Matcher v1.3.0
+- Version updated from v1.2.0 to v1.3.0
+- Updated version number display in header
+- Updated Open Graph and Twitter metadata URLs to stable version
+- Updated navigation dropdown links to reference stable versions only
+
+### Technical Details - Color Matcher v1.3.0
+- New `handleClipboardPaste(e)` function:
+  - Uses Clipboard API's `clipboardData.items` array
+  - Converts blob to File object with auto-generated timestamp filename
+  - Checks for image MIME type before processing
+  - Error handling for clipboard access issues
+
+- New `showToast(message, type = 'info', duration = 3000)` function:
+  - Creates toast element with dynamic type-based styling
+  - SVG icons for success (checkmark), error (X), and info (?)
+  - Auto-removes toast after duration with smooth animation
+
+- New `openHelpModal()` and `closeHelpModal()` functions:
+  - Toggle modal visibility with `.show` class
+  - ESC key listener for closing
+  - Click-outside detection for backdrop closing
+
+- Updated `processImageFile()` function:
+  - Added comprehensive error checking
+  - File size warning (10MB threshold)
+  - FileReader error handling
+  - Image load error handling with try-catch
+  - Toast notifications for each operation state
+
+- Updated `zoomToFit()` and `zoomToWidth()` functions:
+  - Changed from requestAnimationFrame to setTimeout (50ms) for better timing
+  - Uses window.innerWidth and document.documentElement.clientWidth for accurate measurements
+  - Calculates available width based on fixed layout dimensions
+  - Nested setTimeout for ensuring layout settlement before scroll reset
+
+- Updated `clearImage()` function:
+  - Adds success toast notification when image is cleared
+
+- HTML/CSS changes:
+  - Added toast-container div for notifications
+  - Added help-modal with keyboard shortcuts table
+  - Updated help text instruction
+  - Moved zoom controls into floating-zoom-toolbar (absolute positioned)
+  - 80+ lines of new CSS for toasts, modals, and toolbar styling
+  - Dark mode CSS for all new UI elements
+
+- Event listener additions:
+  - Document paste event listener for clipboard support
+  - Help modal click-outside listener
+  - ESC key listener for help modal
+
 ## [1.3.1] - 2025-10-31
 
 ### Changed - Color Accessibility Checker v1.0.1
