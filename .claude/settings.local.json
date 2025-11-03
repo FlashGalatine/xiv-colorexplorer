@@ -10,7 +10,8 @@
       "Bash(for file in colorexplorer.html colormatcher.html dyecomparison.html)",
       "Bash(do echo \"=== $file ===\")",
       "Bash(wc:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(copy \"C:\\Users\\DrawF\\OneDrive\\Projects\\CodingProjects\\XIVProjects\\XIVDyeTools\\colormatcher_experimental.html\" \"C:\\Users\\DrawF\\OneDrive\\Projects\\CodingProjects\\XIVProjects\\XIVDyeTools\\colormatcher_stable.html\")"
     ],
     "deny": [],
     "ask": []
