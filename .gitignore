@@ -40,8 +40,10 @@ Feedback.*
 GIT_SETUP.md
 DEPLOYMENT_SUMMARY.md
 CLAUDE.md
+.claude
 example_many_dyes.json
 example_one_dye.json
+reddit_mod_approval_draft.txt
 
 # Discord Bot (maintained in separate repository)
 discordbot/
