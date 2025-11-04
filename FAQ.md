@@ -139,7 +139,7 @@ A: Currently English only, but the tools are language-agnostic for most features
 A: The tools are free for personal use. For commercial use, check the MIT license terms or contact the creator.
 
 **Q: How often is the dye database updated?**
-A: The database is updated whenever new FFXIV dyes are released. Check back occasionally or follow @ProjectGalatine on social media for updates.
+A: The database is updated whenever new FFXIV dyes are released. Check back occasionally or follow me on social media for updates (links below).
 
 ---
 
