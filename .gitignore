@@ -39,6 +39,7 @@ yarn-error.log*
 Feedback.*
 GIT_SETUP.md
 DEPLOYMENT_SUMMARY.md
+OUTFIT_SIMULATOR_PROPOSAL.md
 CLAUDE.md
 .claude
 example_many_dyes.json
