@@ -1334,41 +1334,86 @@
             return filtered;
         }
         /**
-         * Sorts the color data and populates the dropdown
+         * Get category priority for sorting
+         * Standardized category ordering across all tools:
+         * - Neutral: 0
+         * - Colors (A-Z): 1-26 (when encountered in data, treated as priority 2 for unknown categories)
+         * - Special: 98
+         * - Facewear: 99 (typically excluded from filtering)
+         *
+         * @param {string} category - The dye category name
+         * @returns {number} Priority value for sorting (lower values appear first)
          */
-        function populateDropdown() {
-            const select = document.getElementById('color-select');
-            select.innerHTML = '';
+        function getCategoryPriority(category) {
+            const priorityMap = {
+                'Neutral': 0,
+                'Special': 98,
+                'Facewear': 99
+            };
+            // Default priority for unknown "Colors" categories is 1-26 range (2 as default)
+            return priorityMap[category] !== undefined ? priorityMap[category] : 2;
+        }
 
-            const filteredColors = getFilteredColors();
+        /**
+         * Sort colors by category (using priority) and then by name alphabetically
+         * Used by dropdown population for consistent ordering across tools
+         *
+         * @param {Array} colors - Array of color objects
+         * @returns {Array} Sorted color array
+         */
+        function sortColorsByCategory(colors) {
+            return [...colors].sort((a, b) => {
+                const aPriority = getCategoryPriority(a.category);
+                const bPriority = getCategoryPriority(b.category);
 
-            filteredColors.sort((a, b) => {
-                const categoryOrder = {
-                    'Facewear': 99,
-                    'Neutral': 1,
-                    'Special': 3
-                };
-                const aOrder = categoryOrder[a.category] || 2;
-                const bOrder = categoryOrder[b.category] || 2;
-
-                if (aOrder !== bOrder) {
-                    return aOrder - bOrder;
+                // Sort by category priority first
+                if (aPriority !== bPriority) {
+                    return aPriority - bPriority;
                 }
 
+                // Then by category name alphabetically (for unknown categories)
                 const categoryComparison = a.category.localeCompare(b.category);
                 if (categoryComparison !== 0) {
                     return categoryComparison;
                 }
 
+                // Finally by color name alphabetically
                 return a.name.localeCompare(b.name);
             });
+        }
+
+        /**
+         * Sorts the filtered color data and populates the dropdown with categorized optgroups
+         *
+         * Pattern: Standardized dropdown generation (Color Harmony Explorer variant)
+         * - Filters colors based on acquisition method and exclusions
+         * - Sorts by category priority, then alphabetically by name
+         * - Creates optgroups for each category
+         * - Uses array index as option value (for compatibility with filtered colorData array)
+         * - Maintains consistency with other tools' sorting and grouping logic
+         */
+        function populateDropdown() {
+            const select = document.getElementById('color-select');
+            select.innerHTML = '';
+
+            // Guard: Validate select element
+            if (!select) {
+                console.warn('populateDropdown: Invalid select element');
+                return;
+            }
+
+            const filteredColors = getFilteredColors();
+
+            // Sort using standardized function
+            const sortedColors = sortColorsByCategory(filteredColors);
 
             let currentCategory = '';
             let currentOptgroup = null;
 
-            filteredColors.forEach((color) => {
+            sortedColors.forEach((color) => {
                 const index = colorData.indexOf(color);
-                
+
+                // Create new optgroup when category changes
                 if (color.category !== currentCategory) {
                     currentCategory = color.category;
                     currentOptgroup = document.createElement('optgroup');
@@ -1379,7 +1424,7 @@
                 const option = document.createElement('option');
                 option.value = index;
                 option.textContent = color.name;
-                
+
                 if (currentOptgroup) {
                     currentOptgroup.appendChild(option);
                 } else {

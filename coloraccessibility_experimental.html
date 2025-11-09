@@ -1257,32 +1257,77 @@
         }
 
         /**
-         * Populate a dye dropdown with organized categories
+         * Get category priority for sorting
+         * Standardized category ordering across all tools:
+         * - Neutral: 0
+         * - Colors (A-Z): 1-26 (when encountered in data, treated as priority 2 for unknown categories)
+         * - Special: 98
+         * - Facewear: 99 (typically excluded from filtering)
+         *
+         * @param {string} category - The dye category name
+         * @returns {number} Priority value for sorting (lower values appear first)
          */
-        function populateDyeDropdown(select) {
-            // Sort dyes by category and name
-            const sortedDyes = [...ffxivDyes].sort((a, b) => {
-                const categoryOrder = {
-                    'Facewear': 99,
-                    'Neutral': 1,
-                    'Special': 3
-                };
-                const aOrder = categoryOrder[a.category] || 2;
-                const bOrder = categoryOrder[b.category] || 2;
+        function getCategoryPriority(category) {
+            const priorityMap = {
+                'Neutral': 0,
+                'Special': 98,
+                'Facewear': 99
+            };
+            // Default priority for unknown "Colors" categories is 1-26 range (2 as default)
+            return priorityMap[category] !== undefined ? priorityMap[category] : 2;
+        }
 
-                if (aOrder !== bOrder) {
-                    return aOrder - bOrder;
+        /**
+         * Sort dyes by category (using priority) and then by name alphabetically
+         * Used by all dropdown population functions for consistent ordering
+         *
+         * @param {Array} dyes - Array of dye objects
+         * @returns {Array} Sorted dye array
+         */
+        function sortDyesByCategory(dyes) {
+            return [...dyes].sort((a, b) => {
+                const aPriority = getCategoryPriority(a.category);
+                const bPriority = getCategoryPriority(b.category);
+
+                // Sort by category priority first
+                if (aPriority !== bPriority) {
+                    return aPriority - bPriority;
                 }
 
+                // Then by category name alphabetically (for unknown categories)
                 const categoryComparison = a.category.localeCompare(b.category);
                 if (categoryComparison !== 0) {
                     return categoryComparison;
                 }
 
+                // Finally by dye name alphabetically
                 return a.name.localeCompare(b.name);
             });
+        }
 
-            // Group by category
+        /**
+         * Populate a dye dropdown with organized categories and standardized sorting
+         * Creates optgroups for each category, sorted by priority, with dyes alphabetically ordered
+         *
+         * Pattern: Used by all three tools for consistent dropdown generation
+         * - All dyes sorted by getCategoryPriority() and then by name
+         * - Dyes grouped into optgroups by category
+         * - Each optgroup contains dyes alphabetically sorted by name
+         * - Option values use itemID for database lookup
+         *
+         * @param {HTMLSelectElement} select - The select dropdown element to populate
+         */
+        function populateDyeDropdown(select) {
+            // Guard: Validate select element
+            if (!select) {
+                console.warn('populateDyeDropdown: Invalid select element');
+                return;
+            }
+
+            // Sort dyes using standardized function
+            const sortedDyes = sortDyesByCategory(ffxivDyes);
+
+            // Group dyes by category
             const dyesByCategory = {};
             sortedDyes.forEach(dye => {
                 if (!dyesByCategory[dye.category]) {
@@ -1291,26 +1336,20 @@
                 dyesByCategory[dye.category].push(dye);
             });
 
-            // Get category order for consistent display
-            const categoryOrder = {
-                'Neutral': 1,
-                'Special': 3,
-                'Facewear': 99
-            };
-
-            // Get categories in order
+            // Get categories in priority order
             const categories = Object.keys(dyesByCategory).sort((a, b) => {
-                const aOrder = categoryOrder[a] || 2;
-                const bOrder = categoryOrder[b] || 2;
-                if (aOrder !== bOrder) return aOrder - bOrder;
+                const aPriority = getCategoryPriority(a);
+                const bPriority = getCategoryPriority(b);
+                if (aPriority !== bPriority) return aPriority - bPriority;
                 return a.localeCompare(b);
             });
 
-            // Add optgroups for each category
+            // Populate dropdown with optgroups
             categories.forEach(category => {
                 const optgroup = document.createElement('optgroup');
                 optgroup.label = category;
 
+                // Dyes are already sorted alphabetically from sortDyesByCategory
                 dyesByCategory[category].forEach(dye => {
                     const option = document.createElement('option');
                     option.value = dye.itemID;
