@@ -1133,20 +1133,30 @@
          * Checks if a dye should have price data fetched
          */
         function shouldFetchPrice(color) {
+            // Guard: Validate color object exists
+            if (!color) return false;
             if (!color.itemID) return false;
 
-            const baseDyes = document.getElementById('price-base-dyes').checked;
-            const craftDyes = document.getElementById('price-craft-dyes').checked;
-            const beastTribeDyes = document.getElementById('price-beast-tribe-dyes').checked;
-            const cosmicDyes = document.getElementById('price-cosmic-dyes').checked;
-            const specialDyes = document.getElementById('price-special-dyes').checked;
+            // Guard: Validate dye properties exist
+            if (!color.category || !color.acquisition) return false;
 
-            if (specialDyes && color.category === 'Special') return true;
+            const baseDyesCheckbox = document.getElementById('price-base-dyes');
+            const craftDyesCheckbox = document.getElementById('price-craft-dyes');
+            const beastTribeDyesCheckbox = document.getElementById('price-beast-tribe-dyes');
+            const cosmicDyesCheckbox = document.getElementById('price-cosmic-dyes');
+            const specialDyesCheckbox = document.getElementById('price-special-dyes');
 
-            if (baseDyes && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
-            if (craftDyes && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
-            if (beastTribeDyes && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
-            if (cosmicDyes && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
+            // Guard: Validate checkboxes exist
+            if (!baseDyesCheckbox || !craftDyesCheckbox || !beastTribeDyesCheckbox || !cosmicDyesCheckbox || !specialDyesCheckbox) {
+                return false;
+            }
+
+            if (specialDyesCheckbox.checked && color.category === 'Special') return true;
+
+            if (baseDyesCheckbox.checked && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
+            if (craftDyesCheckbox.checked && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
+            if (beastTribeDyesCheckbox.checked && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
+            if (cosmicDyesCheckbox.checked && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
 
             return false;
         }

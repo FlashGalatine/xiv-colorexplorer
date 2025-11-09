@@ -1495,23 +1495,51 @@
         }
 
         // --- Clipboard Paste Handler ---
+        /**
+         * Handle clipboard paste events with fallback support
+         */
         function handleClipboardPaste(e) {
-            // Only process if there are items in the clipboard
-            if (!e.clipboardData || !e.clipboardData.items) {
+            // Guard: Validate clipboard access
+            if (!e || !e.clipboardData) {
+                console.warn('Clipboard access not available');
+                return;
+            }
+
+            // Guard: Check for clipboard items
+            if (!e.clipboardData.items && !e.clipboardData.files) {
                 return;
             }
 
             let foundImage = false;
+
+            // Try to access clipboard items (modern API)
+            const items = e.clipboardData.items || e.clipboardData.files;
+
+            if (!items || items.length === 0) {
+                return;
+            }
+
             // Look for image data in the clipboard
-            for (let item of e.clipboardData.items) {
+            for (let item of items) {
+                // Guard: Validate item exists and has type
+                if (!item || !item.type) continue;
+
                 if (item.type.startsWith('image/')) {
                     e.preventDefault();
                     foundImage = true;
+
+                    // Guard: Validate getAsFile method exists
+                    if (!item.getAsFile) {
+                        console.warn('getAsFile not available for clipboard item');
+                        continue;
+                    }
+
                     const blob = item.getAsFile();
                     if (!blob) {
                         showToast('Could not access clipboard image', 'error');
-                        return;
+                        continue;
                     }
+
                     // Convert blob to File object
                     const file = new File([blob], `pasted-image-${Date.now()}`, { type: item.type });
                     processImageFile(file);
@@ -1637,8 +1665,13 @@
                 processImageFile(file);
             });
 
-            // Clipboard paste support
-            document.addEventListener('paste', handleClipboardPaste);
+            // Clipboard paste support with fallback
+            // Check if browser supports clipboard API before adding listener
+            if (document.body && typeof ClipboardEvent !== 'undefined') {
+                document.addEventListener('paste', handleClipboardPaste);
+            } else {
+                console.warn('Clipboard API not fully supported; paste functionality unavailable');
+            }
 
             // Help modal event listeners
             const helpModal = document.getElementById('help-modal');
@@ -1662,20 +1695,30 @@
          * Check if a dye should have its price fetched
          */
         function shouldFetchPriceMatcher(color) {
+            // Guard: Validate color object exists
+            if (!color) return false;
             if (!color.itemID) return false;
 
-            const baseDyes = document.getElementById('mb-price-base').checked;
-            const craftDyes = document.getElementById('mb-price-craft').checked;
-            const beastTribeDyes = document.getElementById('mb-price-beast').checked;
-            const cosmicDyes = document.getElementById('mb-price-cosmic').checked;
-            const specialDyes = document.getElementById('mb-price-special').checked;
+            // Guard: Validate dye properties exist
+            if (!color.category || !color.acquisition) return false;
 
-            if (specialDyes && color.category === 'Special') return true;
+            const baseDyesCheckbox = document.getElementById('mb-price-base');
+            const craftDyesCheckbox = document.getElementById('mb-price-craft');
+            const beastTribeDyesCheckbox = document.getElementById('mb-price-beast');
+            const cosmicDyesCheckbox = document.getElementById('mb-price-cosmic');
+            const specialDyesCheckbox = document.getElementById('mb-price-special');
 
-            if (baseDyes && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
-            if (craftDyes && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
-            if (beastTribeDyes && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
-            if (cosmicDyes && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
+            // Guard: Validate checkboxes exist
+            if (!baseDyesCheckbox || !craftDyesCheckbox || !beastTribeDyesCheckbox || !cosmicDyesCheckbox || !specialDyesCheckbox) {
+                return false;
+            }
+
+            if (specialDyesCheckbox.checked && color.category === 'Special') return true;
+
+            if (baseDyesCheckbox.checked && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
+            if (craftDyesCheckbox.checked && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
+            if (beastTribeDyesCheckbox.checked && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
+            if (cosmicDyesCheckbox.checked && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
 
             return false;
         }

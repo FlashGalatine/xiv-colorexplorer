@@ -1260,11 +1260,22 @@
          * Display dye preview
          */
         function displayDyePreview(slotIndex) {
+            // Guard: Validate slot index and DOM elements exist
+            if (slotIndex < 0 || slotIndex >= selectedDyes.length) return;
+
             const preview = document.getElementById(`dye-preview-${slotIndex}`);
             const swatch = document.getElementById(`dye-swatch-${slotIndex}`);
             const name = document.getElementById(`dye-name-${slotIndex}`);
-            const primary = selectedDyes[slotIndex].primary;
-            const secondary = selectedDyes[slotIndex].secondary;
+
+            // Guard: Check that DOM elements were found
+            if (!preview || !swatch || !name) return;
+
+            // Guard: Validate slot exists and has properties
+            const slot = selectedDyes[slotIndex];
+            if (!slot) return;
+
+            const primary = slot.primary;
+            const secondary = slot.secondary;
 
             if (!primary && !secondary) {
                 preview.classList.add('hidden');
@@ -1291,8 +1302,18 @@
          * Clear single dye slot
          */
         function clearDyeSlot(slotIndex, dyeType) {
-            document.getElementById(`dye-slot-${slotIndex}-${dyeType}`).value = '';
-            selectedDyes[slotIndex][dyeType] = null;
+            // Guard: Validate inputs
+            if (slotIndex < 0 || slotIndex >= selectedDyes.length) return;
+            if (!dyeType) return;
+
+            const element = document.getElementById(`dye-slot-${slotIndex}-${dyeType}`);
+            if (!element) return;
+
+            const slot = selectedDyes[slotIndex];
+            if (!slot) return;
+
+            element.value = '';
+            slot[dyeType] = null;
             displayDyePreview(slotIndex);
             updateVisualization();
         }
@@ -1301,12 +1322,21 @@
          * Clear all dyes
          */
         function clearAllDyes() {
-            selectedDyes.forEach((_, index) => {
-                document.getElementById(`dye-slot-${index}-primary`).value = '';
-                document.getElementById(`dye-slot-${index}-secondary`).value = '';
-                selectedDyes[index].primary = null;
-                selectedDyes[index].secondary = null;
-                document.getElementById(`dye-preview-${index}`).classList.add('hidden');
+            selectedDyes.forEach((slot, index) => {
+                if (!slot) return; // Guard: Skip invalid slots
+
+                const primaryInput = document.getElementById(`dye-slot-${index}-primary`);
+                const secondaryInput = document.getElementById(`dye-slot-${index}-secondary`);
+                const preview = document.getElementById(`dye-preview-${index}`);
+
+                // Guard: Only update elements that exist
+                if (primaryInput) primaryInput.value = '';
+                if (secondaryInput) secondaryInput.value = '';
+
+                slot.primary = null;
+                slot.secondary = null;
+
+                if (preview) preview.classList.add('hidden');
             });
             updateVisualization();
         }
