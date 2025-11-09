@@ -968,7 +968,18 @@
         }
 
         /**
-         * RGB to HSV conversion
+         * Convert RGB color values to HSV (Hue, Saturation, Value)
+         *
+         * @param {number} r - Red channel value (0-255)
+         * @param {number} g - Green channel value (0-255)
+         * @param {number} b - Blue channel value (0-255)
+         * @returns {Object} HSV object with properties:
+         *   - h {number} Hue in degrees (0-360)
+         *   - s {number} Saturation as percentage (0-100)
+         *   - v {number} Value as percentage (0-100)
+         *
+         * @example
+         * const hsv = rgbToHsv(255, 0, 0); // Red: { h: 0, s: 100, v: 100 }
          */
         function rgbToHsv(r, g, b) {
             r /= 255;
@@ -996,7 +1007,19 @@
         }
 
         /**
-         * Hex to RGB conversion
+         * Convert hexadecimal color string to RGB object
+         *
+         * @param {string} hex - Hex color string (with or without '#' prefix)
+         *   Accepts formats: "#RRGGBB", "RRGGBB", "#RGB", "RGB"
+         * @returns {Object} RGB object with properties:
+         *   - r {number} Red channel (0-255)
+         *   - g {number} Green channel (0-255)
+         *   - b {number} Blue channel (0-255)
+         * @returns {Object} Falls back to black {r: 0, g: 0, b: 0} if invalid
+         *
+         * @example
+         * hexToRgb("#FF0000") // { r: 255, g: 0, b: 0 }
+         * hexToRgb("00FF00") // { r: 0, g: 255, b: 0 }
          */
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -1008,7 +1031,16 @@
         }
 
         /**
-         * RGB to Hex conversion
+         * Convert RGB color values to hexadecimal string
+         *
+         * @param {number} r - Red channel (0-255)
+         * @param {number} g - Green channel (0-255)
+         * @param {number} b - Blue channel (0-255)
+         * @returns {string} Hex color string in format "#RRGGBB"
+         *
+         * @example
+         * rgbToHex(255, 128, 0) // "#FF8000"
+         * rgbToHex(0, 255, 0) // "#00FF00"
          */
         function rgbToHex(r, g, b) {
             return '#' + [r, g, b].map(x => {
@@ -1018,29 +1050,51 @@
         }
 
         /**
-         * Apply colorblindness transformation to RGB color
+         * Apply colorblindness simulation using Brettel 1997 algorithm
+         *
+         * Simulates how people with specific types of color vision deficiency perceive colors
+         * by applying transformation matrices based on photoreceptor sensitivity.
+         *
+         * @param {string} hex - Hex color string to transform (e.g., "#FF0000")
+         * @param {string} visionType - Type of colorblindness to simulate:
+         *   - "deuteranopia" - Red-green weak (affects ~1% of population)
+         *   - "protanopia" - Red-green absent (affects ~1% of population)
+         *   - "tritanopia" - Blue-yellow deficiency (affects ~0.001% of population)
+         * @param {number} intensity - Simulation intensity (0-100):
+         *   - 0: Original color (no effect)
+         *   - 100: Full colorblindness simulation
+         *   - Values in between: Gradual transition for progressive effect visualization
+         * @returns {string} Hex color string representing how the color appears with the specified vision deficiency
+         *
+         * @see Based on Brettel, Viénot, and Mollon (1997) research on color vision deficiency
+         * @see https://vision.psyche.mit.edu/color_blindness.html
+         *
+         * @example
+         * // See how red appears to someone with deuteranopia at 50% intensity
+         * const simulated = applyColorblindness("#FF0000", "deuteranopia", 50);
          */
         function applyColorblindness(hex, visionType, intensity) {
             const rgb = hexToRgb(hex);
             const matrix = colorblindMatrices[visionType];
 
-            // Normalize to 0-1 range
+            // Normalize RGB values to 0-1 range for transformation
             let r = rgb.r / 255;
             let g = rgb.g / 255;
             let b = rgb.b / 255;
 
-            // Apply transformation matrix
+            // Apply Brettel transformation matrix to simulate photoreceptor response
             const newR = matrix[0][0] * r + matrix[0][1] * g + matrix[0][2] * b;
             const newG = matrix[1][0] * r + matrix[1][1] * g + matrix[1][2] * b;
             const newB = matrix[2][0] * r + matrix[2][1] * g + matrix[2][2] * b;
 
-            // Interpolate based on intensity
+            // Interpolate between original color and simulated color based on intensity
+            // Formula: result = (1 - intensity) * original + intensity * simulated
             const intensityFraction = intensity / 100;
             const finalR = r * (1 - intensityFraction) + newR * intensityFraction;
             const finalG = g * (1 - intensityFraction) + newG * intensityFraction;
             const finalB = b * (1 - intensityFraction) + newB * intensityFraction;
 
-            // Convert back to 0-255 range and to hex
+            // Convert from 0-1 range back to 0-255 range and return as hex
             return rgbToHex(
                 Math.round(finalR * 255),
                 Math.round(finalG * 255),
@@ -1049,15 +1103,29 @@
         }
 
         /**
-         * Apply achromatopsia (monochrome) transformation
+         * Apply achromatopsia (complete color blindness) transformation
+         *
+         * Simulates complete color blindness by converting colors to grayscale based
+         * on human luminance perception using standard coefficients.
+         *
+         * @param {string} hex - Hex color string to transform
+         * @param {number} intensity - Simulation intensity (0-100):
+         *   - 0: Original color
+         *   - 100: Complete grayscale (achromatopsia)
+         * @returns {string} Hex color string representing the simulated grayscale color
+         *
+         * @example
+         * // Convert blue to grayscale at 75% intensity
+         * const gray = applyAchromatopsia("#0000FF", 75);
          */
         function applyAchromatopsia(hex, intensity) {
             const rgb = hexToRgb(hex);
 
-            // Calculate luminance
+            // Calculate luminance using standard weighting (ITU-R BT.601)
+            // These weights reflect human eye sensitivity: most sensitive to green, least to blue
             const luminance = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
 
-            // Interpolate based on intensity
+            // Interpolate between original color and grayscale based on intensity
             const intensityFraction = intensity / 100;
             const finalR = rgb.r * (1 - intensityFraction) + luminance * intensityFraction;
             const finalG = rgb.g * (1 - intensityFraction) + luminance * intensityFraction;
