@@ -400,7 +400,7 @@
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-6">
             <div class="flex justify-center items-center gap-3 mb-4">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v1.2.0</span></h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v1.2.4</span></h1>
             </div>
             <p class="text-md text-gray-600 mt-2">
                 Discover color harmonies using the FFXIV dye palette.
@@ -412,7 +412,7 @@
                         <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
                         <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
                         <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
-                        <a href="coloraccessibility_stable.html" class="nav-dropdown-item">Color Accessibility Checker</a>
+                        <a href="coloraccessibility_experimental.html" class="nav-dropdown-item">Color Accessibility Checker</a>
                         <a href="index.html" class="nav-dropdown-item">All Tools</a>
                     </div>
                 </div>
@@ -623,20 +623,78 @@
         };
 
         /**
+         * Safe localStorage getter with error handling
+         */
+        function safeGetStorage(key, defaultValue = null) {
+            try {
+                if (typeof Storage === 'undefined') {
+                    console.warn('localStorage unavailable: Storage API not supported');
+                    return defaultValue;
+                }
+                return localStorage.getItem(key);
+            } catch (e) {
+                console.warn(`localStorage getItem failed for key "${key}":`, e.message);
+                return defaultValue;
+            }
+        }
+
+        /**
+         * Safe localStorage setter with error handling
+         */
+        function safeSetStorage(key, value) {
+            try {
+                if (typeof Storage === 'undefined') {
+                    console.warn('localStorage unavailable: Storage API not supported');
+                    return false;
+                }
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    console.warn('localStorage quota exceeded for key:', key);
+                } else {
+                    console.warn(`localStorage setItem failed for key "${key}":`, e.message);
+                }
+                return false;
+            }
+        }
+
+        /**
          * Initializes dark mode
          */
         function initializeDarkMode() {
             const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-            
+            const isDarkMode = safeGetStorage('darkMode') === 'true';
+
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
             }
-            
+
             darkModeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
             });
+        }
+
+        /**
+         * Safely fetch and validate JSON data
+         */
+        function safeFetchJSON(url, fallbackData = []) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Invalid content type: ${contentType}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error(`Failed to load JSON from ${url}:`, error.message);
+                    return fallbackData;
+                });
         }
 
         /**
@@ -896,6 +954,58 @@
         }
 
         /**
+         * API Request Throttler for Universalis API
+         * Prevents rate limiting by enforcing minimum interval between requests
+         * Uses a queue system to process requests sequentially
+         */
+        class APIThrottler {
+            constructor(minInterval = 500) {
+                this.minInterval = minInterval; // Milliseconds between requests
+                this.lastRequest = 0;
+                this.queue = [];
+                this.isProcessing = false;
+            }
+
+            async request(url) {
+                return new Promise((resolve, reject) => {
+                    this.queue.push({ url, resolve, reject });
+                    this.processQueue();
+                });
+            }
+
+            async processQueue() {
+                if (this.isProcessing || this.queue.length === 0) return;
+
+                this.isProcessing = true;
+                const now = Date.now();
+                const timeSinceLastRequest = now - this.lastRequest;
+
+                // Wait if not enough time has passed since last request
+                if (timeSinceLastRequest < this.minInterval) {
+                    const waitTime = this.minInterval - timeSinceLastRequest;
+                    await new Promise(r => setTimeout(r, waitTime));
+                }
+
+                const { url, resolve, reject } = this.queue.shift();
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    this.lastRequest = Date.now();
+                    resolve(data);
+                } catch (error) {
+                    reject(error);
+                }
+
+                this.isProcessing = false;
+                this.processQueue();
+            }
+        }
+
+        // Global throttler instance for Universalis API (500ms minimum between requests)
+        const apiThrottler = new APIThrottler(500);
+
+        /**
          * Creates a color wheel SVG
          */
         function createColorWheel(baseColor, relatedColors, harmonyType) {
@@ -917,21 +1027,22 @@
 
             let svg = `<svg viewBox="0 0 ${size} ${size}" class="mx-auto mb-4 color-wheel" data-harmony-type="${harmonyType}" style="width: ${size}px; height: ${size}px;">`;
 
-            // Reduced to 120 segments for better performance
-            const segments = 120;
+            // Optimized to 60 segments (6° each) for better performance
+            // 50% reduction in DOM elements vs. 120 segments while maintaining visual quality
+            const segments = 60;
             for (let i = 0; i < segments; i++) {
                 const angle1 = (i * 360) / segments;
                 const angle2 = ((i + 1) * 360) / segments;
-                
+
                 // Convert HSL to color for each segment
                 const color = `hsl(${angle1}, 100%, 50%)`;
-                
+
                 // Calculate points for the segment
                 const outer1 = getPointOnCircle(angle1, radius);
                 const outer2 = getPointOnCircle(angle2, radius);
                 const inner1 = getPointOnCircle(angle1, innerRadius);
                 const inner2 = getPointOnCircle(angle2, innerRadius);
-                
+
                 // Create path for segment
                 svg += `<path d="M ${outer1.x} ${outer1.y} A ${radius} ${radius} 0 0 1 ${outer2.x} ${outer2.y} L ${inner2.x} ${inner2.y} A ${innerRadius} ${innerRadius} 0 0 0 ${inner1.x} ${inner1.y} Z" fill="${color}" opacity="0.4" />`;
             }
@@ -1022,26 +1133,37 @@
          * Checks if a dye should have price data fetched
          */
         function shouldFetchPrice(color) {
+            // Guard: Validate color object exists
+            if (!color) return false;
             if (!color.itemID) return false;
 
-            const baseDyes = document.getElementById('price-base-dyes').checked;
-            const craftDyes = document.getElementById('price-craft-dyes').checked;
-            const beastTribeDyes = document.getElementById('price-beast-tribe-dyes').checked;
-            const cosmicDyes = document.getElementById('price-cosmic-dyes').checked;
-            const specialDyes = document.getElementById('price-special-dyes').checked;
+            // Guard: Validate dye properties exist
+            if (!color.category || !color.acquisition) return false;
 
-            if (specialDyes && color.category === 'Special') return true;
+            const baseDyesCheckbox = document.getElementById('price-base-dyes');
+            const craftDyesCheckbox = document.getElementById('price-craft-dyes');
+            const beastTribeDyesCheckbox = document.getElementById('price-beast-tribe-dyes');
+            const cosmicDyesCheckbox = document.getElementById('price-cosmic-dyes');
+            const specialDyesCheckbox = document.getElementById('price-special-dyes');
 
-            if (baseDyes && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
-            if (craftDyes && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
-            if (beastTribeDyes && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
-            if (cosmicDyes && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
+            // Guard: Validate checkboxes exist
+            if (!baseDyesCheckbox || !craftDyesCheckbox || !beastTribeDyesCheckbox || !cosmicDyesCheckbox || !specialDyesCheckbox) {
+                return false;
+            }
+
+            if (specialDyesCheckbox.checked && color.category === 'Special') return true;
+
+            if (baseDyesCheckbox.checked && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
+            if (craftDyesCheckbox.checked && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
+            if (beastTribeDyesCheckbox.checked && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
+            if (cosmicDyesCheckbox.checked && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
 
             return false;
         }
 
         /**
          * Fetches market prices from Universalis API using aggregated endpoint
+         * Uses APIThrottler to prevent rate limiting
          */
         async function fetchMarketPrices(itemIds, server) {
             if (itemIds.length === 0) return {};
@@ -1052,10 +1174,8 @@
             const url = `https://universalis.app/api/v2/aggregated/${serverValue}/${itemIdsString}`;
 
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('API request failed');
-
-                const data = await response.json();
+                // Use throttled request to respect API rate limits
+                const data = await apiThrottler.request(url);
                 const prices = {};
 
                 // Parse aggregated endpoint response format
@@ -1214,41 +1334,86 @@
             return filtered;
         }
         /**
-         * Sorts the color data and populates the dropdown
+         * Get category priority for sorting
+         * Standardized category ordering across all tools:
+         * - Neutral: 0
+         * - Colors (A-Z): 1-26 (when encountered in data, treated as priority 2 for unknown categories)
+         * - Special: 98
+         * - Facewear: 99 (typically excluded from filtering)
+         *
+         * @param {string} category - The dye category name
+         * @returns {number} Priority value for sorting (lower values appear first)
          */
-        function populateDropdown() {
-            const select = document.getElementById('color-select');
-            select.innerHTML = '';
+        function getCategoryPriority(category) {
+            const priorityMap = {
+                'Neutral': 0,
+                'Special': 98,
+                'Facewear': 99
+            };
+            // Default priority for unknown "Colors" categories is 1-26 range (2 as default)
+            return priorityMap[category] !== undefined ? priorityMap[category] : 2;
+        }
 
-            const filteredColors = getFilteredColors();
+        /**
+         * Sort colors by category (using priority) and then by name alphabetically
+         * Used by dropdown population for consistent ordering across tools
+         *
+         * @param {Array} colors - Array of color objects
+         * @returns {Array} Sorted color array
+         */
+        function sortColorsByCategory(colors) {
+            return [...colors].sort((a, b) => {
+                const aPriority = getCategoryPriority(a.category);
+                const bPriority = getCategoryPriority(b.category);
 
-            filteredColors.sort((a, b) => {
-                const categoryOrder = {
-                    'Facewear': 99,
-                    'Neutral': 1,
-                    'Special': 3
-                };
-                const aOrder = categoryOrder[a.category] || 2;
-                const bOrder = categoryOrder[b.category] || 2;
-
-                if (aOrder !== bOrder) {
-                    return aOrder - bOrder;
+                // Sort by category priority first
+                if (aPriority !== bPriority) {
+                    return aPriority - bPriority;
                 }
 
+                // Then by category name alphabetically (for unknown categories)
                 const categoryComparison = a.category.localeCompare(b.category);
                 if (categoryComparison !== 0) {
                     return categoryComparison;
                 }
 
+                // Finally by color name alphabetically
                 return a.name.localeCompare(b.name);
             });
+        }
+
+        /**
+         * Sorts the filtered color data and populates the dropdown with categorized optgroups
+         *
+         * Pattern: Standardized dropdown generation (Color Harmony Explorer variant)
+         * - Filters colors based on acquisition method and exclusions
+         * - Sorts by category priority, then alphabetically by name
+         * - Creates optgroups for each category
+         * - Uses array index as option value (for compatibility with filtered colorData array)
+         * - Maintains consistency with other tools' sorting and grouping logic
+         */
+        function populateDropdown() {
+            const select = document.getElementById('color-select');
+            select.innerHTML = '';
+
+            // Guard: Validate select element
+            if (!select) {
+                console.warn('populateDropdown: Invalid select element');
+                return;
+            }
+
+            const filteredColors = getFilteredColors();
+
+            // Sort using standardized function
+            const sortedColors = sortColorsByCategory(filteredColors);
 
             let currentCategory = '';
             let currentOptgroup = null;
 
-            filteredColors.forEach((color) => {
+            sortedColors.forEach((color) => {
                 const index = colorData.indexOf(color);
-                
+
+                // Create new optgroup when category changes
                 if (color.category !== currentCategory) {
                     currentCategory = color.category;
                     currentOptgroup = document.createElement('optgroup');
@@ -1259,7 +1424,7 @@
                 const option = document.createElement('option');
                 option.value = index;
                 option.textContent = color.name;
-                
+
                 if (currentOptgroup) {
                     currentOptgroup.appendChild(option);
                 } else {
@@ -1322,7 +1487,19 @@
         }
 
         /**
-         * Calculates color distance
+         * Calculate Euclidean distance between two colors in RGB space
+         *
+         * Uses the standard RGB Euclidean distance formula:
+         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+         *
+         * Range: 0 (identical colors) to ~441 (white vs black)
+         *
+         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
+         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
+         * @returns {number} Euclidean distance in RGB space
+         *
+         * @example
+         * const dist = colorDistance({ r: 255, g: 0, b: 0 }, { r: 0, g: 0, b: 0 }); // 255
          */
         function colorDistance(rgb1, rgb2) {
             const dr = rgb1.r - rgb2.r;
@@ -1345,16 +1522,28 @@
         }
 
         /**
-         * Converts HSV to RGB
+         * Convert HSV (Hue, Saturation, Value) to RGB color
+         *
+         * @param {number} h - Hue in degrees (0-360)
+         * @param {number} s - Saturation as percentage (0-100)
+         * @param {number} v - Value/Brightness as percentage (0-100)
+         * @returns {Object} RGB object with properties r, g, b (0-255)
+         *
+         * @example
+         * const rgb = hsvToRgb(0, 100, 100); // Red: { r: 255, g: 0, b: 0 }
          */
-        function hsvToRgb({ h, s, v }) {
+        function hsvToRgb(h, s, v) {
+            // Normalize saturation and value to 0-1 range
             s /= 100;
             v /= 100;
-            let c = v * s;
-            let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-            let m = v - c;
-            let r_prime, g_prime, b_prime;
 
+            // Calculate chroma and intermediate variables
+            const c = v * s;
+            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+            const m = v - c;
+
+            // Determine RGB components based on hue sector
+            let r_prime, g_prime, b_prime;
             if (h >= 0 && h < 60) { [r_prime, g_prime, b_prime] = [c, x, 0]; }
             else if (h >= 60 && h < 120) { [r_prime, g_prime, b_prime] = [x, c, 0]; }
             else if (h >= 120 && h < 180) { [r_prime, g_prime, b_prime] = [0, c, x]; }
@@ -1362,6 +1551,7 @@
             else if (h >= 240 && h < 300) { [r_prime, g_prime, b_prime] = [x, 0, c]; }
             else { [r_prime, g_prime, b_prime] = [c, 0, x]; }
 
+            // Convert to 0-255 range and return
             return {
                 r: Math.round((r_prime + m) * 255),
                 g: Math.round((g_prime + m) * 255),
@@ -1437,7 +1627,7 @@
             }
 
             return targetHues.map(targetH => {
-                const idealRgb = hsvToRgb({ h: targetH, s: s, v: v });
+                const idealRgb = hsvToRgb(targetH, s, v);
                 const matchedColor = findClosestColor(idealRgb);
                 const distance = colorDistance(idealRgb, matchedColor.rgb);
                 const devianceRating = calculateDevianceRating(distance);
@@ -1745,14 +1935,17 @@
         window.onload = async () => {
             try {
                 console.log('Attempting to load colors_xiv.json...');
-                const response = await fetch('./assets/json/colors_xiv.json');
-                console.log('Fetch response:', response);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+
+                // Use safeFetchJSON for consistent error handling across all tools
+                const rawData = await safeFetchJSON('./assets/json/colors_xiv.json', []);
+
+                // Guard: Validate data was loaded
+                if (!rawData || rawData.length === 0) {
+                    throw new Error('Color data failed to load or is empty');
                 }
-                const rawData = await response.json();
+
                 console.log('Color data loaded successfully, count:', rawData.length);
-                
+
                 // Enrich the color data with cleaned acquisition text
                 colorData = enrichColorData(rawData);
                 

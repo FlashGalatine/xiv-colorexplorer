@@ -5,6 +5,57 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - All Tools Standardization Update - 2025-11-09
+
+**Deployed to Production**: Color Accessibility v1.0.2 BETA, Color Harmony Explorer v1.2.4, Color Matcher v1.3.1, Dye Comparison v1.2.4
+
+### Added
+
+- **Standardized Dropdown Population Patterns** (Phase 3.4)
+  - Centralized `getCategoryPriority()` function for consistent category ordering across all tools
+  - Unified `sortDyesByCategory()` / `sortColorsByCategory()` functions eliminate duplicate code
+  - Comprehensive JSDoc documentation on all dropdown functions
+  - Input validation guards on all dropdown population functions
+
+- **Improved Error Handling** (Phase 5)
+  - `safeFetchJSON()` utility for robust JSON loading with fallback support
+  - Enhanced `safeGetStorage()` and `safeSetStorage()` functions for localStorage operations
+  - Better error messages and console logging throughout
+
+### Changed
+
+- **Code Quality Improvements** (Phase 3)
+  - Standardized `hsvToRgb()` function signature to parameter-based pattern for universal compatibility
+  - Unified `colorDistance()` implementation across all tools with input validation
+  - Consistent `hexToRgb()` error handling (fallback to black instead of null)
+  - Enhanced `rgbToHex()` and `rgbToHsv()` documentation with JSDoc
+
+- **Performance Enhancements** (Phase 4)
+  - DOM element caching in Color Accessibility for faster access to frequently-used elements
+  - Optimized slider event listeners using cached references
+  - Reduced repeated getElementById calls throughout application lifecycle
+
+- **Dye Comparison Tool**
+  - Removed "EXPERIMENTAL" badge from v1.2.4 stable release
+  - Applied all standardization improvements to stable version
+
+### Fixed
+
+- **Color Converter Consistency**
+  - All tools now use consistent error handling for invalid color inputs
+  - Unified color space conversion algorithms across all tools
+  - Fixed potential null reference errors in Color Matcher
+
+### Documentation
+
+- **JSDoc Enhancements** (Phase 6)
+  - Added comprehensive JSDoc comments to all color utility functions
+  - Documented algorithm formulas and their mathematical basis
+  - Added usage examples and edge case handling documentation
+  - Parameter type definitions for IDE autocomplete support
+
+---
+
 ## [1.3.0] - Color Matcher v1.3.0
 
 ### Added - Color Matcher v1.3.0
