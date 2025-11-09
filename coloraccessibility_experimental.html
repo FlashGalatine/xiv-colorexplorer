@@ -1168,17 +1168,42 @@
         }
 
         /**
-         * Calculate Euclidean color distance
+         * Calculate Euclidean distance between two colors in RGB space
+         *
+         * Uses the standard RGB Euclidean distance formula:
+         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+         *
+         * Range: 0 (identical colors) to ~441 (white vs black)
+         *
+         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
+         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
+         * @returns {number} Euclidean distance in RGB space
+         *
+         * @example
+         * const dist = colorDistance({ r: 255, g: 0, b: 0 }, { r: 0, g: 0, b: 0 }); // 255
          */
-        function getColorDistance(hex1, hex2) {
-            const rgb1 = hexToRgb(hex1);
-            const rgb2 = hexToRgb(hex2);
+        function colorDistance(rgb1, rgb2) {
+            // Guard: Validate input objects
+            if (!rgb1 || !rgb2 || typeof rgb1.r !== 'number' || typeof rgb2.r !== 'number') {
+                console.warn('Invalid color objects passed to colorDistance');
+                return 0;
+            }
 
             const dr = rgb1.r - rgb2.r;
             const dg = rgb1.g - rgb2.g;
             const db = rgb1.b - rgb2.b;
 
             return Math.sqrt(dr * dr + dg * dg + db * db);
+        }
+
+        /**
+         * Wrapper for backward compatibility - converts hex to RGB and calls colorDistance
+         * @deprecated Use colorDistance() directly with RGB objects instead
+         */
+        function getColorDistance(hex1, hex2) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+            return colorDistance(rgb1, rgb2);
         }
 
         /**

@@ -1442,7 +1442,19 @@
         }
 
         /**
-         * Calculates color distance
+         * Calculate Euclidean distance between two colors in RGB space
+         *
+         * Uses the standard RGB Euclidean distance formula:
+         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+         *
+         * Range: 0 (identical colors) to ~441 (white vs black)
+         *
+         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
+         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
+         * @returns {number} Euclidean distance in RGB space
+         *
+         * @example
+         * const dist = colorDistance({ r: 255, g: 0, b: 0 }, { r: 0, g: 0, b: 0 }); // 255
          */
         function colorDistance(rgb1, rgb2) {
             const dr = rgb1.r - rgb2.r;
@@ -1465,16 +1477,28 @@
         }
 
         /**
-         * Converts HSV to RGB
+         * Convert HSV (Hue, Saturation, Value) to RGB color
+         *
+         * @param {number} h - Hue in degrees (0-360)
+         * @param {number} s - Saturation as percentage (0-100)
+         * @param {number} v - Value/Brightness as percentage (0-100)
+         * @returns {Object} RGB object with properties r, g, b (0-255)
+         *
+         * @example
+         * const rgb = hsvToRgb(0, 100, 100); // Red: { r: 255, g: 0, b: 0 }
          */
-        function hsvToRgb({ h, s, v }) {
+        function hsvToRgb(h, s, v) {
+            // Normalize saturation and value to 0-1 range
             s /= 100;
             v /= 100;
-            let c = v * s;
-            let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-            let m = v - c;
-            let r_prime, g_prime, b_prime;
 
+            // Calculate chroma and intermediate variables
+            const c = v * s;
+            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+            const m = v - c;
+
+            // Determine RGB components based on hue sector
+            let r_prime, g_prime, b_prime;
             if (h >= 0 && h < 60) { [r_prime, g_prime, b_prime] = [c, x, 0]; }
             else if (h >= 60 && h < 120) { [r_prime, g_prime, b_prime] = [x, c, 0]; }
             else if (h >= 120 && h < 180) { [r_prime, g_prime, b_prime] = [0, c, x]; }
@@ -1482,6 +1506,7 @@
             else if (h >= 240 && h < 300) { [r_prime, g_prime, b_prime] = [x, 0, c]; }
             else { [r_prime, g_prime, b_prime] = [c, 0, x]; }
 
+            // Convert to 0-255 range and return
             return {
                 r: Math.round((r_prime + m) * 255),
                 g: Math.round((g_prime + m) * 255),
@@ -1557,7 +1582,7 @@
             }
 
             return targetHues.map(targetH => {
-                const idealRgb = hsvToRgb({ h: targetH, s: s, v: v });
+                const idealRgb = hsvToRgb(targetH, s, v);
                 const matchedColor = findClosestColor(idealRgb);
                 const distance = colorDistance(idealRgb, matchedColor.rgb);
                 const devianceRating = calculateDevianceRating(distance);

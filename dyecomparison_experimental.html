@@ -897,7 +897,17 @@
         }
 
         /**
-         * Calculate RGB Euclidean distance
+         * Calculate Euclidean distance between two colors in RGB space
+         *
+         * Uses the standard RGB Euclidean distance formula:
+         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+         *
+         * Range: 0 (identical colors) to ~441 (white vs black)
+         * Used for color distance matrix analysis and dye similarity comparison
+         *
+         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
+         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
+         * @returns {number} Euclidean distance in RGB space
          */
         function colorDistance(rgb1, rgb2) {
             const dr = rgb1.r - rgb2.r;
