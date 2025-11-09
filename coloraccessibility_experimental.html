@@ -918,6 +918,27 @@
         }
 
         /**
+         * Safely fetch and validate JSON data
+         */
+        function safeFetchJSON(url, fallbackData = []) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Invalid content type: ${contentType}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error(`Failed to load JSON from ${url}:`, error.message);
+                    return fallbackData;
+                });
+        }
+
+        /**
          * Initialize dark mode
          */
         function initializeDarkMode() {
@@ -1899,8 +1920,7 @@
             initializeDarkMode();
 
             // Load dye data
-            fetch('./assets/json/colors_xiv.json')
-                .then(response => response.json())
+            safeFetchJSON('./assets/json/colors_xiv.json')
                 .then(data => {
                     ffxivDyes = data;
                     initializeDyeSlots();

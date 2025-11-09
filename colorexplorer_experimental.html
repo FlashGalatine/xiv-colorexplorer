@@ -677,6 +677,27 @@
         }
 
         /**
+         * Safely fetch and validate JSON data
+         */
+        function safeFetchJSON(url, fallbackData = []) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Invalid content type: ${contentType}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error(`Failed to load JSON from ${url}:`, error.message);
+                    return fallbackData;
+                });
+        }
+
+        /**
          * Creates and manages tooltip
          */
         function createTooltip() {
@@ -1787,7 +1808,15 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                // Validate content type
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error(`Invalid content type: ${contentType}. Expected application/json`);
+                }
                 const rawData = await response.json();
+                if (!Array.isArray(rawData)) {
+                    throw new Error('Color data is not an array');
+                }
                 console.log('Color data loaded successfully, count:', rawData.length);
                 
                 // Enrich the color data with cleaned acquisition text

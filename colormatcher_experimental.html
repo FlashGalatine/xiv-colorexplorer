@@ -1018,6 +1018,27 @@
         }
 
         /**
+         * Safely fetch and validate JSON data
+         */
+        function safeFetchJSON(url, fallbackData = []) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Invalid content type: ${contentType}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error(`Failed to load JSON from ${url}:`, error.message);
+                    return fallbackData;
+                });
+        }
+
+        /**
          * Updates the canvas display based on current zoom
          */
         function updateCanvasZoom() {
@@ -1246,15 +1267,28 @@
                 return;
             }
 
-            if (!file.type.startsWith('image/')) {
-                showToast('Please select a valid image file', 'error');
+            // Validate MIME type
+            const SUPPORTED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+            if (!SUPPORTED_TYPES.includes(file.type)) {
+                if (file.type === 'image/svg+xml') {
+                    showToast('SVG images are not supported for color sampling', 'error');
+                } else {
+                    showToast(`Unsupported file type: ${file.type || 'unknown'}. Supported: JPEG, PNG, GIF, WebP, BMP`, 'error');
+                }
                 return;
             }
 
-            // Check file size (warn if over 10MB)
-            const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+            // Check file size
+            const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB hard limit
+            const WARN_FILE_SIZE = 10 * 1024 * 1024; // 10MB warning threshold
+
             if (file.size > MAX_FILE_SIZE) {
-                showToast('File is too large (max 10MB). Loading may be slow.', 'info');
+                showToast(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 50MB`, 'error');
+                return;
+            }
+
+            if (file.size > WARN_FILE_SIZE) {
+                showToast(`Large file (${(file.size / 1024 / 1024).toFixed(1)}MB). Loading may be slow.`, 'warning');
             }
 
             const reader = new FileReader();
@@ -1801,13 +1835,7 @@
             // Initialize market board
             initializeMarketBoard();
 
-            fetch('./assets/json/colors_xiv.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            safeFetchJSON('./assets/json/colors_xiv.json')
                 .then(data => {
                     ffxivDyes = data; // Load data into the global variable
                     console.log('Color data loaded successfully.');
