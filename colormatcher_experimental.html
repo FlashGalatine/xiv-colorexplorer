@@ -1313,9 +1313,19 @@
         }
 
         // --- Image & Eyedropper Functions ---
+        /**
+         * Process and validate image file with comprehensive error checking
+         */
         function processImageFile(file) {
+            // Guard: Validate file object exists
             if (!file) {
                 showToast('No file provided', 'error');
+                return;
+            }
+
+            // Guard: Validate file has a name
+            if (!file.name) {
+                showToast('Invalid file: no filename', 'error');
                 return;
             }
 
@@ -1330,9 +1340,16 @@
                 return;
             }
 
-            // Check file size
+            // Check file size with detailed feedback
             const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB hard limit
             const WARN_FILE_SIZE = 10 * 1024 * 1024; // 10MB warning threshold
+            const MIN_FILE_SIZE = 1024; // 1KB minimum
+
+            // Guard: File is too small (likely invalid)
+            if (file.size < MIN_FILE_SIZE) {
+                showToast('File is too small to be a valid image', 'error');
+                return;
+            }
 
             if (file.size > MAX_FILE_SIZE) {
                 showToast(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 50MB`, 'error');
@@ -1360,6 +1377,29 @@
 
                 img.onload = () => {
                     try {
+                        // Validate image dimensions
+                        const MAX_WIDTH = 16384; // 16k width limit
+                        const MAX_HEIGHT = 16384; // 16k height limit
+                        const MIN_WIDTH = 10; // 10px minimum
+                        const MIN_HEIGHT = 10; // 10px minimum
+
+                        // Guard: Check image dimensions are reasonable
+                        if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
+                            showToast(`Image too small (${img.width}x${img.height}). Minimum: ${MIN_WIDTH}x${MIN_HEIGHT}px`, 'error');
+                            return;
+                        }
+
+                        if (img.width > MAX_WIDTH || img.height > MAX_HEIGHT) {
+                            showToast(`Image too large (${img.width}x${img.height}). Maximum: ${MAX_WIDTH}x${MAX_HEIGHT}px`, 'error');
+                            return;
+                        }
+
+                        // Warn about very large images that might be slow
+                        const WARN_THRESHOLD = 8192; // Warn if either dimension exceeds 8k
+                        if (img.width > WARN_THRESHOLD || img.height > WARN_THRESHOLD) {
+                            console.warn(`Large image dimensions: ${img.width}x${img.height}. Color sampling may be slow.`);
+                        }
+
                         currentImage = img;
                         originalImageWidth = img.width;
                         originalImageHeight = img.height;
