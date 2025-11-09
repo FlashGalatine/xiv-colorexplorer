@@ -160,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 35+ CSS rules for dark mode selectors covering buttons, banners, and containers
 - Replaced dynamic class-based styling with proper CSS selector hierarchy
 
-## [1.3.0] - 2025-10-31
+## [1.3.0] - 2025-10-30
 
 ### Added
 - **New Tool: Color Accessibility Checker v1.0.0**

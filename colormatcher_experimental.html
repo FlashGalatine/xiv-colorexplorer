@@ -659,7 +659,7 @@
     <div class="w-full mb-4">
         <div class="flex justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.2.0-dev</span></h1>
+                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.3.0</span></h1>
                 <p class="text-sm text-gray-600 mt-1">Pick a color or upload an image to find the closest dye match.</p>
             </div>
             <div class="flex items-center gap-3">
@@ -964,11 +964,48 @@
         let startPanY = 0;
 
         /**
+         * Safe localStorage getter with error handling
+         */
+        function safeGetStorage(key, defaultValue = null) {
+            try {
+                if (typeof Storage === 'undefined') {
+                    console.warn('localStorage unavailable: Storage API not supported');
+                    return defaultValue;
+                }
+                return localStorage.getItem(key);
+            } catch (e) {
+                console.warn(`localStorage getItem failed for key "${key}":`, e.message);
+                return defaultValue;
+            }
+        }
+
+        /**
+         * Safe localStorage setter with error handling
+         */
+        function safeSetStorage(key, value) {
+            try {
+                if (typeof Storage === 'undefined') {
+                    console.warn('localStorage unavailable: Storage API not supported');
+                    return false;
+                }
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    console.warn('localStorage quota exceeded for key:', key);
+                } else {
+                    console.warn(`localStorage setItem failed for key "${key}":`, e.message);
+                }
+                return false;
+            }
+        }
+
+        /**
          * Initializes dark mode
          */
         function initializeDarkMode() {
             const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            const isDarkMode = safeGetStorage('darkMode') === 'true';
 
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
@@ -976,7 +1013,7 @@
 
             darkModeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
             });
         }
 
