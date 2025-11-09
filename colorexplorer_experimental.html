@@ -1027,21 +1027,22 @@
 
             let svg = `<svg viewBox="0 0 ${size} ${size}" class="mx-auto mb-4 color-wheel" data-harmony-type="${harmonyType}" style="width: ${size}px; height: ${size}px;">`;
 
-            // Reduced to 120 segments for better performance
-            const segments = 120;
+            // Optimized to 60 segments (6° each) for better performance
+            // 50% reduction in DOM elements vs. 120 segments while maintaining visual quality
+            const segments = 60;
             for (let i = 0; i < segments; i++) {
                 const angle1 = (i * 360) / segments;
                 const angle2 = ((i + 1) * 360) / segments;
-                
+
                 // Convert HSL to color for each segment
                 const color = `hsl(${angle1}, 100%, 50%)`;
-                
+
                 // Calculate points for the segment
                 const outer1 = getPointOnCircle(angle1, radius);
                 const outer2 = getPointOnCircle(angle2, radius);
                 const inner1 = getPointOnCircle(angle1, innerRadius);
                 const inner2 = getPointOnCircle(angle2, innerRadius);
-                
+
                 // Create path for segment
                 svg += `<path d="M ${outer1.x} ${outer1.y} A ${radius} ${radius} 0 0 1 ${outer2.x} ${outer2.y} L ${inner2.x} ${inner2.y} A ${innerRadius} ${innerRadius} 0 0 0 ${inner1.x} ${inner1.y} Z" fill="${color}" opacity="0.4" />`;
             }

@@ -1914,9 +1914,75 @@
         }
 
         /**
+         * DOM Element Cache - Caches frequently accessed DOM elements for better performance
+         * Reduces repeated getElementById calls which are slower than direct references
+         */
+        const domCache = {
+            // Main containers
+            dyeSlotsContainer: null,
+            scoreSection: null,
+            paletteSection: null,
+            simulationsSection: null,
+            warningsSection: null,
+            suggestionsSection: null,
+            chartsContainer: null,
+
+            // Vision sliders
+            deuteranopiSlider: null,
+            protanopiSlider: null,
+            tritanopiSlider: null,
+            deuteranopiValue: null,
+            protanopiValue: null,
+            tritanopiValue: null,
+
+            // Toggles
+            enableSecondaryDyes: null,
+            showWarnings: null,
+            showContrast: null,
+            showSuggestions: null,
+
+            // Other
+            darkModeToggle: null
+        };
+
+        /**
+         * Initialize DOM cache - called after page loads
+         * This prevents repeated getElementById calls and improves performance
+         */
+        function initializeDomCache() {
+            // Main containers
+            domCache.dyeSlotsContainer = document.getElementById('dye-slots-container');
+            domCache.scoreSection = document.getElementById('score-section');
+            domCache.paletteSection = document.getElementById('palette-section');
+            domCache.simulationsSection = document.getElementById('simulations-section');
+            domCache.warningsSection = document.getElementById('warnings-section');
+            domCache.suggestionsSection = document.getElementById('suggestions-section');
+            domCache.chartsContainer = document.getElementById('charts-container');
+
+            // Vision sliders
+            domCache.deuteranopiSlider = document.getElementById('deuteranopia-slider');
+            domCache.protanopiSlider = document.getElementById('protanopia-slider');
+            domCache.tritanopiSlider = document.getElementById('tritanopia-slider');
+            domCache.deuteranopiValue = document.getElementById('deuteranopia-value');
+            domCache.protanopiValue = document.getElementById('protanopia-value');
+            domCache.tritanopiValue = document.getElementById('tritanopia-value');
+
+            // Toggles
+            domCache.enableSecondaryDyes = document.getElementById('enable-secondary-dyes');
+            domCache.showWarnings = document.getElementById('show-warnings');
+            domCache.showContrast = document.getElementById('show-contrast');
+            domCache.showSuggestions = document.getElementById('show-suggestions');
+
+            // Other
+            domCache.darkModeToggle = document.getElementById('dark-mode-toggle');
+        }
+
+        /**
          * Handle slider changes
          */
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize DOM cache first for optimal performance
+            initializeDomCache();
             initializeDarkMode();
 
             // Load dye data
@@ -1928,40 +1994,55 @@
                     // Load dyes from URL parameters if available
                     loadDyesFromUrl();
 
-                    // Setup slider listeners
-                    ['deuteranopia', 'protanopia', 'tritanopia'].forEach(vision => {
-                        const slider = document.getElementById(`${vision}-slider`);
-                        const value = document.getElementById(`${vision}-value`);
-
-                        slider.addEventListener('input', (e) => {
-                            value.textContent = e.target.value + '%';
-                            updateVisualization();
-                        });
+                    // Setup slider listeners using cached DOM elements for better performance
+                    [
+                        { slider: domCache.deuteranopiSlider, value: domCache.deuteranopiValue },
+                        { slider: domCache.protanopiSlider, value: domCache.protanopiValue },
+                        { slider: domCache.tritanopiSlider, value: domCache.tritanopiValue }
+                    ].forEach(({ slider, value }) => {
+                        if (slider && value) {
+                            slider.addEventListener('input', (e) => {
+                                value.textContent = e.target.value + '%';
+                                updateVisualization();
+                            });
+                        }
                     });
 
                     // Load secondary dyes preference from localStorage
                     const savedSecondaryDyesState = safeGetStorage('secondaryDyesEnabled');
                     if (savedSecondaryDyesState !== null) {
                         secondaryDyesEnabled = JSON.parse(savedSecondaryDyesState);
-                        document.getElementById('enable-secondary-dyes').checked = secondaryDyesEnabled;
+                        if (domCache.enableSecondaryDyes) {
+                            domCache.enableSecondaryDyes.checked = secondaryDyesEnabled;
+                        }
                         updateSecondaryDyeVisibility();
                     }
 
-                    // Setup secondary dyes toggle
-                    document.getElementById('enable-secondary-dyes').addEventListener('change', (e) => {
-                        secondaryDyesEnabled = e.target.checked;
-                        safeSetStorage('secondaryDyesEnabled', JSON.stringify(secondaryDyesEnabled));
-                        updateSecondaryDyeVisibility();
-                    });
+                    // Setup secondary dyes toggle using cached DOM element
+                    if (domCache.enableSecondaryDyes) {
+                        domCache.enableSecondaryDyes.addEventListener('change', (e) => {
+                            secondaryDyesEnabled = e.target.checked;
+                            safeSetStorage('secondaryDyesEnabled', JSON.stringify(secondaryDyesEnabled));
+                            updateSecondaryDyeVisibility();
+                        });
+                    }
 
-                    // Setup checkbox listeners
-                    ['show-warnings', 'show-contrast', 'show-suggestions'].forEach(id => {
-                        document.getElementById(id).addEventListener('change', updateVisualization);
+                    // Setup checkbox listeners using cached DOM elements
+                    [
+                        { element: domCache.showWarnings, handler: updateVisualization },
+                        { element: domCache.showContrast, handler: updateVisualization },
+                        { element: domCache.showSuggestions, handler: updateVisualization }
+                    ].forEach(({ element, handler }) => {
+                        if (element) {
+                            element.addEventListener('change', handler);
+                        }
                     });
                 })
                 .catch(error => {
                     console.error('Error loading dyes:', error);
-                    document.getElementById('dye-slots-container').innerHTML = '<p class="text-red-600">Error loading dye data.</p>';
+                    if (domCache.dyeSlotsContainer) {
+                        domCache.dyeSlotsContainer.innerHTML = '<p class="text-red-600">Error loading dye data.</p>';
+                    }
                 });
         });
     </script>
