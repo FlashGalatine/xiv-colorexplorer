@@ -5,6 +5,125 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - Phase 6.6 UI Improvements & Bug Fixes - 2025-11-13
+
+**Deployed to Production**: All 4 tools + index.html
+
+### Added
+
+- **Habibi Font Styling for Numeric Displays (Phase 6.6.1)**
+  - Applied `.number` class styling to all numeric displays across all tools
+  - Visual distinction between numbers and text using Habibi serif font
+  - Implemented in:
+    - Color Harmony Explorer: Hex codes, RGB values, HSV values, market prices
+    - Color Matcher: Hex codes, market prices
+    - Color Accessibility Checker: Intensity percentages, accessibility scores, color distances, warning counts
+    - Dye Comparison: Already included in stable build
+  - Enhanced readability and visual hierarchy with serif font for numeric data
+
+- **Enhanced Component Loading System (Phase 6.6.2)**
+  - Improved `loadComponent()` function with minimal fallback UI
+  - Yellow warning banner displays when components fail to load
+  - "Return home" link in fallback UI redirects to index.html
+  - Better error messages with specific failure information
+  - Graceful degradation when navigation or footer fail to load
+
+- **Improved JSON Debugging (Phase 6.6.3)**
+  - Enhanced `safeFetchJSON()` with detailed console logging
+  - Shows HTTP status, Content-Type header, response length
+  - Logs first 300 characters of response for quick debugging
+  - Switched from `response.json()` to `response.text()` with manual JSON.parse() for better error diagnostics
+  - Helps identify Cloudflare Pages compatibility issues
+
+### Fixed
+
+- **HTML Escaping in Color Explorer (Phase 6.6.1)**
+  - Fixed issue where HTML tags were displaying as literal text in acquisition information
+  - Changed `getAcquisitionText()` to return plain text only
+  - Created separate `formatAcquisitionText()` helper function that applies HTML formatting at render time
+  - Used regex pattern `(\d+(?:,\d+)*)` to wrap numbers with `.number` spans
+  - Prevents exposed HTML and ensures consistent Habibi font styling for prices
+
+- **Cloudflare Pages JSON Loading Issue (Phase 6.6.2)**
+  - Fixed "Error loading dyes: SyntaxError: JSON.parse" crash on Cloudflare Pages
+  - Root cause: Corrupted localStorage data causing `JSON.parse()` to fail during initialization
+  - Added try-catch error handling around localStorage JSON parsing in Accessibility Checker
+  - Reset to valid default values when localStorage data is corrupted
+  - Changed JSON file fetch paths from relative (`./assets/json/`) to absolute (`/assets/json/`) for Cloudflare compatibility
+  - Applied to all 4 tools: colors_xiv.json, data-centers.json, worlds.json
+
+- **Color Accessibility Checker localStorage Corruption (Phase 6.6.2)**
+  - Added comprehensive error handling for `secondaryDyesEnabled` localStorage value
+  - Try-catch block with console warning when localStorage contains invalid JSON
+  - Automatic reset to default value (false) when corruption detected
+  - Prevents page initialization crash from corrupted localStorage
+
+- **UI Navigation Positioning (Phase 6.6.3)**
+  - Moved theme switcher and tools dropdown to top-right corner (fixed positioning)
+  - Added responsive breakpoint: reverts to static positioning on screens ≤768px
+  - Prevents mobile overlap with page content
+  - Improved layout with top: 1rem, right: 1rem, z-index: 100
+
+- **Color Matcher Info Button Positioning (Phase 6.6.3)**
+  - Moved info button to display next to version number in header
+  - Prevents overlay with theme/tools dropdown menu
+  - Better visual hierarchy and information architecture
+
+### Changed
+
+- **Version Numbers Updated (Phase 6.6.4)**
+  - All 4 tools updated from v1.4.2 to v1.5.1:
+    - Color Accessibility Checker
+    - Color Harmony Explorer
+    - Color Matcher
+    - Dye Comparison
+  - Updated in tool headers and index.html cards
+
+- **JSON File Paths Standardized**
+  - All tools now use absolute paths for JSON files
+  - `/assets/json/colors_xiv.json` instead of `./assets/json/colors_xiv.json`
+  - `/assets/json/data-centers.json` (Color Explorer)
+  - `/assets/json/worlds.json` (Color Explorer)
+  - Ensures compatibility with Cloudflare Pages and other CDNs
+
+### Technical Details
+
+**Files Modified**:
+- `assets/js/shared-components.js` - Enhanced safeFetchJSON() with detailed logging
+- `colorexplorer_experimental.html` & `stable` - Applied .number styling to hex, RGB, prices; fixed HTML escaping
+- `colormatcher_experimental.html` & `stable` - Applied .number styling to hex and prices
+- `coloraccessibility_experimental.html` & `stable` - Applied .number styling to all numeric displays; fixed localStorage error handling
+- `dyecomparison_experimental.html` & `stable` - Updated version numbers to v1.5.1
+- `components/nav.html` - Fixed positioning for theme switcher (fixed with responsive fallback)
+- `index.html` - Updated all tool version numbers to v1.5.1
+
+**Commits**:
+- Phase 6.6: Component Loading Improvements
+- UI: Move Tools & Theme selection top-right
+- UI: Move Info button next to version number
+- Release v1.5.1 version numbers
+- Aesthetic: Apply Habibi font to numeric displays (Color Explorer & Matcher)
+- Fix: Color Explorer HTML escaping
+- Fix: Use absolute paths for JSON (Cloudflare compatibility)
+- Debug: Improve safeFetchJSON logging
+- Fix: Color Accessibility Checker crashes on corrupted localStorage
+- Aesthetic: Apply Habibi font to numeric displays in Accessibility Checker
+
+### Testing
+
+- ✅ All 4 tools load successfully on Cloudflare Pages
+- ✅ JSON files load with absolute paths
+- ✅ Component fallback UI displays when nav/footer fail
+- ✅ All numeric displays use Habibi font styling
+- ✅ HTML text in acquisition fields displays correctly (no exposed tags)
+- ✅ Theme switcher positioned in top-right corner
+- ✅ Theme switcher responsive on mobile (reverts to static)
+- ✅ All 10 themes work correctly with new styling
+- ✅ localStorage corruption handled gracefully
+- ✅ No JavaScript errors in console on any tool
+
+---
+
 ## [1.5.0] - Phase 6 Advanced Code Refactoring - 2025-11-13
 
 **Deployed to Production**: All 4 tools + index.html
