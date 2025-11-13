@@ -24,14 +24,6 @@
     <!-- Shared Styles -->
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <style>
-        body.dark-mode .tool-card {
-            background-color: #4b5563;
-            border-color: #6b7280;
-        }
-        body.dark-mode .tool-card:hover {
-            background-color: #374151;
-            border-color: #9ca3af;
-        }
         .tool-card {
             transition: all 0.3s ease;
         }
@@ -39,23 +31,36 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
-        body.dark-mode .tool-card:hover {
+
+        /* Theme-aware styles */
+        body.dark-mode .tool-card,
+        body.hydaelyn-dark .tool-card,
+        body.classic-ff-dark .tool-card,
+        body.parchment-dark .tool-card,
+        body.sugar-riot-dark .tool-card {
+            background-color: var(--theme-card-bg);
+            border-color: var(--theme-border);
+        }
+
+        body.dark-mode .tool-card:hover,
+        body.hydaelyn-dark .tool-card:hover,
+        body.classic-ff-dark .tool-card:hover,
+        body.parchment-dark .tool-card:hover,
+        body.sugar-riot-dark .tool-card:hover {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
-        body.dark-mode .bg-amber-50 {
-            background-color: #78350f;
+
+        #theme-menu {
+            background-color: var(--theme-bg);
+            border-color: var(--theme-border);
         }
-        body.dark-mode .border-amber-200 {
-            border-color: #b45309;
+
+        #theme-menu .theme-option {
+            color: var(--theme-text);
         }
-        body.dark-mode .text-amber-600 {
-            color: #fbbf24;
-        }
-        body.dark-mode .text-amber-900 {
-            color: #fcd34d;
-        }
-        body.dark-mode .text-amber-800 {
-            color: #fcd34d;
+
+        #theme-menu .theme-option:hover {
+            background-color: var(--theme-bg-secondary);
         }
     </style>
 </head>
@@ -63,13 +68,71 @@
 
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-12">
-            <div class="flex justify-center items-center gap-4 mb-4">
+            <div class="flex justify-center items-center gap-4 mb-4 flex-wrap">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900">XIV Dye Tools</h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode" onclick="toggleDarkMode()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
+                <!-- Theme Dropdown -->
+                <div class="relative inline-block">
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700 flex items-center gap-2" title="Select theme">
+                        <span id="theme-label" class="text-sm font-medium">Theme</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                        <div class="p-3 space-y-2">
+                            <!-- Standard Light -->
+                            <button onclick="setTheme('standard-light')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="standard-light">
+                                <span class="w-4 h-4 rounded bg-white border-2 border-gray-300"></span>
+                                Standard Light
+                            </button>
+                            <!-- Standard Dark -->
+                            <button onclick="setTheme('standard-dark')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="standard-dark">
+                                <span class="w-4 h-4 rounded bg-gray-900 border-2 border-gray-300"></span>
+                                Standard Dark
+                            </button>
+                            <!-- Hydaelyn Light -->
+                            <button onclick="setTheme('hydaelyn-light')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="hydaelyn-light">
+                                <span class="w-4 h-4 rounded bg-blue-100 border-2 border-blue-400"></span>
+                                Hydaelyn Light
+                            </button>
+                            <!-- Hydaelyn Dark -->
+                            <button onclick="setTheme('hydaelyn-dark')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="hydaelyn-dark">
+                                <span class="w-4 h-4 rounded bg-blue-900 border-2 border-blue-500"></span>
+                                Hydaelyn Dark
+                            </button>
+                            <!-- Classic FF Light -->
+                            <button onclick="setTheme('classic-ff-light')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="classic-ff-light">
+                                <span class="w-4 h-4 rounded bg-yellow-50 border-2 border-yellow-600"></span>
+                                Classic FF Light
+                            </button>
+                            <!-- Classic FF Dark -->
+                            <button onclick="setTheme('classic-ff-dark')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="classic-ff-dark">
+                                <span class="w-4 h-4 rounded bg-yellow-900 border-2 border-yellow-600"></span>
+                                Classic FF Dark
+                            </button>
+                            <!-- Parchment Light -->
+                            <button onclick="setTheme('parchment-light')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="parchment-light">
+                                <span class="w-4 h-4 rounded bg-amber-100 border-2 border-amber-600"></span>
+                                Parchment Light
+                            </button>
+                            <!-- Parchment Dark -->
+                            <button onclick="setTheme('parchment-dark')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="parchment-dark">
+                                <span class="w-4 h-4 rounded bg-amber-900 border-2 border-amber-700"></span>
+                                Parchment Dark
+                            </button>
+                            <!-- Sugar Riot Light -->
+                            <button onclick="setTheme('sugar-riot-light')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="sugar-riot-light">
+                                <span class="w-4 h-4 rounded bg-pink-100 border-2 border-pink-500"></span>
+                                Sugar Riot Light
+                            </button>
+                            <!-- Sugar Riot Dark -->
+                            <button onclick="setTheme('sugar-riot-dark')" class="theme-option w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition flex items-center gap-2 text-sm" data-theme="sugar-riot-dark">
+                                <span class="w-4 h-4 rounded bg-pink-900 border-2 border-pink-600"></span>
+                                Sugar Riot Dark
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 A comprehensive suite of color and dye utilities for Final Fantasy XIV players.
@@ -180,8 +243,8 @@
                 <h3 class="text-xl font-bold text-gray-900 mb-4">All Tools Feature</h3>
                 <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
                     <div>
-                        <h4 class="font-semibold text-gray-900 mb-2">🌓 Dark Mode</h4>
-                        <p>Toggle between light and dark themes with persistent preference storage across all tools.</p>
+                        <h4 class="font-semibold text-gray-900 mb-2">🎨 10 Theme Variants</h4>
+                        <p>Choose from 5 theme families (Standard, Hydaelyn, Classic FF, Parchment, Sugar Riot) in light and dark modes with persistent storage.</p>
                     </div>
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-2">📊 Complete Dye Database</h4>
@@ -198,6 +261,92 @@
     </div>
 
     <div id="footer-container" class="component-loading"></div>
+
+    <script>
+        /**
+         * Initialize theme system on index.html
+         * Loads saved theme from localStorage and sets up dropdown toggle
+         */
+        function initThemeSystem() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeMenu = document.getElementById('theme-menu');
+            const themeLabelElement = document.getElementById('theme-label');
+
+            // Load saved theme from localStorage
+            const savedTheme = localStorage.getItem('xivdyetools_theme') || 'standard-light';
+            setTheme(savedTheme);
+
+            // Toggle theme menu on button click
+            if (themeToggle) {
+                themeToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    themeMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('[id="theme-toggle"], [id="theme-menu"]')) {
+                    if (themeMenu) {
+                        themeMenu.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        /**
+         * Set theme and update localStorage
+         */
+        function setTheme(themeName) {
+            // Map theme names to display labels
+            const themeLabels = {
+                'standard-light': 'Standard Light',
+                'standard-dark': 'Standard Dark',
+                'hydaelyn-light': 'Hydaelyn Light',
+                'hydaelyn-dark': 'Hydaelyn Dark',
+                'classic-ff-light': 'Classic FF Light',
+                'classic-ff-dark': 'Classic FF Dark',
+                'parchment-light': 'Parchment Light',
+                'parchment-dark': 'Parchment Dark',
+                'sugar-riot-light': 'Sugar Riot Light',
+                'sugar-riot-dark': 'Sugar Riot Dark'
+            };
+
+            // Remove all theme classes
+            document.body.classList.remove(
+                'dark-mode',
+                'hydaelyn-light', 'hydaelyn-dark',
+                'classic-ff-light', 'classic-ff-dark',
+                'parchment-light', 'parchment-dark',
+                'sugar-riot-light', 'sugar-riot-dark'
+            );
+
+            // Add new theme class
+            document.body.classList.add(themeName);
+
+            // Update label
+            const themeLabelElement = document.getElementById('theme-label');
+            if (themeLabelElement) {
+                themeLabelElement.textContent = themeLabels[themeName] || 'Theme';
+            }
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('xivdyetools_theme', themeName);
+            } catch (e) {
+                console.warn('Failed to save theme to localStorage:', e);
+            }
+
+            // Close menu
+            const themeMenu = document.getElementById('theme-menu');
+            if (themeMenu) {
+                themeMenu.classList.add('hidden');
+            }
+        }
+
+        // Initialize theme system when DOM is ready
+        document.addEventListener('DOMContentLoaded', initThemeSystem);
+    </script>
 
     <!-- Shared Components Script -->
     <script src="assets/js/shared-components.js"></script>
