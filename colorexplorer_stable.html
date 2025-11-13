@@ -1430,15 +1430,14 @@
         }
 
         /**
-         * Gets display HTML for acquisition/price (with Habibi font for numbers)
+         * Gets display text for acquisition/price (plain text - HTML formatting handled at display level)
          */
         function getAcquisitionText(color) {
             const showPrices = document.getElementById('show-market-prices-toggle').checked;
 
             // If toggle is off, always show original acquisition
             if (!showPrices) {
-                const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
-                return color.acquisition + priceDisplay;
+                return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
             }
 
             // Toggle is on, show market prices if available
@@ -1449,23 +1448,29 @@
             console.log(`getAcquisitionText: ${color.name}, itemID=${color.itemID}, itemIdKey=${itemIdKey}, showPrices=${showPrices}, shouldFetch=${shouldFetch}, hasCache=${itemIdKey ? !!priceCache[itemIdKey] : false}, cacheValue=${itemIdKey ? priceCache[itemIdKey] : 'N/A'}`);
 
             if (shouldFetch && itemIdKey && priceCache[itemIdKey]) {
-                const result = `Market Board - <span class="number">${priceCache[itemIdKey].toLocaleString()}</span> Gil`;
+                const result = `Market Board - ${priceCache[itemIdKey].toLocaleString()} Gil`;
                 console.log(`  -> Returning market price: ${result}`);
                 return result;
             }
 
             if (shouldFetch && itemIdKey && !priceCache[itemIdKey]) {
-                const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
                 if (lastPriceUpdate) {
-                    return `${color.acquisition}${priceDisplay} (Sold Out)`;
+                    return `${color.acquisition}${color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : ''} (Sold Out)`;
                 }
-                return color.acquisition + priceDisplay;
+                return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
             }
 
-            const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
-            const result = color.acquisition + priceDisplay;
+            const result = color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
             console.log(`  -> Returning acquisition text: ${result}`);
             return result;
+        }
+
+        /**
+         * Format acquisition text with Habibi font for numbers
+         */
+        function formatAcquisitionText(text) {
+            // Replace price amounts with Habibi-styled spans
+            return text.replace(/(\d+(?:,\d+)*)/g, '<span class="number">$1</span>');
         }
 
         /**
@@ -1517,7 +1522,7 @@
                             ${devianceRating !== null ? `<span class="${badgeColor} ${badgeTextColor} text-xs px-2 py-0.5 rounded-full font-medium" style="cursor: pointer;" onmouseenter="showDevianceLine('${color.hex}', '${harmonyType}', '${strokeColor}')" onmouseleave="hideDevianceLine('${harmonyType}')">${badgeText}</span>` : ''}
                         </div>
                         <div class="text-sm opacity-80"><span class="number">${color.hex.toUpperCase()}</span></div>
-                        ${acquisitionText ? `<div class="text-xs opacity-70 mt-1" style="display: inline-block;">${acquisitionText}</div>` : ''}
+                        ${acquisitionText ? `<div class="text-xs opacity-70 mt-1" style="display: inline-block;">${formatAcquisitionText(acquisitionText)}</div>` : ''}
                     </div>
                     <button
                         onclick="copyToClipboard('${color.hex}')"
@@ -1547,7 +1552,7 @@
                 <h2 class="text-2xl font-bold ${selectedTextColor}">${baseColor.name}</h2>
                 <p class="text-lg ${selectedTextColor} opacity-90"><span class="number">${baseColor.hex.toUpperCase()}</span></p>
                 <p class="text-sm ${selectedTextColor} opacity-80">RGB: (<span class="number">${baseColor.rgb.r}</span>, <span class="number">${baseColor.rgb.g}</span>, <span class="number">${baseColor.rgb.b}</span>)</p>
-                ${getAcquisitionText(baseColor) ? `<p class="text-sm ${selectedTextColor} opacity-75 mt-2">Acquisition: ${getAcquisitionText(baseColor)}</p>` : ''}
+                ${getAcquisitionText(baseColor) ? `<p class="text-sm ${selectedTextColor} opacity-75 mt-2">Acquisition: ${formatAcquisitionText(getAcquisitionText(baseColor))}</p>` : ''}
                 <button 
                     onclick="copyToClipboard('${baseColor.hex}')"
                     class="mt-4 px-4 py-2 ${selectedTextColor === 'text-black' ? 'bg-black/10 hover:bg-black/20' : 'bg-white/20 hover:bg-white/30'} ${selectedTextColor} rounded-lg transition"
