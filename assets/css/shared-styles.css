@@ -224,12 +224,12 @@ button:hover, input[type="button"]:hover, input[type="submit"]:hover {
 
 /* ===== TOGGLE SWITCH STYLES ===== */
 .toggle-bg {
-    background-color: #d1d5db;
+    background-color: var(--theme-bg-tertiary);
     transition: background-color 0.3s ease;
 }
 
 input:checked + .toggle-bg {
-    background-color: #4f46e5;
+    background-color: var(--theme-primary);
 }
 
 .toggle-dot {
@@ -240,12 +240,10 @@ input:checked + .toggle-bg + .toggle-dot {
     left: calc(100% - 1.25rem);
 }
 
-body.dark-mode .toggle-bg {
-    background-color: #4b5563;
-}
-
-body.dark-mode input:checked + .toggle-bg {
-    background-color: #6366f1;
+/* ===== RANGE SLIDER STYLES ===== */
+/* Vision Type Simulation sliders and other range inputs */
+input[type="range"] {
+    accent-color: var(--theme-primary) !important;
 }
 
 /* ===== EXPERIMENTAL BADGE ===== */
