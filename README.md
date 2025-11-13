@@ -10,7 +10,7 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### ♿ Color Accessibility Checker (v1.0.1 - BETA)
+### ♿ Color Accessibility Checker (v1.4.2)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
 
 > **⚠ BETA Notice:** This tool uses scientific colorblindness simulation algorithms (Brettel 1997), but has not been validated with actual colorblind players. We recommend testing with real users for critical designs. Feedback from users with colorblindness experience is greatly appreciated!
@@ -44,7 +44,7 @@ Simulate how FFXIV dyes appear to players with colorblindness and ensure your gl
 - Proper dark mode colors for buttons, banners, and containers
 - Persistent preference storage
 
-### 🎨 Color Harmony Explorer (v1.2.3)
+### 🎨 Color Harmony Explorer (v1.4.2)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
 - **Complementary** - Colors opposite on the color wheel
 - **Analogous** - Colors adjacent on the color wheel
@@ -61,7 +61,7 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v1.3.0)
+### 🔍 Color Matcher (v1.4.2)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
 **New in v1.3.0:**
@@ -123,7 +123,7 @@ Upload an image or pick a color to find the closest matching FFXIV dye with an i
 - Matches Color Explorer's dark mode theme
 - All controls styled for both light and dark modes including dropdowns
 
-### ⚖️ Dye Comparison (v1.2.3)
+### ⚖️ Dye Comparison (v1.4.2)
 Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Core Comparison Features:**
@@ -226,11 +226,11 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
   - Showcases all four released stable tools in a beautiful grid layout
   - Quick access to experimental features
   - Feature highlights and navigation
-- **Color Accessibility Checker (Stable v1.0.1 BETA)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
-- **Color Harmony Explorer (Stable v1.2.3)**: Open `colorexplorer_stable.html` for the main tool
-- **Color Harmony Explorer (Experimental v1.2.3)**: Open `colorexplorer_experimental.html` for testing new features
-- **Color Matcher (Stable v1.3.0)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
-- **Dye Comparison (Stable v1.2.3)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
+- **Color Accessibility Checker (Stable v1.4.2)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
+- **Color Harmony Explorer (Stable v1.4.2)**: Open `colorexplorer_stable.html` for the main tool
+- **Color Harmony Explorer (Experimental v1.4.2)**: Open `colorexplorer_experimental.html` for testing new features
+- **Color Matcher (Stable v1.4.2)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
+- **Dye Comparison (Stable v1.4.2)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
 
 No installation or server required! All tools work directly in your browser.
@@ -265,10 +265,10 @@ That's it! No installation or build process needed.
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
 3. **Access all four tools** from the portal:
-   - Color Accessibility Checker (v1.0.1 BETA)
-   - Color Harmony Explorer (v1.2.3)
-   - Color Matcher (v1.3.0)
-   - Dye Comparison (v1.2.3)
+   - Color Accessibility Checker (v1.4.2)
+   - Color Harmony Explorer (v1.4.2)
+   - Color Matcher (v1.4.2)
+   - Dye Comparison (v1.4.2)
 4. **Develop new features**:
    - Edit `colorexplorer_experimental.html` for testing Color Harmony Explorer enhancements
    - Edit `coloraccessibility_experimental.html` for testing Color Accessibility Checker enhancements
