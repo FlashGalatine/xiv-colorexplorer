@@ -49,169 +49,17 @@
         body.sugar-riot-dark .tool-card:hover {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
-
-        /* Theme Switcher Component Styles (from components/nav.html) */
-        .theme-switcher {
-            position: relative;
-            display: inline-block;
-        }
-
-        .theme-switcher-toggle {
-            background-color: transparent;
-            border: none;
-            color: var(--theme-primary);
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: color 0.2s;
-            border-radius: 0.375rem;
-        }
-
-        .theme-switcher-toggle:hover {
-            color: var(--theme-primary-hover);
-            background-color: var(--theme-bg-secondary);
-        }
-
-        .theme-switcher-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: var(--theme-bg);
-            border: 1px solid var(--theme-border);
-            border-radius: 0.5rem;
-            min-width: 180px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .theme-group-label {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--theme-text-muted);
-            letter-spacing: 0.05em;
-        }
-
-        .theme-switcher-menu.show {
-            display: block;
-        }
-
-        .theme-option {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            background-color: transparent;
-            border: none;
-            color: var(--theme-text);
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-        }
-
-        .theme-option:hover {
-            background-color: var(--theme-bg-secondary);
-        }
-
-        .theme-dot {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 0.25rem;
-            flex-shrink: 0;
-        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navigation Container (loaded dynamically from components/nav.html) -->
+    <div id="nav-container" class="component-loading"></div>
 
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-12">
             <div class="flex justify-center items-center gap-4 mb-4 flex-wrap">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900">XIV Dye Tools</h1>
-                <!-- Theme Switcher Component -->
-                <div class="theme-switcher inline-block ml-4">
-                    <button class="theme-switcher-toggle" onclick="toggleThemeSwitcher(this)" title="Change theme and appearance">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                        </svg>
-                        <span class="text-xs ml-1">Theme</span>
-                    </button>
-                    <div class="theme-switcher-menu">
-                        <!-- Standard Themes -->
-                        <div class="theme-group-label">Standard</div>
-                        <button class="theme-option" onclick="setTheme('standard-light')">
-                            <span class="theme-dot" style="background-color: #ffffff; border: 1px solid #e5e7eb;"></span>
-                            Light
-                        </button>
-                        <button class="theme-option" onclick="setTheme('standard-dark')">
-                            <span class="theme-dot" style="background-color: #1f2937;"></span>
-                            Dark
-                        </button>
-
-                        <hr style="margin: 0.5rem 0; opacity: 0.2;">
-
-                        <!-- Hydaelyn Themes -->
-                        <div class="theme-group-label">Hydaelyn</div>
-                        <button class="theme-option" onclick="setTheme('hydaelyn-light')">
-                            <span class="theme-dot" style="background-color: #f0f9ff;"></span>
-                            Light
-                        </button>
-                        <button class="theme-option" onclick="setTheme('hydaelyn-dark')">
-                            <span class="theme-dot" style="background-color: #082f49;"></span>
-                            Dark
-                        </button>
-
-                        <hr style="margin: 0.5rem 0; opacity: 0.2;">
-
-                        <!-- Classic FF Themes -->
-                        <div class="theme-group-label">Classic FF</div>
-                        <button class="theme-option" onclick="setTheme('classic-ff-light')">
-                            <span class="theme-dot" style="background-color: #1e40af;"></span>
-                            Light
-                        </button>
-                        <button class="theme-option" onclick="setTheme('classic-ff-dark')">
-                            <span class="theme-dot" style="background-color: #030712;"></span>
-                            Dark
-                        </button>
-
-                        <hr style="margin: 0.5rem 0; opacity: 0.2;">
-
-                        <!-- Parchment Themes -->
-                        <div class="theme-group-label">Parchment</div>
-                        <button class="theme-option" onclick="setTheme('parchment-light')">
-                            <span class="theme-dot" style="background-color: #fef3c7;"></span>
-                            Light
-                        </button>
-                        <button class="theme-option" onclick="setTheme('parchment-dark')">
-                            <span class="theme-dot" style="background-color: #292415;"></span>
-                            Dark
-                        </button>
-
-                        <hr style="margin: 0.5rem 0; opacity: 0.2;">
-
-                        <!-- Sugar Riot Themes -->
-                        <div class="theme-group-label">Sugar Riot</div>
-                        <button class="theme-option" onclick="setTheme('sugar-riot-light')">
-                            <span class="theme-dot" style="background-color: #fce7f3;"></span>
-                            Light
-                        </button>
-                        <button class="theme-option" onclick="setTheme('sugar-riot-dark')">
-                            <span class="theme-dot" style="background-color: #500724;"></span>
-                            Dark
-                        </button>
-                    </div>
-                </div>
             </div>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 A comprehensive suite of color and dye utilities for Final Fantasy XIV players.
@@ -341,7 +189,7 @@
 
     <div id="footer-container" class="component-loading"></div>
 
-    <!-- Shared Components Script (includes theme system functions) -->
+    <!-- Shared Components Script (includes theme system and automatic initialization) -->
     <script src="assets/js/shared-components.js"></script>
 
 </body>

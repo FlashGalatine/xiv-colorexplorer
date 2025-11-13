@@ -76,6 +76,258 @@ XIVDyeTools/
 - [ ] Browser console shows no errors or warnings
 - [ ] All error scenarios tested (missing data, API failures, invalid input)
 
+**Manual Testing Steps for localStorage Persistence**:
+1. Open tool in browser and make a change (select theme, toggle feature, etc.)
+2. Open DevTools (F12), go to Application tab → Storage → localStorage
+3. Verify the key was saved (e.g., `xivdyetools_theme`)
+4. Refresh page (Ctrl+R / Cmd+R) and confirm change persisted
+5. Hard refresh (Ctrl+Shift+R / Cmd+Shift+R) to clear cache, verify again
+6. Close and reopen browser window to test session persistence
+
+**Browser Testing Priority Order**:
+1. Chrome (primary - most users)
+2. Firefox (secondary - good compatibility)
+3. Edge (Chromium-based, usually works if Chrome works)
+4. Safari (last - most likely to have quirks)
+
+**Checking Console for Errors**:
+1. Open DevTools (F12)
+2. Go to Console tab
+3. Filter by "Error" (red badge in top-left)
+4. Filter by "Warning" (yellow badge)
+5. All filters should show 0 items before syncing
+
+## Quick Commands & Development Workflow
+
+### Running Local Preview
+
+**Option 1: Python (Built-in on Mac/Linux)**:
+```bash
+# Navigate to project directory
+cd /path/to/XIVDyeTools
+
+# Python 3.x
+python -m http.server 8000
+
+# Python 2.x (deprecated)
+python -m SimpleHTTPServer 8000
+
+# Then open: http://localhost:8000
+```
+
+**Option 2: Node.js (if installed)**:
+```bash
+# Install globally once
+npm install -g http-server
+
+# Run from project directory
+http-server
+
+# Then open: http://localhost:8080
+```
+
+**Why Local Preview Matters**:
+- Components load via `fetch()` - requires HTTP, not `file://` protocol
+- Without HTTP server, you'll see: `fetch() errors`, missing nav/footer, broken components
+- Always use local preview when testing experimental versions
+
+### Syncing Experimental to Stable (Windows Commands)
+
+```bash
+# Copy all 4 experimental → stable (Windows PowerShell)
+Copy-Item "coloraccessibility_experimental.html" "coloraccessibility_stable.html"
+Copy-Item "colorexplorer_experimental.html" "colorexplorer_stable.html"
+Copy-Item "colormatcher_experimental.html" "colormatcher_stable.html"
+Copy-Item "dyecomparison_experimental.html" "dyecomparison_stable.html"
+
+# Or using Windows Command Prompt (cmd.exe)
+copy coloraccessibility_experimental.html coloraccessibility_stable.html
+copy colorexplorer_experimental.html colorexplorer_stable.html
+copy colormatcher_experimental.html colormatcher_stable.html
+copy dyecomparison_experimental.html dyecomparison_stable.html
+
+# Verify copies were successful
+dir *_stable.html
+```
+
+### Searching the Codebase
+
+**Find all uses of a utility function**:
+```bash
+# Search for "getColorDistance" in all tool files
+grep -r "getColorDistance" *.html
+
+# Count occurrences
+grep -c "getColorDistance" colorexplorer_experimental.html
+```
+
+**Find hardcoded color references**:
+```bash
+# Search for hex color pattern
+grep -E "#[0-9A-Fa-f]{6}" coloraccessibility_experimental.html | head -20
+
+# Find all theme-related code
+grep -r "body\..*-light\|body\..*-dark" assets/css/
+```
+
+**Find localStorage key usage**:
+```bash
+# See all localStorage interactions
+grep -n "localStorage\|safeGetStorage\|safeSetStorage" colormatcher_experimental.html
+```
+
+## Common Gotchas & Warnings
+
+### 1. Monolithic File Sizes (1,500-1,900 lines)
+
+**⚠️ Problem**:
+- Each tool is a single massive HTML file
+- Hard to search and review in git diffs
+- Difficult for new contributors to understand
+
+**How to Work Around It**:
+- Use browser Find (Ctrl+F / Cmd+F) to locate specific functions
+- Search for section headers: `<!-- SECTION: SHARED UTILITIES -->` or `<!-- EVENT LISTENERS -->`
+- When editing, note the line numbers for reference
+- Use git blame to find when large blocks were added
+
+**Example Search Pattern**:
+- `getColorDistance` - color utility functions (shared)
+- `drawHueSaturationChart` - visualization code (tool-specific)
+- `addEventListener` - event binding section
+
+### 2. Code Duplication Across Tools
+
+**⚠️ Problem**:
+- Same utility functions repeated in each of the 4 tools (~200 lines each)
+- Many shared functions moved to `shared-components.js`, but some still duplicated
+- Total duplication: ~1,600+ lines across all tools
+
+**How to Handle**:
+- Always check `shared-components.js` first before adding utilities
+- If adding new utility, add to shared file AND all 4 tools (or refactor to remove duplication)
+- Comment duplicated code with: `// Duplicated in: tool1, tool2, tool3 (TODO: centralize)`
+
+**Example - Color Conversion**:
+```javascript
+// SHARED: in assets/js/shared-components.js
+function hexToRgb(hex) { ... }
+
+// STILL DUPLICATED in some older sections but should use shared version
+// When refactoring, remove local copy and use: hexToRgb() from shared
+```
+
+### 3. Version Number Synchronization
+
+**⚠️ Problem**:
+- All 4 tools must stay on same major.minor version (e.g., v1.5.0)
+- If you bump one tool, **you must bump all 4**
+- Version appears in multiple locations: file headers, version comments, README
+
+**When Bumping Version** (e.g., v1.4.2 → v1.5.0):
+
+1. **Search all experimental files**:
+   ```bash
+   grep -n "1.4.2" coloraccessibility_experimental.html colorexplorer_experimental.html colormatcher_experimental.html dyecomparison_experimental.html
+   ```
+
+2. **Update all 4 tool files** (experimental):
+   ```
+   Line 1: <!-- Color Accessibility Checker v1.4.2 → v1.5.0 -->
+   Line ~50: <span>v1.4.2</span> → <span>v1.5.0</span>
+   ```
+
+3. **Update index.html** (portal page):
+   ```bash
+   grep -n "1.4.2\|1.5.0" index.html
+   ```
+
+4. **Update CHANGELOG.md**:
+   ```markdown
+   ## v1.5.0 - November 13, 2025
+   - New features
+   - Bug fixes
+   - Improvements
+   ```
+
+5. **Sync experimental → stable** (copy all files)
+
+6. **Commit with version message**:
+   ```bash
+   git add .
+   git commit -m "Release: v1.5.0 - [description]"
+   ```
+
+### 4. Component Loading Requires HTTP Server
+
+**⚠️ Problem**:
+- Tools load nav/footer via `fetch('components/nav.html')`
+- `fetch()` doesn't work with `file://` protocol (browser security)
+- Opening HTML files directly in browser: Components won't load, console error
+
+**Solution**:
+- Always use `http://localhost:8000` (or similar)
+- Never use `file:///C:/Users/.../index.html`
+- See "Running Local Preview" section above
+
+**Error Message You'll See**:
+```
+Uncaught (in promise) TypeError: Failed to fetch
+```
+
+## Detailed Testing Workflow
+
+### Before Syncing to Stable: Complete Test Suite
+
+**1. Component & Theme Testing**:
+- [ ] Open in Chrome dev tools, check theme dropdown loads
+- [ ] Switch to each theme (Standard, Hydaelyn, Classic FF, Parchment, Sugar Riot)
+- [ ] Verify light/dark variants switch correctly
+- [ ] Check that theme persists after refresh
+
+**2. Functionality Testing** (per tool):
+- **Color Accessibility Checker**:
+  - [ ] All 4 vision types produce different outputs
+  - [ ] Accessibility score updates correctly
+  - [ ] Dual dyes toggle works and persists
+
+- **Color Harmony Explorer**:
+  - [ ] All 6 harmony types display
+  - [ ] Color wheel highlights work
+  - [ ] Zoom functionality opens/closes correctly
+  - [ ] Market prices fetch and display
+
+- **Color Matcher**:
+  - [ ] Drag-drop works
+  - [ ] Clipboard paste works (Ctrl+V / Cmd+V)
+  - [ ] Color picker works
+  - [ ] Eyedropper tool works
+
+- **Dye Comparison**:
+  - [ ] All 3 charts render (distance matrix, hue-sat, brightness)
+  - [ ] Charts show all 4 quadrants if all dyes selected
+  - [ ] Export formats are valid (JSON, CSS)
+
+**3. localStorage & Persistence Testing**:
+- [ ] Select a theme → refresh → theme persists
+- [ ] Enable Dual Dyes in Accessibility → refresh → persists
+- [ ] Open DevTools → Application → localStorage → verify keys exist
+- [ ] Hard refresh (Ctrl+Shift+R) → theme still persists
+
+**4. Console & Error Checking**:
+- [ ] F12 to open DevTools
+- [ ] Go to Console tab
+- [ ] Look for **red errors** (X icon) - should have NONE
+- [ ] Look for **yellow warnings** - should have NONE or just browser safe warnings
+- [ ] If any errors, note them and fix before syncing
+
+**5. Responsive Design Testing**:
+- [ ] Resize browser to 1080p width
+- [ ] Resize to tablet (768px)
+- [ ] Resize to mobile (375px)
+- [ ] Check that layouts stack properly
+- [ ] Check that buttons are still clickable on mobile
+
 ## Phase 4.1: Theme System (COMPLETE)
 
 ### What Changed

@@ -405,6 +405,55 @@ class APIThrottler {
 // Available to all tools and pages that load shared-components.js
 const apiThrottler = new APIThrottler(500);
 
+// ===== MIGRATION FUNCTIONS =====
+/**
+ * Migrate legacy dark mode preferences to new unified theme system
+ * Gracefully converts old tool-specific localStorage keys to new system
+ *
+ * Legacy keys: colorMatcher_darkMode, colorExplorer_darkMode, dyeComparison_darkMode
+ * New key: xivdyetools_theme (unified across all tools)
+ *
+ * Migration logic:
+ * 1. If new key already exists, skip migration (already migrated)
+ * 2. Check for any old dark mode keys
+ * 3. If found, convert to appropriate theme (standard-dark or standard-light)
+ * 4. Clean up old keys to prevent confusion
+ */
+function migrateThemePreferences() {
+    const oldKeys = [
+        'colorMatcher_darkMode',
+        'colorExplorer_darkMode',
+        'dyeComparison_darkMode'
+    ];
+    const newKey = THEME_KEY; // 'xivdyetools_theme'
+
+    // Guard: If already migrated, don't process again
+    if (safeGetStorage(newKey, null) !== null) {
+        return;
+    }
+
+    // Check for any old dark mode setting
+    for (const oldKey of oldKeys) {
+        const wasDarkMode = safeGetStorage(oldKey, null);
+        if (wasDarkMode === 'true') {
+            // User had dark mode enabled - migrate to dark theme
+            safeSetStorage(newKey, 'standard-dark');
+            console.log(`Migrated theme preference from ${oldKey} (dark) to ${newKey}`);
+            break;
+        }
+    }
+
+    // If no migration occurred, set default light theme
+    if (safeGetStorage(newKey, null) === null) {
+        safeSetStorage(newKey, 'standard-light');
+    }
+
+    // Clean up old keys to prevent confusion
+    oldKeys.forEach(key => {
+        localStorage.removeItem(key);
+    });
+}
+
 // ===== THEME FUNCTIONS =====
 /**
  * Available unified themes with light/dark variants
@@ -531,6 +580,8 @@ function toggleThemeSwitcher(button) {
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
  * Load an external component HTML file and insert it into the DOM
+ * Includes graceful fallback for network/loading failures
+ *
  * @param {string} url - The URL of the component file
  * @param {string} containerId - The ID of the container element
  */
@@ -549,10 +600,16 @@ async function loadComponent(url, containerId) {
         }
     } catch (error) {
         console.error(`Failed to load component from ${url}:`, error);
-        // Fallback: show error message in container
+
+        // Show minimal fallback UI
         const container = document.getElementById(containerId);
         if (container) {
-            container.innerHTML = `<p style="color: #d32f2f; padding: 1rem;">Failed to load component. Please refresh the page.</p>`;
+            container.innerHTML = `
+                <div style="padding: 0.75rem; background-color: #fff3cd; color: #856404; border-radius: 4px; font-size: 12px;">
+                    <small><strong>⚠️</strong> Navigation unavailable (${error.message}).
+                    <a href="index.html" style="color: #856404; text-decoration: underline;">Return home</a></small>
+                </div>
+            `;
         }
     }
 }
@@ -805,9 +862,16 @@ function formatPrice(price) {
 /**
  * Initialize all shared functionality when DOM is ready
  * Wrapped in try-catch to prevent errors from blocking tool initialization
+ *
+ * Initialization order:
+ * 1. migrateThemePreferences() - Convert legacy dark mode to new theme system
+ * 2. initTheme() - Apply saved theme from localStorage
+ * 3. initComponents() - Load nav and footer from component files
+ * 4. removeLoadingPlaceholders() - Clean up loading indicators
  */
 document.addEventListener('DOMContentLoaded', () => {
     try {
+        migrateThemePreferences();     // Migrate old dark mode keys to new system
         initTheme();                   // Theme now handles both light/dark modes
         initComponents();
         removeLoadingPlaceholders();
