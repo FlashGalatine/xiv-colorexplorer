@@ -28,9 +28,9 @@
         /* Dark mode and shared styles are in assets/css/shared-styles.css */
         /* Tool-specific styles below */
 
-        /* Tool-specific dark mode overrides */
-        body.dark-mode #canvasWrapper {
-            background-color: #1f2937;
+        /* Canvas wrapper uses theme background */
+        #canvasWrapper {
+            background-color: var(--theme-bg);
         }
         #canvasWrapper {
             position: relative;
@@ -62,13 +62,13 @@
             background-color: rgba(59, 130, 246, 0.1);
         }
         /* Nav dropdown styles moved to shared-styles.css */
-        /* Toggle switch styles */
+        /* Toggle switch styles using theme variables */
         .toggle-bg {
-            background-color: #d1d5db;
+            background-color: var(--theme-bg-tertiary);
             transition: background-color 0.3s ease;
         }
         input:checked + .toggle-bg {
-            background-color: #4f46e5;
+            background-color: var(--theme-primary);
         }
         .toggle-dot {
             transition: left 0.3s ease;
@@ -76,54 +76,49 @@
         input:checked + .toggle-bg + .toggle-dot {
             left: calc(100% - 1.25rem);
         }
-        body.dark-mode .toggle-bg {
-            background-color: #4b5563;
+        /* Theme-aware element styling */
+        .bg-gray-50 {
+            background-color: var(--theme-bg-tertiary);
         }
-        body.dark-mode input:checked + .toggle-bg {
-            background-color: #6366f1;
+        .bg-gray-50 .text-gray-700 {
+            color: var(--theme-text-muted);
         }
-        body.dark-mode .bg-gray-50 {
-            background-color: #4b5563;
+        /* Theme-aware text color overrides */
+        .text-gray-700 {
+            color: var(--theme-text-muted) !important;
         }
-        body.dark-mode .bg-gray-50 .text-gray-700 {
-            color: #e5e7eb;
+        .text-gray-900 {
+            color: var(--theme-text) !important;
         }
-        /* Dark mode text color overrides */
-        body.dark-mode .text-gray-700 {
-            color: #e5e7eb !important;
+        .bg-white {
+            background-color: var(--theme-card-bg);
         }
-        body.dark-mode .text-gray-900 {
-            color: #f9fafb !important;
+        .text-gray-600 {
+            color: var(--theme-text-muted);
         }
-        body.dark-mode .bg-white {
-            background-color: #374151;
+        /* Market Board Server Select with themes */
+        #mb-server-select {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            border-color: var(--theme-border);
         }
-        body.dark-mode .text-gray-600 {
-            color: #d1d5db;
+        #mb-server-select option {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
         }
-        /* Market Board Server Select Dark Mode */
-        body.dark-mode #mb-server-select {
-            background-color: #374151;
-            color: #f9fafb;
-            border-color: #4b5563;
+        #mb-server-select optgroup {
+            background-color: var(--theme-bg-tertiary);
+            color: var(--theme-text);
         }
-        body.dark-mode #mb-server-select option {
-            background-color: #374151;
-            color: #f9fafb;
+        /* Sample Size Select with themes */
+        #sampleSize {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            border-color: var(--theme-border);
         }
-        body.dark-mode #mb-server-select optgroup {
-            background-color: #374151;
-            color: #f9fafb;
-        }
-        /* Sample Size Select Dark Mode */
-        body.dark-mode #sampleSize {
-            background-color: #374151;
-            color: #f9fafb;
-            border-color: #4b5563;
-        }
-        body.dark-mode #sampleSize option {
-            background-color: #374151;
-            color: #f9fafb;
+        #sampleSize option {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
         }
         /* Sticky left panel for 1080p optimization */
         #mainContainer > div:first-child {

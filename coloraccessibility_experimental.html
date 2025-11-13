@@ -72,8 +72,8 @@
             margin-top: 0.5rem;
         }
 
-        body.dark-mode .palette-label {
-            color: #d1d5db;
+        .palette-label {
+            color: var(--theme-text-muted);
         }
 
         /* Vision simulation comparison */
@@ -86,34 +86,20 @@
         .vision-type {
             border-radius: 0.75rem;
             overflow: hidden;
-            border: 1px solid #e5e7eb;
-            background-color: #f9fafb;
-        }
-
-        body.dark-mode .vision-type {
-            border-color: #4b5563;
-            background-color: #2d3748;
+            border: 1px solid var(--theme-border);
+            background-color: var(--theme-card-bg);
         }
 
         .vision-header {
             padding: 1rem;
-            background-color: #f3f4f6;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        body.dark-mode .vision-header {
-            background-color: #374151;
-            border-bottom-color: #4b5563;
+            background-color: var(--theme-bg-secondary);
+            border-bottom: 1px solid var(--theme-border);
         }
 
         .vision-title {
             font-weight: 600;
             font-size: 0.95rem;
-            color: #1f2937;
-        }
-
-        body.dark-mode .vision-title {
-            color: #f9fafb;
+            color: var(--theme-text);
         }
 
         .vision-content {
@@ -129,35 +115,22 @@
         .vision-swatch {
             height: 60px;
             border-radius: 0.375rem;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        body.dark-mode .vision-swatch {
-            border-color: rgba(255,255,255,0.1);
+            border: 1px solid var(--theme-border);
         }
 
         /* Accessibility score */
         .score-card {
             border-radius: 0.75rem;
             padding: 1.5rem;
-            background-color: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background-color: var(--theme-bg-secondary);
+            border: 1px solid var(--theme-border);
             margin-bottom: 1.5rem;
-        }
-
-        body.dark-mode .score-card {
-            background-color: #1e3a5f;
-            border-color: #1e5f8f;
         }
 
         .score-value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #0369a1;
-        }
-
-        body.dark-mode .score-value {
-            color: #93c5fd;
+            color: var(--theme-primary);
         }
 
         .score-label {
@@ -421,11 +394,6 @@
         <header class="text-center mb-8 2xl:mb-12">
             <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
                 <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Color Accessibility Checker <span class="text-xs md:text-sm 2xl:text-base font-semibold bg-amber-100 text-amber-700 px-3 py-1 rounded-full">v1.0.1 BETA</span></h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Plan accessible glamour outfits by simulating how your dye combinations appear to colorblind players.
@@ -717,21 +685,6 @@
                     console.error(`Failed to load JSON from ${url}:`, error.message);
                     return fallbackData;
                 });
-        }
-
-        /**
-         * Initialize dark mode
-         */
-        function initializeDarkMode() {
-            const saved = safeGetStorage('darkMode');
-            if (saved !== null) {
-                document.body.classList.toggle('dark-mode', JSON.parse(saved));
-            }
-
-            document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
-            });
         }
 
         /**
@@ -1919,7 +1872,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize DOM cache first for optimal performance
             initializeDomCache();
-            initializeDarkMode();
 
             // Load dye data
             safeFetchJSON('./assets/json/colors_xiv.json')
