@@ -1606,8 +1606,8 @@
         async function initializeMarketBoard() {
             try {
                 const [dcResponse, worldsResponse] = await Promise.all([
-                    fetch('./assets/json/data-centers.json'),
-                    fetch('./assets/json/worlds.json')
+                    fetch('/assets/json/data-centers.json'),
+                    fetch('/assets/json/worlds.json')
                 ]);
 
                 const dataCenters = await dcResponse.json();
@@ -1685,7 +1685,7 @@
             // Initialize market board
             initializeMarketBoard();
 
-            safeFetchJSON('./assets/json/colors_xiv.json')
+            safeFetchJSON('/assets/json/colors_xiv.json')
                 .then(data => {
                     ffxivDyes = data; // Load data into the global variable
                     console.log('Color data loaded successfully.');

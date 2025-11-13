@@ -1326,8 +1326,8 @@
         async function initializeMarketBoardComparison() {
             try {
                 const [dcResponse, worldsResponse] = await Promise.all([
-                    fetch('./assets/json/data-centers.json'),
-                    fetch('./assets/json/worlds.json')
+                    fetch('/assets/json/data-centers.json'),
+                    fetch('/assets/json/worlds.json')
                 ]);
 
                 const dataCenters = await dcResponse.json();
@@ -1405,7 +1405,7 @@
             initializeMarketBoardComparison();
 
             // Load dye data
-            safeFetchJSON('./assets/json/colors_xiv.json')
+            safeFetchJSON('/assets/json/colors_xiv.json')
                 .then(data => {
                     ffxivDyes = data;
                     populateDropdowns();

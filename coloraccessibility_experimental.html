@@ -1531,7 +1531,7 @@
             initializeDomCache();
 
             // Load dye data
-            safeFetchJSON('./assets/json/colors_xiv.json')
+            safeFetchJSON('/assets/json/colors_xiv.json')
                 .then(data => {
                     ffxivDyes = data;
                     initializeDyeSlots();

@@ -843,8 +843,8 @@
         async function loadServerData() {
             try {
                 const [dcResponse, worldsResponse] = await Promise.all([
-                    fetch('./assets/json/data-centers.json'),
-                    fetch('./assets/json/worlds.json')
+                    fetch('/assets/json/data-centers.json'),
+                    fetch('/assets/json/worlds.json')
                 ]);
                 
                 const dataCenters = await dcResponse.json();
@@ -1740,7 +1740,7 @@
                 console.log('Attempting to load colors_xiv.json...');
 
                 // Use safeFetchJSON for consistent error handling across all tools
-                const rawData = await safeFetchJSON('./assets/json/colors_xiv.json', []);
+                const rawData = await safeFetchJSON('/assets/json/colors_xiv.json', []);
 
                 // Guard: Validate data was loaded
                 if (!rawData || rawData.length === 0) {
