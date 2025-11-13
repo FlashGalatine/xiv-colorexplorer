@@ -393,7 +393,7 @@
                                     </label>
                                     <div class="flex items-center gap-3">
                                         <input id="deuteranopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
-                                        <span id="deuteranopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                        <span id="deuteranopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right"><span class="number">100</span>%</span>
                                     </div>
                                 </div>
 
@@ -404,7 +404,7 @@
                                     </label>
                                     <div class="flex items-center gap-3">
                                         <input id="protanopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
-                                        <span id="protanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                        <span id="protanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right"><span class="number">100</span>%</span>
                                     </div>
                                 </div>
 
@@ -415,7 +415,7 @@
                                     </label>
                                     <div class="flex items-center gap-3">
                                         <input id="tritanopia-slider" type="range" min="0" max="100" value="100" class="flex-grow">
-                                        <span id="tritanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right">100%</span>
+                                        <span id="tritanopia-value" class="text-sm font-semibold text-gray-600 w-12 text-right"><span class="number">100</span>%</span>
                                     </div>
                                 </div>
 
@@ -1073,7 +1073,7 @@
                 // Show warnings section and update summary text with issue count
                 warningsSection.classList.remove('hidden');
                 const issueCount = warnings.length;
-                warningsSummary.textContent = `You have ${issueCount} issue${issueCount !== 1 ? 's' : ''}`;
+                warningsSummary.innerHTML = `You have <span class="number">${issueCount}</span> issue${issueCount !== 1 ? 's' : ''}`;
 
                 // Populate warnings with default collapsed state
                 warnings.forEach(warning => {
@@ -1081,7 +1081,7 @@
                     div.className = 'warning-card';
                     div.innerHTML = `
                         <div class="warning-title">⚠ ${warning.dye1} and ${warning.dye2}</div>
-                        <p class="text-sm text-gray-700">These colors are too similar for ${warning.type} players (distance: ${warning.distance.toFixed(1)}). Consider using more contrasting dyes.</p>
+                        <p class="text-sm text-gray-700">These colors are too similar for ${warning.type} players (distance: <span class="number">${warning.distance.toFixed(1)}</span>). Consider using more contrasting dyes.</p>
                     `;
                     container.appendChild(div);
                 });
@@ -1135,7 +1135,7 @@
                             className = 'contrast-value contrast-medium';
                         }
 
-                        html += `<td class="${className}">${distance.toFixed(0)}</td>`;
+                        html += `<td class="${className}"><span class="number">${distance.toFixed(0)}</span></td>`;
                     }
                 });
 
@@ -1191,7 +1191,7 @@
 
             const score = Math.max(0, Math.min(100, distinguishabilityScore));
 
-            document.getElementById('score-number').textContent = score;
+            document.getElementById('score-number').innerHTML = `<span class="number">${score}</span>`;
 
             let rating = '🟢 Excellent';
             let ratingColor = '#059669';
@@ -1210,9 +1210,9 @@
 
             const details = document.getElementById('score-details');
             details.innerHTML = `
-                <div><strong>Distinguishability:</strong> ${score}/100 across all vision types</div>
-                <div><strong>Dyes selected:</strong> ${activeDyes.length}</div>
-                <div><strong>Simulation intensity:</strong> D: ${deuteranopiaIntensity}%, P: ${protanopiaIntensity}%, T: ${tritanopiaIntensity}%</div>
+                <div><strong>Distinguishability:</strong> <span class="number">${score}</span>/100 across all vision types</div>
+                <div><strong>Dyes selected:</strong> <span class="number">${activeDyes.length}</span></div>
+                <div><strong>Simulation intensity:</strong> D: <span class="number">${deuteranopiaIntensity}</span>%, P: <span class="number">${protanopiaIntensity}</span>%, T: <span class="number">${tritanopiaIntensity}</span>%</div>
             `;
         }
 
@@ -1547,7 +1547,7 @@
                     ].forEach(({ slider, value }) => {
                         if (slider && value) {
                             slider.addEventListener('input', (e) => {
-                                value.textContent = e.target.value + '%';
+                                value.innerHTML = `<span class="number">${e.target.value}</span>%`;
                                 updateVisualization();
                             });
                         }
