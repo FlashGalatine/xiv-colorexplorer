@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFXIV Dye Mixer - Find Color Transitions | XIV Dye Tools</title>
+    <meta name="description" content="Find intermediate dyes for smooth color transitions. Generate bridge colors between any two FFXIV dyes with HSV interpolation. Perfect for decorators and interior designers.">
+    <meta name="keywords" content="FFXIV dye mixer, dye transitions, color gradients, bridge colors, dye combinations, interior design, housing, decorating">
+    <!-- Open Graph / Discord embeds -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://xivdyetools.projectgalatine.com/dye-mixer_experimental.html">
+    <meta property="og:title" content="FFXIV Dye Mixer - Find Color Transitions (Experimental)">
+    <meta property="og:description" content="Find intermediate dyes for smooth color transitions between any two FFXIV dyes. Experimental version.">
+    <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
+    <!-- Twitter / X embeds -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/dye-mixer_experimental.html">
+    <meta property="twitter:title" content="FFXIV Dye Mixer - Find Color Transitions (Experimental)">
+    <meta property="twitter:description" content="Find intermediate dyes for smooth color transitions. Try the latest experimental features.">
+    <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="embed_icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/shared-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
+    <script src="assets/js/shared-components.js"></script>
+    <style>
+        /* Tool-specific styles for Dye Mixer */
+
+        /* Main container */
+        body {
+            font-family: "Lexend", sans-serif;
+        }
+
+        .tool-title {
+            font-family: "Cinzel Decorative", serif;
+            font-variant-caps: small-caps;
+            font-size: 2.5rem;
+        }
+
+        h1 {
+            font-family: "Cinzel", serif;
+            font-weight: 600;
+        }
+
+        h2, h3 {
+            font-family: "Cinzel", serif;
+            font-weight: 500;
+            font-variant-caps: small-caps;
+        }
+
+        .section-header, .dye-box-header {
+            font-family: "Lexend Giga", sans-serif;
+            font-variant-caps: all-small-caps;
+        }
+
+        .number {
+            font-family: "Habibi", serif;
+        }
+
+        /* Gradient visualization */
+        .gradient-container {
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 2px solid var(--theme-border);
+            background: var(--theme-bg-secondary);
+        }
+
+        /* Horizontal gradient (landscape) */
+        .gradient-horizontal {
+            display: flex;
+            height: 120px;
+            margin: 2rem 0;
+        }
+
+        .gradient-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Vertical gradient (portrait) */
+        .gradient-vertical {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .gradient-vertical .gradient-section {
+            flex: 1;
+            writing-mode: horizontal-tb;
+        }
+
+        /* Dye selector styles */
+        .dye-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dye-selector-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        .dye-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dye-selector select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--theme-border);
+            border-radius: 0.5rem;
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .dye-selector select:hover {
+            border-color: var(--theme-primary);
+        }
+
+        .dye-selector select:focus {
+            outline: none;
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .dye-selector select option {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+        }
+
+        /* Position indicator styles */
+        .position-indicator {
+            text-align: center;
+            padding: 0.5rem;
+            background-color: var(--theme-bg-secondary);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: var(--theme-text-muted);
+        }
+
+        /* Recommendation count selector */
+        .recommendation-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .recommendation-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--theme-border);
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .recommendation-btn:hover {
+            border-color: var(--theme-primary);
+            background-color: var(--theme-primary);
+            color: white;
+        }
+
+        .recommendation-btn.active {
+            border-color: var(--theme-primary);
+            background-color: var(--theme-primary);
+            color: white;
+        }
+
+        /* Dye recommendation cards grid */
+        .dye-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .dye-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        /* Dye information card */
+        .dye-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid var(--theme-border);
+            border-radius: 0.5rem;
+            background-color: var(--theme-card-bg);
+            transition: all 0.3s ease;
+        }
+
+        .dye-card:hover {
+            border-color: var(--theme-primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .dye-swatch {
+            width: 100%;
+            height: 100px;
+            border-radius: 0.375rem;
+            border: 1px solid var(--theme-border);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dye-name {
+            font-weight: 600;
+            color: var(--theme-text);
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .dye-position {
+            font-size: 0.8rem;
+            color: var(--theme-text-muted);
+        }
+
+        .dye-position .number {
+            color: var(--theme-text);
+            font-weight: 500;
+        }
+
+        .deviance-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .deviance-label {
+            color: var(--theme-text-muted);
+        }
+
+        .deviance-value {
+            font-weight: 600;
+            color: var(--theme-text);
+            font-family: "Habibi", serif;
+        }
+
+        /* Deviance rating color indicators */
+        .deviance-excellent {
+            color: #10b981;
+        }
+
+        .deviance-good {
+            color: #3b82f6;
+        }
+
+        .deviance-fair {
+            color: #f59e0b;
+        }
+
+        .deviance-poor {
+            color: #ef4444;
+        }
+
+        /* Warning/info messages */
+        .warning-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #ef4444;
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text);
+            margin: 1rem 0;
+        }
+
+        .warning-box.info {
+            border-left-color: var(--theme-primary);
+        }
+
+        .warning-icon {
+            display: inline-block;
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        /* Toast notification styles */
+        #toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 250px;
+            max-width: 400px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--theme-card-bg);
+            border-left: 4px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            pointer-events: auto;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.info {
+            border-left-color: var(--theme-primary);
+        }
+
+        .toast-message {
+            flex: 1;
+            color: var(--theme-text);
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Version number */
+        .version-text {
+            font-size: 0.85rem;
+            color: var(--theme-text-muted);
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .version-text .number {
+            color: var(--theme-text);
+        }
+    </style>
+</head>
+<body class="theme-standard-light transition-colors duration-200">
+    <!-- Navigation -->
+    <div id="nav-container" class="component-loading">
+        <span>Loading navigation...</span>
+    </div>
+
+    <!-- Main content -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Page title -->
+        <div class="text-center mb-8">
+            <h1 class="tool-title text-4xl font-bold mb-3">Dye Mixer</h1>
+            <p class="text-lg text-gray-600" style="color: var(--theme-text-muted);">
+                Find smooth color transitions between two dyes with interpolated intermediate colors
+            </p>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-3">How it works</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-700" style="color: var(--theme-text-muted);">
+                <li>Select your starting dye (0%) and ending dye (100%)</li>
+                <li>Choose how many intermediate dyes you want to see (3, 4, 7, or 9)</li>
+                <li>View the gradient progression and deviance ratings for each recommendation</li>
+                <li>Lower deviance = better color match to the theoretical position</li>
+            </ul>
+        </div>
+
+        <!-- Dye selectors -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-6">Select Starting & Ending Dyes</h2>
+            <div class="dye-selector-grid">
+                <div class="dye-selector">
+                    <label for="dye1-select" class="section-header text-sm font-semibold">
+                        Starting Dye (0%)
+                    </label>
+                    <select id="dye1-select">
+                        <option value="">-- Select a dye --</option>
+                    </select>
+                    <div class="position-indicator">Position: 0%</div>
+                </div>
+
+                <div class="dye-selector">
+                    <label for="dye2-select" class="section-header text-sm font-semibold">
+                        Ending Dye (100%)
+                    </label>
+                    <select id="dye2-select">
+                        <option value="">-- Select a dye --</option>
+                    </select>
+                    <div class="position-indicator">Position: 100%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gradient visualization -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-4">Color Transition Gradient</h2>
+            <div id="gradient-container" class="gradient-container gradient-horizontal">
+                <div style="flex: 1; background-color: #cccccc;"></div>
+                <div style="flex: 1; background-color: #999999;"></div>
+            </div>
+        </div>
+
+        <!-- Recommendation selector -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-4">Number of Intermediate Dyes</h2>
+            <div class="recommendation-selector">
+                <button class="recommendation-btn" data-count="3">3 Dyes</button>
+                <button class="recommendation-btn active" data-count="4">4 Dyes</button>
+                <button class="recommendation-btn" data-count="7">7 Dyes</button>
+                <button class="recommendation-btn" data-count="9">9 Dyes</button>
+            </div>
+        </div>
+
+        <!-- Warning message (shown when same dye selected) -->
+        <div id="same-dye-warning" class="warning-box" style="display: none;">
+            <span class="warning-icon">⚠️</span>
+            <span>Please select different dyes for the starting and ending positions.</span>
+        </div>
+
+        <!-- Dye recommendations -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-6">Recommended Color Progression</h2>
+            <div id="dye-cards-container" class="dye-cards-grid">
+                <!-- Dye cards will be generated here -->
+            </div>
+            <p id="no-recommendations-text" class="text-center text-gray-600" style="color: var(--theme-text-muted);">
+                Select both starting and ending dyes to see recommendations.
+            </p>
+        </div>
+
+        <!-- Info box -->
+        <div class="warning-box info">
+            <span class="warning-icon">ℹ️</span>
+            <strong>Deviance Rating:</strong> Measures how close each recommended dye is to its theoretical position in the gradient.
+            <strong>0 = Perfect match</strong>, <strong>10 = Poor match</strong>. Green (0-3) = Excellent, Blue (4-6) = Good,
+            Orange (7-8) = Fair, Red (9-10) = Poor.
+        </div>
+
+        <!-- Version -->
+        <div class="version-text">
+            Dye Mixer Tool <span class="number">v1.5.0</span> (Experimental)
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container" class="component-loading">
+        <!-- Footer will load here -->
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // ============================================
+        // SECTION: GLOBAL STATE & INITIALIZATION
+        // ============================================
+
+        let ffxivDyes = [];
+        let currentDye1 = null;
+        let currentDye2 = null;
+        let currentRecommendationCount = 4;
+        let isPortrait = window.innerWidth < 768;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load shared components
+                initComponents();
+                initTheme();
+
+                // Load dye database
+                ffxivDyes = await loadDyeDatabase();
+
+                // Setup event listeners
+                setupEventListeners();
+
+                // Populate dye selectors
+                populateDyeDropdown(document.getElementById('dye1-select'), ffxivDyes);
+                populateDyeDropdown(document.getElementById('dye2-select'), ffxivDyes);
+
+                // Handle resize for responsive gradient
+                window.addEventListener('resize', () => {
+                    isPortrait = window.innerWidth < 768;
+                    updateGradientVisualization();
+                });
+
+            } catch (error) {
+                console.error('Failed to initialize Dye Mixer:', error);
+                showToast('Failed to load dye data', 'error');
+            }
+        });
+
+        // ============================================
+        // SECTION: DATA LOADING
+        // ============================================
+
+        async function loadDyeDatabase() {
+            const dyes = await safeFetchJSON('assets/json/colors_xiv.json', []);
+
+            if (!dyes || dyes.length === 0) {
+                showToast('Failed to load dye database', 'error');
+                return [];
+            }
+
+            // Filter out facewear and sort by category
+            return dyes
+                .filter(dye => dye.category !== 'Facewear')
+                .sort((a, b) => {
+                    const priorityDiff = getCategoryPriority(a.category) - getCategoryPriority(b.category);
+                    return priorityDiff !== 0 ? priorityDiff : a.name.localeCompare(b.name);
+                });
+        }
+
+        // ============================================
+        // SECTION: EVENT LISTENERS
+        // ============================================
+
+        function setupEventListeners() {
+            // Dye selector changes
+            document.getElementById('dye1-select').addEventListener('change', (e) => {
+                currentDye1 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
+                validateAndUpdate();
+            });
+
+            document.getElementById('dye2-select').addEventListener('change', (e) => {
+                currentDye2 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
+                validateAndUpdate();
+            });
+
+            // Recommendation count buttons
+            document.querySelectorAll('.recommendation-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.recommendation-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentRecommendationCount = parseInt(btn.dataset.count);
+                    validateAndUpdate();
+                });
+            });
+        }
+
+        // ============================================
+        // SECTION: VALIDATION & UPDATES
+        // ============================================
+
+        function validateAndUpdate() {
+            const warningBox = document.getElementById('same-dye-warning');
+
+            // Check if dyes are selected
+            if (!currentDye1 || !currentDye2) {
+                warningBox.style.display = 'none';
+                clearRecommendations();
+                return;
+            }
+
+            // Check if same dye selected
+            if (currentDye1.itemID === currentDye2.itemID) {
+                warningBox.style.display = 'block';
+                clearRecommendations();
+                return;
+            }
+
+            warningBox.style.display = 'none';
+            updateGradientVisualization();
+            generateAndDisplayRecommendations();
+        }
+
+        // ============================================
+        // SECTION: COLOR INTERPOLATION
+        // ============================================
+
+        /**
+         * Interpolate a color in HSV space between two colors at a given position
+         * @param {string} hex1 - Starting color hex
+         * @param {string} hex2 - Ending color hex
+         * @param {number} position - Position 0-1 (0 = hex1, 1 = hex2)
+         * @returns {object} Interpolated color {h, s, v}
+         */
+        function interpolateColorHSV(hex1, hex2, position) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+
+            if (!rgb1 || !rgb2) return null;
+
+            const hsv1 = rgbToHsv(rgb1.r, rgb1.g, rgb1.b);
+            const hsv2 = rgbToHsv(rgb2.r, rgb2.g, rgb2.b);
+
+            // Handle hue wraparound (shortest path)
+            let hue1 = hsv1.h;
+            let hue2 = hsv2.h;
+            let hueDiff = hue2 - hue1;
+
+            if (hueDiff > 180) {
+                hueDiff -= 360;
+            } else if (hueDiff < -180) {
+                hueDiff += 360;
+            }
+
+            const interpolated = {
+                h: (hue1 + hueDiff * position + 360) % 360,
+                s: hsv1.s + (hsv2.s - hsv1.s) * position,
+                v: hsv1.v + (hsv2.v - hsv1.v) * position
+            };
+
+            return interpolated;
+        }
+
+        /**
+         * Convert interpolated HSV color to hex
+         */
+        function hsv2hex(h, s, v) {
+            const rgb = hsvToRgb(h, s, v);
+            return rgbToHex(Math.round(rgb.r), Math.round(rgb.g), Math.round(rgb.b));
+        }
+
+        // ============================================
+        // SECTION: RECOMMENDATION GENERATION
+        // ============================================
+
+        /**
+         * Generate recommendation dyes at equal intervals
+         */
+        function generateRecommendations() {
+            const recommendations = [];
+
+            // Calculate positions
+            const positions = [];
+            for (let i = 1; i < currentRecommendationCount + 1; i++) {
+                const position = i / (currentRecommendationCount + 1);
+                positions.push(position);
+            }
+
+            // For each position, find closest dye
+            positions.forEach((position, index) => {
+                const positionPercent = position * 100;
+                const idealColor = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
+                const idealHex = hsv2hex(idealColor.h, idealColor.s, idealColor.v);
+
+                // Find closest dye to ideal color
+                const closestDye = findClosestDyeToColor(idealHex);
+
+                if (closestDye) {
+                    const deviance = calculateDeviance(closestDye.hex, idealHex);
+                    recommendations.push({
+                        dye: closestDye,
+                        position: positionPercent,
+                        deviance: deviance,
+                        idealHex: idealHex
+                    });
+                }
+            });
+
+            return recommendations;
+        }
+
+        /**
+         * Find closest dye to a target hex color
+         */
+        function findClosestDyeToColor(targetHex) {
+            if (!targetHex) return null;
+
+            let closestDye = null;
+            let smallestDistance = Infinity;
+
+            ffxivDyes.forEach(dye => {
+                const distance = getColorDistance(targetHex, dye.hex);
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    closestDye = dye;
+                }
+            });
+
+            return closestDye;
+        }
+
+        /**
+         * Calculate deviance (0-10 scale)
+         * 0 = perfect match, 10 = very poor match
+         */
+        function calculateDeviance(actualHex, idealHex) {
+            const distance = getColorDistance(actualHex, idealHex);
+            // Max distance in RGB space is ~441 (white to black)
+            // Scale to 0-10: distance/44.1
+            const deviance = Math.min(10, Math.max(0, distance / 44.1));
+            return deviance;
+        }
+
+        /**
+         * Deduplicate recommendations (same dye at multiple positions)
+         */
+        function deduplicateRecommendations(recommendations) {
+            const dyeMap = new Map();
+
+            recommendations.forEach(rec => {
+                const key = rec.dye.itemID;
+                if (dyeMap.has(key)) {
+                    // Already exists - update position range
+                    dyeMap.get(key).positions.push(rec.position);
+                } else {
+                    dyeMap.set(key, {
+                        ...rec,
+                        positions: [rec.position]
+                    });
+                }
+            });
+
+            // Convert back to array
+            return Array.from(dyeMap.values()).sort((a, b) => a.positions[0] - b.positions[0]);
+        }
+
+        // ============================================
+        // SECTION: UI RENDERING
+        // ============================================
+
+        function updateGradientVisualization() {
+            const container = document.getElementById('gradient-container');
+
+            if (!currentDye1 || !currentDye2) {
+                // Show placeholder
+                container.className = `gradient-container ${isPortrait ? 'gradient-vertical' : 'gradient-horizontal'}`;
+                container.innerHTML = `
+                    <div style="flex: 1; background: linear-gradient(to right, #cccccc, #999999); display: flex; align-items: center; justify-content: center; color: #666;">
+                        <span>${isPortrait ? 'Select dyes above' : 'Select dyes above'}</span>
+                    </div>
+                `;
+                return;
+            }
+
+            // Generate gradient sections
+            const sections = [];
+            const steps = 20;
+
+            for (let i = 0; i <= steps; i++) {
+                const position = i / steps;
+                const interpolated = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
+                const color = hsv2hex(interpolated.h, interpolated.s, interpolated.v);
+                sections.push(color);
+            }
+
+            // Build gradient HTML
+            container.className = `gradient-container ${isPortrait ? 'gradient-vertical' : 'gradient-horizontal'}`;
+            container.innerHTML = sections.map((color, i) => {
+                const percent = (i / (sections.length - 1)) * 100;
+                return `<div style="flex: 1; background-color: ${color};"></div>`;
+            }).join('');
+        }
+
+        /**
+         * Generate and display dye recommendation cards
+         */
+        function generateAndDisplayRecommendations() {
+            const recommendations = generateRecommendations();
+            const deduplicated = deduplicateRecommendations(recommendations);
+
+            const container = document.getElementById('dye-cards-container');
+            const noRecText = document.getElementById('no-recommendations-text');
+
+            if (deduplicated.length === 0) {
+                noRecText.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+
+            noRecText.style.display = 'none';
+
+            container.innerHTML = deduplicated.map(rec => {
+                const deviance = rec.deviance;
+                let devianceClass = 'deviance-excellent';
+
+                if (deviance > 9) devianceClass = 'deviance-poor';
+                else if (deviance > 7) devianceClass = 'deviance-fair';
+                else if (deviance > 6) devianceClass = 'deviance-good';
+
+                const positionText = rec.positions.length === 1
+                    ? `<span class="number">${rec.positions[0].toFixed(1)}</span>%`
+                    : `<span class="number">${rec.positions[0].toFixed(1)}</span>-<span class="number">${rec.positions[rec.positions.length - 1].toFixed(1)}</span>%`;
+
+                return `
+                    <div class="dye-card">
+                        <div class="dye-swatch" style="background-color: ${rec.dye.hex};"></div>
+                        <div class="dye-name">${rec.dye.name}</div>
+                        <div class="dye-position">
+                            Position: ${positionText}
+                        </div>
+                        <div class="deviance-rating">
+                            <span class="deviance-label">Match:</span>
+                            <span class="deviance-value ${devianceClass}"><span class="number">${deviance.toFixed(1)}</span></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Clear all recommendations
+         */
+        function clearRecommendations() {
+            const container = document.getElementById('dye-cards-container');
+            const noRecText = document.getElementById('no-recommendations-text');
+
+            container.innerHTML = '';
+            noRecText.style.display = 'block';
+
+            // Clear gradient
+            updateGradientVisualization();
+        }
+
+        // ============================================
+        // SECTION: UTILITY FUNCTIONS
+        // ============================================
+
+        /**
+         * Show toast notification
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
