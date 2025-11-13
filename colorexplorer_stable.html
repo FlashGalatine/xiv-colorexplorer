@@ -49,13 +49,13 @@
         }
         
         .search-result-item:hover {
-            background-color: #f3f4f6;
+            background-color: var(--theme-bg-secondary);
         }
         /* Tooltip */
         .tooltip {
             position: absolute;
             background-color: rgba(0, 0, 0, 0.8);
-            color: white;
+            color: var(--theme-bg);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
@@ -88,17 +88,12 @@
             width: 380px;
             flex-shrink: 0;
             padding: 1.5rem;
-            background-color: white;
-            border-right: 1px solid #e5e7eb;
+            background-color: var(--theme-bg-secondary);
+            border-right: 1px solid var(--theme-border);
             overflow-y: auto;
             max-height: calc(100vh - 200px);
             position: sticky;
             top: 0;
-        }
-
-        .left-sidebar {
-            background-color: var(--theme-bg-secondary);
-            border-right: 1px solid var(--theme-border);
         }
 
         .right-content {

@@ -158,7 +158,7 @@
             padding: 1rem;
             margin-bottom: 0.75rem;
             border-radius: 0.5rem;
-            background-color: white;
+            background-color: var(--theme-card-bg);
             border-left: 4px solid;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             pointer-events: auto;
@@ -193,7 +193,7 @@
         .toast-message {
             flex: 1;
             font-size: 0.875rem;
-            color: #1f2937;
+            color: var(--theme-text);
         }
         .toast.success .toast-message {
             color: #065f46;
@@ -206,29 +206,6 @@
         }
         .toast.hiding {
             animation: slideOut 0.3s ease-out;
-        }
-        body.dark-mode .toast {
-            background-color: #374151;
-            border-left-color: #818cf8;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        body.dark-mode .toast.success {
-            background-color: #064e3b;
-        }
-        body.dark-mode .toast.success .toast-message {
-            color: #d1fae5;
-        }
-        body.dark-mode .toast.error {
-            background-color: #7f1d1d;
-        }
-        body.dark-mode .toast.error .toast-message {
-            color: #fecaca;
-        }
-        body.dark-mode .toast.info {
-            background-color: #1e3a8a;
-        }
-        body.dark-mode .toast.info .toast-message {
-            color: #bfdbfe;
         }
         @keyframes slideIn {
             from {
@@ -267,7 +244,7 @@
             display: flex;
         }
         .modal-content {
-            background-color: white;
+            background-color: var(--theme-bg);
             border-radius: 0.75rem;
             padding: 2rem;
             max-width: 600px;
@@ -275,10 +252,6 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-        }
-        body.dark-mode .modal-content {
-            background-color: #374151;
-            color: #f9fafb;
         }
         .modal-header {
             display: flex;
@@ -296,7 +269,7 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #6b7280;
+            color: var(--theme-text-muted);
             padding: 0;
             width: 2rem;
             height: 2rem;
@@ -304,14 +277,8 @@
             align-items: center;
             justify-content: center;
         }
-        body.dark-mode .modal-close {
-            color: #9ca3af;
-        }
         .modal-close:hover {
-            color: #1f2937;
-        }
-        body.dark-mode .modal-close:hover {
-            color: #f9fafb;
+            color: var(--theme-text);
         }
         .shortcuts-table {
             width: 100%;
@@ -325,21 +292,13 @@
             font-weight: 600;
             color: #374151;
         }
-        body.dark-mode .shortcuts-table th {
-            border-bottom-color: #4b5563;
-            color: #f9fafb;
-        }
         .shortcuts-table td {
             padding: 0.75rem;
             border-bottom: 1px solid #f3f4f6;
-            color: #6b7280;
-        }
-        body.dark-mode .shortcuts-table td {
-            border-bottom-color: #4b5563;
-            color: #d1d5db;
+            color: var(--theme-text-muted);
         }
         .shortcuts-table .kbd {
-            background-color: #f3f4f6;
+            background-color: var(--theme-bg-secondary);
             border: 1px solid #d1d5db;
             border-radius: 0.25rem;
             padding: 0.25rem 0.5rem;
@@ -347,12 +306,7 @@
             font-size: 0.8rem;
             white-space: nowrap;
             display: inline-block;
-            color: #1f2937;
-        }
-        body.dark-mode .shortcuts-table .kbd {
-            background-color: #4b5563;
-            border-color: #6b7280;
-            color: #f9fafb;
+            color: var(--theme-text);
         }
         .shortcuts-group {
             margin-bottom: 1.5rem;
@@ -362,9 +316,6 @@
             font-weight: 600;
             margin: 0 0 0.75rem 0;
             color: #374151;
-        }
-        body.dark-mode .shortcuts-group h3 {
-            color: #f9fafb;
         }
         /* Floating Zoom Toolbar */
         .floating-zoom-toolbar {
@@ -382,19 +333,6 @@
             pointer-events: auto;
             flex-wrap: wrap;
             max-width: calc(100% - 1.5rem);
-        }
-        body.dark-mode .floating-zoom-toolbar {
-            background-color: rgba(55, 65, 81, 0.95);
-        }
-        body.dark-mode .floating-zoom-toolbar .bg-white {
-            background-color: #4b5563;
-        }
-        body.dark-mode #clearImageBtn {
-            background-color: #7f1d1d;
-            color: #fca5a5;
-        }
-        body.dark-mode #clearImageBtn:hover {
-            background-color: #991b1b;
         }
     </style>
 </head>
