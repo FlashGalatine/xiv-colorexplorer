@@ -1430,14 +1430,15 @@
         }
 
         /**
-         * Gets display text for acquisition/price
+         * Gets display HTML for acquisition/price (with Habibi font for numbers)
          */
         function getAcquisitionText(color) {
             const showPrices = document.getElementById('show-market-prices-toggle').checked;
 
             // If toggle is off, always show original acquisition
             if (!showPrices) {
-                return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
+                const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
+                return color.acquisition + priceDisplay;
             }
 
             // Toggle is on, show market prices if available
@@ -1448,19 +1449,21 @@
             console.log(`getAcquisitionText: ${color.name}, itemID=${color.itemID}, itemIdKey=${itemIdKey}, showPrices=${showPrices}, shouldFetch=${shouldFetch}, hasCache=${itemIdKey ? !!priceCache[itemIdKey] : false}, cacheValue=${itemIdKey ? priceCache[itemIdKey] : 'N/A'}`);
 
             if (shouldFetch && itemIdKey && priceCache[itemIdKey]) {
-                const result = `Market Board - ${priceCache[itemIdKey].toLocaleString()} Gil`;
+                const result = `Market Board - <span class="number">${priceCache[itemIdKey].toLocaleString()}</span> Gil`;
                 console.log(`  -> Returning market price: ${result}`);
                 return result;
             }
 
             if (shouldFetch && itemIdKey && !priceCache[itemIdKey]) {
+                const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
                 if (lastPriceUpdate) {
-                    return `${color.acquisition}${color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : ''} (Sold Out)`;
+                    return `${color.acquisition}${priceDisplay} (Sold Out)`;
                 }
-                return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
+                return color.acquisition + priceDisplay;
             }
 
-            const result = color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
+            const priceDisplay = color.price !== null && color.currency ? ` - <span class="number">${color.price}</span> ${color.currency}` : '';
+            const result = color.acquisition + priceDisplay;
             console.log(`  -> Returning acquisition text: ${result}`);
             return result;
         }
@@ -1513,8 +1516,8 @@
                             <span class="font-semibold">${color.name}</span>
                             ${devianceRating !== null ? `<span class="${badgeColor} ${badgeTextColor} text-xs px-2 py-0.5 rounded-full font-medium" style="cursor: pointer;" onmouseenter="showDevianceLine('${color.hex}', '${harmonyType}', '${strokeColor}')" onmouseleave="hideDevianceLine('${harmonyType}')">${badgeText}</span>` : ''}
                         </div>
-                        <div class="text-sm opacity-80">${color.hex.toUpperCase()}</div>
-                        ${acquisitionText ? `<div class="text-xs opacity-70 mt-1">${acquisitionText}</div>` : ''}
+                        <div class="text-sm opacity-80"><span class="number">${color.hex.toUpperCase()}</span></div>
+                        ${acquisitionText ? `<div class="text-xs opacity-70 mt-1" style="display: inline-block;">${acquisitionText}</div>` : ''}
                     </div>
                     <button
                         onclick="copyToClipboard('${color.hex}')"
@@ -1542,8 +1545,8 @@
             selectedColorDisplay.style.backgroundColor = baseColor.hex;
             selectedColorDisplay.innerHTML = `
                 <h2 class="text-2xl font-bold ${selectedTextColor}">${baseColor.name}</h2>
-                <p class="text-lg ${selectedTextColor} opacity-90">${baseColor.hex.toUpperCase()}</p>
-                <p class="text-sm ${selectedTextColor} opacity-80">RGB: (${baseColor.rgb.r}, ${baseColor.rgb.g}, ${baseColor.rgb.b})</p>
+                <p class="text-lg ${selectedTextColor} opacity-90"><span class="number">${baseColor.hex.toUpperCase()}</span></p>
+                <p class="text-sm ${selectedTextColor} opacity-80">RGB: (<span class="number">${baseColor.rgb.r}</span>, <span class="number">${baseColor.rgb.g}</span>, <span class="number">${baseColor.rgb.b}</span>)</p>
                 ${getAcquisitionText(baseColor) ? `<p class="text-sm ${selectedTextColor} opacity-75 mt-2">Acquisition: ${getAcquisitionText(baseColor)}</p>` : ''}
                 <button 
                     onclick="copyToClipboard('${baseColor.hex}')"

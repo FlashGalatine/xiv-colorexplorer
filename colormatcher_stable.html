@@ -1031,11 +1031,11 @@
         }
 
         function updateResultsUI(userHex, matchedDye) {
-            userHexP.textContent = userHex.toUpperCase();
+            userHexP.innerHTML = `<span class="number">${userHex.toUpperCase()}</span>`;
             if (matchedDye) {
                 matchedColorDiv.style.backgroundColor = matchedDye.hex;
                 matchedNameP.textContent = matchedDye.name;
-                document.getElementById('matchedHex').textContent = matchedDye.hex.toUpperCase();
+                document.getElementById('matchedHex').innerHTML = `<span class="number">${matchedDye.hex.toUpperCase()}</span>`;
                 document.getElementById('matchedCategory').textContent = matchedDye.category || 'Unknown';
                 document.getElementById('matchedAcquisition').textContent = matchedDye.acquisition || 'Unknown';
 
@@ -1045,7 +1045,7 @@
                 if (document.getElementById('show-mb-prices-toggle').checked && shouldFetchPriceMatcher(matchedDye)) {
                     const itemIdKey = matchedDye.itemID.toString();
                     if (mbPriceCache[itemIdKey]) {
-                        priceValueElement.textContent = `${mbPriceCache[itemIdKey].toLocaleString()} Gil`;
+                        priceValueElement.innerHTML = `<span class="number">${mbPriceCache[itemIdKey].toLocaleString()}</span> Gil`;
                         priceElement.style.display = 'block';
                     } else {
                         priceElement.style.display = 'none';
@@ -1056,7 +1056,7 @@
             } else {
                 matchedColorDiv.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-bg-secondary').trim();
                 matchedNameP.textContent = 'No Match Found';
-                document.getElementById('matchedHex').textContent = '';
+                document.getElementById('matchedHex').innerHTML = '';
                 document.getElementById('matchedCategory').textContent = '';
                 document.getElementById('matchedAcquisition').textContent = '';
                 document.getElementById('matchedPrice').style.display = 'none';
