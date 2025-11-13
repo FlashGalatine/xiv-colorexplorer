@@ -16,7 +16,7 @@
 }
 
 /* Standard Dark Theme */
-body.theme-dark {
+body.theme-standard-dark {
     --theme-primary: #818cf8;
     --theme-primary-hover: #a5b4fc;
     --theme-primary-light: #c7d2fe;
@@ -29,8 +29,8 @@ body.theme-dark {
     --theme-card-bg: #374151;
 }
 
-/* Hydaelyn Theme (Light Blue) */
-body.theme-hydaelyn {
+/* Hydaelyn Light Theme */
+body.theme-hydaelyn-light {
     --theme-primary: #0369a1;
     --theme-primary-hover: #0284c7;
     --theme-primary-light: #0ea5e9;
@@ -44,7 +44,7 @@ body.theme-hydaelyn {
 }
 
 /* Hydaelyn Dark Theme */
-body.theme-hydaelyn.dark-mode {
+body.theme-hydaelyn-dark {
     --theme-primary: #38bdf8;
     --theme-primary-hover: #7dd3fc;
     --theme-primary-light: #bae6fd;
@@ -57,22 +57,22 @@ body.theme-hydaelyn.dark-mode {
     --theme-card-bg: #0c4a6e;
 }
 
-/* Classic Final Fantasy Theme (Dark Blue) */
-body.theme-classic-ff {
+/* Classic Final Fantasy Light Theme */
+body.theme-classic-ff-light {
     --theme-primary: #1e40af;
     --theme-primary-hover: #1e3a8a;
     --theme-primary-light: #3b82f6;
-    --theme-bg: #0f172a;
-    --theme-bg-secondary: #1e3a8a;
-    --theme-bg-tertiary: #3730a3;
-    --theme-text: #f0f9ff;
-    --theme-text-muted: #cbd5e1;
-    --theme-border: #1e40af;
-    --theme-card-bg: #1e3a8a;
+    --theme-bg: #f0f4f8;
+    --theme-bg-secondary: #e0e7ff;
+    --theme-bg-tertiary: #c7d2fe;
+    --theme-text: #0c2d57;
+    --theme-text-muted: #1e3a8a;
+    --theme-border: #bfdbfe;
+    --theme-card-bg: #ffffff;
 }
 
 /* Classic Final Fantasy Dark Theme */
-body.theme-classic-ff.dark-mode {
+body.theme-classic-ff-dark {
     --theme-primary: #60a5fa;
     --theme-primary-hover: #93c5fd;
     --theme-primary-light: #bfdbfe;
@@ -85,8 +85,8 @@ body.theme-classic-ff.dark-mode {
     --theme-card-bg: #0f172a;
 }
 
-/* Parchment Theme (Beige/Warm) */
-body.theme-parchment {
+/* Parchment Light Theme */
+body.theme-parchment-light {
     --theme-primary: #a16207;
     --theme-primary-hover: #92400e;
     --theme-primary-light: #b45309;
@@ -100,7 +100,7 @@ body.theme-parchment {
 }
 
 /* Parchment Dark Theme */
-body.theme-parchment.dark-mode {
+body.theme-parchment-dark {
     --theme-primary: #fbbf24;
     --theme-primary-hover: #fcd34d;
     --theme-primary-light: #fde68a;
@@ -113,8 +113,8 @@ body.theme-parchment.dark-mode {
     --theme-card-bg: #3d3220;
 }
 
-/* Sugar Riot Theme (Pink/Vibrant) */
-body.theme-sugar-riot {
+/* Sugar Riot Light Theme */
+body.theme-sugar-riot-light {
     --theme-primary: #ec4899;
     --theme-primary-hover: #db2777;
     --theme-primary-light: #f472b6;
@@ -128,7 +128,7 @@ body.theme-sugar-riot {
 }
 
 /* Sugar Riot Dark Theme */
-body.theme-sugar-riot.dark-mode {
+body.theme-sugar-riot-dark {
     --theme-primary: #f472b6;
     --theme-primary-hover: #f9a8d4;
     --theme-primary-light: #fbcfe8;
@@ -162,109 +162,6 @@ button, input[type="button"], input[type="submit"] {
 
 button:hover, input[type="button"]:hover, input[type="submit"]:hover {
     background-color: var(--theme-primary-hover);
-}
-
-/* ===== DARK MODE STYLES (using theme variables) ===== */
-body.dark-mode {
-    background-color: var(--theme-bg);
-    color: var(--theme-text);
-}
-
-body.dark-mode .bg-white {
-    background-color: var(--theme-bg-secondary);
-}
-
-body.dark-mode .text-gray-900 {
-    color: var(--theme-text);
-}
-
-body.dark-mode .text-gray-800 {
-    color: var(--theme-text);
-}
-
-body.dark-mode .text-gray-700 {
-    color: var(--theme-text-muted);
-}
-
-body.dark-mode .text-gray-600 {
-    color: var(--theme-text-muted);
-}
-
-body.dark-mode .text-gray-500 {
-    color: var(--theme-text-muted);
-}
-
-body.dark-mode h1 .text-gray-500 {
-    color: var(--theme-text-muted);
-}
-
-body.dark-mode .bg-gray-50 {
-    background-color: var(--theme-bg-tertiary);
-}
-
-body.dark-mode .bg-gray-100 {
-    background-color: var(--theme-bg-secondary);
-}
-
-body.dark-mode .border-gray-200 {
-    border-color: var(--theme-border);
-}
-
-body.dark-mode .border-gray-300 {
-    border-color: var(--theme-border);
-}
-
-body.dark-mode select {
-    background-color: var(--theme-bg-secondary);
-    color: var(--theme-text);
-    border-color: var(--theme-border);
-}
-
-body.dark-mode select option {
-    background-color: var(--theme-bg-secondary);
-    color: var(--theme-text);
-}
-
-body.dark-mode optgroup {
-    background-color: var(--theme-bg-tertiary);
-    color: var(--theme-text);
-}
-
-body.dark-mode #dark-mode-toggle {
-    background-color: var(--theme-bg-secondary);
-    color: var(--theme-text);
-}
-
-body.dark-mode #dark-mode-toggle:hover {
-    background-color: var(--theme-bg-tertiary);
-}
-
-body.dark-mode .bg-blue-50 {
-    background-color: var(--theme-bg-secondary);
-}
-
-body.dark-mode .border-blue-200 {
-    border-color: var(--theme-border);
-}
-
-body.dark-mode .text-blue-800 {
-    color: var(--theme-primary-light);
-}
-
-body.dark-mode .bg-gray-200 {
-    background-color: var(--theme-bg-tertiary);
-}
-
-body.dark-mode .bg-amber-50 {
-    background-color: var(--theme-bg-secondary);
-}
-
-body.dark-mode .border-amber-200 {
-    border-color: var(--theme-border);
-}
-
-body.dark-mode .text-amber-800 {
-    color: var(--theme-primary-light);
 }
 
 /* ===== NAVIGATION DROPDOWN STYLES ===== */

@@ -36,17 +36,17 @@
         .comparison-card {
             min-height: 400px;
         }
-        body.dark-mode #hue-sat-container {
-            background-color: #4b5563;
-            border-color: #4b5563;
+        #hue-sat-container {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
         }
-        body.dark-mode #brightness-container {
-            background-color: #4b5563;
-            border-color: #4b5563;
+        #brightness-container {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
         }
-        body.dark-mode #hue-sat-canvas,
-        body.dark-mode #brightness-canvas {
-            background-color: #4b5563;
+        #hue-sat-canvas,
+        #brightness-canvas {
+            background-color: var(--theme-bg-secondary);
         }
         /* 1080p Optimization */
         @media (min-width: 1920px) {
@@ -97,11 +97,6 @@
         <header class="text-center mb-8 2xl:mb-12">
             <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
                 <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">2</span>.<span class="number">3</span></span><span class="experimental-badge">EXPERIMENTAL</span></h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Compare FFXIV dyes side-by-side to see similarities and differences.
@@ -443,6 +438,17 @@
 
     <script>
         /**
+         * Get computed CSS variable value from body element
+         * @param {string} varName - CSS variable name (with or without --)
+         * @returns {string} The computed CSS variable value
+         */
+        function getThemeColor(varName) {
+            const cleanVarName = varName.startsWith('--') ? varName : `--${varName}`;
+            const value = getComputedStyle(document.body).getPropertyValue(cleanVarName).trim();
+            return value;
+        }
+
+        /**
          * Toggle dropdown menu
          */
         function toggleDropdown(button) {
@@ -547,25 +553,6 @@
                 }
                 return false;
             }
-        }
-
-        /**
-         * Initialize dark mode
-         */
-        function initializeDarkMode() {
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const isDarkMode = safeGetStorage('darkMode') === 'true';
-
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
-                // Redraw charts when dark mode changes
-                updateColorCharts();
-            });
         }
 
         /**
@@ -851,7 +838,6 @@
 
             if (!canvas || !ctx) return;
 
-            const isDarkMode = document.body.classList.contains('dark-mode');
             const width = canvas.width;
             const height = canvas.height;
             const leftPadding = 70;
@@ -867,8 +853,8 @@
             const reducedWidth = Math.ceil(chartWidth / RESOLUTION_REDUCTION);
             const reducedHeight = Math.ceil(chartHeight / RESOLUTION_REDUCTION);
 
-            // Clear canvas
-            ctx.fillStyle = isDarkMode ? '#374151' : '#ffffff';
+            // Clear canvas using theme background color
+            ctx.fillStyle = getThemeColor('theme-bg');
             ctx.fillRect(0, 0, width, height);
 
             // Draw hue-saturation gradient at reduced resolution
@@ -902,8 +888,8 @@
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(tempCanvas, leftPadding, topPadding, chartWidth, chartHeight);
 
-            // Draw axes
-            ctx.strokeStyle = isDarkMode ? '#6b7280' : '#999999';
+            // Draw axes using theme text color
+            ctx.strokeStyle = getThemeColor('theme-text-muted');
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(leftPadding, topPadding);
@@ -911,8 +897,8 @@
             ctx.lineTo(leftPadding + chartWidth, topPadding + chartHeight);
             ctx.stroke();
 
-            // Draw tick marks and labels
-            ctx.fillStyle = isDarkMode ? '#d1d5db' : '#666666';
+            // Draw tick marks and labels using theme text color
+            ctx.fillStyle = getThemeColor('theme-text-muted');
             ctx.font = 'bold 14px Inter';
             ctx.textAlign = 'center';
 
@@ -948,13 +934,13 @@
                 ctx.arc(x, y, 10, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Draw border
-                ctx.strokeStyle = isDarkMode ? '#1f2937' : '#ffffff';
+                // Draw border using theme background color for contrast
+                ctx.strokeStyle = getThemeColor('theme-bg');
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                // Draw label with white text for contrast
-                ctx.fillStyle = '#ffffff';
+                // Draw label with text color based on theme
+                ctx.fillStyle = getThemeColor('theme-bg');
                 ctx.font = 'bold 16px Inter';
                 ctx.textAlign = 'center';
                 ctx.fillText((index + 1).toString(), x, y + 5);
@@ -971,7 +957,6 @@
 
             if (!canvas || !ctx) return;
 
-            const isDarkMode = document.body.classList.contains('dark-mode');
             const width = canvas.width;
             const height = canvas.height;
             const leftPadding = 50;
@@ -981,30 +966,25 @@
             const chartWidth = width - leftPadding - rightPadding;
             const chartHeight = height - topPadding - bottomPadding;
 
-            // Clear canvas
-            ctx.fillStyle = isDarkMode ? '#374151' : '#ffffff';
+            // Clear canvas using theme background color
+            ctx.fillStyle = getThemeColor('theme-bg');
             ctx.fillRect(0, 0, width, height);
 
-            // Draw brightness gradient bar
+            // Draw brightness gradient bar using dark-to-light gradient
             const gradient = ctx.createLinearGradient(leftPadding, 0, leftPadding + chartWidth, 0);
-            if (isDarkMode) {
-                gradient.addColorStop(0, '#1f2937');
-                gradient.addColorStop(1, '#f3f4f6');
-            } else {
-                gradient.addColorStop(0, '#000000');
-                gradient.addColorStop(1, '#ffffff');
-            }
+            gradient.addColorStop(0, '#000000');
+            gradient.addColorStop(1, '#ffffff');
 
             ctx.fillStyle = gradient;
             ctx.fillRect(leftPadding, topPadding + chartHeight / 2 - 15, chartWidth, 30);
 
-            // Draw border
-            ctx.strokeStyle = isDarkMode ? '#6b7280' : '#999999';
+            // Draw border using theme text-muted color
+            ctx.strokeStyle = getThemeColor('theme-text-muted');
             ctx.lineWidth = 2;
             ctx.strokeRect(leftPadding, topPadding + chartHeight / 2 - 15, chartWidth, 30);
 
-            // Draw axes labels
-            ctx.fillStyle = isDarkMode ? '#d1d5db' : '#666666';
+            // Draw axes labels using theme text-muted
+            ctx.fillStyle = getThemeColor('theme-text-muted');
             ctx.font = 'bold 16px Inter';
             ctx.textAlign = 'center';
             ctx.fillText('0%', leftPadding, topPadding + chartHeight / 2 + 28);
@@ -1475,8 +1455,6 @@
          * Initialize application
          */
         document.addEventListener('DOMContentLoaded', () => {
-            initializeDarkMode();
-
             // Initialize market board
             initializeMarketBoardComparison();
 

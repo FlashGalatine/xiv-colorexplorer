@@ -6,6 +6,19 @@
 // ===== STORAGE KEYS =====
 const THEME_KEY = 'xivdyetools_theme';
 
+// ===== THEME UTILITY FUNCTIONS =====
+/**
+ * Get computed CSS variable value from body element
+ * Used by canvas rendering and dynamic color styling
+ * @param {string} varName - CSS variable name (with or without --)
+ * @returns {string} The computed CSS variable value
+ */
+function getThemeColor(varName) {
+    const cleanVarName = varName.startsWith('--') ? varName : `--${varName}`;
+    const value = getComputedStyle(document.body).getPropertyValue(cleanVarName).trim();
+    return value;
+}
+
 // ===== SAFE STORAGE UTILITIES =====
 /**
  * Safely retrieve a value from localStorage with error handling
@@ -59,38 +72,19 @@ const AVAILABLE_THEMES = [
 ];
 
 /**
- * Map unified theme names to CSS classes and dark-mode flag
- * @param {string} themeName - Unified theme name (e.g., "hydaelyn-dark")
- * @returns {Object} Object with themeClass and isDarkMode properties
+ * Get CSS class name for unified theme
+ * Unified themes use the full name as CSS class (e.g., "theme-classic-ff-light")
+ * @param {string} themeName - Unified theme name (e.g., "hydaelyn-dark", "standard-light")
+ * @returns {string} CSS class name to apply (or null for standard-light which is default)
  */
-function parseThemeName(themeName) {
-    const [base, variant] = themeName.split('-');
-    const isDarkMode = variant === 'dark';
-
-    // Map base theme names to CSS class names
-    const classMap = {
-        'standard': null,          // No class for standard light (default)
-        'hydaelyn': 'hydaelyn',
-        'classic': 'classic-ff',   // "classic-ff" in CSS
-        'parchment': 'parchment',
-        'sugar': 'sugar-riot'      // "sugar-riot" in CSS
-    };
-
-    // Handle "classic-ff-light" case
-    let baseClass = null;
-    if (themeName.startsWith('standard')) {
-        baseClass = null;
-    } else if (themeName.startsWith('hydaelyn')) {
-        baseClass = 'hydaelyn';
-    } else if (themeName.startsWith('classic-ff')) {
-        baseClass = 'classic-ff';
-    } else if (themeName.startsWith('parchment')) {
-        baseClass = 'parchment';
-    } else if (themeName.startsWith('sugar-riot')) {
-        baseClass = 'sugar-riot';
+function getThemeClassName(themeName) {
+    // Standard light is the default, no class needed
+    if (themeName === 'standard-light') {
+        return null;
     }
 
-    return { themeClass: baseClass, isDarkMode };
+    // Return the unified name as-is (e.g., "classic-ff-light" becomes "theme-classic-ff-light")
+    return themeName;
 }
 
 /**
@@ -102,7 +96,7 @@ function initTheme() {
 }
 
 /**
- * Set active theme - handles both theme selection and light/dark mode
+ * Set active theme - applies unified theme class with all colors defined
  * @param {string} themeName - Unified theme name (e.g., "hydaelyn-dark", "standard-light")
  */
 function setTheme(themeName) {
@@ -111,28 +105,23 @@ function setTheme(themeName) {
         themeName = 'standard-light';
     }
 
-    // Parse the unified theme name
-    const { themeClass, isDarkMode } = parseThemeName(themeName);
-
-    // Remove all theme classes
-    ['light', 'dark', 'hydaelyn', 'classic-ff', 'parchment', 'sugar-riot'].forEach(theme => {
+    // Remove all existing theme classes (from old naming or other themes)
+    AVAILABLE_THEMES.forEach(theme => {
         document.body.classList.remove(`theme-${theme}`);
     });
 
-    // Remove dark-mode class
+    // Also remove any old-style classes that might exist
+    ['theme-light', 'theme-dark', 'theme-hydaelyn', 'theme-classic-ff', 'theme-parchment', 'theme-sugar-riot'].forEach(className => {
+        document.body.classList.remove(className);
+    });
+
+    // Remove dark-mode class (no longer used with unified themes)
     document.body.classList.remove('dark-mode');
 
-    // Add new theme class if not standard light
+    // Apply new unified theme class
+    const themeClass = getThemeClassName(themeName);
     if (themeClass) {
         document.body.classList.add(`theme-${themeClass}`);
-    } else if (themeName === 'standard-dark') {
-        // Special case: standard dark uses theme-dark class
-        document.body.classList.add('theme-dark');
-    }
-
-    // Add dark-mode class if needed
-    if (isDarkMode) {
-        document.body.classList.add('dark-mode');
     }
 
     // Save to localStorage
