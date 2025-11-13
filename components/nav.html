@@ -126,19 +126,3 @@
         flex-shrink: 0;
     }
 </style>
-
-<script>
-    function toggleThemeSwitcher(button) {
-        const menu = button.nextElementSibling;
-        if (!menu) return;
-
-        menu.classList.toggle('show');
-
-        // Close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.theme-switcher')) {
-                menu.classList.remove('show');
-            }
-        }, { once: true });
-    }
-</script>

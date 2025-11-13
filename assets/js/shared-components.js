@@ -135,6 +135,24 @@ function toggleDropdown(button) {
     }, { once: true });
 }
 
+/**
+ * Toggle theme switcher menu visibility
+ * @param {HTMLElement} button - The button that triggered the theme switcher
+ */
+function toggleThemeSwitcher(button) {
+    const menu = button.nextElementSibling;
+    if (!menu) return;
+
+    menu.classList.toggle('show');
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.theme-switcher')) {
+            menu.classList.remove('show');
+        }
+    }, { once: true });
+}
+
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
  * Load an external component HTML file and insert it into the DOM
