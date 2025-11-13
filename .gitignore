@@ -39,7 +39,6 @@ yarn-error.log*
 GIT_SETUP.md
 DEPLOYMENT_SUMMARY.md
 OUTFIT_SIMULATOR_PROPOSAL.md
-CLAUDE.md
 GEMINI.md
 .claude
 example_many_dyes.json
