@@ -45,7 +45,7 @@ GEMINI.md
 example_many_dyes.json
 example_one_dye.json
 reddit_mod_approval_draft.txt
-
+feedback/*
 
 # Discord Bot (maintained in separate repository)
 discordbot/

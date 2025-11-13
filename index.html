@@ -20,25 +20,11 @@
     <link rel="icon" type="image/png" href="embed_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="assets/css/shared-styles.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-        }
-        body.dark-mode {
-            background-color: #1f2937;
-            color: #f9fafb;
-        }
-        body.dark-mode .bg-white {
-            background-color: #374151;
-        }
-        body.dark-mode .text-gray-900 {
-            color: #f9fafb;
-        }
-        body.dark-mode .text-gray-600 {
-            color: #d1d5db;
-        }
-        body.dark-mode .text-gray-700 {
-            color: #e5e7eb;
         }
         body.dark-mode .tool-card {
             background-color: #4b5563;
@@ -47,13 +33,6 @@
         body.dark-mode .tool-card:hover {
             background-color: #374151;
             border-color: #9ca3af;
-        }
-        body.dark-mode #dark-mode-toggle {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #dark-mode-toggle:hover {
-            background-color: #374151;
         }
         .tool-card {
             transition: all 0.3s ease;
@@ -88,7 +67,7 @@
         <header class="text-center mb-12">
             <div class="flex justify-center items-center gap-4 mb-4">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-900">XIV Dye Tools</h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
+                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode" onclick="toggleDarkMode()">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                     </svg>
@@ -220,69 +199,10 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center py-8 text-sm text-gray-500 border-t border-gray-200">
-        <p>Built with love for Eorzea's fashionistas.</p>
-        <p class="mt-2">
-            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
-        </p>
-        <p class="mt-2 flex justify-center gap-4 flex-wrap">
-            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Blog
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://github.com/FlashGalatine/xivdyetools" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                GitHub
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                X / Twitter
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Twitch
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://bsky.app/profile/projectgalatine.com" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                BlueSky
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Patreon
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://discord.gg/5VUSKTZCe5" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Discord
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="./LICENSE" class="text-indigo-600 hover:text-indigo-800 transition">
-                License (MIT)
-            </a>
-        </p>
-        <p class="mt-4 text-xs text-gray-400">
-            This is a fan-made tool and is not affiliated with or endorsed by Square Enix Co., Ltd.<br>
-            FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
-        </p>
-    </footer>
+    <div id="footer-container" class="component-loading"></div>
 
-    <script>
-        // Dark mode functionality
-        function initializeDarkMode() {
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', initializeDarkMode);
-    </script>
+    <!-- Shared Components Script -->
+    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>

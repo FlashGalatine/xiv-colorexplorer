@@ -21,100 +21,13 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/shared-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        body.dark-mode {
-            background-color: #1f2937;
-            color: #f9fafb;
-        }
-        body.dark-mode .bg-white {
-            background-color: #374151;
-        }
-        body.dark-mode .text-gray-800 {
-            color: #f9fafb;
-        }
-        body.dark-mode .text-gray-900 {
-            color: #f9fafb;
-        }
-        body.dark-mode .text-gray-600 {
-            color: #d1d5db;
-        }
-        body.dark-mode .text-gray-500 {
-            color: #9ca3af;
-        }
-        body.dark-mode h1 .text-gray-500 {
-            color: #6b7280;
-        }
-        body.dark-mode .text-indigo-600 {
-            color: #818cf8;
-        }
-        body.dark-mode .text-indigo-600:hover {
-            color: #a5b4fc;
-        }
-        body.dark-mode .border-gray-300 {
-            border-color: #4b5563;
-        }
-        body.dark-mode .border-gray-200 {
-            border-color: #4b5563;
-        }
-        body.dark-mode .bg-gray-50 {
-            background-color: #4b5563;
-        }
-        body.dark-mode .bg-gray-100 {
-            background-color: #374151;
-        }
-        body.dark-mode #help-toggle {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #help-toggle:hover {
-            background-color: #374151;
-        }
-        body.dark-mode #dark-mode-toggle {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #dark-mode-toggle:hover {
-            background-color: #374151;
-        }
-        body.dark-mode #imageLoader {
-            color: #d1d5db;
-        }
-        body.dark-mode #imageLoader::file-selector-button {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #imageLoader::file-selector-button:hover {
-            background-color: #374151;
-        }
-        body.dark-mode #clearImageBtn {
-            background-color: #7f1d1d;
-            color: #fca5a5;
-        }
-        body.dark-mode #clearImageBtn:hover {
-            background-color: #991b1b;
-        }
-        body.dark-mode #zoomInBtn,
-        body.dark-mode #zoomOutBtn,
-        body.dark-mode #zoomToFitBtn,
-        body.dark-mode #zoomToWidthBtn,
-        body.dark-mode #resetZoomBtn {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #zoomInBtn:hover,
-        body.dark-mode #zoomOutBtn:hover,
-        body.dark-mode #zoomToFitBtn:hover,
-        body.dark-mode #zoomToWidthBtn:hover,
-        body.dark-mode #resetZoomBtn:hover {
-            background-color: #374151;
-        }
-        body.dark-mode #zoomLevel {
-            color: #f9fafb;
-        }
+        /* Dark mode and shared styles are in assets/css/shared-styles.css */
+        /* Tool-specific styles below */
+
+        /* Tool-specific dark mode overrides */
         body.dark-mode #canvasWrapper {
             background-color: #1f2937;
         }
@@ -147,75 +60,7 @@
             border: 4px dashed #3b82f6; /* blue-500 */
             background-color: rgba(59, 130, 246, 0.1);
         }
-        .nav-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .nav-dropdown-toggle {
-            background-color: transparent;
-            border: none;
-            color: #4f46e5;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: color 0.2s;
-        }
-        .nav-dropdown-toggle:hover {
-            color: #4338ca;
-        }
-        body.dark-mode .nav-dropdown-toggle {
-            color: #818cf8;
-        }
-        body.dark-mode .nav-dropdown-toggle:hover {
-            color: #a5b4fc;
-        }
-        .nav-dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 0.5rem;
-            min-width: 200px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 0.5rem;
-        }
-        body.dark-mode .nav-dropdown-menu {
-            background-color: #374151;
-            border-color: #4b5563;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-        }
-        .nav-dropdown-menu.show {
-            display: block;
-        }
-        .nav-dropdown-item {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: #1f2937;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            font-size: 0.95rem;
-        }
-        .nav-dropdown-item:hover {
-            background-color: #f3f4f6;
-        }
-        body.dark-mode .nav-dropdown-item {
-            color: #f9fafb;
-        }
-        body.dark-mode .nav-dropdown-item:hover {
-            background-color: #4b5563;
-        }
-        .nav-dropdown-item:not(:last-child) {
-            border-bottom: 1px solid #e5e7eb;
-        }
-        body.dark-mode .nav-dropdown-item:not(:last-child) {
-            border-bottom-color: #4b5563;
-        }
+        /* Nav dropdown styles moved to shared-styles.css */
         /* Toggle switch styles */
         .toggle-bg {
             background-color: #d1d5db;
@@ -668,18 +513,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </button>
-                <div class="nav-dropdown inline-block">
-                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
-                        Tools ▼
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="colorexplorer_experimental.html" class="nav-dropdown-item">Color Harmony Explorer</a>
-                        <a href="colormatcher_experimental.html" class="nav-dropdown-item">Color Matcher</a>
-                        <a href="dyecomparison_experimental.html" class="nav-dropdown-item">Dye Comparison</a>
-                        <a href="coloraccessibility_experimental.html" class="nav-dropdown-item">Color Accessibility Checker</a>
-                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
-                    </div>
-                </div>
+                <div id="nav-container" class="component-loading inline-block"></div>
                 <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
@@ -855,50 +689,8 @@
 
     </div>
 
-    <!-- Footer Credits -->
-    <footer class="text-center mt-12 mb-8 text-sm text-gray-500">
-        <p>Built with love for Eorzea's fashionistas.</p>
-        <p class="mt-2">
-            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
-        </p>
-        <p class="mt-2 flex justify-center gap-4 flex-wrap">
-            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Blog
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://github.com/FlashGalatine/xivdyetools" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                GitHub
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                X / Twitter
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Twitch
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://bsky.app/profile/projectgalatine.com" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                BlueSky
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Patreon
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://discord.gg/5VUSKTZCe5" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Discord
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="./LICENSE" class="text-indigo-600 hover:text-indigo-800 transition">
-                License (MIT)
-            </a>
-        </p>
-        <p class="mt-4 text-xs text-gray-400">
-            This is a fan-made tool and is not affiliated with or endorsed by Square Enix Co., Ltd.<br>
-            FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
-        </p>
-    </footer>
+    <!-- Footer Container - loaded dynamically from components/footer.html -->
+    <div id="footer-container" class="component-loading"></div>
 
     <script>
         /**
@@ -2030,6 +1822,9 @@
         });
 
     </script>
+
+    <!-- Shared Components Script -->
+    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>

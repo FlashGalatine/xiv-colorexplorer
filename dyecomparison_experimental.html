@@ -21,90 +21,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/shared-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: "Lexend", sans-serif;
-        }
-        body.dark-mode {
-            background-color: #1f2937;
-            color: #f9fafb;
-        }
-        body.dark-mode .bg-white {
-            background-color: #374151;
-        }
-        body.dark-mode .text-gray-900 {
-            color: #f9fafb;
-        }
-        body.dark-mode .text-gray-800 {
-            color: #f3f4f6;
-        }
-        body.dark-mode .text-gray-700 {
-            color: #e5e7eb;
-        }
-        body.dark-mode .text-gray-600 {
-            color: #d1d5db;
-        }
-        body.dark-mode .text-gray-500 {
-            color: #9ca3af;
-        }
-        body.dark-mode h1 .text-gray-500 {
-            color: #6b7280;
-        }
-        body.dark-mode .bg-gray-50 {
-            background-color: #4b5563;
-        }
-        body.dark-mode .bg-gray-100 {
-            background-color: #374151;
-        }
-        body.dark-mode .border-gray-200 {
-            border-color: #4b5563;
-        }
-        body.dark-mode .border-gray-300 {
-            border-color: #4b5563;
-        }
-        body.dark-mode select {
-            background-color: #374151;
-            color: #f9fafb;
-            border-color: #4b5563;
-        }
-        body.dark-mode select option {
-            background-color: #374151;
-            color: #f9fafb;
-        }
-        body.dark-mode optgroup {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #dark-mode-toggle {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-        body.dark-mode #dark-mode-toggle:hover {
-            background-color: #374151;
-        }
-        body.dark-mode .bg-blue-50 {
-            background-color: #1e3a5f;
-        }
-        body.dark-mode .border-blue-200 {
-            border-color: #1e5f8f;
-        }
-        body.dark-mode .text-blue-800 {
-            color: #93c5fd;
-        }
-        body.dark-mode .bg-gray-200 {
-            background-color: #4b5563;
-        }
-        body.dark-mode .bg-amber-50 {
-            background-color: #2a2512;
-        }
-        body.dark-mode .border-amber-200 {
-            border-color: #5d3a1a;
-        }
-        body.dark-mode .text-amber-800 {
-            color: #fca5a5;
-        }
+        /* Dark mode and shared styles are in assets/css/shared-styles.css */
+        /* Tool-specific dark mode overrides below */
         .dye-swatch {
             width: 100%;
             height: 120px;
@@ -113,101 +35,6 @@
         }
         .comparison-card {
             min-height: 400px;
-        }
-        .nav-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .nav-dropdown-toggle {
-            background-color: transparent;
-            border: none;
-            color: #4f46e5;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: color 0.2s;
-        }
-        .nav-dropdown-toggle:hover {
-            color: #4338ca;
-        }
-        body.dark-mode .nav-dropdown-toggle {
-            color: #818cf8;
-        }
-        body.dark-mode .nav-dropdown-toggle:hover {
-            color: #a5b4fc;
-        }
-        .nav-dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 0.5rem;
-            min-width: 200px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 0.5rem;
-        }
-        body.dark-mode .nav-dropdown-menu {
-            background-color: #374151;
-            border-color: #4b5563;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-        }
-        .nav-dropdown-menu.show {
-            display: block;
-        }
-        .nav-dropdown-item {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: #1f2937;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            font-size: 0.95rem;
-        }
-        .nav-dropdown-item:hover {
-            background-color: #f3f4f6;
-        }
-        body.dark-mode .nav-dropdown-item {
-            color: #f9fafb;
-        }
-        body.dark-mode .nav-dropdown-item:hover {
-            background-color: #4b5563;
-        }
-        .nav-dropdown-item:not(:last-child) {
-            border-bottom: 1px solid #e5e7eb;
-        }
-        body.dark-mode .nav-dropdown-item:not(:last-child) {
-            border-bottom-color: #4b5563;
-        }
-        /* Toggle switch styles */
-        .toggle-bg {
-            background-color: #d1d5db;
-            transition: background-color 0.3s ease;
-        }
-        input:checked + .toggle-bg {
-            background-color: #4f46e5;
-        }
-        .toggle-dot {
-            transition: left 0.3s ease;
-        }
-        input:checked + .toggle-bg + .toggle-dot {
-            left: calc(100% - 1.25rem);
-        }
-        body.dark-mode .toggle-bg {
-            background-color: #4b5563;
-        }
-        body.dark-mode input:checked + .toggle-bg {
-            background-color: #6366f1;
-        }
-        body.dark-mode .bg-gray-50 {
-            background-color: #4b5563;
-        }
-        body.dark-mode .bg-gray-50 .text-gray-700 {
-            color: #e5e7eb;
         }
         body.dark-mode #hue-sat-container {
             background-color: #4b5563;
@@ -220,38 +47,6 @@
         body.dark-mode #hue-sat-canvas,
         body.dark-mode #brightness-canvas {
             background-color: #4b5563;
-        }
-        .experimental-badge {
-            display: inline-block;
-            background-color: #fbbf24;
-            color: #78350f;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-            letter-spacing: 0.05em;
-        }
-        /* Font Styling */
-        .tool-title {
-            font-family: "Cinzel Decorative", serif;
-            font-variant-caps: small-caps;
-        }
-        h1 {
-            font-family: "Cinzel", serif;
-            font-weight: 600;
-        }
-        h2, h3 {
-            font-family: "Cinzel", serif;
-            font-weight: 500;
-            font-variant-caps: small-caps;
-        }
-        .section-header, .dye-box-header {
-            font-family: "Lexend Giga", sans-serif;
-            font-variant-caps: all-small-caps;
-        }
-        .number {
-            font-family: "Habibi", serif;
         }
         /* 1080p Optimization */
         @media (min-width: 1920px) {
@@ -310,17 +105,7 @@
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Compare FFXIV dyes side-by-side to see similarities and differences.
-                <div class="nav-dropdown inline-block ml-4">
-                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
-                        Tools ▼
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
-                        <a href="colormatcher.html" class="nav-dropdown-item">Color Matcher</a>
-                        <a href="dyecomparison.html" class="nav-dropdown-item">Dye Comparison</a>
-                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
-                    </div>
-                </div>
+                <div id="nav-container" class="component-loading"></div>
             </p>
         </header>
 
@@ -648,50 +433,8 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center mt-12 mb-8 text-sm text-gray-500">
-        <p>Built with love for Eorzea's fashionistas.</p>
-        <p class="mt-2">
-            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
-        </p>
-        <p class="mt-2 flex justify-center gap-4 flex-wrap">
-            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Blog
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://github.com/FlashGalatine/xivdyetools" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                GitHub
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                X / Twitter
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Twitch
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://bsky.app/profile/projectgalatine.com" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                BlueSky
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Patreon
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://discord.gg/5VUSKTZCe5" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Discord
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="./LICENSE" class="text-indigo-600 hover:text-indigo-800 transition">
-                License (MIT)
-            </a>
-        </p>
-        <p class="mt-4 text-xs text-gray-400">
-            This is a fan-made tool and is not affiliated with or endorsed by Square Enix Co., Ltd.<br>
-            FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
-        </p>
-    </footer>
+    <!-- Footer Container - loaded dynamically from components/footer.html -->
+    <div id="footer-container" class="component-loading"></div>
 
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hidden transition-all duration-300">
@@ -1760,6 +1503,9 @@
                 });
         });
     </script>
+
+    <!-- Shared Components Script -->
+    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>

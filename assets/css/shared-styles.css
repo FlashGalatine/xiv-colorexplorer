@@ -1,0 +1,308 @@
+/* XIV Dye Tools - Shared Styles */
+
+/* ===== DARK MODE STYLES ===== */
+body.dark-mode {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+body.dark-mode .bg-white {
+    background-color: #374151;
+}
+
+body.dark-mode .text-gray-900 {
+    color: #f9fafb;
+}
+
+body.dark-mode .text-gray-800 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .text-gray-700 {
+    color: #e5e7eb;
+}
+
+body.dark-mode .text-gray-600 {
+    color: #d1d5db;
+}
+
+body.dark-mode .text-gray-500 {
+    color: #9ca3af;
+}
+
+body.dark-mode h1 .text-gray-500 {
+    color: #6b7280;
+}
+
+body.dark-mode .bg-gray-50 {
+    background-color: #4b5563;
+}
+
+body.dark-mode .bg-gray-100 {
+    background-color: #374151;
+}
+
+body.dark-mode .border-gray-200 {
+    border-color: #4b5563;
+}
+
+body.dark-mode .border-gray-300 {
+    border-color: #4b5563;
+}
+
+body.dark-mode select {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.dark-mode select option {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+body.dark-mode optgroup {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+body.dark-mode #dark-mode-toggle {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+body.dark-mode #dark-mode-toggle:hover {
+    background-color: #374151;
+}
+
+body.dark-mode .bg-blue-50 {
+    background-color: #1e3a5f;
+}
+
+body.dark-mode .border-blue-200 {
+    border-color: #1e5f8f;
+}
+
+body.dark-mode .text-blue-800 {
+    color: #93c5fd;
+}
+
+body.dark-mode .bg-gray-200 {
+    background-color: #4b5563;
+}
+
+body.dark-mode .bg-amber-50 {
+    background-color: #2a2512;
+}
+
+body.dark-mode .border-amber-200 {
+    border-color: #5d3a1a;
+}
+
+body.dark-mode .text-amber-800 {
+    color: #fca5a5;
+}
+
+/* ===== NAVIGATION DROPDOWN STYLES ===== */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-dropdown-toggle {
+    background-color: transparent;
+    border: none;
+    color: #4f46e5;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s;
+}
+
+.nav-dropdown-toggle:hover {
+    color: #4338ca;
+}
+
+body.dark-mode .nav-dropdown-toggle {
+    color: #818cf8;
+}
+
+body.dark-mode .nav-dropdown-toggle:hover {
+    color: #a5b4fc;
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    min-width: 200px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    margin-top: 0.5rem;
+}
+
+body.dark-mode .nav-dropdown-menu {
+    background-color: #374151;
+    border-color: #4b5563;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+.nav-dropdown-menu.show {
+    display: block;
+}
+
+.nav-dropdown-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #1f2937;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    font-size: 0.95rem;
+}
+
+.nav-dropdown-item:hover {
+    background-color: #f3f4f6;
+}
+
+body.dark-mode .nav-dropdown-item {
+    color: #f9fafb;
+}
+
+body.dark-mode .nav-dropdown-item:hover {
+    background-color: #4b5563;
+}
+
+.nav-dropdown-item:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+body.dark-mode .nav-dropdown-item:not(:last-child) {
+    border-bottom-color: #4b5563;
+}
+
+/* ===== TOGGLE SWITCH STYLES ===== */
+.toggle-bg {
+    background-color: #d1d5db;
+    transition: background-color 0.3s ease;
+}
+
+input:checked + .toggle-bg {
+    background-color: #4f46e5;
+}
+
+.toggle-dot {
+    transition: left 0.3s ease;
+}
+
+input:checked + .toggle-bg + .toggle-dot {
+    left: calc(100% - 1.25rem);
+}
+
+body.dark-mode .toggle-bg {
+    background-color: #4b5563;
+}
+
+body.dark-mode input:checked + .toggle-bg {
+    background-color: #6366f1;
+}
+
+/* ===== EXPERIMENTAL BADGE ===== */
+.experimental-badge {
+    display: inline-block;
+    background-color: #fbbf24;
+    color: #78350f;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+/* ===== FONT STYLING ===== */
+body {
+    font-family: "Lexend", sans-serif;
+}
+
+.tool-title {
+    font-family: "Cinzel Decorative", serif;
+    font-variant-caps: small-caps;
+}
+
+h1 {
+    font-family: "Cinzel", serif;
+    font-weight: 600;
+}
+
+h2, h3 {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-variant-caps: small-caps;
+}
+
+.section-header, .dye-box-header {
+    font-family: "Lexend Giga", sans-serif;
+    font-variant-caps: all-small-caps;
+}
+
+.number {
+    font-family: "Habibi", serif;
+}
+
+/* ===== FOOTER STYLES ===== */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer p + p {
+    margin-top: 0.5rem;
+}
+
+footer a {
+    color: #4f46e5;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: #4338ca;
+}
+
+body.dark-mode footer {
+    color: #d1d5db;
+}
+
+body.dark-mode footer a {
+    color: #818cf8;
+}
+
+body.dark-mode footer a:hover {
+    color: #a5b4fc;
+}
+
+footer .text-gray-400 {
+    color: #9ca3af;
+}
+
+body.dark-mode footer .text-gray-400 {
+    color: #6b7280;
+}
+
+footer .text-xs {
+    font-size: 0.75rem;
+}

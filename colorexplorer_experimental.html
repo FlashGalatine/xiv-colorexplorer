@@ -22,54 +22,11 @@
     <link rel="icon" type="image/png" href="embed_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="assets/css/shared-styles.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-        }
-        body.dark-mode {
-            background-color: #1f2937;
-            color: #f9fafb;
-        }
-        body.dark-mode .bg-gray-100 {
-            background-color: #1f2937;
-        }
-        body.dark-mode .bg-white {
-            background-color: #374151;
-        }
-        body.dark-mode .text-gray-800 {
-            color: #f9fafb;
-        }
-        body.dark-mode .text-gray-700 {
-            color: #e5e7eb;
-        }
-        body.dark-mode .text-gray-600 {
-            color: #d1d5db;
-        }
-        body.dark-mode .text-gray-900 {
-            color: #f9fafb;
-        }
-        body.dark-mode .border-gray-300 {
-            border-color: #4b5563;
-        }
-        body.dark-mode input, body.dark-mode select {
-            background-color: #374151;
-            color: #f9fafb;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        body.dark-mode ::-webkit-scrollbar-track {
-            background: #374151;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
         }
         
         /* Animations */
@@ -97,27 +54,6 @@
         .search-result-item:hover {
             background-color: #f3f4f6;
         }
-        body.dark-mode .search-result-item:hover {
-            background-color: #4b5563;
-        }
-        
-        /* Toggle Switch Styles */
-        .toggle-bg {
-            transition: background-color 0.2s ease;
-        }
-
-        #show-market-prices-toggle:checked ~ .toggle-bg {
-            background-color: #4f46e5;
-        }
-
-        .toggle-dot {
-            transition: transform 0.2s ease;
-        }
-
-        #show-market-prices-toggle:checked ~ .toggle-dot {
-            transform: translateX(100%);
-        }
-        
         /* Tooltip */
         .tooltip {
             position: absolute;
@@ -184,25 +120,6 @@
             margin-bottom: 0;
         }
 
-        /* Dark mode for sidebar subsections */
-        body.dark-mode .sidebar-section.bg-gray-50 {
-            background-color: #4b5563;
-        }
-
-        /* Dark mode toggle button styling */
-        body.dark-mode #dark-mode-toggle {
-            background-color: #4b5563;
-            color: #f9fafb;
-        }
-
-        body.dark-mode #dark-mode-toggle:hover {
-            background-color: #374151;
-        }
-
-        /* Dark mode for header title */
-        body.dark-mode h1 {
-            color: #f9fafb;
-        }
 
         /* Zoom Modal Styles */
         .zoom-backdrop {
@@ -260,17 +177,6 @@
             }
         }
 
-        body.dark-mode .harmony-section.zoomed {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-        }
-
-        body.dark-mode .harmony-section {
-            background-color: #374151;
-        }
-
-        body.dark-mode .harmony-section h3 {
-            color: #f9fafb;
-        }
 
         /* Larger color wheel when zoomed */
         .harmony-section.zoomed .color-wheel {
@@ -297,10 +203,6 @@
                 border-bottom: 1px solid #e5e7eb;
             }
 
-            body.dark-mode .left-sidebar {
-                border-bottom: 1px solid #4b5563;
-            }
-
             .right-content {
                 max-width: 100%;
             }
@@ -309,89 +211,6 @@
                 width: 95vw;
                 max-height: 95vh;
             }
-        }
-
-        .nav-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .nav-dropdown-toggle {
-            background-color: transparent;
-            border: none;
-            color: #4f46e5;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: color 0.2s;
-        }
-
-        .nav-dropdown-toggle:hover {
-            color: #4338ca;
-        }
-
-        body.dark-mode .nav-dropdown-toggle {
-            color: #818cf8;
-        }
-
-        body.dark-mode .nav-dropdown-toggle:hover {
-            color: #a5b4fc;
-        }
-
-        .nav-dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 0.5rem;
-            min-width: 200px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            margin-top: 0.5rem;
-        }
-
-        body.dark-mode .nav-dropdown-menu {
-            background-color: #374151;
-            border-color: #4b5563;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-        }
-
-        .nav-dropdown-menu.show {
-            display: block;
-        }
-
-        .nav-dropdown-item {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: #1f2937;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .nav-dropdown-item:hover {
-            background-color: #f3f4f6;
-        }
-
-        body.dark-mode .nav-dropdown-item {
-            color: #f9fafb;
-        }
-
-        body.dark-mode .nav-dropdown-item:hover {
-            background-color: #4b5563;
-        }
-
-        .nav-dropdown-item:not(:last-child) {
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        body.dark-mode .nav-dropdown-item:not(:last-child) {
-            border-bottom-color: #4b5563;
         }
     </style>
 </head>
@@ -404,18 +223,7 @@
             </div>
             <p class="text-md text-gray-600 mt-2">
                 Discover color harmonies using the FFXIV dye palette.
-                <div class="nav-dropdown inline-block ml-4">
-                    <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
-                        Tools ▼
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
-                        <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
-                        <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
-                        <a href="coloraccessibility_experimental.html" class="nav-dropdown-item">Color Accessibility Checker</a>
-                        <a href="index.html" class="nav-dropdown-item">All Tools</a>
-                    </div>
-                </div>
+                <div id="nav-container" class="component-loading inline-block ml-4"></div>
             </p>
         </header>
 
@@ -2104,48 +1912,10 @@
 
     </script>
 
-    <footer class="text-center mt-12 text-sm text-gray-500">
-        <p>Built with love for Eorzea's fashionistas.</p>
-        <p class="mt-2">
-            Created by <a href="https://na.finalfantasyxiv.com/lodestone/character/7677106/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">Flash Galatine</a> (Balmung)
-        </p>
-        <p class="mt-2 flex justify-center gap-4 flex-wrap">
-            <a href="https://blog.projectgalatine.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Blog
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://github.com/FlashGalatine/xivdyetools" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                GitHub
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://x.com/AsheJunius" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                X / Twitter
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://www.twitch.tv/flashgalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Twitch
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://bsky.app/profile/projectgalatine.com" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                BlueSky
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://patreon.com/ProjectGalatine" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Patreon
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="https://discord.gg/5VUSKTZCe5" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 transition">
-                Discord
-            </a>
-            <span class="text-gray-400">•</span>
-            <a href="./LICENSE" class="text-indigo-600 hover:text-indigo-800 transition">
-                License (MIT)
-            </a>
-        </p>
-        <p class="mt-4 text-xs text-gray-400">
-            This is a fan-made tool and is not affiliated with or endorsed by Square Enix Co., Ltd.<br>
-            FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
-        </p>
-    </footer>
+    <div id="footer-container" class="component-loading"></div>
+
+    <!-- Shared Components Script -->
+    <script src="assets/js/shared-components.js"></script>
+
 </body>
 </html>
