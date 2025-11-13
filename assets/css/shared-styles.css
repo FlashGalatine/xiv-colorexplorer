@@ -498,7 +498,9 @@ footer .text-xs {
     border-left-color: var(--theme-primary) !important;
 }
 
-/* ===== SELECT/DROPDOWN ELEMENT STYLES ===== */
+/* ===== TEXT INPUT AND SELECT ELEMENT STYLES ===== */
+input[type="text"],
+input[type="search"],
 select {
     background-color: var(--theme-card-bg) !important;
     color: var(--theme-text) !important;
@@ -510,17 +512,23 @@ select option {
     color: var(--theme-text) !important;
 }
 
-/* Focus ring colors for select elements */
+/* Focus ring colors for input and select elements */
+input[type="text"]:focus,
+input[type="search"]:focus,
 select:focus {
     outline: none;
-    ring: 2px;
-    ring-color: var(--theme-primary);
     border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 2px var(--theme-primary) !important;
 }
 
 /* ===== CHECKBOX COLOR OVERRIDES ===== */
 .text-indigo-600 {
     color: var(--theme-primary) !important;
+}
+
+/* Use accent-color for checkboxes to match theme primary */
+input[type="checkbox"] {
+    accent-color: var(--theme-primary) !important;
 }
 
 input[type="checkbox"]:checked {
@@ -534,7 +542,10 @@ input[type="checkbox"]:checked {
     color: white !important;
 }
 
-/* For light primary color themes (parchment dark, sugar riot dark), use dark text */
+/* For light primary color themes, use dark text for better contrast */
+body.theme-standard-dark .bg-blue-600,
+body.theme-hydaelyn-dark .bg-blue-600,
+body.theme-classic-ff-dark .bg-blue-600,
 body.theme-parchment-dark .bg-blue-600,
 body.theme-sugar-riot-dark .bg-blue-600 {
     color: #1f2937 !important;
