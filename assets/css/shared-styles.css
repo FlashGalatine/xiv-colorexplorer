@@ -1,5 +1,169 @@
 /* XIV Dye Tools - Shared Styles */
 
+/* ===== THEME COLOR VARIABLES ===== */
+:root {
+    /* Standard Light Theme (default) */
+    --theme-primary: #4f46e5;
+    --theme-primary-hover: #4338ca;
+    --theme-primary-light: #818cf8;
+    --theme-bg: #ffffff;
+    --theme-bg-secondary: #f3f4f6;
+    --theme-bg-tertiary: #e5e7eb;
+    --theme-text: #1f2937;
+    --theme-text-muted: #6b7280;
+    --theme-border: #e5e7eb;
+    --theme-card-bg: #ffffff;
+}
+
+/* Standard Dark Theme */
+body.theme-dark {
+    --theme-primary: #818cf8;
+    --theme-primary-hover: #a5b4fc;
+    --theme-primary-light: #c7d2fe;
+    --theme-bg: #1f2937;
+    --theme-bg-secondary: #374151;
+    --theme-bg-tertiary: #4b5563;
+    --theme-text: #f9fafb;
+    --theme-text-muted: #9ca3af;
+    --theme-border: #4b5563;
+    --theme-card-bg: #374151;
+}
+
+/* Hydaelyn Theme (Light Blue) */
+body.theme-hydaelyn {
+    --theme-primary: #0369a1;
+    --theme-primary-hover: #0284c7;
+    --theme-primary-light: #0ea5e9;
+    --theme-bg: #f0f9ff;
+    --theme-bg-secondary: #cffafe;
+    --theme-bg-tertiary: #a5f3fc;
+    --theme-text: #0c2d57;
+    --theme-text-muted: #164e63;
+    --theme-border: #0ea5e9;
+    --theme-card-bg: #ffffff;
+}
+
+/* Hydaelyn Dark Theme */
+body.theme-hydaelyn.dark-mode {
+    --theme-primary: #38bdf8;
+    --theme-primary-hover: #7dd3fc;
+    --theme-primary-light: #bae6fd;
+    --theme-bg: #082f49;
+    --theme-bg-secondary: #0c4a6e;
+    --theme-bg-tertiary: #0e7490;
+    --theme-text: #f0f9ff;
+    --theme-text-muted: #a5f3fc;
+    --theme-border: #0ea5e9;
+    --theme-card-bg: #0c4a6e;
+}
+
+/* Classic Final Fantasy Theme (Dark Blue) */
+body.theme-classic-ff {
+    --theme-primary: #1e40af;
+    --theme-primary-hover: #1e3a8a;
+    --theme-primary-light: #3b82f6;
+    --theme-bg: #0f172a;
+    --theme-bg-secondary: #1e3a8a;
+    --theme-bg-tertiary: #3730a3;
+    --theme-text: #f0f9ff;
+    --theme-text-muted: #cbd5e1;
+    --theme-border: #1e40af;
+    --theme-card-bg: #1e3a8a;
+}
+
+/* Classic Final Fantasy Dark Theme */
+body.theme-classic-ff.dark-mode {
+    --theme-primary: #60a5fa;
+    --theme-primary-hover: #93c5fd;
+    --theme-primary-light: #bfdbfe;
+    --theme-bg: #030712;
+    --theme-bg-secondary: #0f172a;
+    --theme-bg-tertiary: #1e3a8a;
+    --theme-text: #f0f9ff;
+    --theme-text-muted: #93c5fd;
+    --theme-border: #1e40af;
+    --theme-card-bg: #0f172a;
+}
+
+/* Parchment Theme (Beige/Warm) */
+body.theme-parchment {
+    --theme-primary: #a16207;
+    --theme-primary-hover: #92400e;
+    --theme-primary-light: #b45309;
+    --theme-bg: #fef3c7;
+    --theme-bg-secondary: #fde68a;
+    --theme-bg-tertiary: #fcd34d;
+    --theme-text: #54340e;
+    --theme-text-muted: #78350f;
+    --theme-border: #d97706;
+    --theme-card-bg: #fffbeb;
+}
+
+/* Parchment Dark Theme */
+body.theme-parchment.dark-mode {
+    --theme-primary: #fbbf24;
+    --theme-primary-hover: #fcd34d;
+    --theme-primary-light: #fde68a;
+    --theme-bg: #292415;
+    --theme-bg-secondary: #44342a;
+    --theme-bg-tertiary: #5a4632;
+    --theme-text: #fef3c7;
+    --theme-text-muted: #fcd34d;
+    --theme-border: #b45309;
+    --theme-card-bg: #3d3220;
+}
+
+/* Sugar Riot Theme (Pink/Vibrant) */
+body.theme-sugar-riot {
+    --theme-primary: #ec4899;
+    --theme-primary-hover: #db2777;
+    --theme-primary-light: #f472b6;
+    --theme-bg: #fce7f3;
+    --theme-bg-secondary: #fbcfe8;
+    --theme-bg-tertiary: #f9a8d4;
+    --theme-text: #831843;
+    --theme-text-muted: #be185d;
+    --theme-border: #ec4899;
+    --theme-card-bg: #fff1f5;
+}
+
+/* Sugar Riot Dark Theme */
+body.theme-sugar-riot.dark-mode {
+    --theme-primary: #f472b6;
+    --theme-primary-hover: #f9a8d4;
+    --theme-primary-light: #fbcfe8;
+    --theme-bg: #500724;
+    --theme-bg-secondary: #6b1b47;
+    --theme-bg-tertiary: #831843;
+    --theme-text: #fce7f3;
+    --theme-text-muted: #f472b6;
+    --theme-border: #ec4899;
+    --theme-card-bg: #6b1b47;
+}
+
+/* ===== APPLY THEME VARIABLES TO ELEMENTS ===== */
+body {
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+}
+
+a {
+    color: var(--theme-primary);
+}
+
+a:hover {
+    color: var(--theme-primary-hover);
+}
+
+button, input[type="button"], input[type="submit"] {
+    background-color: var(--theme-primary);
+    color: white;
+}
+
+button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+    background-color: var(--theme-primary-hover);
+}
+
 /* ===== DARK MODE STYLES ===== */
 body.dark-mode {
     background-color: #1f2937;

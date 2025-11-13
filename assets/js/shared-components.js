@@ -3,8 +3,9 @@
  * Provides common functionality for all tools (navigation, footer, dark mode, etc.)
  */
 
-// ===== DARK MODE KEY =====
+// ===== STORAGE KEYS =====
 const DARK_MODE_KEY = 'xivdyetools_darkMode';
+const THEME_KEY = 'xivdyetools_theme';
 
 // ===== SAFE STORAGE UTILITIES =====
 /**
@@ -57,6 +58,62 @@ function initDarkMode() {
 function toggleDarkMode() {
     const isDark = document.body.classList.toggle('dark-mode');
     safeSetStorage(DARK_MODE_KEY, isDark.toString());
+}
+
+// ===== THEME FUNCTIONS =====
+/**
+ * Available themes
+ */
+const AVAILABLE_THEMES = [
+    'light',          // Standard Light (default)
+    'dark',           // Standard Dark
+    'hydaelyn',       // Hydaelyn (Light Blue)
+    'classic-ff',     // Classic Final Fantasy (Dark Blue)
+    'parchment',      // Parchment (Beige/Warm)
+    'sugar-riot'      // Sugar Riot (Pink/Vibrant)
+];
+
+/**
+ * Initialize theme from localStorage
+ */
+function initTheme() {
+    const savedTheme = safeGetStorage(THEME_KEY, 'light');
+    setTheme(savedTheme);
+}
+
+/**
+ * Set active theme
+ * @param {string} themeName - Name of the theme to activate
+ */
+function setTheme(themeName) {
+    if (!AVAILABLE_THEMES.includes(themeName)) {
+        console.warn(`Invalid theme: ${themeName}. Defaulting to light.`);
+        themeName = 'light';
+    }
+
+    // Remove all theme classes
+    AVAILABLE_THEMES.forEach(theme => {
+        document.body.classList.remove(`theme-${theme}`);
+    });
+
+    // Add new theme class (except for 'light' which is default)
+    if (themeName !== 'light') {
+        document.body.classList.add(`theme-${themeName}`);
+    }
+
+    // Save to localStorage
+    safeSetStorage(THEME_KEY, themeName);
+
+    // Dispatch custom event for theme change
+    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: themeName } }));
+}
+
+/**
+ * Get current active theme
+ * @returns {string} Current theme name
+ */
+function getActiveTheme() {
+    return safeGetStorage(THEME_KEY, 'light');
 }
 
 // ===== DROPDOWN FUNCTIONS =====
@@ -129,7 +186,8 @@ function removeLoadingPlaceholders() {
  * Initialize all shared functionality when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', () => {
-    initComponents();
+    initTheme();
     initDarkMode();
+    initComponents();
     removeLoadingPlaceholders();
 });
