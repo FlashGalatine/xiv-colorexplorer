@@ -58,8 +58,15 @@
             z-index: 10;
         }
         .drag-over {
-            border: 4px dashed #3b82f6; /* blue-500 */
-            background-color: rgba(59, 130, 246, 0.1);
+            border: 4px dashed var(--theme-primary);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        body.theme-standard-dark .drag-over,
+        body.theme-hydaelyn-dark .drag-over,
+        body.theme-classic-ff-dark .drag-over,
+        body.theme-parchment-dark .drag-over,
+        body.theme-sugar-riot-dark .drag-over {
+            background-color: rgba(255, 255, 255, 0.05);
         }
         /* Nav dropdown styles moved to shared-styles.css */
         /* Toggle switch styles using theme variables */
@@ -166,24 +173,24 @@
         }
         .toast.success {
             border-left-color: #10b981;
-            background-color: #f0fdf4;
+            background-color: var(--theme-card-bg);
         }
         .toast.success .toast-icon {
             color: #10b981;
         }
         .toast.error {
             border-left-color: #ef4444;
-            background-color: #fef2f2;
+            background-color: var(--theme-card-bg);
         }
         .toast.error .toast-icon {
             color: #ef4444;
         }
         .toast.info {
-            border-left-color: #3b82f6;
-            background-color: #eff6ff;
+            border-left-color: var(--theme-primary);
+            background-color: var(--theme-card-bg);
         }
         .toast.info .toast-icon {
-            color: #3b82f6;
+            color: var(--theme-primary);
         }
         .toast-icon {
             flex-shrink: 0;
@@ -196,13 +203,13 @@
             color: var(--theme-text);
         }
         .toast.success .toast-message {
-            color: #065f46;
+            color: var(--theme-text);
         }
         .toast.error .toast-message {
-            color: #7f1d1d;
+            color: var(--theme-text);
         }
         .toast.info .toast-message {
-            color: #0c2340;
+            color: var(--theme-text);
         }
         .toast.hiding {
             animation: slideOut 0.3s ease-out;
@@ -1057,7 +1064,7 @@
                     priceElement.style.display = 'none';
                 }
             } else {
-                matchedColorDiv.style.backgroundColor = '#FFFFFF';
+                matchedColorDiv.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-bg-secondary').trim();
                 matchedNameP.textContent = 'No Match Found';
                 document.getElementById('matchedHex').textContent = '';
                 document.getElementById('matchedCategory').textContent = '';

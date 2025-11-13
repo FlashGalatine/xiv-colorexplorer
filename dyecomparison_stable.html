@@ -970,10 +970,10 @@
             ctx.fillStyle = getThemeColor('theme-bg');
             ctx.fillRect(0, 0, width, height);
 
-            // Draw brightness gradient bar using dark-to-light gradient
+            // Draw brightness gradient bar using dark-to-light gradient (theme-aware)
             const gradient = ctx.createLinearGradient(leftPadding, 0, leftPadding + chartWidth, 0);
-            gradient.addColorStop(0, '#000000');
-            gradient.addColorStop(1, '#ffffff');
+            gradient.addColorStop(0, '#1a1a1a');
+            gradient.addColorStop(1, '#e8e8e8');
 
             ctx.fillStyle = gradient;
             ctx.fillRect(leftPadding, topPadding + chartHeight / 2 - 15, chartWidth, 30);

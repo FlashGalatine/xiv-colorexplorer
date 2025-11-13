@@ -787,6 +787,10 @@
             const radius = 60;
             const innerRadius = 44;
 
+            // Get theme colors for SVG strokes
+            const themeTextMuted = getComputedStyle(document.documentElement).getPropertyValue('--theme-text-muted').trim();
+            const themeBg = getComputedStyle(document.documentElement).getPropertyValue('--theme-bg').trim();
+
             const getPointOnCircle = (hue, r) => {
                 const angle = (hue - 90) * (Math.PI / 180);
                 return {
@@ -820,25 +824,25 @@
                 svg += `<path d="M ${outer1.x} ${outer1.y} A ${radius} ${radius} 0 0 1 ${outer2.x} ${outer2.y} L ${inner2.x} ${inner2.y} A ${innerRadius} ${innerRadius} 0 0 0 ${inner1.x} ${inner1.y} Z" fill="${color}" opacity="0.4" />`;
             }
             
-            // Lines connecting colors
+            // Lines connecting colors (using theme-muted color for lines)
             relatedColors.forEach(color => {
                 const point = getPointOnCircle(hexToHue(color.hex), radius);
-                svg += `<line x1="${basePoint.x}" y1="${basePoint.y}" x2="${point.x}" y2="${point.y}" 
-                    stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,2" />`;
+                svg += `<line x1="${basePoint.x}" y1="${basePoint.y}" x2="${point.x}" y2="${point.y}"
+                    stroke="${themeTextMuted}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />`;
             });
-            
-            // Related color dots with hover events
+
+            // Related color dots with hover events (using theme background for stroke contrast)
             relatedColors.forEach(color => {
                 const point = getPointOnCircle(hexToHue(color.hex), radius);
                 svg += `<circle cx="${point.x}" cy="${point.y}" r="10" fill="${color.hex}"
-                    stroke="#fff" stroke-width="2" class="color-dot" data-name="${color.name}" data-hex="${color.hex}"
+                    stroke="${themeBg}" stroke-width="2" class="color-dot" data-name="${color.name}" data-hex="${color.hex}"
                     onmousemove="showTooltip('${color.name}', event.pageX, event.pageY)"
                     onmouseout="hideTooltip()" style="cursor: pointer;" />`;
             });
 
-            // Base color dot (larger) with hover event
+            // Base color dot (larger) with hover event (using theme background for stroke contrast)
             svg += `<circle cx="${basePoint.x}" cy="${basePoint.y}" r="14" fill="${baseColor.hex}"
-                stroke="#fff" stroke-width="3" class="color-dot" data-name="${baseColor.name}" data-hex="${baseColor.hex}"
+                stroke="${themeBg}" stroke-width="3" class="color-dot" data-name="${baseColor.name}" data-hex="${baseColor.hex}"
                 onmousemove="showTooltip('${baseColor.name} (Base)', event.pageX, event.pageY)"
                 onmouseout="hideTooltip()" style="cursor: pointer;" />`;
             

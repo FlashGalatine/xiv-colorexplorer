@@ -173,7 +173,7 @@ button:hover, input[type="button"]:hover, input[type="submit"]:hover {
 .nav-dropdown-toggle {
     background-color: transparent;
     border: none;
-    color: #4f46e5;
+    color: var(--theme-primary);
     font-weight: 500;
     cursor: pointer;
     padding: 0;
@@ -184,15 +184,7 @@ button:hover, input[type="button"]:hover, input[type="submit"]:hover {
 }
 
 .nav-dropdown-toggle:hover {
-    color: #4338ca;
-}
-
-body.dark-mode .nav-dropdown-toggle {
-    color: #818cf8;
-}
-
-body.dark-mode .nav-dropdown-toggle:hover {
-    color: #a5b4fc;
+    color: var(--theme-primary-hover);
 }
 
 .nav-dropdown-menu {
@@ -200,19 +192,13 @@ body.dark-mode .nav-dropdown-toggle:hover {
     position: absolute;
     right: 0;
     top: 100%;
-    background-color: white;
-    border: 2px solid #e5e7eb;
+    background-color: var(--theme-card-bg);
+    border: 2px solid var(--theme-border);
     border-radius: 0.5rem;
     min-width: 200px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     z-index: 50;
     margin-top: 0.5rem;
-}
-
-body.dark-mode .nav-dropdown-menu {
-    background-color: #374151;
-    border-color: #4b5563;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
 
 .nav-dropdown-menu.show {
@@ -222,30 +208,18 @@ body.dark-mode .nav-dropdown-menu {
 .nav-dropdown-item {
     display: block;
     padding: 0.75rem 1rem;
-    color: #1f2937;
+    color: var(--theme-text);
     text-decoration: none;
     transition: background-color 0.2s;
     font-size: 0.95rem;
 }
 
 .nav-dropdown-item:hover {
-    background-color: #f3f4f6;
-}
-
-body.dark-mode .nav-dropdown-item {
-    color: #f9fafb;
-}
-
-body.dark-mode .nav-dropdown-item:hover {
-    background-color: #4b5563;
+    background-color: var(--theme-bg-secondary);
 }
 
 .nav-dropdown-item:not(:last-child) {
-    border-bottom: 1px solid #e5e7eb;
-}
-
-body.dark-mode .nav-dropdown-item:not(:last-child) {
-    border-bottom-color: #4b5563;
+    border-bottom: 1px solid var(--theme-border);
 }
 
 /* ===== TOGGLE SWITCH STYLES ===== */
@@ -426,4 +400,100 @@ footer .text-xs {
 /* Amber text override */
 .text-amber-800 {
     color: var(--theme-text) !important;
+}
+
+/* Blue announcement/notification box colors */
+.bg-blue-50 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.bg-blue-100 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.border-blue-100 {
+    border-color: var(--theme-border) !important;
+}
+
+.text-blue-600 {
+    color: var(--theme-primary) !important;
+}
+
+/* Amber announcement/notification box colors */
+.bg-amber-50 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.bg-amber-100 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.border-amber-100 {
+    border-color: var(--theme-border) !important;
+}
+
+.border-amber-200 {
+    border-color: var(--theme-border) !important;
+}
+
+.text-amber-600 {
+    color: var(--theme-primary) !important;
+}
+
+/* Red button override */
+.bg-red-100 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.text-red-700 {
+    color: var(--theme-primary) !important;
+}
+
+.hover\:bg-red-200:hover {
+    background-color: var(--theme-bg-tertiary) !important;
+}
+
+/* Blue button overrides */
+.bg-blue-600 {
+    background-color: var(--theme-primary) !important;
+}
+
+.hover\:bg-blue-600:hover {
+    background-color: var(--theme-primary-hover) !important;
+}
+
+.hover\:bg-blue-700:hover {
+    background-color: var(--theme-primary-hover) !important;
+}
+
+.hover\:bg-blue-200:hover {
+    background-color: var(--theme-bg-tertiary) !important;
+}
+
+/* Theme-aware notification box styles */
+.warning-card {
+    background-color: var(--theme-bg-secondary) !important;
+    border: 1px solid var(--theme-border) !important;
+}
+
+.warning-title {
+    color: var(--theme-primary) !important;
+}
+
+/* Toast notification base styles - will be updated in tool-specific styles */
+.toast {
+    background-color: var(--theme-card-bg) !important;
+    color: var(--theme-text) !important;
+}
+
+.toast.success {
+    border-left-color: #10b981 !important;
+}
+
+.toast.error {
+    border-left-color: #ef4444 !important;
+}
+
+.toast.info {
+    border-left-color: var(--theme-primary) !important;
 }
