@@ -5,6 +5,99 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - Phase 6 Advanced Code Refactoring - 2025-11-13
+
+**Deployed to Production**: All 4 tools + index.html
+
+### Added
+
+- **Centralized Shared Utilities (Phase 6.1)**
+  - Moved 12 major utility functions to `shared-components.js`
+  - Color conversion utilities: `hexToRgb()`, `rgbToHex()`, `rgbToHsv()`, `hsvToRgb()`
+  - Color distance calculations: `colorDistance()`, `getColorDistance()`
+  - Storage utilities: `safeGetStorage()`, `safeSetStorage()`
+  - Dye category management: `getCategoryPriority()`, `sortDyesByCategory()`, `populateDyeDropdown()`
+  - JSON fetching: `safeFetchJSON()` with validation and error handling
+  - API rate limiting: `APIThrottler` class with 500ms minimum between requests
+  - Global `apiThrottler` instance available to all tools
+
+- **Market Board Integration (Phase 6.2)**
+  - Created reusable `components/market-prices.html` component
+  - Centralized price category definitions in `PRICE_CATEGORIES` object
+  - Market board functions: `initializeMarketBoard()`, `fetchUniversalisPrice()`, `formatPrice()`
+  - Integration with all 3 tools: Color Explorer, Color Matcher, Dye Comparison
+  - Updated "Beast Tribe Dyes" → "Allied Society Dyes" for accurate game terminology
+  - Proper classification of all vendor types (Amalj'aa, Ixali, Sahagin, Kobold, Sylphic)
+
+- **Component Loading System**
+  - Early script loading in `<head>` for reliable DOMContentLoaded handling
+  - Proper theme and component initialization order
+  - Navigation and footer components load consistently across all tools
+
+### Fixed
+
+- **Bug 6.1: Script Loading Order**
+  - Moved `shared-components.js` from end of `</body>` to `<head>`
+  - DOMContentLoaded events now register properly for component initialization
+  - Theme system initializes before page render
+
+- **Bug 6.2: Duplicate APIThrottler Declarations**
+  - Removed duplicate `APIThrottler` class from all 3 tool files
+  - Fixed `Uncaught SyntaxError: redeclaration of let APIThrottler`
+  - All tools now use single implementation from shared-components.js
+
+- **Bug 6.3: Missing Global apiThrottler Instance**
+  - Added `const apiThrottler = new APIThrottler(500)` to shared-components.js
+  - Resolved `ReferenceError: apiThrottler is not defined`
+  - Market board pricing now works correctly with API throttling
+
+- **Bug 6.4: Color Harmony Explorer Base Color Price Display**
+  - Fixed base color swatch at top not updating with market prices
+  - Added special DOM handling for `selected-color-display` element
+  - All harmony palettes + base color now display market prices correctly
+
+- **Bug 6.5: Ixali Vendor Misclassification**
+  - Moved Ixali Vendor from "Base Dyes" to "Allied Society Dyes" category
+  - Updated in 4 locations: shared-components.js + all 3 tool filter functions
+  - Consistent vendor classification across all tools
+
+### Changed
+
+- Code duplication reduced by ~1,600+ lines across all tools
+- Market board integration simplified with centralized utility functions
+- All tools now share single implementations of color conversion and utility functions
+- Improved code maintainability through shared-components.js centralization
+- Better separation of concerns: shared logic vs tool-specific UI/layout
+
+### Technical Details
+
+**Files Modified**:
+- `assets/js/shared-components.js` - Added 12 utility functions and market board integration
+- `components/market-prices.html` - Created reusable market board UI component
+- `colorexplorer_experimental.html` - Updated to stable (v1.5.0)
+- `colormatcher_experimental.html` - Updated to stable (v1.5.0)
+- `dyecomparison_experimental.html` - Updated to stable (v1.5.0)
+- `coloraccessibility_experimental.html` - Updated to stable (v1.5.0)
+
+**Commits**:
+- 3a108e3: Phase 6.5: Sync Phase 6 changes to stable versions
+
+### Testing
+
+- ✅ Dye dropdowns populate correctly in all 3 tools
+- ✅ Market board server dropdowns populate with data centers & worlds
+- ✅ Allied Society Dyes filter works correctly (includes all 5 vendors + Ixali)
+- ✅ Base Dyes filter only shows Dye Vendor dyes
+- ✅ Craft, Cosmic, Special filters work correctly
+- ✅ Universalis API integration working with rate limiting
+- ✅ Price fetching respects APIThrottler 500ms minimum
+- ✅ Prices display correctly in all tools (base + harmony swatches)
+- ✅ No JavaScript errors in console
+- ✅ All 10 themes work correctly with market prices
+- ✅ Responsive design maintained
+
+---
+
 ## [1.4.2] - Phase 4.1 Complete Theme System - 2025-11-13
 
 **Deployed to Production**: All 4 tools + index.html

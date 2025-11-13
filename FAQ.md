@@ -130,7 +130,7 @@ A: Report it on GitHub (https://github.com/FlashGalatine/xivdyetools/issues) or 
 ## Accessibility & Features
 
 **Q: Is there a colorblindness simulator?**
-A: Yes! Color Accessibility Checker (BETA v1.0.0) simulates deuteranopia, protanopia, tritanopia, and monochrome vision. This helps ensure your glamour choices are distinguishable for all players.
+A: Yes! Color Accessibility Checker (BETA v1.5.0) simulates deuteranopia, protanopia, tritanopia, and monochrome vision. This helps ensure your glamour choices are distinguishable for all players.
 
 **Q: What languages are supported?**
 A: Currently English only, but the tools are language-agnostic for most features (color data is universal).

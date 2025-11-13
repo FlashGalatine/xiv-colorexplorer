@@ -1,0 +1,66 @@
+<!-- Market Board Price Panel Component -->
+<!--
+    Reusable market board component for all tools
+    Used by: Color Harmony Explorer, Color Matcher, Dye Comparison
+
+    To use:
+    1. Add container in tool HTML: <div id="market-prices-container"></div>
+    2. Load component: loadComponent('components/market-prices.html', 'market-prices-container')
+    3. Initialize after data loads: initializeMarketBoard('mb-server-select', toolId)
+-->
+
+<h3 class="text-sm font-semibold text-gray-900 mb-3">Market Board</h3>
+<div class="space-y-4">
+    <div>
+        <label for="mb-server-select" class="block text-sm font-medium text-gray-700 mb-2">Server:</label>
+        <select id="mb-server-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm">
+            <!-- Options populated by JavaScript -->
+        </select>
+    </div>
+
+    <!-- Price Categories Toggle -->
+    <div class="bg-gray-50 rounded-lg p-4">
+        <div class="flex justify-between items-center mb-3">
+            <label class="text-sm font-semibold text-gray-700">Show Prices</label>
+            <label class="flex items-center cursor-pointer">
+                <input id="show-mb-prices-toggle" type="checkbox" class="sr-only" checked>
+                <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner"></div>
+                <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 transition"></div>
+            </label>
+        </div>
+
+        <!-- Price Category Checkboxes -->
+        <div id="mb-price-settings" class="space-y-2">
+            <div class="text-xs space-y-2">
+                <div class="flex items-center">
+                    <input id="mb-price-base" type="checkbox" class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                    <label for="mb-price-base" class="ml-2 text-gray-600">Base Dyes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="mb-price-craft" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                    <label for="mb-price-craft" class="ml-2 text-gray-600">Craft Dyes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="mb-price-allied" type="checkbox" class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                    <label for="mb-price-allied" class="ml-2 text-gray-600">Allied Society Dyes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="mb-price-cosmic" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                    <label for="mb-price-cosmic" class="ml-2 text-gray-600">Cosmic Dyes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="mb-price-special" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
+                    <label for="mb-price-special" class="ml-2 text-gray-600">Special Dyes</label>
+                </div>
+            </div>
+
+            <!-- Refresh Button -->
+            <button id="mb-refresh-btn" class="w-full px-3 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium mt-3" disabled>
+                Refresh Prices
+            </button>
+
+            <!-- Status Message -->
+            <div id="mb-price-status" class="mt-2 text-xs text-gray-500 text-center"></div>
+        </div>
+    </div>
+</div>
