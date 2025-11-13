@@ -421,11 +421,6 @@
         <header class="text-center mb-8 2xl:mb-12">
             <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
                 <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Color Accessibility Checker <span class="text-xs md:text-sm 2xl:text-base font-semibold bg-amber-100 text-amber-700 px-3 py-1 rounded-full">v1.0.1 BETA</span></h1>
-                <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Plan accessible glamour outfits by simulating how your dye combinations appear to colorblind players.
@@ -717,21 +712,6 @@
                     console.error(`Failed to load JSON from ${url}:`, error.message);
                     return fallbackData;
                 });
-        }
-
-        /**
-         * Initialize dark mode
-         */
-        function initializeDarkMode() {
-            const saved = safeGetStorage('darkMode');
-            if (saved !== null) {
-                document.body.classList.toggle('dark-mode', JSON.parse(saved));
-            }
-
-            document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
-            });
         }
 
         /**
@@ -1919,7 +1899,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize DOM cache first for optimal performance
             initializeDomCache();
-            initializeDarkMode();
 
             // Load dye data
             safeFetchJSON('./assets/json/colors_xiv.json')

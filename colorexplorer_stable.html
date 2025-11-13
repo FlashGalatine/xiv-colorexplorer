@@ -340,16 +340,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Dark Mode Toggle -->
-                <div class="sidebar-section">
-                    <button id="dark-mode-toggle" class="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700 font-medium text-sm" title="Toggle dark mode">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                        <span>Toggle Dark Mode</span>
-                    </button>
-                </div>
             </div>
 
             <!-- Right Content - Color Display and Harmony Results -->
@@ -462,23 +452,6 @@
                 }
                 return false;
             }
-        }
-
-        /**
-         * Initializes dark mode
-         */
-        function initializeDarkMode() {
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const isDarkMode = safeGetStorage('darkMode') === 'true';
-
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                safeSetStorage('darkMode', document.body.classList.contains('dark-mode'));
-            });
         }
 
         /**
@@ -1753,10 +1726,7 @@
 
                 // Enrich the color data with cleaned acquisition text
                 colorData = enrichColorData(rawData);
-                
-                // Initialize dark mode
-                initializeDarkMode();
-                
+
                 // Create tooltip
                 createTooltip();
                 

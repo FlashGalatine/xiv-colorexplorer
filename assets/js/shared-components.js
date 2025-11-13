@@ -4,7 +4,6 @@
  */
 
 // ===== STORAGE KEYS =====
-const DARK_MODE_KEY = 'xivdyetools_darkMode';
 const THEME_KEY = 'xivdyetools_theme';
 
 // ===== SAFE STORAGE UTILITIES =====
@@ -41,64 +40,99 @@ function safeSetStorage(key, value) {
     }
 }
 
-// ===== DARK MODE FUNCTIONS =====
-/**
- * Initialize dark mode from localStorage
- */
-function initDarkMode() {
-    const isDark = safeGetStorage(DARK_MODE_KEY, 'false') === 'true';
-    if (isDark) {
-        document.body.classList.add('dark-mode');
-    }
-}
-
-/**
- * Toggle dark mode and sync across all tools
- */
-function toggleDarkMode() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    safeSetStorage(DARK_MODE_KEY, isDark.toString());
-}
-
 // ===== THEME FUNCTIONS =====
 /**
- * Available themes
+ * Available unified themes with light/dark variants
+ * Format: "base-variant" where base is the theme and variant is light/dark
  */
 const AVAILABLE_THEMES = [
-    'light',          // Standard Light (default)
-    'dark',           // Standard Dark
-    'hydaelyn',       // Hydaelyn (Light Blue)
-    'classic-ff',     // Classic Final Fantasy (Dark Blue)
-    'parchment',      // Parchment (Beige/Warm)
-    'sugar-riot'      // Sugar Riot (Pink/Vibrant)
+    'standard-light',    // Standard Light (default)
+    'standard-dark',     // Standard Dark
+    'hydaelyn-light',    // Hydaelyn Light (Light Blue)
+    'hydaelyn-dark',     // Hydaelyn Dark (Dark Blue)
+    'classic-ff-light',  // Classic Final Fantasy Light (Medium Blue)
+    'classic-ff-dark',   // Classic Final Fantasy Dark (Very Dark Blue)
+    'parchment-light',   // Parchment Light (Warm Beige)
+    'parchment-dark',    // Parchment Dark (Dark Brown)
+    'sugar-riot-light',  // Sugar Riot Light (Bright Pink)
+    'sugar-riot-dark'    // Sugar Riot Dark (Deep Pink)
 ];
+
+/**
+ * Map unified theme names to CSS classes and dark-mode flag
+ * @param {string} themeName - Unified theme name (e.g., "hydaelyn-dark")
+ * @returns {Object} Object with themeClass and isDarkMode properties
+ */
+function parseThemeName(themeName) {
+    const [base, variant] = themeName.split('-');
+    const isDarkMode = variant === 'dark';
+
+    // Map base theme names to CSS class names
+    const classMap = {
+        'standard': null,          // No class for standard light (default)
+        'hydaelyn': 'hydaelyn',
+        'classic': 'classic-ff',   // "classic-ff" in CSS
+        'parchment': 'parchment',
+        'sugar': 'sugar-riot'      // "sugar-riot" in CSS
+    };
+
+    // Handle "classic-ff-light" case
+    let baseClass = null;
+    if (themeName.startsWith('standard')) {
+        baseClass = null;
+    } else if (themeName.startsWith('hydaelyn')) {
+        baseClass = 'hydaelyn';
+    } else if (themeName.startsWith('classic-ff')) {
+        baseClass = 'classic-ff';
+    } else if (themeName.startsWith('parchment')) {
+        baseClass = 'parchment';
+    } else if (themeName.startsWith('sugar-riot')) {
+        baseClass = 'sugar-riot';
+    }
+
+    return { themeClass: baseClass, isDarkMode };
+}
 
 /**
  * Initialize theme from localStorage
  */
 function initTheme() {
-    const savedTheme = safeGetStorage(THEME_KEY, 'light');
+    const savedTheme = safeGetStorage(THEME_KEY, 'standard-light');
     setTheme(savedTheme);
 }
 
 /**
- * Set active theme
- * @param {string} themeName - Name of the theme to activate
+ * Set active theme - handles both theme selection and light/dark mode
+ * @param {string} themeName - Unified theme name (e.g., "hydaelyn-dark", "standard-light")
  */
 function setTheme(themeName) {
     if (!AVAILABLE_THEMES.includes(themeName)) {
-        console.warn(`Invalid theme: ${themeName}. Defaulting to light.`);
-        themeName = 'light';
+        console.warn(`Invalid theme: ${themeName}. Defaulting to standard-light.`);
+        themeName = 'standard-light';
     }
 
+    // Parse the unified theme name
+    const { themeClass, isDarkMode } = parseThemeName(themeName);
+
     // Remove all theme classes
-    AVAILABLE_THEMES.forEach(theme => {
+    ['light', 'dark', 'hydaelyn', 'classic-ff', 'parchment', 'sugar-riot'].forEach(theme => {
         document.body.classList.remove(`theme-${theme}`);
     });
 
-    // Add new theme class (except for 'light' which is default)
-    if (themeName !== 'light') {
-        document.body.classList.add(`theme-${themeName}`);
+    // Remove dark-mode class
+    document.body.classList.remove('dark-mode');
+
+    // Add new theme class if not standard light
+    if (themeClass) {
+        document.body.classList.add(`theme-${themeClass}`);
+    } else if (themeName === 'standard-dark') {
+        // Special case: standard dark uses theme-dark class
+        document.body.classList.add('theme-dark');
+    }
+
+    // Add dark-mode class if needed
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
     }
 
     // Save to localStorage
@@ -110,10 +144,10 @@ function setTheme(themeName) {
 
 /**
  * Get current active theme
- * @returns {string} Current theme name
+ * @returns {string} Current unified theme name
  */
 function getActiveTheme() {
-    return safeGetStorage(THEME_KEY, 'light');
+    return safeGetStorage(THEME_KEY, 'standard-light');
 }
 
 // ===== DROPDOWN FUNCTIONS =====
@@ -204,8 +238,7 @@ function removeLoadingPlaceholders() {
  * Initialize all shared functionality when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    initDarkMode();
+    initTheme();                   // Theme now handles both light/dark modes
     initComponents();
     removeLoadingPlaceholders();
 });
