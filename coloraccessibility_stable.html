@@ -308,6 +308,8 @@
             }
         }
     </style>
+    <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
+    <script src="assets/js/shared-components.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
@@ -553,149 +555,19 @@
         /**
          * Safe localStorage getter with error handling
          */
-        function safeGetStorage(key, defaultValue = null) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return defaultValue;
-                }
-                return localStorage.getItem(key);
-            } catch (e) {
-                console.warn(`localStorage getItem failed for key "${key}":`, e.message);
-                return defaultValue;
-            }
-        }
+        // Storage and utility functions now provided by shared-components.js:
+        // - safeGetStorage(key, defaultValue)
+        // - safeSetStorage(key, value)
+        // - safeFetchJSON(url, fallbackData)
+        // - toggleDropdown(button)
 
-        /**
-         * Safe localStorage setter with error handling
-         */
-        function safeSetStorage(key, value) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return false;
-                }
-                localStorage.setItem(key, value);
-                return true;
-            } catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    console.warn('localStorage quota exceeded for key:', key);
-                } else {
-                    console.warn(`localStorage setItem failed for key "${key}":`, e.message);
-                }
-                return false;
-            }
-        }
-
-        /**
-         * Safely fetch and validate JSON data
-         */
-        function safeFetchJSON(url, fallbackData = []) {
-            return fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error(`Invalid content type: ${contentType}`);
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error(`Failed to load JSON from ${url}:`, error.message);
-                    return fallbackData;
-                });
-        }
-
-        /**
-         * Toggle tools dropdown
-         */
-        function toggleDropdown(button) {
-            const menu = button.nextElementSibling;
-            menu.classList.toggle('show');
-
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.nav-dropdown')) {
-                    menu.classList.remove('show');
-                }
-            });
-        }
-
-        /**
-         * Convert RGB color values to HSV (Hue, Saturation, Value)
-         *
-         * @param {number} r - Red channel value (0-255)
-         * @param {number} g - Green channel value (0-255)
-         * @param {number} b - Blue channel value (0-255)
-         * @returns {Object} HSV object with properties:
-         *   - h {number} Hue in degrees (0-360)
-         *   - s {number} Saturation as percentage (0-100)
-         *   - v {number} Value as percentage (0-100)
-         *
-         * @example
-         * const hsv = rgbToHsv(255, 0, 0); // Red: { h: 0, s: 100, v: 100 }
-         */
-        function rgbToHsv(r, g, b) {
-            r /= 255;
-            g /= 255;
-            b /= 255;
-
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            const delta = max - min;
-
-            let h = 0;
-            if (delta === 0) h = 0;
-            else if (max === r) h = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
-            else if (max === g) h = ((b - r) / delta + 2) / 6;
-            else h = ((r - g) / delta + 4) / 6;
-
-            const s = max === 0 ? 0 : delta / max;
-            const v = max;
-
-            return {
-                h: Math.round(h * 360),
-                s: Math.round(s * 100),
-                v: Math.round(v * 100)
-            };
-        }
-
-        /**
-         * Convert hexadecimal color string to RGB object
-         * Standardized across all tools
-         *
-         * @param {string} hex - Hex color string (with or without '#')
-         * @returns {Object} RGB object with r, g, b (0-255), falls back to black on error
-         *
-         * @example
-         * hexToRgb("#FF0000") // { r: 255, g: 0, b: 0 }
-         * hexToRgb("00FF00") // { r: 0, g: 255, b: 0 }
-         */
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 0, g: 0, b: 0 }; // Fallback to black on invalid input
-        }
-
-        /**
-         * Convert RGB color values to hexadecimal string
-         * Standardized across all tools
-         *
-         * @param {number} r - Red channel (0-255)
-         * @param {number} g - Green channel (0-255)
-         * @param {number} b - Blue channel (0-255)
-         * @returns {string} Hex color string in format "#RRGGBB"
-         */
-        function rgbToHex(r, g, b) {
-            return '#' + [r, g, b].map(x => {
-                const hex = x.toString(16);
-                return hex.length === 1 ? '0' + hex : hex;
-            }).join('');
-        }
+        // Color conversion functions now provided by shared-components.js:
+        // - rgbToHsv(r, g, b) - Convert RGB to HSV
+        // - hexToRgb(hex) - Convert hex to RGB
+        // - rgbToHex(r, g, b) - Convert RGB to hex
+        // - hsvToRgb(h, s, v) - Convert HSV to RGB
+        // - colorDistance(rgb1, rgb2) - Calculate color distance
+        // - getColorDistance(hex1, hex2) - Calculate color distance from hex
 
         /**
          * Apply colorblindness simulation using Brettel 1997 algorithm
@@ -815,44 +687,6 @@
             return (lighter + 0.05) / (darker + 0.05);
         }
 
-        /**
-         * Calculate Euclidean distance between two colors in RGB space
-         *
-         * Uses the standard RGB Euclidean distance formula:
-         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
-         *
-         * Range: 0 (identical colors) to ~441 (white vs black)
-         *
-         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
-         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
-         * @returns {number} Euclidean distance in RGB space
-         *
-         * @example
-         * const dist = colorDistance({ r: 255, g: 0, b: 0 }, { r: 0, g: 0, b: 0 }); // 255
-         */
-        function colorDistance(rgb1, rgb2) {
-            // Guard: Validate input objects
-            if (!rgb1 || !rgb2 || typeof rgb1.r !== 'number' || typeof rgb2.r !== 'number') {
-                console.warn('Invalid color objects passed to colorDistance');
-                return 0;
-            }
-
-            const dr = rgb1.r - rgb2.r;
-            const dg = rgb1.g - rgb2.g;
-            const db = rgb1.b - rgb2.b;
-
-            return Math.sqrt(dr * dr + dg * dg + db * db);
-        }
-
-        /**
-         * Wrapper for backward compatibility - converts hex to RGB and calls colorDistance
-         * @deprecated Use colorDistance() directly with RGB objects instead
-         */
-        function getColorDistance(hex1, hex2) {
-            const rgb1 = hexToRgb(hex1);
-            const rgb2 = hexToRgb(hex2);
-            return colorDistance(rgb1, rgb2);
-        }
 
         /**
          * Initialize dye slot selectors
@@ -911,110 +745,12 @@
             });
         }
 
-        /**
-         * Get category priority for sorting
-         * Standardized category ordering across all tools:
-         * - Neutral: 0
-         * - Colors (A-Z): 1-26 (when encountered in data, treated as priority 2 for unknown categories)
-         * - Special: 98
-         * - Facewear: 99 (typically excluded from filtering)
-         *
-         * @param {string} category - The dye category name
-         * @returns {number} Priority value for sorting (lower values appear first)
-         */
-        function getCategoryPriority(category) {
-            const priorityMap = {
-                'Neutral': 0,
-                'Special': 98,
-                'Facewear': 99
-            };
-            // Default priority for unknown "Colors" categories is 1-26 range (2 as default)
-            return priorityMap[category] !== undefined ? priorityMap[category] : 2;
-        }
+        // Category sorting functions now provided by shared-components.js:
+        // - getCategoryPriority(category) - Get priority number for sorting
+        // - sortDyesByCategory(dyes) - Sort dyes by category and name
 
-        /**
-         * Sort dyes by category (using priority) and then by name alphabetically
-         * Used by all dropdown population functions for consistent ordering
-         *
-         * @param {Array} dyes - Array of dye objects
-         * @returns {Array} Sorted dye array
-         */
-        function sortDyesByCategory(dyes) {
-            return [...dyes].sort((a, b) => {
-                const aPriority = getCategoryPriority(a.category);
-                const bPriority = getCategoryPriority(b.category);
-
-                // Sort by category priority first
-                if (aPriority !== bPriority) {
-                    return aPriority - bPriority;
-                }
-
-                // Then by category name alphabetically (for unknown categories)
-                const categoryComparison = a.category.localeCompare(b.category);
-                if (categoryComparison !== 0) {
-                    return categoryComparison;
-                }
-
-                // Finally by dye name alphabetically
-                return a.name.localeCompare(b.name);
-            });
-        }
-
-        /**
-         * Populate a dye dropdown with organized categories and standardized sorting
-         * Creates optgroups for each category, sorted by priority, with dyes alphabetically ordered
-         *
-         * Pattern: Used by all three tools for consistent dropdown generation
-         * - All dyes sorted by getCategoryPriority() and then by name
-         * - Dyes grouped into optgroups by category
-         * - Each optgroup contains dyes alphabetically sorted by name
-         * - Option values use itemID for database lookup
-         *
-         * @param {HTMLSelectElement} select - The select dropdown element to populate
-         */
-        function populateDyeDropdown(select) {
-            // Guard: Validate select element
-            if (!select) {
-                console.warn('populateDyeDropdown: Invalid select element');
-                return;
-            }
-
-            // Sort dyes using standardized function
-            const sortedDyes = sortDyesByCategory(ffxivDyes);
-
-            // Group dyes by category
-            const dyesByCategory = {};
-            sortedDyes.forEach(dye => {
-                if (!dyesByCategory[dye.category]) {
-                    dyesByCategory[dye.category] = [];
-                }
-                dyesByCategory[dye.category].push(dye);
-            });
-
-            // Get categories in priority order
-            const categories = Object.keys(dyesByCategory).sort((a, b) => {
-                const aPriority = getCategoryPriority(a);
-                const bPriority = getCategoryPriority(b);
-                if (aPriority !== bPriority) return aPriority - bPriority;
-                return a.localeCompare(b);
-            });
-
-            // Populate dropdown with optgroups
-            categories.forEach(category => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = category;
-
-                // Dyes are already sorted alphabetically from sortDyesByCategory
-                dyesByCategory[category].forEach(dye => {
-                    const option = document.createElement('option');
-                    option.value = dye.itemID;
-                    option.textContent = dye.name;
-                    optgroup.appendChild(option);
-                });
-
-                select.appendChild(optgroup);
-            });
-        }
+        // Populate dye dropdown function now provided by shared-components.js:
+        // - populateDyeDropdown(select, dyeArray = null)
 
         /**
          * Handle dye selection change
@@ -1855,9 +1591,6 @@
                 });
         });
     </script>
-
-    <!-- Shared Components Script -->
-    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>

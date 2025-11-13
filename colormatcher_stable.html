@@ -342,6 +342,8 @@
             max-width: calc(100% - 1.5rem);
         }
     </style>
+    <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
+    <script src="assets/js/shared-components.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen p-3">
 
@@ -541,7 +543,7 @@
                                 </div>
                                 <div class="flex items-center">
                                     <input id="mb-price-beast" type="checkbox" class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
-                                    <label for="mb-price-beast" class="ml-2 text-gray-600">Beast Tribe Dyes</label>
+                                    <label for="mb-price-beast" class="ml-2 text-gray-600">Allied Society Dyes</label>
                                 </div>
                                 <div class="flex items-center">
                                     <input id="mb-price-cosmic" type="checkbox" checked class="h-3 w-3 text-indigo-600 border-gray-300 rounded mb-price-checkbox">
@@ -645,13 +647,51 @@
         }
 
         // Market Board price categories
-        const PRICE_CATEGORIES = {
-            'baseDyes': { name: 'Base Dyes', acquisitions: ['Dye Vendor', 'Ixali Vendor'], default: false },
-            'craftDyes': { name: 'Craft Dyes', acquisitions: ['Crafting'], default: true },
-            'beastTribeDyes': { name: 'Beast Tribe Dyes', acquisitions: ['Amalj\'aa Vendor', 'Sahagin Vendor', 'Kobold Vendor', 'Sylphic Vendor'], default: false },
-            'cosmicDyes': { name: 'Cosmic Dyes', acquisitions: ['Cosmic Exploration', 'Cosmic Fortunes'], default: true },
-            'specialDyes': { name: 'Special Dyes', category: 'Special', default: true }
-        };
+        // Price categories now provided by shared-components.js
+        // Helper function to check if a dye should have price fetched for Color Matcher
+        function shouldFetchPriceMatcher(dye) {
+            if (!dye) return false;
+            if (!dye.itemID) return false;
+
+            // Special dyes category
+            if (document.getElementById('show-mb-prices-toggle')?.checked &&
+                document.getElementById('mb-price-special')?.checked &&
+                dye.category === 'Special') {
+                return true;
+            }
+
+            if (!dye.acquisition) return false;
+
+            const showPrices = document.getElementById('show-mb-prices-toggle')?.checked;
+            if (!showPrices) return false;
+
+            // Base Dyes: Dye Vendor
+            if (document.getElementById('mb-price-base')?.checked &&
+                ['Dye Vendor'].includes(dye.acquisition)) {
+                return true;
+            }
+
+            // Craft Dyes: Crafting, Treasure Chest
+            if (document.getElementById('mb-price-craft')?.checked &&
+                ['Crafting', 'Treasure Chest'].includes(dye.acquisition)) {
+                return true;
+            }
+
+            // Allied Society Dyes (ID still uses 'beast' for backward compatibility):
+            // Amalj'aa, Ixali, Sylphic, Kobold, Sahagin Vendors
+            if (document.getElementById('mb-price-beast')?.checked &&
+                ['Amalj\'aa Vendor', 'Ixali Vendor', 'Sahagin Vendor', 'Kobold Vendor', 'Sylphic Vendor'].includes(dye.acquisition)) {
+                return true;
+            }
+
+            // Cosmic Dyes: Cosmic Exploration, Cosmic Fortunes
+            if (document.getElementById('mb-price-cosmic')?.checked &&
+                ['Cosmic Exploration', 'Cosmic Fortunes'].includes(dye.acquisition)) {
+                return true;
+            }
+
+            return false;
+        }
 
         // This variable will hold the color data once it's fetched.
         let ffxivDyes = [];
@@ -928,57 +968,7 @@
             return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         }
 
-        /**
-         * API Request Throttler for Universalis API
-         * Prevents rate limiting by enforcing minimum interval between requests
-         * Uses a queue system to process requests sequentially
-         */
-        class APIThrottler {
-            constructor(minInterval = 500) {
-                this.minInterval = minInterval; // Milliseconds between requests
-                this.lastRequest = 0;
-                this.queue = [];
-                this.isProcessing = false;
-            }
-
-            async request(url) {
-                return new Promise((resolve, reject) => {
-                    this.queue.push({ url, resolve, reject });
-                    this.processQueue();
-                });
-            }
-
-            async processQueue() {
-                if (this.isProcessing || this.queue.length === 0) return;
-
-                this.isProcessing = true;
-                const now = Date.now();
-                const timeSinceLastRequest = now - this.lastRequest;
-
-                // Wait if not enough time has passed since last request
-                if (timeSinceLastRequest < this.minInterval) {
-                    const waitTime = this.minInterval - timeSinceLastRequest;
-                    await new Promise(r => setTimeout(r, waitTime));
-                }
-
-                const { url, resolve, reject } = this.queue.shift();
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    this.lastRequest = Date.now();
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-
-                this.isProcessing = false;
-                this.processQueue();
-            }
-        }
-
-        // Global throttler instance for Universalis API (500ms minimum between requests)
-        const apiThrottler = new APIThrottler(500);
+        // APIThrottler class and apiThrottler instance now provided by shared-components.js
 
         function findClosestMatch() {
             if (ffxivDyes.length === 0) {
@@ -1495,35 +1485,6 @@
         /**
          * Check if a dye should have its price fetched
          */
-        function shouldFetchPriceMatcher(color) {
-            // Guard: Validate color object exists
-            if (!color) return false;
-            if (!color.itemID) return false;
-
-            // Guard: Validate dye properties exist
-            if (!color.category || !color.acquisition) return false;
-
-            const baseDyesCheckbox = document.getElementById('mb-price-base');
-            const craftDyesCheckbox = document.getElementById('mb-price-craft');
-            const beastTribeDyesCheckbox = document.getElementById('mb-price-beast');
-            const cosmicDyesCheckbox = document.getElementById('mb-price-cosmic');
-            const specialDyesCheckbox = document.getElementById('mb-price-special');
-
-            // Guard: Validate checkboxes exist
-            if (!baseDyesCheckbox || !craftDyesCheckbox || !beastTribeDyesCheckbox || !cosmicDyesCheckbox || !specialDyesCheckbox) {
-                return false;
-            }
-
-            if (specialDyesCheckbox.checked && color.category === 'Special') return true;
-
-            if (baseDyesCheckbox.checked && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
-            if (craftDyesCheckbox.checked && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
-            if (beastTribeDyesCheckbox.checked && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
-            if (cosmicDyesCheckbox.checked && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
-
-            return false;
-        }
-
         /**
          * Fetches market prices from Universalis API
          */
@@ -1738,9 +1699,6 @@
         });
 
     </script>
-
-    <!-- Shared Components Script -->
-    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>

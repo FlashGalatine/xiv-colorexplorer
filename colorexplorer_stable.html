@@ -205,6 +205,8 @@
             }
         }
     </style>
+    <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
+    <script src="assets/js/shared-components.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -293,7 +295,7 @@
                             </div>
                             <div class="flex items-center">
                                 <input id="price-beast-tribe-dyes" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded price-category-checkbox">
-                                <label for="price-beast-tribe-dyes" class="ml-2 block text-xs text-gray-700">Beast Tribe Dyes</label>
+                                <label for="price-beast-tribe-dyes" class="ml-2 block text-xs text-gray-700">Allied Society Dyes</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="price-cosmic-dyes" type="checkbox" checked class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded price-category-checkbox">
@@ -404,13 +406,48 @@
         let lastPriceUpdate = null;
 
         // Price data categories mapping
-        const PRICE_CATEGORIES = {
-            'baseDyes': { name: 'Base Dyes', acquisitions: ['Dye Vendor', 'Ixali Vendor'], default: false },
-            'craftDyes': { name: 'Craft Dyes', acquisitions: ['Crafting'], default: true },
-            'beastTribeDyes': { name: 'Beast Tribe Dyes', acquisitions: ['Amalj\'aa Vendor', 'Sahagin Vendor', 'Kobold Vendor', 'Sylphic Vendor'], default: false },
-            'cosmicDyes': { name: 'Cosmic Dyes', acquisitions: ['Cosmic Exploration', 'Cosmic Fortunes'], default: true },
-            'specialDyes': { name: 'Special Dyes', category: 'Special', default: true }
-        };
+        // Price categories now provided by shared-components.js:
+        // const PRICE_CATEGORIES = { ... } // See assets/js/shared-components.js for the source of truth
+
+        // Helper function to check if a color should have price fetched
+        // Maps tool-specific checkbox IDs to shared PRICE_CATEGORIES
+        function shouldFetchPriceExplorer(color) {
+            if (!color) return false;
+            if (!color.itemID) return false;
+
+            // Special dyes category
+            if (document.getElementById('price-special-dyes')?.checked && color.category === 'Special') {
+                return true;
+            }
+
+            if (!color.acquisition) return false;
+
+            // Base Dyes: Dye Vendor
+            if (document.getElementById('price-base-dyes')?.checked &&
+                ['Dye Vendor'].includes(color.acquisition)) {
+                return true;
+            }
+
+            // Craft Dyes: Crafting, Treasure Chest
+            if (document.getElementById('price-craft-dyes')?.checked &&
+                ['Crafting', 'Treasure Chest'].includes(color.acquisition)) {
+                return true;
+            }
+
+            // Allied Society Dyes (formerly Beast Tribe): Amalj'aa, Ixali, Sylphic, Kobold, Sahagin Vendors
+            if (document.getElementById('price-beast-tribe-dyes')?.checked &&
+                ['Amalj\'aa Vendor', 'Ixali Vendor', 'Sahagin Vendor', 'Kobold Vendor', 'Sylphic Vendor'].includes(color.acquisition)) {
+                return true;
+            }
+
+            // Cosmic Dyes: Cosmic Exploration, Cosmic Fortunes
+            if (document.getElementById('price-cosmic-dyes')?.checked &&
+                ['Cosmic Exploration', 'Cosmic Fortunes'].includes(color.acquisition)) {
+                return true;
+            }
+
+            return false;
+        }
 
         /**
          * Safe localStorage getter with error handling
@@ -726,57 +763,7 @@
             return hue < 0 ? hue + 360 : hue;
         }
 
-        /**
-         * API Request Throttler for Universalis API
-         * Prevents rate limiting by enforcing minimum interval between requests
-         * Uses a queue system to process requests sequentially
-         */
-        class APIThrottler {
-            constructor(minInterval = 500) {
-                this.minInterval = minInterval; // Milliseconds between requests
-                this.lastRequest = 0;
-                this.queue = [];
-                this.isProcessing = false;
-            }
-
-            async request(url) {
-                return new Promise((resolve, reject) => {
-                    this.queue.push({ url, resolve, reject });
-                    this.processQueue();
-                });
-            }
-
-            async processQueue() {
-                if (this.isProcessing || this.queue.length === 0) return;
-
-                this.isProcessing = true;
-                const now = Date.now();
-                const timeSinceLastRequest = now - this.lastRequest;
-
-                // Wait if not enough time has passed since last request
-                if (timeSinceLastRequest < this.minInterval) {
-                    const waitTime = this.minInterval - timeSinceLastRequest;
-                    await new Promise(r => setTimeout(r, waitTime));
-                }
-
-                const { url, resolve, reject } = this.queue.shift();
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    this.lastRequest = Date.now();
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-
-                this.isProcessing = false;
-                this.processQueue();
-            }
-        }
-
-        // Global throttler instance for Universalis API (500ms minimum between requests)
-        const apiThrottler = new APIThrottler(500);
+        // APIThrottler class and apiThrottler instance now provided by shared-components.js
 
         /**
          * Creates a color wheel SVG
@@ -909,34 +896,8 @@
         /**
          * Checks if a dye should have price data fetched
          */
-        function shouldFetchPrice(color) {
-            // Guard: Validate color object exists
-            if (!color) return false;
-            if (!color.itemID) return false;
-
-            // Guard: Validate dye properties exist
-            if (!color.category || !color.acquisition) return false;
-
-            const baseDyesCheckbox = document.getElementById('price-base-dyes');
-            const craftDyesCheckbox = document.getElementById('price-craft-dyes');
-            const beastTribeDyesCheckbox = document.getElementById('price-beast-tribe-dyes');
-            const cosmicDyesCheckbox = document.getElementById('price-cosmic-dyes');
-            const specialDyesCheckbox = document.getElementById('price-special-dyes');
-
-            // Guard: Validate checkboxes exist
-            if (!baseDyesCheckbox || !craftDyesCheckbox || !beastTribeDyesCheckbox || !cosmicDyesCheckbox || !specialDyesCheckbox) {
-                return false;
-            }
-
-            if (specialDyesCheckbox.checked && color.category === 'Special') return true;
-
-            if (baseDyesCheckbox.checked && PRICE_CATEGORIES.baseDyes.acquisitions.includes(color.acquisition)) return true;
-            if (craftDyesCheckbox.checked && PRICE_CATEGORIES.craftDyes.acquisitions.includes(color.acquisition)) return true;
-            if (beastTribeDyesCheckbox.checked && PRICE_CATEGORIES.beastTribeDyes.acquisitions.some(acq => color.acquisition === acq)) return true;
-            if (cosmicDyesCheckbox.checked && PRICE_CATEGORIES.cosmicDyes.acquisitions.includes(color.acquisition)) return true;
-
-            return false;
-        }
+        // Using shouldFetchPriceExplorer (defined above) which implements the same logic
+        // without referencing the removed PRICE_CATEGORIES object
 
         /**
          * Fetches market prices from Universalis API using aggregated endpoint
@@ -984,11 +945,13 @@
 
                             if (price) {
                                 prices[itemId] = price;
+                                console.log(`Fetched price for item ${itemId}: ${price} Gil`);
                             }
                         }
                     });
                 }
 
+                console.log('All fetched prices:', prices);
                 return prices;
             } catch (error) {
                 console.error('Error fetching prices:', error);
@@ -1019,7 +982,7 @@
                 });
 
                 // Filter to colors that should have prices
-                const colorsNeedingPrices = visibleColors.filter(color => shouldFetchPrice(color));
+                const colorsNeedingPrices = visibleColors.filter(color => shouldFetchPriceExplorer(color));
                 const itemIds = [...new Set(colorsNeedingPrices.map(c => c.itemID))];
 
                 if (itemIds.length === 0) {
@@ -1043,9 +1006,57 @@
                 priceCache = { ...priceCache, ...newPrices };
                 lastPriceUpdate = new Date();
 
-                // Update UI
-                updateUI();
-                
+                // Update acquisition text for all colors that had prices fetched
+                // Iterate through all harmony palettes (base + all harmony types)
+                const allSwatchColors = [currentPalettes.base];
+                Object.keys(currentPalettes).forEach(key => {
+                    if (key !== 'base' && Array.isArray(currentPalettes[key])) {
+                        allSwatchColors.push(...currentPalettes[key]);
+                    }
+                });
+
+                // Update the BASE COLOR display at the top
+                const baseColor = currentPalettes.base;
+                if (baseColor) {
+                    const selectedColorDisplay = document.getElementById('selected-color-display');
+                    if (selectedColorDisplay) {
+                        // Find the acquisition paragraph (contains "Acquisition: ...")
+                        const paragraphs = selectedColorDisplay.querySelectorAll('p');
+                        paragraphs.forEach(p => {
+                            if (p.textContent.includes('Acquisition:')) {
+                                const acquisitionText = getAcquisitionText(baseColor);
+                                p.textContent = acquisitionText ? `Acquisition: ${acquisitionText}` : '';
+                                console.log(`Updated BASE COLOR display: ${p.textContent}`);
+                            }
+                        });
+                    }
+                }
+
+                // For each color, find its swatch in the DOM and update acquisition text
+                allSwatchColors.forEach(color => {
+                    if (!color || !color.name) return;
+
+                    // Find the swatch div by searching for a span with the color name
+                    const colorNameSpans = Array.from(document.querySelectorAll('span.font-semibold')).filter(span => span.textContent.trim() === color.name);
+
+                    colorNameSpans.forEach(nameSpan => {
+                        // Find the parent swatch div (it should be a few levels up)
+                        let swatchDiv = nameSpan.closest('div.group');
+                        if (swatchDiv) {
+                            // Find the acquisition text div within this swatch
+                            let acquisitionDiv = Array.from(swatchDiv.querySelectorAll('div')).find(div =>
+                                div.className.includes('text-xs') &&
+                                div.className.includes('opacity-70')
+                            );
+
+                            if (acquisitionDiv) {
+                                acquisitionDiv.textContent = getAcquisitionText(color);
+                                console.log(`Updated price for ${color.name}: ${acquisitionDiv.textContent}`);
+                            }
+                        }
+                    });
+                });
+
                 const priceCount = Object.keys(newPrices).length;
                 statusDiv.textContent = `Updated ${priceCount} prices at ${lastPriceUpdate.toLocaleTimeString()}`;
                 
@@ -1432,19 +1443,26 @@
             // Toggle is on, show market prices if available
             // Use string key for cache lookup to match how prices are stored
             const itemIdKey = color.itemID ? color.itemID.toString() : null;
+            const shouldFetch = shouldFetchPriceExplorer(color);
 
-            if (shouldFetchPrice(color) && itemIdKey && priceCache[itemIdKey]) {
-                return `Market Board - ${priceCache[itemIdKey].toLocaleString()} Gil`;
+            console.log(`getAcquisitionText: ${color.name}, itemID=${color.itemID}, itemIdKey=${itemIdKey}, showPrices=${showPrices}, shouldFetch=${shouldFetch}, hasCache=${itemIdKey ? !!priceCache[itemIdKey] : false}, cacheValue=${itemIdKey ? priceCache[itemIdKey] : 'N/A'}`);
+
+            if (shouldFetch && itemIdKey && priceCache[itemIdKey]) {
+                const result = `Market Board - ${priceCache[itemIdKey].toLocaleString()} Gil`;
+                console.log(`  -> Returning market price: ${result}`);
+                return result;
             }
 
-            if (shouldFetchPrice(color) && itemIdKey && !priceCache[itemIdKey]) {
+            if (shouldFetch && itemIdKey && !priceCache[itemIdKey]) {
                 if (lastPriceUpdate) {
                     return `${color.acquisition}${color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : ''} (Sold Out)`;
                 }
                 return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
             }
 
-            return color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
+            const result = color.acquisition + (color.price !== null && color.currency ? ` - ${color.price} ${color.currency}` : '');
+            console.log(`  -> Returning acquisition text: ${result}`);
+            return result;
         }
 
         /**
@@ -1879,9 +1897,6 @@
     </script>
 
     <div id="footer-container" class="component-loading"></div>
-
-    <!-- Shared Components Script -->
-    <script src="assets/js/shared-components.js"></script>
 
 </body>
 </html>
