@@ -1556,11 +1556,18 @@
                     // Load secondary dyes preference from localStorage
                     const savedSecondaryDyesState = safeGetStorage('secondaryDyesEnabled');
                     if (savedSecondaryDyesState !== null) {
-                        secondaryDyesEnabled = JSON.parse(savedSecondaryDyesState);
-                        if (domCache.enableSecondaryDyes) {
-                            domCache.enableSecondaryDyes.checked = secondaryDyesEnabled;
+                        try {
+                            secondaryDyesEnabled = JSON.parse(savedSecondaryDyesState);
+                            if (domCache.enableSecondaryDyes) {
+                                domCache.enableSecondaryDyes.checked = secondaryDyesEnabled;
+                            }
+                            updateSecondaryDyeVisibility();
+                        } catch (parseError) {
+                            console.warn('Invalid secondaryDyesEnabled value in localStorage, resetting to default:', parseError.message);
+                            // Reset to default (secondary dyes disabled)
+                            secondaryDyesEnabled = false;
+                            safeSetStorage('secondaryDyesEnabled', JSON.stringify(false));
                         }
-                        updateSecondaryDyeVisibility();
                     }
 
                     // Setup secondary dyes toggle using cached DOM element
