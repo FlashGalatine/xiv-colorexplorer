@@ -335,35 +335,95 @@ footer p + p {
 }
 
 footer a {
-    color: #4f46e5;
+    color: var(--theme-primary);
     text-decoration: none;
     transition: color 0.2s;
 }
 
 footer a:hover {
-    color: #4338ca;
+    color: var(--theme-primary-hover);
 }
 
-body.dark-mode footer {
-    color: #d1d5db;
-}
-
-body.dark-mode footer a {
-    color: #818cf8;
-}
-
-body.dark-mode footer a:hover {
-    color: #a5b4fc;
+footer {
+    color: var(--theme-text-muted);
 }
 
 footer .text-gray-400 {
-    color: #9ca3af;
-}
-
-body.dark-mode footer .text-gray-400 {
-    color: #6b7280;
+    color: var(--theme-text-muted);
 }
 
 footer .text-xs {
     font-size: 0.75rem;
+}
+
+/* ===== TAILWIND CLASS OVERRIDES FOR THEME SUPPORT ===== */
+/* These override hardcoded Tailwind colors to use theme variables */
+
+/* Background colors */
+.bg-white {
+    background-color: var(--theme-bg) !important;
+}
+
+.bg-gray-50 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.bg-gray-100 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.bg-gray-200 {
+    background-color: var(--theme-bg-tertiary) !important;
+}
+
+/* Text colors */
+.text-gray-900 {
+    color: var(--theme-text) !important;
+}
+
+.text-gray-800 {
+    color: var(--theme-text) !important;
+}
+
+.text-gray-700 {
+    color: var(--theme-text-muted) !important;
+}
+
+.text-gray-600 {
+    color: var(--theme-text-muted) !important;
+}
+
+.text-gray-500 {
+    color: var(--theme-text-muted) !important;
+}
+
+.text-gray-400 {
+    color: var(--theme-text-muted) !important;
+}
+
+/* Border colors */
+.border-gray-200 {
+    border-color: var(--theme-border) !important;
+}
+
+.border-gray-300 {
+    border-color: var(--theme-border) !important;
+}
+
+.border-blue-200 {
+    border-color: var(--theme-border) !important;
+}
+
+.border-amber-200 {
+    border-color: var(--theme-border) !important;
+}
+
+/* Blue text override for proper contrast */
+.text-blue-800 {
+    color: var(--theme-text) !important;
+}
+
+/* Amber text override */
+.text-amber-800 {
+    color: var(--theme-text) !important;
 }
