@@ -62,17 +62,31 @@ function safeSetStorage(key, value) {
 function safeFetchJSON(url, fallbackData = []) {
     return fetch(url)
         .then(response => {
+            const contentType = response.headers.get('content-type');
+            console.log(`[safeFetchJSON] Fetching ${url}: HTTP ${response.status}, Content-Type: ${contentType}`);
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error(`Invalid content type: ${contentType}`);
-            }
-            return response.json();
+
+            // First, try to get the response as text so we can inspect it
+            return response.text().then(text => {
+                console.log(`[safeFetchJSON] Response received, length: ${text.length} chars`);
+
+                // Try to parse the text as JSON
+                try {
+                    const data = JSON.parse(text);
+                    console.log(`[safeFetchJSON] Successfully parsed JSON from ${url}`);
+                    return data;
+                } catch (parseError) {
+                    console.error(`[safeFetchJSON] JSON parse failed for ${url}:`, parseError.message);
+                    console.error(`[safeFetchJSON] Response preview (first 300 chars): ${text.substring(0, 300)}`);
+                    throw new Error(`Invalid JSON response: ${parseError.message}`);
+                }
+            });
         })
         .catch(error => {
-            console.error(`Failed to load JSON from ${url}:`, error.message);
+            console.error(`[safeFetchJSON] Failed to load JSON from ${url}:`, error.message);
             return fallbackData;
         });
 }
