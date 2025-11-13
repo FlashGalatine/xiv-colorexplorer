@@ -5,6 +5,155 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - Phase 4.1 Complete Theme System - 2025-11-13
+
+**Deployed to Production**: All 4 tools + index.html
+
+### Added
+
+- **Complete Theme System Implementation (Phase 4.1)**
+  - 10 theme variants: 5 themes × light/dark combinations
+  - Unified theme switcher in navigation bar (all tools synchronized)
+  - Real-time theme switching with localStorage persistence
+  - Theme system replaces legacy dark mode toggle pattern
+  - Themes fully integrate with all tool components
+
+- **5 Branded Themes with WCAG Compliance**
+  - **Standard** (default): Indigo primary (#4f46e5 light, #818cf8 dark)
+  - **Hydaelyn**: Sky blue (#0369a1 light, #38bdf8 dark) - FFXIV aesthetic
+  - **Classic Final Fantasy**: Deep blue (#1e40af light, #60a5fa dark) - FF tradition
+  - **Parchment**: Warm beige (#a16207 light, #fbbf24 dark) - Retro aesthetic
+  - **Sugar Riot**: Vibrant pink (#ec4899 light, #f472b6 dark) - Playful design
+
+- **CSS Custom Properties for Theme System**
+  - 10 CSS variable sets (9 themed + 1 default)
+  - Variables: `--theme-primary`, `--theme-primary-hover`, `--theme-light`, `--theme-bg`, `--theme-bg-secondary`, `--theme-bg-tertiary`, `--theme-text`, `--theme-text-muted`, `--theme-border`, `--theme-card-bg`
+  - All theme-aware styling centralized in shared-styles.css
+  - Comprehensive Tailwind utility class overrides for consistency
+
+- **Theme-Aware Interactive Elements**
+  - Range sliders (.vision-type sliders in Accessibility Checker) use `accent-color: var(--theme-primary)`
+  - Toggle switches for Market Price panels adapt to active theme
+  - File input browse buttons theme-aware
+  - Select/dropdown elements theme-aware
+  - Checkbox colors using `accent-color` property
+  - All buttons, inputs, and form controls inherit theme colors
+
+- **Navigation Theme Switcher UI**
+  - Theme switcher button in header with gear icon
+  - Dropdown menu showing all 10 theme options grouped by theme name
+  - Light/Dark variants clearly labeled for each theme
+  - Color swatches preview each theme's primary color
+  - Mobile-responsive dropdown design
+
+- **Enhanced Color Consistency**
+  - Replaced 150+ hardcoded color values with theme variables
+  - Toast notification backgrounds and text colors now theme-aware
+  - Canvas visualizations (Dye Comparison charts) dynamically reference theme colors
+  - SVG color wheel elements use theme colors for strokes and lines
+  - Nav dropdown menus fully theme-aware
+  - Search input boxes theme-aware
+
+### Fixed
+
+- **Vision Type Simulation Sliders**
+  - Fixed remaining blue color on range sliders in Accessibility Checker
+  - Now properly match active theme color using `accent-color` property
+  - All three sliders (Deuteranopia, Protanopia, Tritanopia) theme-aware
+
+- **Market Price Toggle Switches**
+  - Fixed remaining blue color on "Show Prices" toggle switches
+  - All toggle switches across all tools now theme-aware
+  - Toggle background and active state properly adapt to theme
+
+- **"Refresh Prices" Button Text Color**
+  - Fixed text visibility in dark theme variants
+  - Standard Dark, Hydaelyn Dark, Classic FF Dark now show dark text on light primary buttons
+  - All 10 theme combinations now have proper contrast ratios
+
+- **Select/Dropdown Menu Styling**
+  - Fixed hardcoded background colors on all select elements
+  - Dropdowns now use `var(--theme-card-bg)` for background
+  - Border colors use `var(--theme-border)` for consistency
+  - Option text uses `var(--theme-text)` for readability
+
+- **Search Colors Input Box** (Color Harmony Explorer)
+  - Fixed missing theme styling for text input elements
+  - Input background, text color, border all theme-aware
+  - Focus state uses theme primary color with box-shadow
+
+- **Accessibility Checker Score Label**
+  - Fixed hardcoded blue color (#0c4a6e) on "Overall Accessibility Score" text
+  - Now uses `var(--theme-text-muted)` for proper visibility in all themes
+
+- **Experimental Badge Removal**
+  - Removed "Experimental Version" notice from Dye Comparison tool
+  - Tool now properly marked as stable
+
+### Technical Details
+
+**Architecture**:
+- Unified theme implementation across all 4 tools
+- Single source of truth for theme definitions in shared-styles.css
+- Theme switching handled by setTheme() function in shared-components.js
+- localStorage key: `xivdyetools_theme` stores selected theme name
+- Default theme: `standard-light` (no class on root)
+
+**CSS Variable Structure**:
+```css
+body.theme-{theme-name}-{light|dark} {
+    --theme-primary: #...;
+    --theme-primary-hover: #...;
+    --theme-primary-light: #...;
+    --theme-bg: #...;
+    --theme-bg-secondary: #...;
+    --theme-bg-tertiary: #...;
+    --theme-text: #...;
+    --theme-text-muted: #...;
+    --theme-border: #...;
+    --theme-card-bg: #...;
+}
+```
+
+**Tailwind Class Overrides** (25+ selectors):
+- Background colors: `.bg-white`, `.bg-gray-*` → `var(--theme-*)`
+- Text colors: `.text-gray-*`, `.text-blue-*`, `.text-amber-*` → `var(--theme-text*)`
+- Border colors: `.border-gray-*`, `.border-blue-*`, `.border-amber-*` → `var(--theme-border)`
+- Button colors: `.bg-blue-600` → `var(--theme-primary)`
+- Form elements: `select`, `input[type="text"]`, `input[type="checkbox"]` → theme variables
+
+**Files Modified**:
+- `assets/css/shared-styles.css` - 75+ lines added (theme definitions + overrides)
+- `assets/js/shared-components.js` - Theme switching functions
+- `components/nav.html` - Theme switcher UI
+- All 4 tool files - Synced experimental → stable
+
+**Commits**:
+- dc1caef: Add comprehensive Tailwind class overrides for theme support
+- f0ee45d: Fix remaining hardcoded colors for complete theme support
+- 8b11049: Fix remaining Theme Switcher bugs (dropdowns, checkmarks, file input)
+- ffc8a99: Address remaining issues from testing (Refresh Prices, sliders, Experimental badge)
+- daa4877: Fix Vision Type sliders and Market Price toggle switches (final fixes)
+
+### Testing
+
+- ✅ All 10 theme combinations tested and verified
+- ✅ Theme switching works across all 4 tools simultaneously
+- ✅ localStorage persistence tested across page refreshes
+- ✅ All interactive elements properly themed:
+  - ✅ Buttons and dropdowns
+  - ✅ Range sliders
+  - ✅ Toggle switches
+  - ✅ Checkboxes
+  - ✅ Text inputs
+  - ✅ Canvas visualizations
+  - ✅ SVG elements
+- ✅ Dark theme variants properly show readable text
+- ✅ Light primary color themes (Parchment Dark, Sugar Riot Dark) show appropriate text contrast
+- ✅ WCAG color contrast ratios met across all themes
+
+---
+
 ## [1.4.1] - Phase 1 Bug Fixes - 2025-11-12
 
 **Deployed to Production**: Color Matcher v1.3.0, Dye Comparison v1.2.3

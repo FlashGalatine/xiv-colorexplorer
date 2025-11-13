@@ -188,8 +188,33 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Dark Mode
-Toggle between light and dark themes with persistent preference storage. Available in both Color Harmony Explorer and Color Matcher with consistent styling across all UI elements.
+### 🌓 Theme System (v1.4.2)
+Comprehensive theme system with 10 theme variants (5 themes × light/dark), all fully WCAG compliant:
+
+**Available Themes:**
+- **Standard** - Classic indigo light/dark (default)
+- **Hydaelyn** - FFXIV sky blue light/dark
+- **Classic Final Fantasy** - Deep blue light/dark (FF tradition)
+- **Parchment** - Warm beige light/dark (retro aesthetic)
+- **Sugar Riot** - Vibrant pink light/dark (fun & playful)
+
+**Theme System Features:**
+- Unified theme switcher in navigation (all tools synchronized)
+- CSS custom properties (variables) for consistent theming
+- All UI elements dynamically adapt to selected theme
+- Persistent theme preference storage via localStorage
+- Real-time theme switching across all open tool windows
+- Full support for all interactive elements: buttons, inputs, sliders, toggles, dropdowns
+- Vision Type Simulation sliders theme-aware
+- Market Price toggle switches theme-aware
+- File input browse button theme-aware
+
+**Technical Implementation:**
+- CSS custom properties: `--theme-primary`, `--theme-bg`, `--theme-text`, `--theme-border`, etc.
+- Unified theme naming: `body.theme-{name}-{variant}` (e.g., `body.theme-hydaelyn-dark`)
+- Automatic Tailwind utility class overrides for theme consistency
+- Component-level styling inheritance from theme variables
+- No additional JavaScript dependencies beyond localStorage
 
 ## Getting Started
 
