@@ -1282,7 +1282,7 @@
             const isMetallicExcluded = excludeMetallicCheckbox.checked;
             const isExtremesExcluded = excludeExtremesCheckbox.checked;
 
-            // Apply all filters
+            // Apply all filters, but keep track of excluded extremes for exact-match fallback
             let dyesToSearch = ffxivDyes.filter(dye => {
                 // Always exclude Facewear colors
                 if (dye.category === 'Facewear') return false;
@@ -1290,25 +1290,42 @@
                 // Exclude metallic if checkbox is checked
                 if (isMetallicExcluded && dye.name.toLowerCase().includes('metallic')) return false;
 
-                // Exclude Pure White and Jet Black if checkbox is checked
-                if (isExtremesExcluded && (dye.name === 'Pure White' || dye.name === 'Jet Black')) return false;
-
                 return true;
             });
 
             let closestColor = null;
             let smallestDistance = Infinity;
+            let excludedExtremeMatch = null;
+            let excludedExtremeDistance = Infinity;
 
             dyesToSearch.forEach(dye => {
                 const dyeRgb = hexToRgb(dye.hex);
                 if (dyeRgb) {
                     const distance = colorDistance(userRgb, dyeRgb);
-                    if (distance < smallestDistance) {
-                        smallestDistance = distance;
-                        closestColor = dye;
+
+                    const isExcludedExtreme = isExtremesExcluded && (dye.name === 'Pure White' || dye.name === 'Jet Black');
+
+                    if (isExcludedExtreme) {
+                        // Track excluded extremes in case of exact/near-exact match
+                        if (distance < excludedExtremeDistance) {
+                            excludedExtremeDistance = distance;
+                            excludedExtremeMatch = dye;
+                        }
+                    } else {
+                        // Normal filtering
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            closestColor = dye;
+                        }
                     }
                 }
             });
+
+            // If excluded extreme is an exact/near-exact match (distance < 5), use it
+            if (isExtremesExcluded && excludedExtremeMatch && excludedExtremeDistance < 5 && excludedExtremeDistance < smallestDistance) {
+                closestColor = excludedExtremeMatch;
+            }
+
             updateResultsUI(userHex, closestColor);
         }
 

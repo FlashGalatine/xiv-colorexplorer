@@ -22,9 +22,10 @@
     <link rel="icon" type="image/png" href="embed_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: "Lexend", sans-serif;
         }
         body.dark-mode {
             background-color: #1f2937;
@@ -35,6 +36,9 @@
         }
         body.dark-mode .text-gray-900 {
             color: #f9fafb;
+        }
+        body.dark-mode .text-gray-800 {
+            color: #f3f4f6;
         }
         body.dark-mode .text-gray-700 {
             color: #e5e7eb;
@@ -228,6 +232,27 @@
             margin-left: 0.5rem;
             letter-spacing: 0.05em;
         }
+        /* Font Styling */
+        .tool-title {
+            font-family: "Cinzel Decorative", serif;
+            font-variant-caps: small-caps;
+        }
+        h1 {
+            font-family: "Cinzel", serif;
+            font-weight: 600;
+        }
+        h2, h3 {
+            font-family: "Cinzel", serif;
+            font-weight: 500;
+            font-variant-caps: small-caps;
+        }
+        .section-header, .dye-box-header {
+            font-family: "Lexend Giga", sans-serif;
+            font-variant-caps: all-small-caps;
+        }
+        .number {
+            font-family: "Habibi", serif;
+        }
         /* 1080p Optimization */
         @media (min-width: 1920px) {
             body {
@@ -276,7 +301,7 @@
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-8 2xl:mb-12">
             <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
-                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v1.2.3</span><span class="experimental-badge">EXPERIMENTAL</span></h1>
+                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">2</span>.<span class="number">3</span></span><span class="experimental-badge">EXPERIMENTAL</span></h1>
                 <button id="dark-mode-toggle" class="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-700" title="Toggle dark mode">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
@@ -392,31 +417,31 @@
                         <div id="dye-swatch-1" class="dye-swatch mb-4"></div>
                         <div class="space-y-2 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Name:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Name:</span>
                                 <p id="dye-name-1" class="text-gray-900 font-medium"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Category:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Category:</span>
                                 <p id="dye-category-1" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Hex:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Hex:</span>
                                 <p id="dye-hex-1" class="font-mono text-gray-900"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">RGB:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">RGB:</span>
                                 <p id="dye-rgb-1" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
+                                <span class="dye-box-header font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
                                 <p id="dye-hsv-1" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Acquisition:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Acquisition:</span>
                                 <p id="dye-acquisition-1" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Price:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Price:</span>
                                 <p id="dye-price-1" class="text-gray-600"></p>
                             </div>
                         </div>
@@ -435,31 +460,31 @@
                         <div id="dye-swatch-2" class="dye-swatch mb-4"></div>
                         <div class="space-y-2 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Name:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Name:</span>
                                 <p id="dye-name-2" class="text-gray-900 font-medium"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Category:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Category:</span>
                                 <p id="dye-category-2" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Hex:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Hex:</span>
                                 <p id="dye-hex-2" class="font-mono text-gray-900"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">RGB:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">RGB:</span>
                                 <p id="dye-rgb-2" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
+                                <span class="dye-box-header font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
                                 <p id="dye-hsv-2" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Acquisition:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Acquisition:</span>
                                 <p id="dye-acquisition-2" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Price:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Price:</span>
                                 <p id="dye-price-2" class="text-gray-600"></p>
                             </div>
                         </div>
@@ -478,31 +503,31 @@
                         <div id="dye-swatch-3" class="dye-swatch mb-4"></div>
                         <div class="space-y-2 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Name:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Name:</span>
                                 <p id="dye-name-3" class="text-gray-900 font-medium"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Category:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Category:</span>
                                 <p id="dye-category-3" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Hex:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Hex:</span>
                                 <p id="dye-hex-3" class="font-mono text-gray-900"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">RGB:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">RGB:</span>
                                 <p id="dye-rgb-3" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
+                                <span class="dye-box-header font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
                                 <p id="dye-hsv-3" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Acquisition:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Acquisition:</span>
                                 <p id="dye-acquisition-3" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Price:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Price:</span>
                                 <p id="dye-price-3" class="text-gray-600"></p>
                             </div>
                         </div>
@@ -521,31 +546,31 @@
                         <div id="dye-swatch-4" class="dye-swatch mb-4"></div>
                         <div class="space-y-2 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Name:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Name:</span>
                                 <p id="dye-name-4" class="text-gray-900 font-medium"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Category:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Category:</span>
                                 <p id="dye-category-4" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Hex:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Hex:</span>
                                 <p id="dye-hex-4" class="font-mono text-gray-900"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">RGB:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">RGB:</span>
                                 <p id="dye-rgb-4" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
+                                <span class="dye-box-header font-semibold text-gray-700 cursor-help" title="HSV values can be used in other games like Monster Hunter Wilds">HSV:</span>
                                 <p id="dye-hsv-4" class="font-mono text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Acquisition:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Acquisition:</span>
                                 <p id="dye-acquisition-4" class="text-gray-600"></p>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Price:</span>
+                                <span class="dye-box-header font-semibold text-gray-700">Price:</span>
                                 <p id="dye-price-4" class="text-gray-600"></p>
                             </div>
                         </div>
@@ -687,6 +712,46 @@
                     dropdown.classList.remove('show');
                 }
             }, { once: true });
+        }
+
+        /**
+         * Format color hex code with number styling
+         */
+        function formatHexCode(hex) {
+            return `<span class="number">${hex.toUpperCase()}</span>`;
+        }
+
+        /**
+         * Format RGB values with number styling
+         */
+        function formatRGBValues(r, g, b) {
+            return `R: <span class="number">${r}</span>, G: <span class="number">${g}</span>, B: <span class="number">${b}</span>`;
+        }
+
+        /**
+         * Format HSV values with number styling
+         */
+        function formatHSVValues(h, s, v) {
+            return `H: <span class="number">${h.toFixed(0)}</span>°, S: <span class="number">${s.toFixed(0)}</span>%, V: <span class="number">${v.toFixed(0)}</span>%`;
+        }
+
+        /**
+         * Format price with number styling
+         */
+        function formatPrice(priceText) {
+            // Handle "Market Board - 5250 Gil" format
+            if (priceText.includes('Market Board')) {
+                const match = priceText.match(/(\d+(?:,\d{3})*)\s(Gil)/);
+                if (match) {
+                    return priceText.replace(match[1], `<span class="number">${match[1]}</span>`);
+                }
+            }
+            // Handle "5250 Currency" format
+            const match = priceText.match(/^(\d+(?:,\d{3})*)\s(.+)$/);
+            if (match) {
+                return `<span class="number">${match[1]}</span> ${match[2]}`;
+            }
+            return priceText;
         }
 
         // Market Board price categories
@@ -914,9 +979,9 @@
             // Update text fields
             document.getElementById(`dye-name-${num}`).textContent = dye.name;
             document.getElementById(`dye-category-${num}`).textContent = dye.category;
-            document.getElementById(`dye-hex-${num}`).textContent = dye.hex.toUpperCase();
-            document.getElementById(`dye-rgb-${num}`).textContent = `R: ${dye.rgb.r}, G: ${dye.rgb.g}, B: ${dye.rgb.b}`;
-            document.getElementById(`dye-hsv-${num}`).textContent = `H: ${dye.hsv.h.toFixed(0)}°, S: ${dye.hsv.s.toFixed(0)}%, V: ${dye.hsv.v.toFixed(0)}%`;
+            document.getElementById(`dye-hex-${num}`).innerHTML = formatHexCode(dye.hex);
+            document.getElementById(`dye-rgb-${num}`).innerHTML = formatRGBValues(dye.rgb.r, dye.rgb.g, dye.rgb.b);
+            document.getElementById(`dye-hsv-${num}`).innerHTML = formatHSVValues(dye.hsv.h, dye.hsv.s, dye.hsv.v);
             document.getElementById(`dye-acquisition-${num}`).textContent = dye.acquisition || 'Unknown';
 
             // Show price (market board if available, otherwise acquisition price)
@@ -931,7 +996,7 @@
             } else if (dye.price && dye.currency) {
                 priceText = `${dye.price.toLocaleString()} ${dye.currency}`;
             }
-            document.getElementById(`dye-price-${num}`).textContent = priceText;
+            document.getElementById(`dye-price-${num}`).innerHTML = formatPrice(priceText);
         }
 
         /**
@@ -1081,15 +1146,18 @@
                 }
             }
 
-            // Put reduced image data and let browser upscale smoothly
-            ctx.putImageData(imageData, leftPadding, topPadding);
+            // Use two-stage canvas rendering for proper scaling
+            // Create temporary off-screen canvas at reduced resolution
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = reducedWidth;
+            tempCanvas.height = reducedHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.putImageData(imageData, 0, 0);
 
-            // Upscale the image data to full resolution using CSS transform for smooth scaling
-            // This provides better performance than rendering full resolution while maintaining visual quality
-            if (RESOLUTION_REDUCTION > 1) {
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-            }
+            // Scale up to main canvas with smoothing enabled
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(tempCanvas, leftPadding, topPadding, chartWidth, chartHeight);
 
             // Draw axes
             ctx.strokeStyle = isDarkMode ? '#6b7280' : '#999999';
@@ -1280,7 +1348,7 @@
                     } else {
                         const distance = colorDistance(dyeA.rgb, dyeB.rgb);
                         const color = distance < 50 ? 'text-green-600 font-semibold' : distance < 100 ? 'text-yellow-600' : 'text-red-600';
-                        tableHTML += `<td class="p-2 border border-gray-300 ${color}">${distance.toFixed(2)}</td>`;
+                        tableHTML += `<td class="p-2 border border-gray-300 ${color}"><span class="number">${distance.toFixed(2)}</span></td>`;
                     }
                 });
 

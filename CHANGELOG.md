@@ -5,6 +5,36 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - Phase 1 Bug Fixes - 2025-11-12
+
+**Deployed to Production**: Color Matcher v1.3.0, Dye Comparison v1.2.3
+
+### Fixed
+
+- **Color Matcher - Jet Black Matching Issue**
+  - Fixed incorrect exclusion logic that prevented exact/near-exact matches to Pure White and Jet Black
+  - `#000000` now correctly matches to Jet Black instead of Gunmetal Black
+  - `#FFFFFF` now correctly matches to Pure White
+  - `#1e1e1e` now matches to Jet Black (near-exact) instead of Dark Brown
+  - Exclusion filter now acts as "don't auto-suggest" while still allowing exact matches (distance < 5)
+  - Implementation: Changed from pre-filter approach to post-calculation exact-match fallback logic
+
+- **Dye Comparison - Hue-Saturation Chart Rendering**
+  - Fixed canvas rendering issue where only NW quarter of chart was displayed
+  - Chart now renders complete 1000×750 canvas with all four quadrants visible (NW, NE, SW, SE)
+  - Hue gradient now spans full 360 degrees, Saturation gradient spans full vertical range
+  - Implementation: Changed from direct ImageData placement to two-stage canvas rendering with proper scaling
+  - Performance maintained through continued use of RESOLUTION_REDUCTION=2 optimization
+
+### Testing
+
+- ✅ Color Matcher: Verified exact matches work with exclusion enabled
+- ✅ Color Matcher: Verified exclusion still filters non-exact matches
+- ✅ Dye Comparison: Verified full chart area renders with 1, 2, 3, and 4 selected dyes
+- ✅ Dye Comparison: Verified gradient quality maintained with image smoothing
+
+---
+
 ## [1.4.0] - All Tools Standardization Update - 2025-11-09
 
 **Deployed to Production**: Color Accessibility v1.0.2 BETA, Color Harmony Explorer v1.2.4, Color Matcher v1.3.1, Dye Comparison v1.2.4

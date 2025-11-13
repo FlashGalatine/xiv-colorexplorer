@@ -659,7 +659,7 @@
     <div class="w-full mb-4">
         <div class="flex justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.3.1</span></h1>
+                <h1 class="text-3xl font-bold text-gray-900">FFXIV Dye Color Matcher <span class="text-2xl text-gray-500">v1.3.0</span></h1>
                 <p class="text-sm text-gray-600 mt-1">Pick a color or upload an image to find the closest dye match.</p>
             </div>
             <div class="flex items-center gap-3">
@@ -1282,7 +1282,7 @@
             const isMetallicExcluded = excludeMetallicCheckbox.checked;
             const isExtremesExcluded = excludeExtremesCheckbox.checked;
 
-            // Apply all filters
+            // Apply all filters, but keep track of excluded extremes for exact-match fallback
             let dyesToSearch = ffxivDyes.filter(dye => {
                 // Always exclude Facewear colors
                 if (dye.category === 'Facewear') return false;
@@ -1290,25 +1290,42 @@
                 // Exclude metallic if checkbox is checked
                 if (isMetallicExcluded && dye.name.toLowerCase().includes('metallic')) return false;
 
-                // Exclude Pure White and Jet Black if checkbox is checked
-                if (isExtremesExcluded && (dye.name === 'Pure White' || dye.name === 'Jet Black')) return false;
-
                 return true;
             });
 
             let closestColor = null;
             let smallestDistance = Infinity;
+            let excludedExtremeMatch = null;
+            let excludedExtremeDistance = Infinity;
 
             dyesToSearch.forEach(dye => {
                 const dyeRgb = hexToRgb(dye.hex);
                 if (dyeRgb) {
                     const distance = colorDistance(userRgb, dyeRgb);
-                    if (distance < smallestDistance) {
-                        smallestDistance = distance;
-                        closestColor = dye;
+
+                    const isExcludedExtreme = isExtremesExcluded && (dye.name === 'Pure White' || dye.name === 'Jet Black');
+
+                    if (isExcludedExtreme) {
+                        // Track excluded extremes in case of exact/near-exact match
+                        if (distance < excludedExtremeDistance) {
+                            excludedExtremeDistance = distance;
+                            excludedExtremeMatch = dye;
+                        }
+                    } else {
+                        // Normal filtering
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            closestColor = dye;
+                        }
                     }
                 }
             });
+
+            // If excluded extreme is an exact/near-exact match (distance < 5), use it
+            if (isExtremesExcluded && excludedExtremeMatch && excludedExtremeDistance < 5 && excludedExtremeDistance < smallestDistance) {
+                closestColor = excludedExtremeMatch;
+            }
+
             updateResultsUI(userHex, closestColor);
         }
 
