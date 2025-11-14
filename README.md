@@ -406,6 +406,42 @@ All four main tools are production-ready stable versions with full feature suppo
 - **Market Prices**: Real-time data from [Universalis API](https://universalis.app/)
 - **Server Data**: FFXIV data centers and world information
 
+## Code Quality & Maintainability
+
+### Clean Architecture (v1.5.2)
+
+XIV Dye Tools follows best practices for maintainability and code organization:
+
+- **Single Source of Truth**: Shared utility functions centralized in `shared-components.js`
+  - Color conversion functions (hexToRgb, rgbToHex, rgbToHsv, hsvToRgb)
+  - Color distance calculations (Euclidean RGB space)
+  - Storage utilities with error handling (safeGetStorage, safeSetStorage)
+  - JSON fetching with validation (safeFetchJSON)
+  - Theme management system
+
+- **Consistent Naming Conventions**: All tools use standardized variable names
+  - `ffxivDyes` - Dye database across all tools
+  - localStorage keys follow pattern: `xivdyetools_[toolname]_[setting]`
+
+- **Monolithic HTML Pattern** (By Design):
+  - Each tool is a self-contained HTML file (~1,400-1,900 lines)
+  - No build process required - pure vanilla HTML/CSS/JavaScript
+  - Easy for users to download, inspect, and modify individual tools
+  - Shared utilities loaded from centralized files to reduce duplication
+
+- **Code Deduplication**: ~164 lines of duplicate code removed across tools
+  - All tools reference shared-components.js exclusively for utility functions
+  - Standardized dropdown population patterns
+  - Unified color conversion implementations
+
+### Open Source & Contributions
+
+The project is fully open source under the MIT license. The codebase is designed for easy contribution:
+- No complex build tools or dependencies
+- Well-organized directory structure with clear separation of concerns
+- Comprehensive CLAUDE.md for AI-assisted development
+- All code follows consistent patterns across tools
+
 ## Technology Stack
 
 - Pure HTML/CSS/JavaScript (no framework dependencies)

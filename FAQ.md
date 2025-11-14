@@ -5,6 +5,9 @@
 **Q: What are XIV Dye Tools?**
 A: XIV Dye Tools is a free suite of five client-side web utilities designed to help FFXIV players with color and dye management. The tools include Dye Mixer, Color Accessibility Checker, Color Harmony Explorer, Color Matcher, and Dye Comparison—all available at https://xivdyetools.projectgalatine.com/
 
+**Q: What's the current version?**
+A: Version **1.5.2** (released November 14, 2025). This version includes aggressive code cleanup and optimization for better maintainability. See the CHANGELOG.md for detailed release notes.
+
 **Q: Do these tools cost money?**
 A: No, all tools are completely free with no ads, paywalls, or premium features.
 
@@ -16,6 +19,9 @@ A: The tools were developed with AI assistance, built using vanilla JavaScript. 
 
 **Q: Who made these tools?**
 A: XIV Dye Tools was created by Flash Galatine (Balmung) as a passion project for the FFXIV community.
+
+**Q: Why did v1.5.2 change my saved settings?**
+A: Version 1.5.2 standardized all localStorage keys to follow a consistent naming pattern (`xivdyetools_[toolname]_[setting]`). This prevents namespace collisions and improves code maintainability. Your settings will need to be reconfigured on first load, but future updates will preserve them. We apologize for the inconvenience—this was a necessary cleanup for long-term code quality.
 
 ---
 
@@ -177,6 +183,45 @@ A: The tools are free for personal use. For commercial use, check the MIT licens
 
 **Q: How often is the dye database updated?**
 A: The database is updated whenever new FFXIV dyes are released. Check back occasionally or follow me on social media for updates (links below).
+
+---
+
+## Code Quality & Contributions
+
+**Q: How is the codebase organized?**
+A: Each tool is a single self-contained HTML file (~1,500-1,900 lines) with embedded CSS and JavaScript. This "monolithic" design has several benefits:
+- No build process required—pure vanilla HTML/CSS/JavaScript
+- Easy for users to download and inspect individual tools
+- Shared utilities are centralized in `shared-components.js` to reduce duplication
+- All styling uses Tailwind CSS and custom theme variables
+
+**Q: Can I contribute to XIV Dye Tools?**
+A: Yes! The project is open source under the MIT license. Since there's no complex build process, you can easily modify and test the tools locally. Check out the GitHub repository (https://github.com/FlashGalatine/xivdyetools) and CLAUDE.md for development guidelines.
+
+**Q: How are duplicate functions handled across tools?**
+A: Version 1.5.2 removed ~164 lines of duplicate code by consolidating all shared utilities in `shared-components.js`. All tools now reference a single implementation for:
+- Color conversion functions (hexToRgb, rgbToHex, rgbToHsv, hsvToRgb)
+- Color distance calculations (Euclidean RGB space)
+- Storage functions (safeGetStorage, safeSetStorage)
+- JSON fetching with validation (safeFetchJSON)
+- Theme management
+
+This "single source of truth" approach makes the codebase easier to maintain and update.
+
+**Q: What naming conventions does the codebase follow?**
+A: All tools use consistent conventions:
+- **Data Variables**: `ffxivDyes` for the dye database (all tools)
+- **localStorage Keys**: `xivdyetools_[toolname]_[setting]` (e.g., `xivdyetools_coloraccessibility_secondaryDyes`)
+- **Functions**: camelCase with JSDoc comments documenting parameters and return types
+- **CSS Classes**: Combination of Tailwind utilities and custom classes for theme-aware styling
+
+**Q: Where can I find documentation for developers?**
+A: Check these files in the repository:
+- **CLAUDE.md** - Detailed architecture guide, common patterns, and testing procedures
+- **CHANGELOG.md** - Complete version history with technical details for each release
+- **README.md** - User-facing documentation with feature descriptions and usage examples
+- **TAILWIND_SETUP.md** - Guide for CSS modifications and theme system
+- **historical/** - Folder with past phase documentation for reference
 
 ---
 
