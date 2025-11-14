@@ -6,14 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 XIV Dye Tools is a client-side web application providing four specialized tools for Final Fantasy XIV players to explore dye colors:
 
-1. **Color Accessibility Checker** (v1.4.2) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
-2. **Color Harmony Explorer** (v1.4.2) - Generate harmonious color palettes using color theory
-3. **Color Matcher** (v1.4.2) - Upload images and find closest matching FFXIV dyes
-4. **Dye Comparison** (v1.4.2) - Compare up to 4 dyes with color distance matrices and visualizations
+1. **Color Accessibility Checker** (v1.5.1) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
+2. **Color Harmony Explorer** (v1.5.1) - Generate harmonious color palettes using color theory
+3. **Color Matcher** (v1.5.1) - Upload images and find closest matching FFXIV dyes
+4. **Dye Comparison** (v1.5.1) - Compare up to 4 dyes with color distance matrices and visualizations
+5. **Dye Mixer** (v1.5.1) - Find intermediate dyes for smooth color transitions (experimental)
 
-**Current Status**: v1.4.2 Production (Phase 4.1 Theme System complete)
+**Current Status**: v1.5.1 Production (Phase 5 cleanup + bug fixes)
 **Repository**: Main branch only, no feature branches
-**Deployment**: All experimental versions synced with stable (v1.4.2)
+**Deployment**: All experimental versions synced with stable (v1.5.1)
 
 ## Architecture: The Monolithic Pattern
 
@@ -36,10 +37,12 @@ XIVDyeTools/
 ├── colorexplorer_stable.html
 ├── colormatcher_stable.html
 ├── dyecomparison_stable.html
+├── dye-mixer_stable.html
 ├── coloraccessibility_experimental.html           # Development versions (in sync)
 ├── colorexplorer_experimental.html
 ├── colormatcher_experimental.html
 ├── dyecomparison_experimental.html
+├── dye-mixer_experimental.html
 │
 ├── components/
 │   ├── nav.html                                   # Theme switcher + tools dropdown
@@ -385,7 +388,7 @@ toggleThemeSwitcher(button);
 
 ## The Four Tools: Architecture & Test Coverage
 
-### 1. Color Accessibility Checker (1,862 lines)
+### 1. Color Accessibility Checker (~1,603 lines)
 
 **Algorithm**: Brettel 1997 colorblindness transformation matrices
 - Simulates: Deuteranopia, Protanopia, Tritanopia, Achromatopsia
@@ -400,7 +403,7 @@ toggleThemeSwitcher(button);
 
 **Recent Bug Fix** (Phase 1): Jet Black matching logic corrected (exact matches now take priority over near-exact)
 
-### 2. Color Harmony Explorer (1,886 lines)
+### 2. Color Harmony Explorer (~1,909 lines)
 
 **Features**: 6 harmony types with color wheel visualization
 - Complementary: 180° opposite
@@ -422,7 +425,7 @@ toggleThemeSwitcher(button);
 - Confirm API integration optional (works without network)
 - Test CSV/JSON/SCSS export functionality
 
-### 3. Color Matcher (1,746 lines)
+### 3. Color Matcher (~1,704 lines)
 
 **Input Methods**:
 - Drag & drop image files
@@ -443,7 +446,7 @@ toggleThemeSwitcher(button);
 
 **Recent Bug Fix** (Phase 1): Jet Black matching fixed (exclusion filter now acts as "don't auto-suggest" while preserving exact matches)
 
-### 4. Dye Comparison (1,477 lines)
+### 4. Dye Comparison (~1,432 lines)
 
 **Visualizations**:
 - Color distance matrix (table with green/yellow/red indicators)
@@ -535,10 +538,12 @@ Each dye object:
 | Key | Used By | Purpose |
 |-----|---------|---------|
 | `xivdyetools_theme` | All tools | Current selected theme (shared) |
-| `colorAccessibility_secondaryDyes` | Accessibility Checker | Dual dyes toggle state |
+| `secondaryDyesEnabled` | Accessibility Checker | Dual dyes toggle state |
 | ~~colorExplorer_darkMode~~ | DEPRECATED | Old dark mode setting |
 | ~~colorMatcher_darkMode~~ | DEPRECATED | Old dark mode setting |
 | ~~dyeComparison_darkMode~~ | DEPRECATED | Old dark mode setting |
+
+**Note**: Future refactoring should standardize keys to follow pattern: `xivdyetools_[toolname]_[setting]`
 
 ## Development Workflow
 
@@ -678,7 +683,7 @@ function safeFetchJSON(url, fallbackData = []) {
 
 ### Monolithic File Sizes (Medium Priority)
 
-**Problem**: 1,477-1,886 lines per tool file
+**Problem**: 1,400-1,900 lines per tool file
 - Hard to review in PRs
 - Difficult for new contributors to understand
 - Makes debugging harder

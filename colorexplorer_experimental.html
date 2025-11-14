@@ -213,7 +213,7 @@
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-6">
             <div class="flex justify-center items-center gap-3 mb-4">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">0</span></span></h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
             </div>
             <p class="text-md text-gray-600 mt-2">
                 Discover color harmonies using the FFXIV dye palette.
@@ -1740,7 +1740,7 @@
                 console.log('Attempting to load colors_xiv.json...');
 
                 // Use safeFetchJSON for consistent error handling across all tools
-                const rawData = await safeFetchJSON('/assets/json/colors_xiv.json', []);
+                const rawData = await safeFetchJSON('./assets/json/colors_xiv.json', []);
 
                 // Guard: Validate data was loaded
                 if (!rawData || rawData.length === 0) {
