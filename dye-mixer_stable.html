@@ -253,15 +253,22 @@
         .dye-card-details {
             font-size: 0.75rem;
             color: var(--theme-text-muted);
-            display: none;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid var(--theme-border);
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            padding-top: 0;
+            overflow: hidden;
+            border-top: 1px solid transparent;
             line-height: 1.4;
+            transition: all 0.3s ease-in-out;
         }
 
         .dye-card:hover .dye-card-details {
-            display: block;
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--theme-border);
         }
 
         .dye-card-details-row {
