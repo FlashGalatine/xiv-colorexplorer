@@ -1049,6 +1049,20 @@
             const toggleBtn = document.getElementById('show-mb-prices-toggle');
             const refreshBtn = document.getElementById('mb-refresh-btn');
             const priceCheckboxes = document.querySelectorAll('.mb-price-checkbox');
+            const serverSelect = document.getElementById('mb-server-select');
+
+            // Enable refresh button once server is selected
+            if (serverSelect && refreshBtn) {
+                // Check initial state and enable if server already selected
+                if (serverSelect.value) {
+                    refreshBtn.disabled = false;
+                }
+
+                // Listen for server selection changes
+                serverSelect.addEventListener('change', () => {
+                    refreshBtn.disabled = !serverSelect.value;
+                });
+            }
 
             // Toggle show/hide prices
             if (toggleBtn) {
@@ -1083,16 +1097,6 @@
                     }
                 });
             });
-
-            // Enable refresh button once server is selected
-            const serverSelect = document.getElementById('mb-server-select');
-            if (serverSelect) {
-                serverSelect.addEventListener('change', () => {
-                    if (refreshBtn) {
-                        refreshBtn.disabled = !serverSelect.value;
-                    }
-                });
-            }
         }
 
         /**
