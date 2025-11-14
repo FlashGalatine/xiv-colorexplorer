@@ -6,6 +6,50 @@
 
 ---
 
+## Known Issues / Bugs to Fix
+
+### BUG: Mobile Navigation Menu Alignment Inconsistent
+**Priority**: HIGH (Visual bug affecting all tools)
+**Affected Tools**: All 5 experimental tools
+**File**: `components/nav.html`
+
+#### Issue Description:
+On mobile devices, the Tools dropdown menu and Themes dropdown menu alignment is inconsistent. They appear aligned to either left or right and do not look centered/consistent across different screen sizes.
+
+#### Expected Behavior:
+- Navigation menus should be centered on mobile screens
+- Consistent alignment across all tools
+- Menus should not overflow screen edges
+- Proper spacing from edges on small screens
+
+#### Changes Required:
+- [ ] Inspect nav.html theme switcher styling
+- [ ] Fix `.theme-switcher-menu` positioning on mobile
+  - Ensure centering with `left: 50%; transform: translateX(-50%);` or flex-based centering
+  - Remove any hardcoded left/right positioning
+  - Account for screen edge padding
+
+- [ ] Fix any tool-specific dropdown positioning
+- [ ] Test on multiple mobile screen sizes (375px, 428px, 640px)
+- [ ] Verify on iOS and Android devices
+- [ ] Check both portrait and landscape orientations
+
+#### Test Cases:
+- [ ] iPhone SE (375px width) - menu centered
+- [ ] iPhone 12 (390px width) - menu centered
+- [ ] Samsung S21 (360px width) - menu centered
+- [ ] Tablet landscape (768px+) - menu positioned correctly
+- [ ] No menu overflow on any screen size
+
+#### Success Criteria:
+- [ ] All navigation menus are visually centered on mobile
+- [ ] Consistent alignment across all 5 tools
+- [ ] No menu items cut off at screen edges
+- [ ] Proper padding from edges on narrow screens
+- [ ] Works in portrait and landscape
+
+---
+
 ## Phase 4: PWA & Camera Support
 
 Progressive Web App configuration and camera integration for mobile devices.
