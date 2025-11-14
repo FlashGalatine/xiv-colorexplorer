@@ -5,9 +5,96 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.1] - Phase 6.6 UI Improvements & Bug Fixes - 2025-11-13
+## [1.5.1] - Complete Release: All Tools + Dye Mixer - 2025-11-13
 
-**Deployed to Production**: All 4 tools + index.html
+**Deployed to Production**: All 5 tools (Color Harmony Explorer, Color Matcher, Color Accessibility Checker, Dye Comparison, Dye Mixer) + index.html
+
+### Added
+
+- **Phase 5: Dye Mixer - Find Smooth Color Transitions**
+  - HSV color space interpolation for smooth color transitions
+  - Select 3, 4, 7, or 9 intermediate dyes between two colors
+  - Visual gradient visualization (responsive portrait/landscape layout)
+  - Deviance rating system (0-10 scale) showing color match quality
+  - Interactive gradient tooltips with Hex, RGB, HSV values
+  - Color information display on card hover (acquisition method)
+
+- **Phase 5.2: Market Board Integration**
+  - Real-time dye pricing via Universalis API
+  - Server and world selection dropdowns
+  - Acquisition method filters (Base, Craft, Allied Society, Cosmic, Special)
+  - Refresh Prices button with debouncing and rate limiting
+  - Price toggling per dye with status indicators
+
+- **Phase 5.3: Gradient Save/Load System**
+  - Save unlimited gradients with custom names
+  - Persistent storage in browser localStorage
+  - Load saved gradients to restore all settings
+  - Delete saved gradients with confirmation
+  - Collapsible "Saved Gradients" panel with smooth animations
+  - Display creation date/time for each saved gradient
+
+- **Phase 5.4: Dye Exclusion Filters**
+  - Filter out Metallic dyes from recommendations
+  - Filter out Pastel dyes from recommendations
+  - Filter out Dark dyes from recommendations
+  - Filter out Cosmic dyes from recommendations
+  - Filters persist via localStorage
+  - Recommendations automatically regenerate when filters change
+
+- **Phase 5.5: URL Sharing with Filter Persistence**
+  - Generate shareable URLs with gradient configuration
+  - Filter settings encoded in URL parameters
+  - Auto-load gradient and filter settings from shared URLs
+  - Copy Share URL button with clipboard support
+
+### Features
+
+- **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
+- **Smooth Animations**: Card expand/collapse with 0.3s transitions
+- **Acquisition Fallback**: Shows dye acquisition method when market data unavailable
+- **Theme Support**: Full theme-aware styling with 10 theme variants
+- **Error Handling**: Graceful error messages and recovery
+- **HTML Safety**: XSS prevention via HTML escaping in dynamic content
+
+### Technical Details
+
+**Files Added**:
+- `dye-mixer_stable.html` - Production Dye Mixer tool
+- `dye-mixer_experimental.html` - Development version with markers
+
+**Files Modified**:
+- `index.html` - Added Dye Mixer tool card (v1.5.1), updated description
+- `components/nav.html` - Added Dye Mixer link to Tools dropdown
+
+**Key Commits**:
+- `c87a123` Feature: Add Load Gradient UI with expand/collapse panel
+- `5b6cca5` Enhancement: Include filter settings in shareable URLs
+- `1c76ee2` Enhancement: Add dye exclusion filters to recommendations
+- `1d7561c` Fix: Enable Refresh Prices button on initial load
+- `670df14` Enhancement: Add smooth expand/collapse animation to dye cards
+- `0d3c724` Fix: Align acquisition text properly in dye card details
+- `086b843` Fix: Dye Mixer market board integration
+
+### Technical Architecture
+
+The Dye Mixer demonstrates the monolithic HTML pattern used across all tools:
+- **Single self-contained file** (~1,640 lines) with no build step required
+- **Vanilla JavaScript** with no framework dependencies
+- **Shared utilities** from `assets/js/shared-components.js`:
+  - Color conversion (hex↔RGB↔HSV)
+  - Color distance calculations (Euclidean RGB space)
+  - Market board integration (Universalis API)
+  - localStorage management with error handling
+  - Theme system and component loading
+- **Reused components**:
+  - Market board UI from `components/market-prices.html`
+  - Navigation and theme switcher from `components/nav.html`
+  - Footer from `components/footer.html`
+
+---
+
+## [1.5.0] - Phase 6.6 UI Improvements & Bug Fixes (Color Tools Only) - 2025-11-13
 
 ### Added
 

@@ -3,7 +3,7 @@
 ## General Questions
 
 **Q: What are XIV Dye Tools?**
-A: XIV Dye Tools is a free suite of three client-side web utilities designed to help FFXIV players with color and dye management. The tools include Color Harmony Explorer, Color Matcher, and Dye Comparison—all available at https://xivdyetools.projectgalatine.com/
+A: XIV Dye Tools is a free suite of five client-side web utilities designed to help FFXIV players with color and dye management. The tools include Dye Mixer, Color Accessibility Checker, Color Harmony Explorer, Color Matcher, and Dye Comparison—all available at https://xivdyetools.projectgalatine.com/
 
 **Q: Do these tools cost money?**
 A: No, all tools are completely free with no ads, paywalls, or premium features.
@@ -32,6 +32,43 @@ A: Yes! Most features work offline. Market board pricing requires an internet co
 
 **Q: Is my dark mode preference saved?**
 A: Yes, dark mode preference is stored locally in your browser using localStorage. It persists across sessions.
+
+---
+
+## Dye Mixer
+
+**Q: What does the Dye Mixer do?**
+A: The Dye Mixer finds smooth color transitions between two dyes by interpolating through HSV color space. You select a starting dye and ending dye, choose how many intermediate dyes you want (3, 4, 7, or 9), and the tool recommends the closest matching FFXIV dyes for each step of the gradient.
+
+**Q: Why use HSV instead of RGB for interpolation?**
+A: HSV (Hue, Saturation, Value) color space produces more natural-looking gradients because it follows human color perception better than RGB. HSV transitions tend to feel more harmonious and less "artificial" than RGB interpolation.
+
+**Q: What is the "Deviance Rating"?**
+A: The deviance rating (0-10 scale) measures how closely each recommended dye matches its theoretical position in the gradient. 0 = perfect match, 10 = poor match. Green (0-3) is excellent, Blue (4-6) is good, Orange (7-8) is fair, Red (9-10) is poor. Lower deviance = better color matching.
+
+**Q: Can I save my favorite gradients?**
+A: Yes! Click "Save Gradient" to store unlimited gradients with custom names. They're saved to your browser's localStorage and persist across sessions. You can load, view creation date/time, and delete any saved gradient.
+
+**Q: How do I share a gradient with someone else?**
+A: Click "Copy Share URL" to get a link that includes all your gradient settings (starting dye, ending dye, number of intermediate dyes, and filter settings). Anyone who opens that link will see your exact gradient configuration.
+
+**Q: What are the dye exclusion filters?**
+A: Four filters let you exclude specific dye types from recommendations:
+- **Exclude Metallic Dyes** - Removes dyes with "Metallic" in the name
+- **Exclude Pastel Dyes** - Removes dyes with "Pastel" in the name
+- **Exclude Dark Dyes** - Removes dyes with "Dark" in the name
+- **Exclude Cosmic Dyes** - Removes dyes from Cosmic Exploration or Cosmic Fortunes
+
+When you save a gradient or generate a share URL, your filter settings are included.
+
+**Q: What is the "Acquisition" information?**
+A: When hovering over a dye card in the recommendations, the Acquisition field shows how to obtain that dye (e.g., "Dye Vendor", "Cosmic Exploration", "Treasure Chest"). This is useful when market board data is unavailable.
+
+**Q: Does the market board pricing work without internet?**
+A: No, market board data requires internet. If you can't connect to the Universalis API, the tool shows "Connection failed" but still displays recommendations—you just won't see prices.
+
+**Q: Can I export my gradients?**
+A: Currently, saved gradients are stored in your browser's localStorage. You can share them via the "Copy Share URL" feature, but direct export as files is not yet available.
 
 ---
 

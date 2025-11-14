@@ -1,14 +1,49 @@
 # XIV Dye Tools
 
-A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
+A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-**Four Powerful Tools:**
+**Five Powerful Tools:**
+- **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
 - **Color Accessibility Checker** - Simulate colorblindness and ensure your glamour is accessible to everyone
 - **Color Harmony Explorer** - Generate color palettes based on color theory principles
 - **Color Matcher** - Upload images and find the closest matching FFXIV dyes
 - **Dye Comparison** - Compare up to 4 dyes side-by-side with detailed color visualization
 
 ## Features
+
+### 🎨 Dye Mixer (v1.5.1)
+Find smooth color transitions between any two FFXIV dyes using HSV color space interpolation. Perfect for decorators and interior designers discovering bridge colors for housing projects.
+
+**Core Features:**
+- **HSV Color Interpolation** - Smooth color transitions in HSV color space (more natural than RGB)
+- **Flexible Intermediate Dyes** - Generate 3, 4, 7, or 9 intermediate dyes between start and end colors
+- **Deviance Rating System** - 0-10 scale showing how closely each dye matches its theoretical position (0 = perfect, 10 = poor)
+- **Visual Gradient Progression** - Interactive gradient visualization with color swatches and labels
+- **Interactive Tooltips** - Hover over any point in gradient to see interpolated Hex, RGB, HSV values
+- **Responsive Layout** - Adapts to portrait/landscape orientation on mobile and desktop
+
+**Save & Share Features:**
+- **Save Gradients** - Store unlimited custom gradients with user-defined names
+- **Load Saved Gradients** - Restore any saved gradient with one click
+- **Shareable URLs** - Generate links that load gradient configuration and filter settings
+- **Collapsible Panel** - All saved gradients in expandable section showing creation date/time
+
+**Dye Exclusion Filters:**
+- **Exclude by Type** - Filter out Metallic, Pastel, Dark, or Cosmic dyes from recommendations
+- **Auto-Regenerate** - Recommendations update instantly when filter settings change
+- **Persistent Filters** - Selections saved to localStorage and included in shareable URLs
+
+**Market Board Integration:**
+- **Real-Time Pricing** - Fetch dye prices from Universalis API for all data centers/worlds
+- **Server Selection** - Choose data center and world for accurate pricing
+- **Acquisition Information** - Fallback display of dye acquisition method (e.g., "Dye Vendor", "Cosmic Exploration") when market data unavailable
+- **Price Filtering** - Toggle pricing visibility per dye category (Base, Craft, Allied Society, Cosmic, Special)
+
+**Accessibility & Theme Support:**
+- **10 Theme Variants** - Choose from 5 theme families with light/dark options
+- **Smooth Animations** - Card details expand/collapse with 0.3s transitions
+- **Responsive Design** - Optimized for desktop, tablet, and mobile
+- **XSS Protection** - HTML escaping for safety in dynamic content
 
 ### ♿ Color Accessibility Checker (v1.5.1)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
