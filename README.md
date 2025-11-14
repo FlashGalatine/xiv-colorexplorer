@@ -11,7 +11,7 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### 🎨 Dye Mixer (v1.5.1)
+### 🎨 Dye Mixer (v1.5.2)
 Find smooth color transitions between any two FFXIV dyes using HSV color space interpolation. Perfect for decorators and interior designers discovering bridge colors for housing projects.
 
 **Core Features:**
@@ -45,7 +45,7 @@ Find smooth color transitions between any two FFXIV dyes using HSV color space i
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **XSS Protection** - HTML escaping for safety in dynamic content
 
-### ♿ Color Accessibility Checker (v1.5.1)
+### ♿ Color Accessibility Checker (v1.5.2)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
 
 > **⚠ BETA Notice:** This tool uses scientific colorblindness simulation algorithms (Brettel 1997), but has not been validated with actual colorblind players. We recommend testing with real users for critical designs. Feedback from users with colorblindness experience is greatly appreciated!
@@ -74,12 +74,7 @@ Simulate how FFXIV dyes appear to players with colorblindness and ensure your gl
 - **One-Click Replacement** - Replace problematic dyes with suggestions and watch the issue count update automatically
 - **Hue-Saturation Matching** - Finds similar dyes based on color space to preserve intended color scheme
 
-**Dark Mode Support:**
-- Comprehensive dark mode styling for all UI elements
-- Proper dark mode colors for buttons, banners, and containers
-- Persistent preference storage
-
-### 🎨 Color Harmony Explorer (v1.5.1)
+### 🎨 Color Harmony Explorer (v1.5.2)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
 - **Complementary** - Colors opposite on the color wheel
 - **Analogous** - Colors adjacent on the color wheel
@@ -96,7 +91,7 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v1.5.1)
+### 🔍 Color Matcher (v1.5.2)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
 **New in v1.3.0:**
@@ -152,13 +147,7 @@ Upload an image or pick a color to find the closest matching FFXIV dye with an i
 - **Exclude Metallic Dyes** - Optional checkbox to remove metallic finishes from results
 - **Exclude Pure White & Jet Black** - Optional checkbox (default: OFF) for extreme colors
 
-**Dark Mode Support:**
-- Toggle button with moon icon in header
-- Persistent preference storage
-- Matches Color Explorer's dark mode theme
-- All controls styled for both light and dark modes including dropdowns
-
-### ⚖️ Dye Comparison (v1.5.1)
+### ⚖️ Dye Comparison (v1.5.2)
 Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Core Comparison Features:**
@@ -195,10 +184,6 @@ Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Display & Optimization**
 - 1080p display optimization with responsive typography
-- Dark Mode Support
-  - Full dark mode styling for all elements including color charts
-  - Persistent preference storage
-  - All controls properly themed
 
 ### 💰 Market Board Integration
 Fetch real-time dye prices from the Universalis API:
@@ -223,7 +208,7 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Theme System (v1.5.1)
+### 🌓 Theme System (v1.5.2)
 Comprehensive theme system with 10 theme variants (5 themes × light/dark), all fully WCAG compliant:
 
 **Available Themes:**
@@ -258,14 +243,14 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
   - Access all tools online without any installation
   - Live version with latest features and updates
 - **XIV Dye Tools Portal** (Home): Open `index.html` in any modern web browser to access all tools
-  - Showcases all four released stable tools in a beautiful grid layout
+  - Showcases all tools in a beautiful grid layout
   - Quick access to experimental features
   - Feature highlights and navigation
-- **Color Accessibility Checker (Stable v1.5.1)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
-- **Color Harmony Explorer (Stable v1.5.1)**: Open `colorexplorer_stable.html` for the main tool
-- **Color Harmony Explorer (Experimental v1.5.1)**: Open `colorexplorer_experimental.html` for testing new features
-- **Color Matcher (Stable v1.5.1)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
-- **Dye Comparison (Stable v1.5.1)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
+- **Color Accessibility Checker (Stable v1.5.2)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
+- **Color Harmony Explorer (Stable v1.5.2)**: Open `colorexplorer_stable.html` for the main tool
+- **Color Matcher (Stable v1.5.2)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
+- **Dye Comparison (Stable v1.5.2)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
+- **Dye Mixer (Stable v1.5.2)**: Open `dye-mixer_stable.html` for finding smooth color transitions
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
 
 No installation or server required! All tools work directly in your browser.
@@ -299,17 +284,18 @@ That's it! No installation or build process needed.
 ### Local Development
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
-3. **Access all four tools** from the portal:
-   - Color Accessibility Checker (v1.5.1)
-   - Color Harmony Explorer (v1.5.1)
-   - Color Matcher (v1.5.1)
-   - Dye Comparison (v1.5.1)
+3. **Access all tools** from the portal:
+   - Color Accessibility Checker (v1.5.2)
+   - Color Harmony Explorer (v1.5.2)
+   - Color Matcher (v1.5.2)
+   - Dye Comparison (v1.5.2)
+   - Dye Mixer (v1.5.2)
 4. **Develop new features**:
-   - Edit `colorexplorer_experimental.html` for testing Color Harmony Explorer enhancements
-   - Edit `coloraccessibility_experimental.html` for testing Color Accessibility Checker enhancements
+   - Edit `*_experimental.html` files for testing new features
+   - Thoroughly test in all browsers, themes, and responsive sizes
 5. **Deploy to production**: Copy tested features from the experimental version to the corresponding stable version
 
-All four main tools are production-ready stable versions with full feature support. The application is entirely client-side and requires no build process or dependencies.
+All tools are production-ready stable versions with full feature support. The application is entirely client-side and requires no build process or dependencies.
 
 ## Usage
 
@@ -405,42 +391,6 @@ All four main tools are production-ready stable versions with full feature suppo
 - **Color Data**: Complete FFXIV dye database with RGB, HSV, hex values, and acquisition methods
 - **Market Prices**: Real-time data from [Universalis API](https://universalis.app/)
 - **Server Data**: FFXIV data centers and world information
-
-## Code Quality & Maintainability
-
-### Clean Architecture (v1.5.2)
-
-XIV Dye Tools follows best practices for maintainability and code organization:
-
-- **Single Source of Truth**: Shared utility functions centralized in `shared-components.js`
-  - Color conversion functions (hexToRgb, rgbToHex, rgbToHsv, hsvToRgb)
-  - Color distance calculations (Euclidean RGB space)
-  - Storage utilities with error handling (safeGetStorage, safeSetStorage)
-  - JSON fetching with validation (safeFetchJSON)
-  - Theme management system
-
-- **Consistent Naming Conventions**: All tools use standardized variable names
-  - `ffxivDyes` - Dye database across all tools
-  - localStorage keys follow pattern: `xivdyetools_[toolname]_[setting]`
-
-- **Monolithic HTML Pattern** (By Design):
-  - Each tool is a self-contained HTML file (~1,400-1,900 lines)
-  - No build process required - pure vanilla HTML/CSS/JavaScript
-  - Easy for users to download, inspect, and modify individual tools
-  - Shared utilities loaded from centralized files to reduce duplication
-
-- **Code Deduplication**: ~164 lines of duplicate code removed across tools
-  - All tools reference shared-components.js exclusively for utility functions
-  - Standardized dropdown population patterns
-  - Unified color conversion implementations
-
-### Open Source & Contributions
-
-The project is fully open source under the MIT license. The codebase is designed for easy contribution:
-- No complex build tools or dependencies
-- Well-organized directory structure with clear separation of concerns
-- Comprehensive CLAUDE.md for AI-assisted development
-- All code follows consistent patterns across tools
 
 ## Technology Stack
 
