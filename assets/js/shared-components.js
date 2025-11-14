@@ -564,13 +564,6 @@ function toggleDropdown(button) {
     if (!dropdown) return;
 
     dropdown.classList.toggle('show');
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.nav-dropdown')) {
-            dropdown.classList.remove('show');
-        }
-    }, { once: true });
 }
 
 /**
@@ -582,14 +575,25 @@ function toggleThemeSwitcher(button) {
     if (!menu) return;
 
     menu.classList.toggle('show');
-
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.theme-switcher')) {
-            menu.classList.remove('show');
-        }
-    }, { once: true });
 }
+
+/**
+ * Global handler for closing menus when clicking outside
+ * Attached once on page load to handle all dropdowns and menus
+ */
+document.addEventListener('click', (e) => {
+    // Close Tools dropdown if clicking outside
+    const toolsDropdown = document.querySelector('.nav-dropdown .nav-dropdown-menu.show');
+    if (toolsDropdown && !e.target.closest('.nav-dropdown')) {
+        toolsDropdown.classList.remove('show');
+    }
+
+    // Close Theme menu if clicking outside
+    const themeMenu = document.querySelector('.theme-switcher .theme-switcher-menu.show');
+    if (themeMenu && !e.target.closest('.theme-switcher')) {
+        themeMenu.classList.remove('show');
+    }
+});
 
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
