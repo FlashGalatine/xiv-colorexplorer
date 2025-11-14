@@ -97,6 +97,36 @@
             writing-mode: horizontal-tb;
         }
 
+        /* Gradient tooltip */
+        .gradient-tooltip {
+            position: absolute;
+            background-color: var(--theme-bg-secondary);
+            border: 1px solid var(--theme-border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: var(--theme-text);
+            pointer-events: none;
+            z-index: 50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            display: none;
+        }
+
+        .gradient-tooltip.show {
+            display: block;
+        }
+
+        .gradient-tooltip-color {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--theme-border);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
         /* Dye selector styles */
         .dye-selector-grid {
             display: grid;
@@ -212,11 +242,37 @@
             border-radius: 0.5rem;
             background-color: var(--theme-card-bg);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .dye-card:hover {
             border-color: var(--theme-primary);
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .dye-card-details {
+            font-size: 0.75rem;
+            color: var(--theme-text-muted);
+            display: none;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--theme-border);
+            line-height: 1.4;
+        }
+
+        .dye-card:hover .dye-card-details {
+            display: block;
+        }
+
+        .dye-card-details-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .dye-card-details-label {
+            font-weight: 600;
+            margin-right: 0.5rem;
         }
 
         .dye-swatch {
@@ -392,6 +448,33 @@
             </ul>
         </div>
 
+        <!-- Market Board Controls -->
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+            <h2 class="text-xl font-semibold mb-4">Market Board Data (Optional)</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label for="mb-server-select" class="section-header text-sm font-semibold block mb-2">
+                        Server / Data Center
+                    </label>
+                    <select id="mb-server-select" style="width: 100%; padding: 0.75rem; border: 2px solid var(--theme-border); border-radius: 0.5rem; background-color: var(--theme-bg-secondary); color: var(--theme-text);">
+                        <option value="">-- Loading servers --</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="show-prices-toggle" checked style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                        <span class="text-sm font-semibold">Show Prices</span>
+                    </label>
+                </div>
+                <div class="flex items-end">
+                    <button id="refresh-prices-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold" style="background-color: var(--theme-primary); width: 100%;">
+                        Refresh Prices
+                    </button>
+                </div>
+            </div>
+            <div id="price-status-message" class="text-sm text-gray-600 mt-3" style="color: var(--theme-text-muted);"></div>
+        </div>
+
         <!-- Dye selectors -->
         <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
             <h2 class="text-xl font-semibold mb-6">Select Starting & Ending Dyes</h2>
@@ -419,22 +502,41 @@
         </div>
 
         <!-- Gradient visualization -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
-            <h2 class="text-xl font-semibold mb-4">Color Transition Gradient</h2>
-            <div id="gradient-container" class="gradient-container gradient-horizontal">
+        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg); position: relative;">
+            <h2 class="text-xl font-semibold mb-4">Color Transition Gradient (Hover for color values)</h2>
+            <div id="gradient-container" class="gradient-container gradient-horizontal" style="position: relative; cursor: crosshair;">
                 <div style="flex: 1; background-color: #cccccc;"></div>
                 <div style="flex: 1; background-color: #999999;"></div>
+            </div>
+            <div id="gradient-tooltip" class="gradient-tooltip">
+                <span class="gradient-tooltip-color" id="tooltip-color-swatch"></span>
+                <span id="tooltip-color-value"></span>
             </div>
         </div>
 
         <!-- Recommendation selector -->
         <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
-            <h2 class="text-xl font-semibold mb-4">Number of Intermediate Dyes</h2>
-            <div class="recommendation-selector">
-                <button class="recommendation-btn" data-count="3">3 Dyes</button>
-                <button class="recommendation-btn active" data-count="4">4 Dyes</button>
-                <button class="recommendation-btn" data-count="7">7 Dyes</button>
-                <button class="recommendation-btn" data-count="9">9 Dyes</button>
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">Number of Intermediate Dyes</h2>
+                    <div class="recommendation-selector">
+                        <button class="recommendation-btn" data-count="3">3 Dyes</button>
+                        <button class="recommendation-btn active" data-count="4">4 Dyes</button>
+                        <button class="recommendation-btn" data-count="7">7 Dyes</button>
+                        <button class="recommendation-btn" data-count="9">9 Dyes</button>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                    <div class="flex flex-col gap-2">
+                        <button id="save-gradient-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold" style="background-color: #10b981;">
+                            💾 Save Gradient
+                        </button>
+                        <button id="copy-url-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold" style="background-color: var(--theme-primary);">
+                            🔗 Copy Share URL
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -501,9 +603,48 @@
                 // Setup event listeners
                 setupEventListeners();
 
+                // Initialize market board
+                await initializeMarketBoard('mb-server-select');
+
                 // Populate dye selectors
                 populateDyeDropdown(document.getElementById('dye1-select'), ffxivDyes);
                 populateDyeDropdown(document.getElementById('dye2-select'), ffxivDyes);
+
+                // Market board event listeners
+                document.getElementById('show-prices-toggle')?.addEventListener('change', (e) => {
+                    const cards = document.querySelectorAll('.dye-price');
+                    cards.forEach(card => {
+                        card.style.display = e.target.checked ? 'block' : 'none';
+                    });
+                    if (e.target.checked && currentDye1 && currentDye2) {
+                        const itemIds = Array.from(document.querySelectorAll('.dye-card')).map(card => {
+                            const priceDiv = card.querySelector('.dye-price');
+                            return priceDiv?.id.replace('price-', '');
+                        }).filter(id => id);
+                        if (itemIds.length > 0) {
+                            fetchMarketPrices(itemIds);
+                        }
+                    }
+                });
+
+                document.getElementById('refresh-prices-btn')?.addEventListener('click', () => {
+                    const itemIds = Array.from(document.querySelectorAll('.dye-card')).map(card => {
+                        const priceDiv = card.querySelector('.dye-price');
+                        return priceDiv?.id.replace('price-', '');
+                    }).filter(id => id);
+                    if (itemIds.length > 0) {
+                        fetchMarketPrices(itemIds);
+                    } else {
+                        showToast('No dyes selected', 'info');
+                    }
+                });
+
+                // Save and share gradient buttons
+                document.getElementById('save-gradient-btn')?.addEventListener('click', saveGradient);
+                document.getElementById('copy-url-btn')?.addEventListener('click', copyShareUrl);
+
+                // Load gradient from URL if present
+                loadGradientFromUrl();
 
                 // Handle resize for responsive gradient
                 window.addEventListener('resize', () => {
@@ -769,6 +910,47 @@
                 const percent = (i / (sections.length - 1)) * 100;
                 return `<div style="flex: 1; background-color: ${color};"></div>`;
             }).join('');
+
+            // Add interactive tooltip functionality
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const tooltip = document.getElementById('gradient-tooltip');
+                const tooltipColor = document.getElementById('tooltip-color-swatch');
+                const tooltipValue = document.getElementById('tooltip-color-value');
+
+                // Calculate position percentage
+                let position;
+                if (isPortrait) {
+                    position = (e.clientY - rect.top) / rect.height;
+                } else {
+                    position = (e.clientX - rect.left) / rect.width;
+                }
+
+                position = Math.max(0, Math.min(1, position));
+
+                // Interpolate color at position
+                const interpolated = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
+                const hex = hsv2hex(interpolated.h, interpolated.s, interpolated.v);
+
+                // Update tooltip
+                tooltipColor.style.backgroundColor = hex;
+                const positionPercent = (position * 100).toFixed(1);
+                tooltipValue.innerHTML = `<strong class="number">${positionPercent}%</strong><br/><span class="number">${hex}</span><br/>H: <span class="number">${Math.round(interpolated.h)}</span>°, S: <span class="number">${Math.round(interpolated.s)}</span>%, V: <span class="number">${Math.round(interpolated.v)}</span>%`;
+
+                // Position tooltip
+                tooltip.classList.add('show');
+                if (isPortrait) {
+                    tooltip.style.left = (rect.left + rect.width / 2 - 70) + 'px';
+                    tooltip.style.top = (e.clientY - 60) + 'px';
+                } else {
+                    tooltip.style.left = (e.clientX - 70) + 'px';
+                    tooltip.style.top = (rect.top - 70) + 'px';
+                }
+            });
+
+            container.addEventListener('mouseleave', () => {
+                document.getElementById('gradient-tooltip').classList.remove('show');
+            });
         }
 
         /**
@@ -801,6 +983,10 @@
                     ? `<span class="number">${rec.positions[0].toFixed(1)}</span>%`
                     : `<span class="number">${rec.positions[0].toFixed(1)}</span>-<span class="number">${rec.positions[rec.positions.length - 1].toFixed(1)}</span>%`;
 
+                // Calculate RGB and HSV values for color details
+                const rgb = hexToRgb(rec.dye.hex);
+                const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+
                 return `
                     <div class="dye-card">
                         <div class="dye-swatch" style="background-color: ${rec.dye.hex};"></div>
@@ -812,9 +998,31 @@
                             <span class="deviance-label">Match:</span>
                             <span class="deviance-value ${devianceClass}"><span class="number">${deviance.toFixed(1)}</span></span>
                         </div>
+                        <div class="dye-card-details">
+                            <div class="dye-card-details-row">
+                                <span class="dye-card-details-label">Hex:</span>
+                                <span class="number">${rec.dye.hex}</span>
+                            </div>
+                            <div class="dye-card-details-row">
+                                <span class="dye-card-details-label">RGB:</span>
+                                <span class="number">${rgb.r}, ${rgb.g}, ${rgb.b}</span>
+                            </div>
+                            <div class="dye-card-details-row">
+                                <span class="dye-card-details-label">HSV:</span>
+                                <span class="number">${hsv.h}°, ${hsv.s}%, ${hsv.v}%</span>
+                            </div>
+                        </div>
+                        <div id="price-${rec.dye.itemID}" class="dye-price" style="display: ${document.getElementById('show-prices-toggle')?.checked ? 'block' : 'none'}; font-size: 0.8rem; color: var(--theme-text-muted); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--theme-border);">
+                            Loading price...
+                        </div>
                     </div>
                 `;
             }).join('');
+
+            // Fetch prices if toggle is enabled
+            if (document.getElementById('show-prices-toggle')?.checked && deduplicated.length > 0) {
+                fetchMarketPrices(deduplicated.map(rec => rec.dye.itemID));
+            }
         }
 
         /**
@@ -857,6 +1065,168 @@
                 toast.style.animation = 'slideOut 0.3s ease-out forwards';
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
+        }
+
+        // ============================================
+        // SECTION: MARKET BOARD INTEGRATION
+        // ============================================
+
+        /**
+         * Fetch market prices from Universalis API for dyes
+         */
+        async function fetchMarketPrices(itemIds) {
+            const serverSelect = document.getElementById('mb-server-select');
+            const server = serverSelect.value;
+
+            if (!server) {
+                showToast('Please select a server first', 'info');
+                return;
+            }
+
+            const statusEl = document.getElementById('price-status-message');
+            statusEl.textContent = 'Fetching prices...';
+            statusEl.style.color = 'var(--theme-text-muted)';
+
+            try {
+                // Parse server value (format: "ServerName" or "DataCenterName")
+                const url = `https://universalis.app/api/v2/aggregated/${server}?items=${itemIds.join(',')}`;
+
+                const response = await apiThrottler.request(url);
+
+                if (response && response.items) {
+                    // Update price display for each dye
+                    Object.entries(response.items).forEach(([itemId, priceData]) => {
+                        const priceDiv = document.getElementById(`price-${itemId}`);
+                        if (priceDiv && priceData && priceData.minPriceNq) {
+                            const priceText = formatPrice(priceData.minPriceNq);
+                            priceDiv.innerHTML = `<strong>Market Price:</strong> <span class="number">${priceText}</span> Gil`;
+                        } else if (priceDiv) {
+                            priceDiv.textContent = 'Price unavailable';
+                        }
+                    });
+
+                    // Update status message
+                    const timestamp = new Date().toLocaleTimeString();
+                    statusEl.textContent = `✓ Prices updated at ${timestamp}`;
+                    statusEl.style.color = '#10b981';
+                    showToast('Prices updated successfully', 'success');
+                } else {
+                    statusEl.textContent = 'Failed to fetch prices';
+                    statusEl.style.color = '#ef4444';
+                    showToast('Failed to fetch prices from market board', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+                statusEl.textContent = 'Error fetching prices: ' + error.message;
+                statusEl.style.color = '#ef4444';
+                showToast('Error fetching prices', 'error');
+            }
+        }
+
+        /**
+         * Format price with thousands separator
+         */
+        function formatPrice(price) {
+            if (typeof price !== 'number') return '0';
+            return price.toLocaleString('en-US');
+        }
+
+        // ============================================
+        // SECTION: GRADIENT SAVE/SHARE/LOAD
+        // ============================================
+
+        /**
+         * Save current gradient to localStorage
+         */
+        function saveGradient() {
+            if (!currentDye1 || !currentDye2) {
+                showToast('Please select both starting and ending dyes', 'info');
+                return;
+            }
+
+            const gradientName = prompt('Name your gradient (e.g., "Sunset Fade"):');
+            if (!gradientName) return;
+
+            const gradient = {
+                name: gradientName,
+                dye1Id: currentDye1.itemID,
+                dye1Name: currentDye1.name,
+                dye2Id: currentDye2.itemID,
+                dye2Name: currentDye2.name,
+                recommendationCount: currentRecommendationCount,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const savedGradients = JSON.parse(safeGetStorage('dyeMixerGradients', '[]'));
+                savedGradients.push(gradient);
+                safeSetStorage('dyeMixerGradients', JSON.stringify(savedGradients));
+                showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
+            } catch (error) {
+                console.error('Error saving gradient:', error);
+                showToast('Failed to save gradient', 'error');
+            }
+        }
+
+        /**
+         * Generate share URL with gradient parameters
+         */
+        function copyShareUrl() {
+            if (!currentDye1 || !currentDye2) {
+                showToast('Please select both starting and ending dyes', 'info');
+                return;
+            }
+
+            const params = new URLSearchParams({
+                dye1: currentDye1.itemID,
+                dye2: currentDye2.itemID,
+                count: currentRecommendationCount
+            });
+
+            const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast('✓ Share URL copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showToast('Failed to copy URL to clipboard', 'error');
+            });
+        }
+
+        /**
+         * Load gradient from URL parameters (if present)
+         */
+        function loadGradientFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const dye1Id = parseInt(params.get('dye1'));
+            const dye2Id = parseInt(params.get('dye2'));
+            const count = parseInt(params.get('count')) || 4;
+
+            if (dye1Id && dye2Id && ffxivDyes.length > 0) {
+                const dye1 = ffxivDyes.find(d => d.itemID === dye1Id);
+                const dye2 = ffxivDyes.find(d => d.itemID === dye2Id);
+
+                if (dye1 && dye2) {
+                    // Set selectors
+                    document.getElementById('dye1-select').value = dye1Id;
+                    document.getElementById('dye2-select').value = dye2Id;
+
+                    // Set current values
+                    currentDye1 = dye1;
+                    currentDye2 = dye2;
+
+                    // Set recommendation count
+                    currentRecommendationCount = count;
+                    document.querySelectorAll('.recommendation-btn').forEach(btn => {
+                        btn.classList.toggle('active', parseInt(btn.dataset.count) === count);
+                    });
+
+                    // Trigger update
+                    validateAndUpdate();
+                    showToast(`✓ Loaded gradient: ${dye1.name} → ${dye2.name}`, 'success');
+                }
+            }
         }
     </script>
 </body>
