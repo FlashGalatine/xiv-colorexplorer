@@ -511,9 +511,10 @@
             </div>
         </div>
 
-        <!-- Recommendation selector -->
+        <!-- Recommendation & Filter Options -->
         <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
-            <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Number of Intermediate Dyes -->
                 <div>
                     <h2 class="text-xl font-semibold mb-4">Number of Intermediate Dyes</h2>
                     <div class="recommendation-selector">
@@ -523,16 +524,41 @@
                         <button class="recommendation-btn" data-count="9">9 Dyes</button>
                     </div>
                 </div>
+
+                <!-- Dye Exclusion Filters -->
                 <div>
-                    <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
-                    <div class="flex flex-col gap-2">
-                        <button id="save-gradient-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold" style="background-color: #10b981;">
-                            💾 Save Gradient
-                        </button>
-                        <button id="copy-url-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold" style="background-color: var(--theme-primary);">
-                            🔗 Copy Share URL
-                        </button>
+                    <h2 class="text-xl font-semibold mb-4">Exclude from Recommendations</h2>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="exclude-metallic" class="dye-filter-checkbox" style="width: 1.125rem; height: 1.125rem; cursor: pointer;">
+                            <span class="text-sm">Metallic Dyes</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="exclude-pastel" class="dye-filter-checkbox" style="width: 1.125rem; height: 1.125rem; cursor: pointer;">
+                            <span class="text-sm">Pastel Dyes</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="exclude-dark" class="dye-filter-checkbox" style="width: 1.125rem; height: 1.125rem; cursor: pointer;">
+                            <span class="text-sm">Dark Dyes</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="exclude-cosmic" class="dye-filter-checkbox" style="width: 1.125rem; height: 1.125rem; cursor: pointer;">
+                            <span class="text-sm">Cosmic Dyes</span>
+                        </label>
                     </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions (moved below) -->
+            <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
+                <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button id="save-gradient-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex-1" style="background-color: #10b981;">
+                        💾 Save Gradient
+                    </button>
+                    <button id="copy-url-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold flex-1" style="background-color: var(--theme-primary);">
+                        🔗 Copy Share URL
+                    </button>
                 </div>
             </div>
         </div>
@@ -676,6 +702,44 @@
                     validateAndUpdate();
                 });
             });
+
+            // Dye filter checkboxes
+            document.querySelectorAll('.dye-filter-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    // Save filter settings to localStorage
+                    const filters = {
+                        metallic: document.getElementById('exclude-metallic').checked,
+                        pastel: document.getElementById('exclude-pastel').checked,
+                        dark: document.getElementById('exclude-dark').checked,
+                        cosmic: document.getElementById('exclude-cosmic').checked
+                    };
+                    safeSetStorage('dyeMixerFilters', JSON.stringify(filters));
+
+                    // Re-generate recommendations with new filters
+                    validateAndUpdate();
+                });
+            });
+
+            // Load saved filter settings
+            loadFilterSettings();
+        }
+
+        /**
+         * Load filter settings from localStorage
+         */
+        function loadFilterSettings() {
+            try {
+                const saved = safeGetStorage('dyeMixerFilters', null);
+                if (saved) {
+                    const filters = JSON.parse(saved);
+                    if (filters.metallic) document.getElementById('exclude-metallic').checked = true;
+                    if (filters.pastel) document.getElementById('exclude-pastel').checked = true;
+                    if (filters.dark) document.getElementById('exclude-dark').checked = true;
+                    if (filters.cosmic) document.getElementById('exclude-cosmic').checked = true;
+                }
+            } catch (error) {
+                console.error('Error loading filter settings:', error);
+            }
         }
 
         // ============================================
@@ -757,6 +821,35 @@
         // ============================================
 
         /**
+         * Check if a dye should be excluded based on filter settings
+         */
+        function isDyeExcluded(dye) {
+            // Check Metallic filter
+            if (document.getElementById('exclude-metallic')?.checked) {
+                if (dye.name.includes('Metallic')) return true;
+            }
+
+            // Check Pastel filter
+            if (document.getElementById('exclude-pastel')?.checked) {
+                if (dye.name.includes('Pastel')) return true;
+            }
+
+            // Check Dark filter
+            if (document.getElementById('exclude-dark')?.checked) {
+                if (dye.name.includes('Dark')) return true;
+            }
+
+            // Check Cosmic filter
+            if (document.getElementById('exclude-cosmic')?.checked) {
+                if (dye.acquisition === 'Cosmic Exploration' || dye.acquisition === 'Cosmic Fortunes') {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
          * Generate recommendation dyes at equal intervals
          */
         function generateRecommendations() {
@@ -775,10 +868,10 @@
                 const idealColor = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
                 const idealHex = hsv2hex(idealColor.h, idealColor.s, idealColor.v);
 
-                // Find closest dye to ideal color
+                // Find closest dye to ideal color (respecting filters)
                 const closestDye = findClosestDyeToColor(idealHex);
 
-                if (closestDye) {
+                if (closestDye && !isDyeExcluded(closestDye)) {
                     const deviance = calculateDeviance(closestDye.hex, idealHex);
                     recommendations.push({
                         dye: closestDye,
