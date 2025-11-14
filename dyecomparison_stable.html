@@ -546,63 +546,8 @@
         let cmpPriceCache = {};
         let cmpLastPriceUpdate = null;
 
-        /**
-         * Safe localStorage getter with error handling
-         */
-        function safeGetStorage(key, defaultValue = null) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return defaultValue;
-                }
-                return localStorage.getItem(key);
-            } catch (e) {
-                console.warn(`localStorage getItem failed for key "${key}":`, e.message);
-                return defaultValue;
-            }
-        }
-
-        /**
-         * Safe localStorage setter with error handling
-         */
-        function safeSetStorage(key, value) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return false;
-                }
-                localStorage.setItem(key, value);
-                return true;
-            } catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    console.warn('localStorage quota exceeded for key:', key);
-                } else {
-                    console.warn(`localStorage setItem failed for key "${key}":`, e.message);
-                }
-                return false;
-            }
-        }
-
-        /**
-         * Safely fetch and validate JSON data
-         */
-        function safeFetchJSON(url, fallbackData = []) {
-            return fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error(`Invalid content type: ${contentType}`);
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error(`Failed to load JSON from ${url}:`, error.message);
-                    return fallbackData;
-                });
-        }
+        // Storage functions (safeGetStorage, safeSetStorage) provided by shared-components.js
+        // safeFetchJSON function provided by shared-components.js
 
         /**
          * Get category priority for sorting

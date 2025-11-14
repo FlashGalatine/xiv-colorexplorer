@@ -399,7 +399,7 @@
             }, { once: true });
         }
 
-        let colorData = [];
+        let ffxivDyes = [];
         let currentPalettes = {};
         let tooltip = null;
         let priceCache = {};
@@ -486,26 +486,7 @@
             }
         }
 
-        /**
-         * Safely fetch and validate JSON data
-         */
-        function safeFetchJSON(url, fallbackData = []) {
-            return fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error(`Invalid content type: ${contentType}`);
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error(`Failed to load JSON from ${url}:`, error.message);
-                    return fallbackData;
-                });
-        }
+        // safeFetchJSON function provided by shared-components.js
 
         /**
          * Creates and manages tooltip
@@ -1077,7 +1058,7 @@
          */
         function populateAcquisitionFilter() {
             const acquisitionSet = new Set();
-            colorData.forEach(color => {
+            ffxivDyes.forEach(color => {
                 if (color.acquisitionClean) {
                     acquisitionSet.add(color.acquisitionClean);
                 }
@@ -1102,7 +1083,7 @@
             const excludeExtremes = document.getElementById('exclude-extremes-checkbox').checked;
             const excludeMetallic = document.getElementById('exclude-metallic-checkbox').checked;
 
-            let filtered = colorData;
+            let filtered = ffxivDyes;
 
             // Filter by acquisition if not "all"
             if (acquisitionFilter !== 'all') {
@@ -1177,7 +1158,7 @@
          * - Filters colors based on acquisition method and exclusions
          * - Sorts by category priority, then alphabetically by name
          * - Creates optgroups for each category
-         * - Uses array index as option value (for compatibility with filtered colorData array)
+         * - Uses array index as option value (for compatibility with filtered ffxivDyes array)
          * - Maintains consistency with other tools' sorting and grouping logic
          */
         function populateDropdown() {
@@ -1199,7 +1180,7 @@
             let currentOptgroup = null;
 
             sortedColors.forEach((color) => {
-                const index = colorData.indexOf(color);
+                const index = ffxivDyes.indexOf(color);
 
                 // Create new optgroup when category changes
                 if (color.category !== currentCategory) {
@@ -1233,7 +1214,7 @@
             }
 
             const searchLower = query.toLowerCase();
-            const matches = colorData
+            const matches = ffxivDyes
                 .map((color, index) => ({ color, index }))
                 .filter(({ color }) => 
                     color.name.toLowerCase().includes(searchLower) ||
@@ -1357,7 +1338,7 @@
             let closestColor = null;
             let minDistance = Infinity;
 
-            let searchableColors = colorData;
+            let searchableColors = ffxivDyes;
 
             if (excludeMetallic) {
                 searchableColors = searchableColors.filter(color => !color.name.toLowerCase().includes('metallic'));
@@ -1373,7 +1354,7 @@
                 );
             }
 
-            const sourceToSearch = searchableColors.length > 0 ? searchableColors : colorData;
+            const sourceToSearch = searchableColors.length > 0 ? searchableColors : ffxivDyes;
 
             sourceToSearch.forEach(color => {
                 const distance = colorDistance(targetRgb, color.rgb);
@@ -1543,7 +1524,7 @@
         function updateUI() {
             const select = document.getElementById('color-select');
             const selectedIndex = select.value;
-            const baseColor = colorData[selectedIndex];
+            const baseColor = ffxivDyes[selectedIndex];
 
             const selectedColorDisplay = document.getElementById('selected-color-display');
             const selectedTextColor = (baseColor.rgb.r * 0.299 + baseColor.rgb.g * 0.587 + baseColor.rgb.b * 0.114) > 186 ? 'text-black' : 'text-white';
@@ -1750,7 +1731,7 @@
                 console.log('Color data loaded successfully, count:', rawData.length);
 
                 // Enrich the color data with cleaned acquisition text
-                colorData = enrichColorData(rawData);
+                ffxivDyes = enrichColorData(rawData);
 
                 // Create tooltip
                 createTooltip();
@@ -1765,7 +1746,7 @@
                 
                 const select = document.getElementById('color-select');
                 // Set default color to Abyssal Blue
-                const abyssalBlueIndex = colorData.findIndex(color => color.name === "Abyssal Blue");
+                const abyssalBlueIndex = ffxivDyes.findIndex(color => color.name === "Abyssal Blue");
                 if (abyssalBlueIndex !== -1) {
                     select.value = abyssalBlueIndex;
                 }
@@ -1776,7 +1757,7 @@
                 checkbox.addEventListener('change', () => {
                     // Store the currently selected dye name
                     const currentSelectedIndex = select.value;
-                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? ffxivDyes[parseInt(currentSelectedIndex)] : null;
                     const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
 
                     // Repopulate dropdown with new filters
@@ -1785,7 +1766,7 @@
                     // Restore the previously selected dye if it still exists
                     if (currentDyeName) {
                         const newIndex = Array.from(select.options).findIndex(opt =>
-                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                            ffxivDyes[parseInt(opt.value)]?.name === currentDyeName
                         );
                         if (newIndex !== -1) {
                             select.value = select.options[newIndex].value;
@@ -1806,7 +1787,7 @@
                 extremesCheckbox.addEventListener('change', () => {
                     // Store the currently selected dye name
                     const currentSelectedIndex = select.value;
-                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? ffxivDyes[parseInt(currentSelectedIndex)] : null;
                     const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
 
                     // Repopulate dropdown with new filters
@@ -1815,7 +1796,7 @@
                     // Restore the previously selected dye if it still exists
                     if (currentDyeName) {
                         const newIndex = Array.from(select.options).findIndex(opt =>
-                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                            ffxivDyes[parseInt(opt.value)]?.name === currentDyeName
                         );
                         if (newIndex !== -1) {
                             select.value = select.options[newIndex].value;
@@ -1833,7 +1814,7 @@
                 acquisitionFilter.addEventListener('change', () => {
                     // Store the currently selected dye name
                     const currentSelectedIndex = select.value;
-                    const currentSelectedDye = currentSelectedIndex !== '' ? colorData[parseInt(currentSelectedIndex)] : null;
+                    const currentSelectedDye = currentSelectedIndex !== '' ? ffxivDyes[parseInt(currentSelectedIndex)] : null;
                     const currentDyeName = currentSelectedDye ? currentSelectedDye.name : null;
 
                     // Repopulate dropdown with new filters
@@ -1842,7 +1823,7 @@
                     // Restore the previously selected dye if it still exists
                     if (currentDyeName) {
                         const newIndex = Array.from(select.options).findIndex(opt =>
-                            colorData[parseInt(opt.value)]?.name === currentDyeName
+                            ffxivDyes[parseInt(opt.value)]?.name === currentDyeName
                         );
                         if (newIndex !== -1) {
                             select.value = select.options[newIndex].value;

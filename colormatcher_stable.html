@@ -731,63 +731,8 @@
         let startPanX = 0;
         let startPanY = 0;
 
-        /**
-         * Safe localStorage getter with error handling
-         */
-        function safeGetStorage(key, defaultValue = null) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return defaultValue;
-                }
-                return localStorage.getItem(key);
-            } catch (e) {
-                console.warn(`localStorage getItem failed for key "${key}":`, e.message);
-                return defaultValue;
-            }
-        }
-
-        /**
-         * Safe localStorage setter with error handling
-         */
-        function safeSetStorage(key, value) {
-            try {
-                if (typeof Storage === 'undefined') {
-                    console.warn('localStorage unavailable: Storage API not supported');
-                    return false;
-                }
-                localStorage.setItem(key, value);
-                return true;
-            } catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    console.warn('localStorage quota exceeded for key:', key);
-                } else {
-                    console.warn(`localStorage setItem failed for key "${key}":`, e.message);
-                }
-                return false;
-            }
-        }
-
-        /**
-         * Safely fetch and validate JSON data
-         */
-        function safeFetchJSON(url, fallbackData = []) {
-            return fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error(`Invalid content type: ${contentType}`);
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error(`Failed to load JSON from ${url}:`, error.message);
-                    return fallbackData;
-                });
-        }
+        // Storage functions (safeGetStorage, safeSetStorage) provided by shared-components.js
+        // safeFetchJSON function provided by shared-components.js
 
         /**
          * Updates the canvas display based on current zoom
@@ -917,57 +862,7 @@
             showToast('Image cleared', 'info');
         }
 
-        // --- Core Functions ---
-        /**
-         * Convert hexadecimal color string to RGB object
-         * Standardized across all tools
-         *
-         * @param {string} hex - Hex color string (with or without '#')
-         * @returns {Object} RGB object with r, g, b (0-255), falls back to black on error
-         */
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 0, g: 0, b: 0 }; // Fallback to black on invalid input
-        }
-
-        /**
-         * Convert RGB color values to hexadecimal string
-         * Standardized across all tools
-         *
-         * @param {number} r - Red channel (0-255)
-         * @param {number} g - Green channel (0-255)
-         * @param {number} b - Blue channel (0-255)
-         * @returns {string} Hex color string in format "#RRGGBB"
-         */
-        function rgbToHex(r, g, b) {
-            const componentToHex = (c) => ('0' + Math.round(c).toString(16)).slice(-2);
-            return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
-        }
-
-        /**
-         * Calculate Euclidean distance between two colors in RGB space
-         *
-         * Uses the standard RGB Euclidean distance formula:
-         * distance = sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
-         *
-         * Range: 0 (identical colors) to ~441 (white vs black)
-         * Used for finding closest matching dyes and color similarity analysis
-         *
-         * @param {Object} rgb1 - First color with properties r, g, b (0-255)
-         * @param {Object} rgb2 - Second color with properties r, g, b (0-255)
-         * @returns {number} Euclidean distance in RGB space
-         */
-        function colorDistance(rgb1, rgb2) {
-            const rDiff = rgb1.r - rgb2.r;
-            const gDiff = rgb1.g - rgb2.g;
-            const bDiff = rgb1.b - rgb2.b;
-            return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
-        }
-
+        // Core color conversion functions (hexToRgb, rgbToHex, colorDistance) provided by shared-components.js
         // APIThrottler class and apiThrottler instance now provided by shared-components.js
 
         function findClosestMatch() {

@@ -1456,7 +1456,7 @@
         function saveDyesToStorage() {
             const activeDyes = getActiveDyes();
             const itemIds = activeDyes.map(d => d.itemID);
-            safeSetStorage('colorAccessibilityDyes', JSON.stringify(itemIds));
+            safeSetStorage('xivdyetools_coloraccessibility_dyes', JSON.stringify(itemIds));
         }
 
         /**
@@ -1554,7 +1554,7 @@
                     });
 
                     // Load secondary dyes preference from localStorage
-                    const savedSecondaryDyesState = safeGetStorage('secondaryDyesEnabled');
+                    const savedSecondaryDyesState = safeGetStorage('xivdyetools_coloraccessibility_secondaryDyes');
                     if (savedSecondaryDyesState !== null) {
                         try {
                             secondaryDyesEnabled = JSON.parse(savedSecondaryDyesState);
@@ -1566,7 +1566,7 @@
                             console.warn('Invalid secondaryDyesEnabled value in localStorage, resetting to default:', parseError.message);
                             // Reset to default (secondary dyes disabled)
                             secondaryDyesEnabled = false;
-                            safeSetStorage('secondaryDyesEnabled', JSON.stringify(false));
+                            safeSetStorage('xivdyetools_coloraccessibility_secondaryDyes', JSON.stringify(false));
                         }
                     }
 
@@ -1574,7 +1574,7 @@
                     if (domCache.enableSecondaryDyes) {
                         domCache.enableSecondaryDyes.addEventListener('change', (e) => {
                             secondaryDyesEnabled = e.target.checked;
-                            safeSetStorage('secondaryDyesEnabled', JSON.stringify(secondaryDyesEnabled));
+                            safeSetStorage('xivdyetools_coloraccessibility_secondaryDyes', JSON.stringify(secondaryDyesEnabled));
                             updateSecondaryDyeVisibility();
                         });
                     }
