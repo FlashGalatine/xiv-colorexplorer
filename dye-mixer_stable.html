@@ -1300,7 +1300,7 @@
         }
 
         /**
-         * Generate share URL with gradient parameters
+         * Generate share URL with gradient parameters and filter settings
          */
         function copyShareUrl() {
             if (!currentDye1 || !currentDye2) {
@@ -1313,6 +1313,17 @@
                 dye2: currentDye2.itemID,
                 count: currentRecommendationCount
             });
+
+            // Add filter settings to URL
+            const metallic = document.getElementById('exclude-metallic')?.checked ? '1' : '0';
+            const pastel = document.getElementById('exclude-pastel')?.checked ? '1' : '0';
+            const dark = document.getElementById('exclude-dark')?.checked ? '1' : '0';
+            const cosmic = document.getElementById('exclude-cosmic')?.checked ? '1' : '0';
+
+            params.append('excludeMetallic', metallic);
+            params.append('excludePastel', pastel);
+            params.append('excludeDark', dark);
+            params.append('excludeCosmic', cosmic);
 
             const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 
@@ -1352,6 +1363,26 @@
                     document.querySelectorAll('.recommendation-btn').forEach(btn => {
                         btn.classList.toggle('active', parseInt(btn.dataset.count) === count);
                     });
+
+                    // Load filter settings from URL
+                    const excludeMetallic = params.get('excludeMetallic') === '1';
+                    const excludePastel = params.get('excludePastel') === '1';
+                    const excludeDark = params.get('excludeDark') === '1';
+                    const excludeCosmic = params.get('excludeCosmic') === '1';
+
+                    document.getElementById('exclude-metallic').checked = excludeMetallic;
+                    document.getElementById('exclude-pastel').checked = excludePastel;
+                    document.getElementById('exclude-dark').checked = excludeDark;
+                    document.getElementById('exclude-cosmic').checked = excludeCosmic;
+
+                    // Save filter settings to localStorage
+                    const filters = {
+                        metallic: excludeMetallic,
+                        pastel: excludePastel,
+                        dark: excludeDark,
+                        cosmic: excludeCosmic
+                    };
+                    safeSetStorage('dyeMixerFilters', JSON.stringify(filters));
 
                     // Trigger update
                     validateAndUpdate();
