@@ -436,6 +436,75 @@
         .version-text .number {
             color: var(--theme-text);
         }
+
+        /* Saved gradients list */
+        .saved-gradient-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background-color: var(--theme-bg-secondary);
+            border: 1px solid var(--theme-border);
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .saved-gradient-item:hover {
+            background-color: var(--theme-border);
+            border-color: var(--theme-primary);
+        }
+
+        .saved-gradient-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .saved-gradient-name {
+            font-weight: 600;
+            color: var(--theme-text);
+            font-size: 0.9rem;
+        }
+
+        .saved-gradient-details {
+            font-size: 0.75rem;
+            color: var(--theme-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .saved-gradient-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .saved-gradient-btn {
+            padding: 0.4rem 0.75rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .saved-gradient-load {
+            background-color: var(--theme-primary);
+            color: white;
+        }
+
+        .saved-gradient-load:hover {
+            opacity: 0.9;
+        }
+
+        .saved-gradient-delete {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .saved-gradient-delete:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body class="theme-standard-light transition-colors duration-200">
@@ -561,6 +630,22 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Saved Gradients -->
+            <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Saved Gradients</h2>
+                    <button id="toggle-saved-gradients" class="text-sm px-2 py-1 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-100" style="color: var(--theme-text-muted); background-color: transparent;" title="Show/hide saved gradients">
+                        ▼
+                    </button>
+                </div>
+                <div id="saved-gradients-container" class="space-y-2" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+                    <!-- Saved gradient items will be generated here -->
+                </div>
+                <p id="no-saved-gradients-text" class="text-sm text-gray-500" style="color: var(--theme-text-muted);">
+                    No saved gradients yet. Click "Save Gradient" to create one!
+                </p>
+            </div>
         </div>
 
         <!-- Warning message (shown when same dye selected) -->
@@ -640,6 +725,10 @@
                 // Save and share gradient buttons
                 document.getElementById('save-gradient-btn')?.addEventListener('click', saveGradient);
                 document.getElementById('copy-url-btn')?.addEventListener('click', copyShareUrl);
+
+                // Saved gradients toggle and display
+                document.getElementById('toggle-saved-gradients')?.addEventListener('click', toggleSavedGradientsPanel);
+                displaySavedGradients();
 
                 // Load gradient from URL if present
                 loadGradientFromUrl();
@@ -1293,6 +1382,7 @@
                 savedGradients.push(gradient);
                 safeSetStorage('dyeMixerGradients', JSON.stringify(savedGradients));
                 showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
+                displaySavedGradients();
             } catch (error) {
                 console.error('Error saving gradient:', error);
                 showToast('Failed to save gradient', 'error');
@@ -1389,6 +1479,160 @@
                     showToast(`✓ Loaded gradient: ${dye1.name} → ${dye2.name}`, 'success');
                 }
             }
+        }
+
+        /**
+         * Display saved gradients in the UI
+         */
+        function displaySavedGradients() {
+            const container = document.getElementById('saved-gradients-container');
+            const noGradientsText = document.getElementById('no-saved-gradients-text');
+
+            try {
+                const savedGradients = JSON.parse(safeGetStorage('dyeMixerGradients', '[]'));
+
+                if (!savedGradients || savedGradients.length === 0) {
+                    container.innerHTML = '';
+                    noGradientsText.style.display = 'block';
+                    return;
+                }
+
+                noGradientsText.style.display = 'none';
+                container.innerHTML = savedGradients.map((gradient, index) => {
+                    const timestamp = new Date(gradient.timestamp);
+                    const dateStr = timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return `
+                        <div class="saved-gradient-item">
+                            <div class="saved-gradient-info">
+                                <div class="saved-gradient-name">${escapeHtml(gradient.name)}</div>
+                                <div class="saved-gradient-details">
+                                    ${escapeHtml(gradient.dye1Name)} → ${escapeHtml(gradient.dye2Name)} (${gradient.recommendationCount} dyes) • ${dateStr}
+                                </div>
+                            </div>
+                            <div class="saved-gradient-buttons">
+                                <button class="saved-gradient-btn saved-gradient-load" onclick="loadSavedGradient(${index})">
+                                    Load
+                                </button>
+                                <button class="saved-gradient-btn saved-gradient-delete" onclick="deleteSavedGradient(${index})">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error displaying saved gradients:', error);
+                container.innerHTML = '<p style="color: var(--theme-text-muted); font-size: 0.875rem;">Error loading saved gradients</p>';
+            }
+        }
+
+        /**
+         * Toggle saved gradients panel visibility
+         */
+        function toggleSavedGradientsPanel() {
+            const container = document.getElementById('saved-gradients-container');
+            const toggle = document.getElementById('toggle-saved-gradients');
+
+            if (container.style.maxHeight === '0px' || container.style.maxHeight === '') {
+                // Open panel
+                container.style.maxHeight = '1000px';
+                toggle.textContent = '▲';
+            } else {
+                // Close panel
+                container.style.maxHeight = '0px';
+                toggle.textContent = '▼';
+            }
+        }
+
+        /**
+         * Load a saved gradient by index
+         */
+        function loadSavedGradient(index) {
+            try {
+                const savedGradients = JSON.parse(safeGetStorage('dyeMixerGradients', '[]'));
+
+                if (!savedGradients || !savedGradients[index]) {
+                    showToast('Gradient not found', 'error');
+                    return;
+                }
+
+                const gradient = savedGradients[index];
+                const dye1 = ffxivDyes.find(d => d.itemID === gradient.dye1Id);
+                const dye2 = ffxivDyes.find(d => d.itemID === gradient.dye2Id);
+
+                if (!dye1 || !dye2) {
+                    showToast('One or more dyes in this gradient are no longer available', 'error');
+                    return;
+                }
+
+                // Set dye selectors
+                document.getElementById('dye1-select').value = gradient.dye1Id;
+                document.getElementById('dye2-select').value = gradient.dye2Id;
+
+                // Update current state
+                currentDye1 = dye1;
+                currentDye2 = dye2;
+                currentRecommendationCount = gradient.recommendationCount;
+
+                // Update recommendation count buttons
+                document.querySelectorAll('.recommendation-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.count) === gradient.recommendationCount);
+                });
+
+                // Validate and update display
+                validateAndUpdate();
+                showToast(`✓ Loaded gradient: "${gradient.name}"`, 'success');
+            } catch (error) {
+                console.error('Error loading saved gradient:', error);
+                showToast('Failed to load gradient', 'error');
+            }
+        }
+
+        /**
+         * Delete a saved gradient by index
+         */
+        function deleteSavedGradient(index) {
+            try {
+                const savedGradients = JSON.parse(safeGetStorage('dyeMixerGradients', '[]'));
+
+                if (!savedGradients || !savedGradients[index]) {
+                    showToast('Gradient not found', 'error');
+                    return;
+                }
+
+                const gradientName = savedGradients[index].name;
+
+                // Confirm deletion
+                if (!confirm(`Delete gradient "${gradientName}"?`)) {
+                    return;
+                }
+
+                // Remove from array
+                savedGradients.splice(index, 1);
+                safeSetStorage('dyeMixerGradients', JSON.stringify(savedGradients));
+
+                // Refresh display
+                displaySavedGradients();
+                showToast(`✓ Deleted gradient: "${gradientName}"`, 'success');
+            } catch (error) {
+                console.error('Error deleting saved gradient:', error);
+                showToast('Failed to delete gradient', 'error');
+            }
+        }
+
+        /**
+         * Escape HTML special characters for safety
+         */
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
         }
     </script>
 </body>
