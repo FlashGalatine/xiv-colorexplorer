@@ -173,44 +173,82 @@ Progressive Web App configuration and camera integration for mobile devices.
 
 ---
 
-### PHASE 4.4: Add App Icons
-**Files**: `assets/icons/` (new directory)
+### PHASE 4.4: Add App Icons & Update Metadata
+**Files**: `assets/icons/` ✅ ICONS CREATED | HTML files need metadata updates
 
-#### Changes Required:
-- [ ] Create icon design (or use placeholder):
-  - [ ] 192×192 PNG (for home screen, smaller devices)
-  - [ ] 512×512 PNG (for splash screen, larger devices)
-  - [ ] All PNG files must have transparency (PNG-24)
-  - [ ] Recommended: Use maskable safe area for icon center
+#### Status: Icons Already Created
+**✅ Completed**: Application icons have been created and placed in `assets/icons/`:
+- ✅ `apple-touch-icon.png` (180×180 for iOS)
+- ✅ `icon-192x192.png` (for home screen, smaller devices)
+- ✅ `icon-512x512.png` (for splash screen, larger devices)
 
-- [ ] Icon design considerations:
-  - [ ] Should represent FFXIV theme
-  - [ ] Should work at small sizes (192px)
-  - [ ] Should work at large sizes (512px)
-  - [ ] Maintain contrast for readability
-  - [ ] Consider dark and light backgrounds
+#### Remaining Changes Required:
 
-- [ ] Icon placement:
-  - [ ] `assets/icons/icon-192x192.png`
-  - [ ] `assets/icons/icon-512x512.png`
-  - [ ] Icons referenced in `manifest.json`
+- [ ] **Update all 5 experimental tool files with icon metadata**:
+  - [ ] `coloraccessibility_experimental.html`
+  - [ ] `colorexplorer_experimental.html`
+  - [ ] `colormatcher_experimental.html`
+  - [ ] `dyecomparison_experimental.html`
+  - [ ] `dye-mixer_experimental.html`
 
-- [ ] Generate favicon variants (optional):
-  - [ ] `embed_icon.png` (already exists)
-  - [ ] `apple-touch-icon.png` (180×180)
-
-#### HTML Integration:
-- [ ] Add to all 5 experimental tool files:
+  Add to `<head>` section:
   ```html
   <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="../assets/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icons/icon-512x512.png">
   ```
 
+- [ ] **Update `manifest.json`** to reference the created icons:
+  ```json
+  "icons": [
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+  ```
+
+- [ ] **Update `index.html`** with icon metadata:
+  ```html
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
+  ```
+
+#### Verification Checklist:
+- [ ] All 5 tool files have icon links in `<head>`
+- [ ] `index.html` has icon links
+- [ ] `manifest.json` includes all 4 icon entries (192×192 any + maskable, 512×512 any + maskable)
+- [ ] Icons are relative paths (use `../assets/icons/` for tools, `assets/icons/` for index.html)
+- [ ] No 404 errors when opening DevTools (Network tab for icon requests)
+
 #### Success Criteria:
-- [ ] Icons display on home screen when installed
+- [ ] Icons display on home screen when installed (iOS & Android)
 - [ ] Icons display as splash screen on launch
 - [ ] Icons are crisp and recognizable at all sizes
 - [ ] Icons appear correctly on both iOS and Android
+- [ ] PWA validator shows no icon errors
+- [ ] No broken image references in DevTools console
 
 ---
 
