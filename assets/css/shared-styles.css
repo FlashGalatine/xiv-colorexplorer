@@ -1,5 +1,25 @@
 /* XIV Dye Tools - Shared Styles */
 
+/* ===== MOBILE BREAKPOINT VARIABLES ===== */
+:root {
+    /* Mobile breakpoints for responsive design */
+    --bp-mobile: 375px;      /* Small phones (iPhone SE, etc) */
+    --bp-mobile-lg: 428px;   /* Large phones (iPhone 13/14, etc) */
+    --bp-tablet: 640px;      /* iPad Mini, small tablets */
+    --bp-tablet-lg: 768px;   /* iPad, standard tablets */
+    --bp-desktop: 1024px;    /* Desktop and large tablets */
+    --bp-desktop-lg: 1920px; /* Large desktop screens */
+
+    /* Touch target sizing */
+    --touch-target-min: 44px;       /* Minimum touch target size (iOS/Android standard) */
+    --touch-target-padding: 12px;   /* Minimum padding between touch targets */
+
+    /* Font sizes for mobile */
+    --font-size-mobile-base: 16px;  /* Prevent zoom on input focus */
+    --font-size-mobile-sm: 14px;
+    --font-size-mobile-lg: 18px;
+}
+
 /* ===== THEME COLOR VARIABLES ===== */
 :root {
     /* Standard Light Theme (default) */
@@ -571,4 +591,200 @@ input[type="file"]::file-selector-button:hover {
 body.theme-parchment-dark input[type="file"]::file-selector-button,
 body.theme-sugar-riot-dark input[type="file"]::file-selector-button {
     color: #1f2937 !important;
+}
+
+/* ===== MOBILE UTILITY CLASSES ===== */
+
+/* Touch target sizing utilities */
+.touch-target-min {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+}
+
+.touch-target-safe {
+    padding: var(--touch-target-padding);
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+}
+
+/* Mobile visibility utilities */
+.mobile-hidden {
+    display: none;
+}
+
+.mobile-only {
+    display: block;
+}
+
+.desktop-hidden {
+    display: block;
+}
+
+.desktop-only {
+    display: none;
+}
+
+/* Mobile-specific button sizing */
+.mobile-button {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+    padding: 0.75rem 1rem;
+    font-size: var(--font-size-mobile-base);
+}
+
+/* Mobile-specific input sizing */
+.mobile-input {
+    font-size: var(--font-size-mobile-base); /* Prevent zoom on iOS */
+    min-height: var(--touch-target-min);
+    padding: 0.75rem;
+}
+
+/* Mobile-friendly dropdown */
+.mobile-dropdown {
+    position: relative;
+    max-width: 100%;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+select,
+textarea {
+    font-size: 16px; /* iOS requires 16px minimum to prevent zoom */
+}
+
+/* Touch feedback for interactive elements */
+@media (hover: none) {
+    button:active,
+    input[type="button"]:active,
+    input[type="submit"]:active,
+    .nav-dropdown-item:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
+}
+
+/* Tap highlight color for iOS */
+a, button, input[type="button"], input[type="submit"] {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-sugar-riot-dark a,
+body.theme-sugar-riot-dark button,
+body.theme-sugar-riot-light a,
+body.theme-sugar-riot-light button {
+    -webkit-tap-highlight-color: rgba(236, 72, 153, 0.2);
+}
+
+/* ===== RESPONSIVE BREAKPOINT STYLES ===== */
+
+/* Mobile (375px and up) */
+@media (max-width: 639px) {
+    .mobile-hidden {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block !important;
+    }
+
+    .desktop-hidden {
+        display: block !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    /* Ensure all buttons meet minimum touch target size */
+    button,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"],
+    .button,
+    a.button {
+        min-height: var(--touch-target-min);
+        min-width: var(--touch-target-min);
+        padding: 0.75rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Increase padding in dropdowns for mobile touch */
+    .nav-dropdown-item,
+    .dropdown-item {
+        padding: 1rem;
+        min-height: var(--touch-target-min);
+    }
+
+    /* Optimize font size for mobile */
+    body {
+        font-size: var(--font-size-mobile-base);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2, h3 {
+        font-size: 1.25rem;
+    }
+
+    /* Reduce spacing on mobile */
+    .space-y-4 {
+        row-gap: 1rem;
+    }
+
+    .gap-4 {
+        gap: 1rem;
+    }
+}
+
+/* Tablet (640px to 767px) */
+@media (min-width: 640px) and (max-width: 767px) {
+    .mobile-hidden {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block !important;
+    }
+
+    .desktop-hidden {
+        display: block !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+}
+
+/* Small Desktop and up (768px+) */
+@media (min-width: 768px) {
+    .mobile-hidden {
+        display: inline-block !important;
+    }
+
+    .mobile-only {
+        display: none !important;
+    }
+
+    .desktop-hidden {
+        display: none !important;
+    }
+
+    .desktop-only {
+        display: block !important;
+    }
+}
+
+/* Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+    body {
+        font-size: 1.1rem;
+    }
 }

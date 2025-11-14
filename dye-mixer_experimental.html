@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Dye Mixer - Find Color Transitions | XIV Dye Tools</title>
     <meta name="description" content="Find intermediate dyes for smooth color transitions. Generate bridge colors between any two FFXIV dyes with HSV interpolation. Perfect for decorators and interior designers.">
     <meta name="keywords" content="FFXIV dye mixer, dye transitions, color gradients, bridge colors, dye combinations, interior design, housing, decorating">
@@ -194,7 +199,7 @@
         }
 
         .recommendation-btn {
-            padding: 0.5rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--theme-border);
             background-color: var(--theme-bg-secondary);
             color: var(--theme-text);
@@ -203,6 +208,10 @@
             font-weight: 500;
             transition: all 0.3s ease;
             font-size: 0.875rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .recommendation-btn:hover {
@@ -478,14 +487,19 @@
         }
 
         .saved-gradient-btn {
-            padding: 0.4rem 0.75rem;
+            padding: 0.6rem 1rem;
             border: none;
             border-radius: 0.25rem;
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
         }
 
         .saved-gradient-load {
@@ -504,6 +518,436 @@
 
         .saved-gradient-delete:hover {
             opacity: 0.9;
+        }
+
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            /* Header adjustments */
+            .tool-title {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 0.875rem !important;
+            }
+
+            h1, h2, h3 {
+                font-size: 1rem !important;
+            }
+
+            main {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            /* Dye selector grid: single column on mobile */
+            .dye-selector-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            /* Position indicator */
+            .position-indicator {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            /* Gradient sizing on mobile */
+            .gradient-horizontal {
+                height: 80px;
+                margin: 1rem 0;
+            }
+
+            .gradient-vertical {
+                height: 250px;
+                margin: 1rem 0;
+            }
+
+            .gradient-section {
+                font-size: 0.7rem;
+            }
+
+            /* Recommendation buttons */
+            .recommendation-selector {
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+
+            .recommendation-btn {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.75rem;
+                min-height: 36px;
+                min-width: auto;
+            }
+
+            /* Dye cards grid: single column on mobile */
+            .dye-cards-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+
+            /* Dye card sizing */
+            .dye-swatch {
+                height: 60px;
+            }
+
+            .dye-name {
+                font-size: 0.85rem;
+            }
+
+            .dye-position {
+                font-size: 0.75rem;
+            }
+
+            /* Dye card hover behavior: show details on mobile tap */
+            .dye-card-details {
+                max-height: none;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
+
+            /* Warning boxes */
+            .warning-box {
+                padding: 0.75rem;
+                margin: 0.75rem 0;
+                font-size: 0.875rem;
+            }
+
+            /* Saved gradients list: stack on mobile */
+            .saved-gradient-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+
+            .saved-gradient-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .saved-gradient-btn {
+                width: 100%;
+                padding: 0.5rem !important;
+                font-size: 0.75rem;
+                min-height: 40px;
+            }
+
+            /* Toast notifications on mobile */
+            #toast-container {
+                top: 0.5rem;
+                right: 0.5rem;
+                left: 0.5rem;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: 100%;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            main {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .tool-title {
+                font-size: 2rem !important;
+            }
+
+            h1 span {
+                font-size: 1rem !important;
+            }
+
+            /* Single column but more spacious */
+            .dye-selector-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.625rem !important;
+                font-size: 14px;
+                min-height: 40px;
+            }
+
+            /* Gradient sizing */
+            .gradient-horizontal {
+                height: 90px;
+            }
+
+            .gradient-vertical {
+                height: 300px;
+            }
+
+            /* Dye cards: 2 columns on tablet small */
+            .dye-cards-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Saved gradients: allow inline on tablet */
+            .saved-gradient-item {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .saved-gradient-buttons {
+                width: auto;
+                flex-direction: row;
+            }
+
+            .saved-gradient-btn {
+                width: auto;
+                padding: 0.6rem 1rem !important;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* 768px+ - Tablet Large & Desktop */
+        @media (min-width: 768px) {
+            main {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            .tool-title {
+                font-size: 2.5rem !important;
+            }
+
+            h1 span {
+                font-size: 1.5rem !important;
+            }
+
+            /* Two columns on larger tablets/desktop */
+            .dye-selector-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 2rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.75rem !important;
+                font-size: 1rem;
+                min-height: 44px;
+            }
+
+            /* Gradient: normal sizing */
+            .gradient-horizontal {
+                height: 120px;
+                margin: 2rem 0;
+            }
+
+            .gradient-vertical {
+                height: 400px;
+                margin: 2rem 0;
+            }
+
+            .gradient-section {
+                font-size: 0.875rem;
+            }
+
+            /* Dye cards: 3-4 columns on desktop */
+            .dye-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+                gap: 1.5rem !important;
+            }
+
+            .dye-swatch {
+                height: 100px;
+            }
+
+            /* Dye card hover behavior: only show details on hover */
+            .dye-card-details {
+                max-height: 0;
+                opacity: 0;
+                margin-top: 0;
+                padding-top: 0;
+                border-top: 1px solid transparent;
+            }
+
+            .dye-card:hover .dye-card-details {
+                max-height: 200px;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
+
+            /* Recommendation buttons: larger on desktop */
+            .recommendation-btn {
+                padding: 0.75rem 1.5rem !important;
+                font-size: 0.875rem;
+                min-height: 44px;
+            }
+
+            /* Saved gradients: side-by-side */
+            .saved-gradient-item {
+                flex-direction: row;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+            }
+
+            .saved-gradient-buttons {
+                width: auto;
+                gap: 0.5rem;
+            }
+
+            .saved-gradient-btn {
+                padding: 0.6rem 1rem !important;
+                width: auto;
+                min-width: 60px;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
+        @media (min-width: 1920px) {
+            body {
+                font-size: 16px;
+            }
+
+            main {
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            .tool-title {
+                font-size: 3rem !important;
+            }
+
+            h1 span {
+                font-size: 2rem !important;
+            }
+
+            h1, h2, h3 {
+                font-size: 1.5rem !important;
+            }
+
+            .dye-selector select {
+                padding: 1rem !important;
+                font-size: 1.125rem;
+                min-height: 48px;
+            }
+
+            .recommendation-btn {
+                padding: 1rem 2rem !important;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+
+            .dye-swatch {
+                height: 120px;
+            }
+
+            .dye-name {
+                font-size: 1rem;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+
+            main {
+                width: 100%;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            .tool-title {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.75rem !important;
+            }
+
+            .gradient-horizontal {
+                height: 60px;
+                margin: 0.5rem 0;
+            }
+
+            .gradient-vertical {
+                height: 200px;
+                margin: 0.5rem 0;
+            }
+
+            main {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            /* Tighter spacing on landscape */
+            .dye-selector-grid {
+                gap: 0.75rem !important;
+            }
+
+            .dye-cards-grid {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button,
+            .recommendation-btn,
+            .saved-gradient-btn {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active,
+            .recommendation-btn:active,
+            .saved-gradient-btn:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            select:active {
+                transform: scale(0.98);
+            }
+
+            /* Make dye cards always show details on touch devices */
+            .dye-card {
+                border-color: var(--theme-primary);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+            }
+
+            .dye-card-details {
+                max-height: 200px;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
         }
     </style>
 </head>
@@ -622,10 +1066,10 @@
             <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
                 <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <button id="save-gradient-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex-1" style="background-color: #10b981;">
+                    <button id="save-gradient-btn" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex-1 min-h-[44px]" style="background-color: #10b981;">
                         💾 Save Gradient
                     </button>
-                    <button id="copy-url-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold flex-1" style="background-color: var(--theme-primary);">
+                    <button id="copy-url-btn" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold flex-1 min-h-[44px]" style="background-color: var(--theme-primary);">
                         🔗 Copy Share URL
                     </button>
                 </div>
@@ -635,7 +1079,7 @@
             <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Saved Gradients</h2>
-                    <button id="toggle-saved-gradients" class="text-sm px-2 py-1 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-100" style="color: var(--theme-text-muted); background-color: transparent;" title="Show/hide saved gradients">
+                    <button id="toggle-saved-gradients" class="px-3 py-2 rounded min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-100" style="color: var(--theme-text-muted); background-color: transparent;" title="Show/hide saved gradients">
                         ▼
                     </button>
                 </div>

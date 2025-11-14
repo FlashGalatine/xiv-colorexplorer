@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Color Accessibility Checker - Simulate Colorblindness | XIV Dye Tools</title>
     <meta name="description" content="Check how FFXIV dyes appear to players with colorblindness. Simulate deuteranopia, protanopia, tritanopia, and achromatopsia. Compare dye distinguishability and get accessibility scores for glamour outfits.">
     <meta name="keywords" content="FFXIV colorblindness simulator, dye accessibility, color contrast, colorblind simulation, deuteranopia, protanopia, tritanopia, accessibility checker, XIV dyes, FF14">
@@ -273,7 +278,334 @@
 
 
 
-        /* 1080p Optimization */
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0.5rem 0.5rem !important;
+            }
+
+            /* Header adjustments */
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.625rem !important;
+                padding: 0.25rem 0.5rem !important;
+            }
+
+            h2 {
+                font-size: 1rem !important;
+            }
+
+            h3 {
+                font-size: 0.875rem !important;
+            }
+
+            header p {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+            }
+
+            /* Nav container adjustments */
+            #nav-container {
+                display: block;
+                margin-left: 0 !important;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            /* Grid: single column on mobile */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            /* Left panel: remove sticky on mobile */
+            .lg\\:col-span-1 {
+                position: relative;
+            }
+
+            .sticky {
+                position: relative !important;
+                top: auto !important;
+            }
+
+            /* Card padding */
+            .bg-white.rounded-lg {
+                padding: 1rem !important;
+            }
+
+            /* Dye slots: stack vertically */
+            #dye-slots-container {
+                space-y: 0.5rem;
+            }
+
+            #dye-slots-container > div {
+                margin-bottom: 0.5rem;
+            }
+
+            /* Selects and inputs sizing */
+            select,
+            input[type="text"],
+            input[type="search"] {
+                padding: 0.5rem 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            input[type="range"] {
+                height: 24px;
+            }
+
+            /* Toggle sizing */
+            .toggle-bg {
+                width: 36px !important;
+                height: 22px !important;
+            }
+
+            .toggle-dot {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            /* Buttons */
+            button {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+
+            /* Dye swatch sizing */
+            .dye-swatch {
+                height: 60px;
+                font-size: 0.75rem;
+            }
+
+            /* Palette grid: responsive */
+            .palette-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+
+            .palette-item {
+                padding: 0.5rem 0;
+            }
+
+            .palette-label {
+                font-size: 0.625rem;
+                margin-top: 0.25rem;
+            }
+
+            /* Vision comparison grid */
+            .vision-comparison {
+                gap: 0.75rem !important;
+            }
+
+            .vision-header {
+                padding: 0.75rem;
+            }
+
+            .vision-title {
+                font-size: 0.85rem;
+            }
+
+            .vision-content {
+                padding: 0.75rem;
+            }
+
+            .vision-palette {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)) !important;
+                gap: 0.5rem !important;
+            }
+
+            .vision-swatch {
+                height: 50px;
+            }
+
+            /* Score card */
+            .score-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .score-value {
+                font-size: 2rem;
+            }
+
+            /* Warning cards */
+            .warning-card {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .warning-title {
+                font-size: 0.85rem;
+            }
+
+            /* Contrast table */
+            .contrast-table {
+                font-size: 0.75rem;
+            }
+
+            .contrast-table th,
+            .contrast-table td {
+                padding: 0.5rem;
+            }
+
+            /* Info boxes */
+            .bg-blue-50,
+            .bg-amber-50 {
+                padding: 1rem !important;
+            }
+
+            .bg-blue-50 p,
+            .bg-amber-50 p {
+                font-size: 0.75rem;
+            }
+
+            /* Hide desktop-only elements or adjust spacing */
+            main {
+                margin-top: 0;
+            }
+
+            .flex.gap-3 {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+
+            /* Checkbox spacing */
+            .space-y-2 > * + * {
+                margin-top: 0.5rem;
+            }
+
+            .space-y-4 > * + * {
+                margin-top: 0.75rem;
+            }
+
+            .space-y-6 > * + * {
+                margin-top: 1rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            .container {
+                padding: 0.75rem !important;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 0.75rem !important;
+            }
+
+            h2 {
+                font-size: 1.125rem !important;
+            }
+
+            /* Still single column but more spacious */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Card padding */
+            .bg-white.rounded-lg {
+                padding: 1.25rem !important;
+            }
+
+            /* Palette grid: 2 columns */
+            .palette-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .dye-swatch {
+                height: 70px;
+            }
+
+            /* Vision palette: 3 columns */
+            .vision-palette {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        /* 768px+ - Tablet Large */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+                padding: 1rem !important;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+            }
+
+            /* Two column on larger tablets */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 300px 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            .lg\\:col-span-1 {
+                position: sticky;
+                top: 1rem;
+            }
+
+            /* Palette grid: 3 columns */
+            .palette-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Vision palette: 4 columns */
+            .vision-palette {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+
+        /* 1024px+ - Desktop (original layout) */
+        @media (min-width: 1024px) {
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            .lg\\:col-span-1 {
+                position: sticky;
+                top: 2rem;
+            }
+
+            .lg\\:col-span-2 {
+                grid-column: span 2;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            .palette-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+
+            .vision-palette {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)) !important;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
         @media (min-width: 1920px) {
             body {
                 font-size: 16px;
@@ -305,6 +637,49 @@
             }
             label {
                 font-size: 1rem;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            h1 {
+                font-size: 1.125rem !important;
+            }
+
+            header {
+                margin-bottom: 0.5rem;
+            }
+
+            .container {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .grid.lg\\:grid-cols-3 {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            input[type="range"]:active {
+                transform: scale(1.05);
             }
         }
     </style>
@@ -704,13 +1079,13 @@
                         <select id="dye-slot-${index}-primary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Primary...</option>
                         </select>
-                        <button onclick="clearDyeSlot(${index}, 'primary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                        <button onclick="clearDyeSlot(${index}, 'primary')" class="px-3 py-2 rounded-lg transition clear-button min-h-[44px] min-w-[44px] flex items-center justify-center">✕</button>
                     </div>
                     <div id="dye-secondary-${index}" class="flex gap-2 mb-2 hidden">
                         <select id="dye-slot-${index}-secondary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Secondary...</option>
                         </select>
-                        <button onclick="clearDyeSlot(${index}, 'secondary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                        <button onclick="clearDyeSlot(${index}, 'secondary')" class="px-3 py-2 rounded-lg transition clear-button min-h-[44px] min-w-[44px] flex items-center justify-center">✕</button>
                     </div>
                     <div id="dye-preview-${index}" class="mt-2 hidden">
                         <div class="dye-swatch" id="dye-swatch-${index}"></div>
@@ -1373,7 +1748,7 @@
                                         <p class="font-medium text-gray-900">${dye.name}</p>
                                         <p class="text-xs text-gray-600">${dye.category} • ${dye.acquisition}</p>
                                     </div>
-                                    <button onclick="replaceDye(${slotInfo.slotIndex}, '${dye.itemID}')" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                    <button onclick="replaceDye(${slotInfo.slotIndex}, '${dye.itemID}')" class="px-4 py-2.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition min-h-[44px]">
                                         Use
                                     </button>
                                 </div>

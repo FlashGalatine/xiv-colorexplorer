@@ -419,6 +419,413 @@ class APIThrottler {
 // Available to all tools and pages that load shared-components.js
 const apiThrottler = new APIThrottler(500);
 
+// ===== MOBILE DEVICE DETECTION =====
+/**
+ * Detect if device supports touch events
+ * @returns {boolean} True if device is touch-capable
+ */
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0) ||
+            (navigator.msMaxTouchPoints > 0));
+}
+
+/**
+ * Detect if device is a mobile/small screen
+ * @param {number} breakpoint - Width threshold in pixels (default: 768px)
+ * @returns {boolean} True if viewport width is less than breakpoint
+ */
+function isMobile(breakpoint = 768) {
+    return window.innerWidth < breakpoint;
+}
+
+/**
+ * Detect if device is a tablet (medium screen)
+ * @returns {boolean} True if viewport width is between 768px and 1024px
+ */
+function isTablet() {
+    return window.innerWidth >= 768 && window.innerWidth < 1024;
+}
+
+/**
+ * Get current viewport dimensions
+ * @returns {Object} Object with width and height properties
+ */
+function getViewportSize() {
+    return {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        isMobile: isMobile(),
+        isTablet: isTablet(),
+        isTouchDevice: isTouchDevice()
+    };
+}
+
+/**
+ * Detect device orientation (portrait or landscape)
+ * @returns {string} 'portrait' or 'landscape'
+ */
+function getOrientation() {
+    return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
+}
+
+// ===== PERFORMANCE OPTIMIZATION UTILITIES =====
+/**
+ * Debounce function - delays execution until after specified milliseconds of inactivity
+ * Useful for performance-sensitive handlers (resize, scroll, input)
+ *
+ * @param {Function} func - Function to debounce
+ * @param {number} delay - Delay in milliseconds (default: 300ms)
+ * @returns {Function} Debounced function
+ */
+function debounce(func, delay = 300) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+/**
+ * Throttle function - limits execution to once per specified milliseconds
+ * Useful for high-frequency events (mousemove, touchmove)
+ *
+ * @param {Function} func - Function to throttle
+ * @param {number} limit - Minimum milliseconds between executions (default: 100ms)
+ * @returns {Function} Throttled function
+ */
+function throttle(func, limit = 100) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+        }
+    };
+}
+
+/**
+ * Request animation frame wrapper for smooth animations
+ * Automatically handles browser prefixes and provides fallback
+ *
+ * @param {Function} callback - Function to call on next animation frame
+ * @returns {number} Animation frame ID (can be used with cancelAnimationFrame)
+ */
+function requestFrame(callback) {
+    return window.requestAnimationFrame ||
+           window.webkitRequestAnimationFrame ||
+           window.mozRequestAnimationFrame ||
+           (fn => setTimeout(fn, 16));
+}
+
+// ===== TOUCH GESTURE UTILITIES =====
+/**
+ * Calculate distance between two touch points
+ * Used for pinch-to-zoom detection
+ *
+ * @param {Touch} touch1 - First touch point
+ * @param {Touch} touch2 - Second touch point
+ * @returns {number} Distance between touches in pixels
+ */
+function getTouchDistance(touch1, touch2) {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Calculate midpoint between two touch points
+ * Used for pinch-to-zoom center calculation
+ *
+ * @param {Touch} touch1 - First touch point
+ * @param {Touch} touch2 - Second touch point
+ * @returns {Object} Midpoint with x and y coordinates
+ */
+function getTouchMidpoint(touch1, touch2) {
+    return {
+        x: (touch1.clientX + touch2.clientX) / 2,
+        y: (touch1.clientY + touch2.clientY) / 2
+    };
+}
+
+/**
+ * Touch Gesture Manager Class
+ * Provides unified touch event handling for common gestures
+ * Used across all tools for consistent touch interaction
+ */
+class TouchGestureManager {
+    constructor(element) {
+        this.element = element;
+        this.touchStart = null;
+        this.lastTouchDistance = 0;
+        this.gestureCallbacks = {
+            onTap: null,
+            onDoubleTap: null,
+            onLongPress: null,
+            onSwipe: null,
+            onPinch: null,
+            onPan: null
+        };
+        this.lastTapTime = 0;
+        this.doubleTapTimer = null;
+        this.longPressTimer = null;
+        this.minSwipeDistance = 30;
+        this.minPinchDistance = 50;
+
+        this.init();
+    }
+
+    /**
+     * Initialize touch event listeners
+     */
+    init() {
+        this.element.addEventListener('touchstart', (e) => this.handleTouchStart(e), false);
+        this.element.addEventListener('touchmove', (e) => this.handleTouchMove(e), false);
+        this.element.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
+        this.element.addEventListener('touchcancel', (e) => this.handleTouchCancel(e), false);
+    }
+
+    /**
+     * Register callback for gesture
+     * @param {string} gestureName - 'onTap', 'onDoubleTap', 'onLongPress', 'onSwipe', 'onPinch', 'onPan'
+     * @param {Function} callback - Callback function
+     */
+    on(gestureName, callback) {
+        if (this.gestureCallbacks.hasOwnProperty(gestureName)) {
+            this.gestureCallbacks[gestureName] = callback;
+        }
+    }
+
+    /**
+     * Handle touch start
+     */
+    handleTouchStart(e) {
+        if (e.touches.length === 1) {
+            this.touchStart = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY,
+                time: Date.now()
+            };
+
+            // Setup long-press detection
+            this.longPressTimer = setTimeout(() => {
+                if (this.gestureCallbacks.onLongPress) {
+                    this.gestureCallbacks.onLongPress({
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    });
+                }
+            }, 500);
+        } else if (e.touches.length === 2) {
+            // Two-finger gesture
+            this.lastTouchDistance = getTouchDistance(e.touches[0], e.touches[1]);
+        }
+    }
+
+    /**
+     * Handle touch move
+     */
+    handleTouchMove(e) {
+        if (e.touches.length === 1) {
+            // Clear long-press timer if user moves (it's a pan, not a long-press)
+            if (this.longPressTimer) {
+                clearTimeout(this.longPressTimer);
+            }
+
+            // Pan/drag detection
+            if (this.touchStart && this.gestureCallbacks.onPan) {
+                const dx = e.touches[0].clientX - this.touchStart.x;
+                const dy = e.touches[0].clientY - this.touchStart.y;
+                this.gestureCallbacks.onPan({
+                    dx,
+                    dy,
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                });
+            }
+        } else if (e.touches.length === 2) {
+            // Two-finger pinch detection
+            const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+            const delta = currentDistance - this.lastTouchDistance;
+
+            if (Math.abs(delta) > this.minPinchDistance && this.gestureCallbacks.onPinch) {
+                const midpoint = getTouchMidpoint(e.touches[0], e.touches[1]);
+                this.gestureCallbacks.onPinch({
+                    scale: currentDistance / this.lastTouchDistance,
+                    distance: currentDistance,
+                    previousDistance: this.lastTouchDistance,
+                    centerX: midpoint.x,
+                    centerY: midpoint.y,
+                    isZoomIn: currentDistance > this.lastTouchDistance
+                });
+            }
+
+            this.lastTouchDistance = currentDistance;
+        }
+    }
+
+    /**
+     * Handle touch end
+     */
+    handleTouchEnd(e) {
+        // Clear long-press timer
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+        }
+
+        if (this.touchStart && e.changedTouches.length > 0) {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const dx = endX - this.touchStart.x;
+            const dy = endY - this.touchStart.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const timeDelta = Date.now() - this.touchStart.time;
+
+            // Swipe detection
+            if (distance > this.minSwipeDistance && this.gestureCallbacks.onSwipe) {
+                const angle = Math.atan2(dy, dx);
+                let direction;
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    direction = dx > 0 ? 'right' : 'left';
+                } else {
+                    direction = dy > 0 ? 'down' : 'up';
+                }
+
+                this.gestureCallbacks.onSwipe({
+                    direction,
+                    dx,
+                    dy,
+                    angle,
+                    distance,
+                    velocity: distance / timeDelta
+                });
+            }
+            // Tap detection (short press with minimal movement)
+            else if (distance < 10 && timeDelta < 300) {
+                const now = Date.now();
+                // Check for double-tap
+                if (now - this.lastTapTime < 300) {
+                    if (this.gestureCallbacks.onDoubleTap) {
+                        this.gestureCallbacks.onDoubleTap({
+                            x: endX,
+                            y: endY
+                        });
+                    }
+                } else {
+                    if (this.gestureCallbacks.onTap) {
+                        this.gestureCallbacks.onTap({
+                            x: endX,
+                            y: endY
+                        });
+                    }
+                }
+                this.lastTapTime = now;
+            }
+        }
+
+        this.touchStart = null;
+        this.lastTouchDistance = 0;
+    }
+
+    /**
+     * Handle touch cancel (e.g., interrupted by system)
+     */
+    handleTouchCancel(e) {
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+        }
+        this.touchStart = null;
+    }
+
+    /**
+     * Destroy gesture manager and remove listeners
+     */
+    destroy() {
+        this.element.removeEventListener('touchstart', (e) => this.handleTouchStart(e));
+        this.element.removeEventListener('touchmove', (e) => this.handleTouchMove(e));
+        this.element.removeEventListener('touchend', (e) => this.handleTouchEnd(e));
+        this.element.removeEventListener('touchcancel', (e) => this.handleTouchCancel(e));
+    }
+}
+
+// ===== MOBILE STORAGE UTILITIES =====
+/**
+ * Get mobile-specific storage key with prefix
+ * Helps organize localStorage for mobile-specific settings
+ *
+ * @param {string} key - The base key name
+ * @param {string} prefix - Optional prefix (default: 'mobile_')
+ * @returns {string} Full storage key with prefix
+ */
+function getMobileStorageKey(key, prefix = 'mobile_') {
+    return `${prefix}${key}`;
+}
+
+/**
+ * Get mobile-specific setting from localStorage
+ * @param {string} key - Setting key
+ * @param {*} defaultValue - Default value if not set
+ * @returns {*} Stored value or default
+ */
+function getMobileSetting(key, defaultValue) {
+    return safeGetStorage(getMobileStorageKey(key), defaultValue);
+}
+
+/**
+ * Set mobile-specific setting in localStorage
+ * @param {string} key - Setting key
+ * @param {*} value - Value to store
+ */
+function setMobileSetting(key, value) {
+    safeSetStorage(getMobileStorageKey(key), value);
+}
+
+// ===== HAPTIC FEEDBACK =====
+/**
+ * Trigger haptic feedback on supported devices
+ * Provides tactile feedback for user interactions
+ *
+ * @param {number} duration - Duration in milliseconds (10-100ms recommended)
+ */
+function triggerHaptic(duration = 10) {
+    // Check if device supports Vibration API
+    if ('vibrate' in navigator) {
+        try {
+            navigator.vibrate(duration);
+        } catch (e) {
+            // Silently fail if vibration is not available
+        }
+    }
+}
+
+/**
+ * Success haptic feedback (short pulse)
+ */
+function hapticSuccess() {
+    triggerHaptic(20);
+}
+
+/**
+ * Error haptic feedback (double pulse)
+ */
+function hapticError() {
+    if ('vibrate' in navigator) {
+        try {
+            navigator.vibrate([10, 20, 10]);
+        } catch (e) {
+            // Silently fail
+        }
+    }
+}
+
+/**
+ * Light haptic feedback for general interactions
+ */
+function hapticLight() {
+    triggerHaptic(10);
+}
+
 // ===== MIGRATION FUNCTIONS =====
 /**
  * Migrate legacy dark mode preferences to new unified theme system

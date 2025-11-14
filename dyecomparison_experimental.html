@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Dye Comparison Tool - Compare Up to 4 Dyes | XIV Dye Tools</title>
     <meta name="description" content="Compare up to 4 FFXIV dyes side-by-side with color distance matrix, RGB/HSV values, hue-saturation charts, and market prices. Perfect for finding similar dyes or understanding color differences.">
     <meta name="keywords" content="FFXIV dye comparison, compare dyes, dye colors, FF14 dyes, color distance, hue saturation, RGB values, HSV values, dye analysis">
@@ -48,7 +53,244 @@
         #brightness-canvas {
             background-color: var(--theme-bg-secondary);
         }
-        /* 1080p Optimization */
+
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0.5rem !important;
+            }
+
+            /* Header adjustments */
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.875rem !important;
+            }
+
+            h2 {
+                font-size: 1rem !important;
+            }
+
+            h3 {
+                font-size: 0.875rem !important;
+            }
+
+            header p {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+            }
+
+            /* Nav container */
+            #nav-container {
+                display: block;
+                margin-top: 0.5rem;
+            }
+
+            /* Market board section */
+            .block.text-lg {
+                font-size: 0.875rem !important;
+            }
+
+            select {
+                padding: 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            /* Price controls section */
+            .bg-gray-50.rounded-lg {
+                padding: 1rem !important;
+            }
+
+            .flex.justify-between.items-center {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            /* Toggle sizing */
+            .toggle-bg {
+                width: 36px !important;
+                height: 22px !important;
+            }
+
+            .toggle-dot {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            /* Price checkboxes */
+            .space-y-1\\.5 > * + * {
+                margin-top: 0.375rem;
+            }
+
+            /* Info boxes */
+            .bg-blue-50 {
+                padding: 1rem !important;
+            }
+
+            .bg-blue-50 p {
+                font-size: 0.75rem;
+            }
+
+            /* Comparison grid: 1 column on mobile */
+            #comparison-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+
+            /* Comparison cards */
+            .comparison-card {
+                min-height: auto;
+                padding: 1rem !important;
+            }
+
+            /* Dye swatches smaller on mobile */
+            .dye-swatch {
+                height: 60px;
+            }
+
+            /* Text sizing in cards */
+            .space-y-2.text-sm > * {
+                margin-bottom: 0.5rem;
+            }
+
+            /* Buttons */
+            button {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+
+            /* Canvas containers: reduce initial height on mobile */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 300px;
+            }
+
+            /* Main content */
+            main {
+                margin-top: 0;
+            }
+
+            /* Distance matrix table */
+            table {
+                font-size: 0.75rem;
+            }
+
+            table th,
+            table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            .container {
+                padding: 0.75rem !important;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 1rem !important;
+            }
+
+            h2 {
+                font-size: 1.125rem !important;
+            }
+
+            /* Grid: 2 columns on tablet */
+            #comparison-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+            }
+
+            .comparison-card {
+                min-height: 350px;
+                padding: 1.25rem !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Canvas containers */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 350px;
+            }
+        }
+
+        /* 768px+ - Tablet Large */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+                padding: 1rem !important;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+            }
+
+            /* Grid: 3 columns on larger tablets */
+            #comparison-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1.25rem !important;
+            }
+
+            .comparison-card {
+                min-height: 380px;
+                padding: 1.5rem !important;
+            }
+
+            .dye-swatch {
+                height: 100px;
+            }
+
+            /* Canvas containers */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 400px;
+            }
+        }
+
+        /* 1024px+ - Desktop (original layout) */
+        @media (min-width: 1024px) {
+            #comparison-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+
+            .comparison-card {
+                min-height: 400px;
+                padding: 1.5rem;
+            }
+
+            .dye-swatch {
+                height: 120px;
+            }
+
+            /* Canvas containers: full height on desktop */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 500px;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
         @media (min-width: 1920px) {
             body {
                 font-size: 16px;
@@ -87,6 +329,63 @@
             }
             label {
                 font-size: 1rem;
+            }
+
+            /* Canvas containers: maximize on large desktop */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 600px;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            h1 {
+                font-size: 1.125rem !important;
+            }
+
+            header {
+                margin-bottom: 0.5rem;
+            }
+
+            .container {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            /* Canvas: reduce height on landscape */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 250px;
+            }
+
+            /* Comparison grid: tighter spacing */
+            #comparison-grid {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            select:active,
+            input:active {
+                transform: scale(0.98);
             }
         }
     </style>
@@ -397,19 +696,19 @@
             <div class="bg-white rounded-xl shadow-md p-6 2xl:p-8 text-center">
                 <h2 class="text-xl 2xl:text-2xl font-bold text-gray-900 mb-4">Export Comparison</h2>
                 <div class="flex flex-wrap justify-center gap-3 2xl:gap-4">
-                    <button id="export-json-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium" disabled>
+                    <button id="export-json-btn" class="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium min-h-[44px]" disabled>
                         Export as JSON
                     </button>
-                    <button id="copy-summary-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium" disabled>
+                    <button id="copy-summary-btn" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium min-h-[44px]" disabled>
                         Copy Summary
                     </button>
-                    <button id="export-css-btn" class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium" disabled>
+                    <button id="export-css-btn" class="px-4 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium min-h-[44px]" disabled>
                         Export as CSS
                     </button>
-                    <button id="copy-hex-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium" disabled>
+                    <button id="copy-hex-btn" class="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium min-h-[44px]" disabled>
                         Copy Hex Codes
                     </button>
-                    <button id="clear-all-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium" disabled>
+                    <button id="clear-all-btn" class="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium min-h-[44px]" disabled>
                         Clear All
                     </button>
                 </div>
