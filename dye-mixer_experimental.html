@@ -448,31 +448,11 @@
             </ul>
         </div>
 
-        <!-- Market Board Controls -->
+        <!-- Market Board Controls (Shared Component) -->
         <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
-            <h2 class="text-xl font-semibold mb-4">Market Board Data (Optional)</h2>
-            <div class="grid md:grid-cols-3 gap-4">
-                <div>
-                    <label for="mb-server-select" class="section-header text-sm font-semibold block mb-2">
-                        Server / Data Center
-                    </label>
-                    <select id="mb-server-select" style="width: 100%; padding: 0.75rem; border: 2px solid var(--theme-border); border-radius: 0.5rem; background-color: var(--theme-bg-secondary); color: var(--theme-text);">
-                        <option value="">-- Loading servers --</option>
-                    </select>
-                </div>
-                <div class="flex items-end gap-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="show-prices-toggle" checked style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
-                        <span class="text-sm font-semibold">Show Prices</span>
-                    </label>
-                </div>
-                <div class="flex items-end">
-                    <button id="refresh-prices-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold" style="background-color: var(--theme-primary); width: 100%;">
-                        Refresh Prices
-                    </button>
-                </div>
+            <div id="market-prices-container" class="component-loading">
+                <span>Loading market board...</span>
             </div>
-            <div id="price-status-message" class="text-sm text-gray-600 mt-3" style="color: var(--theme-text-muted);"></div>
         </div>
 
         <!-- Dye selectors -->
@@ -603,41 +583,16 @@
                 // Setup event listeners
                 setupEventListeners();
 
-                // Initialize market board
+                // Load market prices component and initialize market board
+                await loadComponent('components/market-prices.html', 'market-prices-container');
                 await initializeMarketBoard('mb-server-select');
 
                 // Populate dye selectors
                 populateDyeDropdown(document.getElementById('dye1-select'), ffxivDyes);
                 populateDyeDropdown(document.getElementById('dye2-select'), ffxivDyes);
 
-                // Market board event listeners
-                document.getElementById('show-prices-toggle')?.addEventListener('change', (e) => {
-                    const cards = document.querySelectorAll('.dye-price');
-                    cards.forEach(card => {
-                        card.style.display = e.target.checked ? 'block' : 'none';
-                    });
-                    if (e.target.checked && currentDye1 && currentDye2) {
-                        const itemIds = Array.from(document.querySelectorAll('.dye-card')).map(card => {
-                            const priceDiv = card.querySelector('.dye-price');
-                            return priceDiv?.id.replace('price-', '');
-                        }).filter(id => id);
-                        if (itemIds.length > 0) {
-                            fetchMarketPrices(itemIds);
-                        }
-                    }
-                });
-
-                document.getElementById('refresh-prices-btn')?.addEventListener('click', () => {
-                    const itemIds = Array.from(document.querySelectorAll('.dye-card')).map(card => {
-                        const priceDiv = card.querySelector('.dye-price');
-                        return priceDiv?.id.replace('price-', '');
-                    }).filter(id => id);
-                    if (itemIds.length > 0) {
-                        fetchMarketPrices(itemIds);
-                    } else {
-                        showToast('No dyes selected', 'info');
-                    }
-                });
+                // Market board event listeners (after component loads)
+                setupMarketBoardListeners();
 
                 // Save and share gradient buttons
                 document.getElementById('save-gradient-btn')?.addEventListener('click', saveGradient);
@@ -1012,17 +967,12 @@
                                 <span class="number">${hsv.h}°, ${hsv.s}%, ${hsv.v}%</span>
                             </div>
                         </div>
-                        <div id="price-${rec.dye.itemID}" class="dye-price" style="display: ${document.getElementById('show-prices-toggle')?.checked ? 'block' : 'none'}; font-size: 0.8rem; color: var(--theme-text-muted); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--theme-border);">
-                            Loading price...
+                        <div id="price-${rec.dye.itemID}" class="dye-price" style="display: ${document.getElementById('show-mb-prices-toggle')?.checked ? 'block' : 'none'}; font-size: 0.8rem; color: var(--theme-text-muted); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--theme-border);">
+                            Not fetched
                         </div>
                     </div>
                 `;
             }).join('');
-
-            // Fetch prices if toggle is enabled
-            if (document.getElementById('show-prices-toggle')?.checked && deduplicated.length > 0) {
-                fetchMarketPrices(deduplicated.map(rec => rec.dye.itemID));
-            }
         }
 
         /**
@@ -1072,63 +1022,126 @@
         // ============================================
 
         /**
-         * Fetch market prices from Universalis API for dyes
+         * Setup market board event listeners
          */
-        async function fetchMarketPrices(itemIds) {
+        function setupMarketBoardListeners() {
+            const toggleBtn = document.getElementById('show-mb-prices-toggle');
+            const refreshBtn = document.getElementById('mb-refresh-btn');
+            const priceCheckboxes = document.querySelectorAll('.mb-price-checkbox');
+
+            // Toggle show/hide prices
+            if (toggleBtn) {
+                toggleBtn.addEventListener('change', (e) => {
+                    const priceSettings = document.getElementById('mb-price-settings');
+                    const cards = document.querySelectorAll('.dye-price');
+
+                    if (e.target.checked) {
+                        priceSettings.style.display = 'block';
+                        cards.forEach(card => card.style.display = 'block');
+                        // Auto-fetch if we have selections
+                        if (currentDye1 && currentDye2) {
+                            fetchMarketPricesForRecommendations();
+                        }
+                    } else {
+                        priceSettings.style.display = 'none';
+                        cards.forEach(card => card.style.display = 'none');
+                    }
+                });
+            }
+
+            // Refresh prices button
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', fetchMarketPricesForRecommendations);
+            }
+
+            // Price category checkboxes
+            priceCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (currentDye1 && currentDye2) {
+                        fetchMarketPricesForRecommendations();
+                    }
+                });
+            });
+
+            // Enable refresh button once server is selected
             const serverSelect = document.getElementById('mb-server-select');
-            const server = serverSelect.value;
+            if (serverSelect) {
+                serverSelect.addEventListener('change', () => {
+                    if (refreshBtn) {
+                        refreshBtn.disabled = !serverSelect.value;
+                    }
+                });
+            }
+        }
+
+        /**
+         * Fetch market prices for current recommendations
+         */
+        async function fetchMarketPricesForRecommendations() {
+            const serverSelect = document.getElementById('mb-server-select');
+            const server = serverSelect?.value;
+            const statusEl = document.getElementById('mb-price-status');
 
             if (!server) {
                 showToast('Please select a server first', 'info');
                 return;
             }
 
-            const statusEl = document.getElementById('price-status-message');
-            statusEl.textContent = 'Fetching prices...';
-            statusEl.style.color = 'var(--theme-text-muted)';
+            // Get only dyes that should have prices fetched based on filters
+            const itemIdsToFetch = Array.from(document.querySelectorAll('.dye-card')).map(card => {
+                const dyeName = card.querySelector('.dye-name')?.textContent;
+                const dye = ffxivDyes.find(d => d.name === dyeName);
+
+                // Check if dye matches filter criteria
+                if (dye && shouldFetchPrice(dye)) {
+                    const priceDiv = card.querySelector('.dye-price');
+                    return priceDiv?.id.replace('price-', '');
+                }
+                return null;
+            }).filter(id => id && id !== 'undefined');
+
+            if (itemIdsToFetch.length === 0) {
+                if (statusEl) statusEl.textContent = 'No dyes match selected price categories';
+                return;
+            }
+
+            if (statusEl) {
+                statusEl.textContent = 'Fetching prices...';
+                statusEl.style.color = 'var(--theme-text-muted)';
+            }
 
             try {
-                // Parse server value (format: "ServerName" or "DataCenterName")
-                const url = `https://universalis.app/api/v2/aggregated/${server}?items=${itemIds.join(',')}`;
+                const prices = await fetchUniversalisPrice(itemIdsToFetch, server, apiThrottler);
 
-                const response = await apiThrottler.request(url);
-
-                if (response && response.items) {
-                    // Update price display for each dye
-                    Object.entries(response.items).forEach(([itemId, priceData]) => {
-                        const priceDiv = document.getElementById(`price-${itemId}`);
-                        if (priceDiv && priceData && priceData.minPriceNq) {
-                            const priceText = formatPrice(priceData.minPriceNq);
-                            priceDiv.innerHTML = `<strong>Market Price:</strong> <span class="number">${priceText}</span> Gil`;
-                        } else if (priceDiv) {
+                // Update price display for each dye
+                itemIdsToFetch.forEach(itemId => {
+                    const priceDiv = document.getElementById(`price-${itemId}`);
+                    if (priceDiv) {
+                        const price = prices[itemId];
+                        if (price) {
+                            const formattedPrice = price.toLocaleString('en-US');
+                            priceDiv.innerHTML = `<strong>Market:</strong> <span class="number">${formattedPrice}</span> Gil`;
+                        } else {
                             priceDiv.textContent = 'Price unavailable';
                         }
-                    });
+                    }
+                });
 
-                    // Update status message
-                    const timestamp = new Date().toLocaleTimeString();
+                // Update status message
+                const timestamp = new Date().toLocaleTimeString();
+                if (statusEl) {
                     statusEl.textContent = `✓ Prices updated at ${timestamp}`;
                     statusEl.style.color = '#10b981';
-                    showToast('Prices updated successfully', 'success');
-                } else {
-                    statusEl.textContent = 'Failed to fetch prices';
-                    statusEl.style.color = '#ef4444';
-                    showToast('Failed to fetch prices from market board', 'error');
                 }
+                showToast('Prices updated successfully', 'success');
             } catch (error) {
                 console.error('Error fetching prices:', error);
-                statusEl.textContent = 'Error fetching prices: ' + error.message;
-                statusEl.style.color = '#ef4444';
+                if (statusEl) {
+                    statusEl.textContent = 'Error fetching prices: ' + error.message;
+                    statusEl.style.color = '#ef4444';
+                }
                 showToast('Error fetching prices', 'error');
             }
-        }
-
-        /**
-         * Format price with thousands separator
-         */
-        function formatPrice(price) {
-            if (typeof price !== 'number') return '0';
-            return price.toLocaleString('en-US');
         }
 
         // ============================================
