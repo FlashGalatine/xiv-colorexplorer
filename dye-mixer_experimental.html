@@ -505,57 +505,6 @@
         .saved-gradient-delete:hover {
             opacity: 0.9;
         }
-
-        /* ===== ANIMATED GRADIENT HERO BANNER ===== */
-        .hero-banner {
-            background: linear-gradient(-45deg, #781a1a, #66304e, #112944, #312d57);
-            background-size: 400% 400%;
-            padding: 2rem 1rem;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Animate the gradient continuously */
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .hero-banner {
-            animation: gradient 15s ease infinite;
-        }
-
-        /* Respect user's motion preferences */
-        @media (prefers-reduced-motion: reduce) {
-            .hero-banner {
-                animation: none;
-                background: linear-gradient(135deg, #781a1a 0%, #66304e 50%, #112944 100%);
-            }
-        }
-
-        .hero-banner h2 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        .hero-banner p {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            color: rgba(255, 255, 255, 0.95);
-            max-width: 40rem;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
     </style>
 </head>
 <body class="theme-standard-light transition-colors duration-200">
@@ -563,12 +512,6 @@
     <div id="nav-container" class="component-loading">
         <span>Loading navigation...</span>
     </div>
-
-    <!-- Animated Hero Banner -->
-    <section class="hero-banner">
-        <h2>Dye Mixer</h2>
-        <p>Find smooth color transitions between any two FFXIV dyes</p>
-    </section>
 
     <!-- Main content -->
     <main class="container mx-auto px-4 py-8 max-w-5xl">
