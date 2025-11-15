@@ -159,16 +159,16 @@
         overflow-y: auto;
     }
 
-    /* Mobile-optimized dropdown sizing */
+    /* Mobile-optimized dropdown sizing - centered on screen */
     @media (max-width: 639px) {
         .theme-switcher-menu {
             position: fixed;
-            right: 1rem;
-            left: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
             max-height: 70vh;
             min-width: auto;
-            width: auto;
-            max-width: calc(100vw - 2rem);
+            width: 90vw;
+            max-width: 340px;
             top: auto;
             bottom: auto;
         }

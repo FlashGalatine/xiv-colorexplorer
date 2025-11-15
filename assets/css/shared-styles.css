@@ -242,6 +242,21 @@ button:hover, input[type="button"]:hover, input[type="submit"]:hover {
     border-bottom: 1px solid var(--theme-border);
 }
 
+/* Mobile-optimized dropdown positioning - center on screen */
+@media (max-width: 640px) {
+    .nav-dropdown-menu {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        min-width: auto;
+        width: 90vw;
+        max-width: 340px;
+        top: auto;
+        bottom: auto;
+    }
+}
+
 /* ===== TOGGLE SWITCH STYLES ===== */
 .toggle-bg {
     background-color: var(--theme-bg-tertiary);
