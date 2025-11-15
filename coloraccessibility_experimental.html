@@ -1149,7 +1149,7 @@
             }
 
             displayDyePreview(slotIndex);
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -1211,7 +1211,7 @@
             element.value = '';
             slot[dyeType] = null;
             displayDyePreview(slotIndex);
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -1234,7 +1234,7 @@
 
                 if (preview) preview.classList.add('hidden');
             });
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -1297,6 +1297,10 @@
                 document.getElementById('suggestions-section').classList.add('hidden');
             }
         }
+
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateVisualization = debounce(updateVisualization, calculationDebounceTime);
 
         /**
          * Update original palette display
@@ -1777,7 +1781,7 @@
                 document.getElementById(`dye-slot-${slotIndex}-primary`).value = itemId;
                 selectedDyes[slotIndex].primary = dye;
                 displayDyePreview(slotIndex);
-                updateVisualization();
+                debouncedUpdateVisualization();
             }
         }
 
@@ -1803,7 +1807,7 @@
             });
 
             if (itemIds.length > 0) {
-                updateVisualization();
+                debouncedUpdateVisualization();
                 return true;
             }
 
@@ -1928,7 +1932,7 @@
                         if (slider && value) {
                             slider.addEventListener('input', (e) => {
                                 value.innerHTML = `<span class="number">${e.target.value}</span>%`;
-                                updateVisualization();
+                                debouncedUpdateVisualization();
                             });
                         }
                     });
@@ -1961,9 +1965,9 @@
 
                     // Setup checkbox listeners using cached DOM elements
                     [
-                        { element: domCache.showWarnings, handler: updateVisualization },
-                        { element: domCache.showContrast, handler: updateVisualization },
-                        { element: domCache.showSuggestions, handler: updateVisualization }
+                        { element: domCache.showWarnings, handler: debouncedUpdateVisualization },
+                        { element: domCache.showContrast, handler: debouncedUpdateVisualization },
+                        { element: domCache.showSuggestions, handler: debouncedUpdateVisualization }
                     ].forEach(({ element, handler }) => {
                         if (element) {
                             element.addEventListener('change', handler);

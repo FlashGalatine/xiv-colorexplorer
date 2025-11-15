@@ -1598,7 +1598,7 @@
             select.value = index;
             document.getElementById('color-search').value = '';
             document.getElementById('search-results').classList.add('hidden');
-            updateUI();
+            debouncedUpdateUI();
         }
 
         /**
@@ -1755,6 +1755,7 @@
                 };
             });
         }
+
 
         /**
          * Gets display text for acquisition/price (plain text - HTML formatting handled at display level)
@@ -1956,6 +1957,10 @@
             });
         }
 
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateUI = debounce(updateUI, calculationDebounceTime);
+
         /**
          * Copies all hex codes from a specific palette
          */
@@ -2097,7 +2102,7 @@
                     select.value = abyssalBlueIndex;
                 }
 
-                select.addEventListener('change', updateUI);
+                select.addEventListener('change', debouncedUpdateUI);
 
                 const checkbox = document.getElementById('exclude-metallic-checkbox');
                 checkbox.addEventListener('change', () => {
@@ -2122,12 +2127,12 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
                 const facewearCheckbox = document.getElementById('exclude-facewear-checkbox');
-                facewearCheckbox.addEventListener('change', updateUI);
+                facewearCheckbox.addEventListener('change', debouncedUpdateUI);
 
                 const extremesCheckbox = document.getElementById('exclude-extremes-checkbox');
                 extremesCheckbox.addEventListener('change', () => {
@@ -2152,7 +2157,7 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
@@ -2179,13 +2184,13 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
                 // Add event listeners for price category checkboxes
                 document.querySelectorAll('.price-category-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', updateUI);
+                    checkbox.addEventListener('change', debouncedUpdateUI);
                 });
 
                 // Add event listener for market price toggle
@@ -2197,7 +2202,7 @@
                     } else {
                         settingsPanel.style.display = 'none';
                     }
-                    updateUI();
+                    debouncedUpdateUI();
                 });
 
                 const searchInput = document.getElementById('color-search');

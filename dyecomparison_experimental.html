@@ -1075,8 +1075,9 @@
             const chartHeight = height - topPadding - bottomPadding;
 
             // Optimization: Reduce resolution and upscale for faster rendering
-            // This reduces pixel calculations by ~75% while maintaining visual quality
-            const RESOLUTION_REDUCTION = 2; // 2x smaller = 4x fewer pixels
+            // Mobile: 4x reduction (6.25% of pixels) for better performance
+            // Desktop: 2x reduction (25% of pixels) for visual quality
+            const RESOLUTION_REDUCTION = isMobile() ? 4 : 2;
             const reducedWidth = Math.ceil(chartWidth / RESOLUTION_REDUCTION);
             const reducedHeight = Math.ceil(chartHeight / RESOLUTION_REDUCTION);
 
@@ -1309,6 +1310,11 @@
             tableContainer.innerHTML = tableHTML;
         }
 
+        // Debounced calculations for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateColorCharts = debounce(updateColorCharts, calculationDebounceTime);
+        const debouncedUpdateDistanceMatrix = debounce(updateDistanceMatrix, calculationDebounceTime);
+
         /**
          * Handle dye selection
          */
@@ -1324,8 +1330,8 @@
             }
 
             displayDye(index, selectedDyes[index]);
-            updateColorCharts();
-            updateDistanceMatrix();
+            debouncedUpdateColorCharts();
+            debouncedUpdateDistanceMatrix();
             updateExportButtons();
         }
 
@@ -1438,8 +1444,8 @@
                 selectedDyes[i] = null;
                 displayDye(i, null);
             }
-            updateColorCharts();
-            updateDistanceMatrix();
+            debouncedUpdateColorCharts();
+            debouncedUpdateDistanceMatrix();
             updateExportButtons();
         }
 
@@ -1553,7 +1559,7 @@
                         displayDye(index, dye);
                     }
                 });
-                updateDistanceMatrix();
+                debouncedUpdateDistanceMatrix();
 
                 statusDiv.textContent = `Updated ${uniqueIds.length} prices at ${cmpLastPriceUpdate.toLocaleTimeString()}`;
 

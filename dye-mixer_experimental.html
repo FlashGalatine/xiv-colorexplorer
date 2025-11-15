@@ -1218,12 +1218,12 @@
             // Dye selector changes
             document.getElementById('dye1-select').addEventListener('change', (e) => {
                 currentDye1 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
             });
 
             document.getElementById('dye2-select').addEventListener('change', (e) => {
                 currentDye2 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
             });
 
             // Recommendation count buttons
@@ -1232,7 +1232,7 @@
                     document.querySelectorAll('.recommendation-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentRecommendationCount = parseInt(btn.dataset.count);
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                 });
             });
 
@@ -1249,7 +1249,7 @@
                     safeSetStorage('xivdyetools_dyemixer_filters', JSON.stringify(filters));
 
                     // Re-generate recommendations with new filters
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                 });
             });
 
@@ -1300,6 +1300,10 @@
             updateGradientVisualization();
             generateAndDisplayRecommendations();
         }
+
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedValidateAndUpdate = debounce(validateAndUpdate, calculationDebounceTime);
 
         // ============================================
         // SECTION: COLOR INTERPOLATION
@@ -1919,7 +1923,7 @@
                     safeSetStorage('xivdyetools_dyemixer_filters', JSON.stringify(filters));
 
                     // Trigger update
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                     showToast(`✓ Loaded gradient: ${dye1.name} → ${dye2.name}`, 'success');
                 }
             }
@@ -2025,7 +2029,7 @@
                 });
 
                 // Validate and update display
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
                 showToast(`✓ Loaded gradient: "${gradient.name}"`, 'success');
             } catch (error) {
                 console.error('Error loading saved gradient:', error);
