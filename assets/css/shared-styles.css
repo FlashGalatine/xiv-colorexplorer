@@ -305,7 +305,7 @@ body {
 }
 
 h1 {
-    font-family: "Cinzel", serif;
+    font-family: "Cinzel Decorative", serif;
     font-weight: 600;
 }
 
@@ -368,7 +368,7 @@ footer .text-xs {
 
 /* Background colors */
 .bg-white {
-    background-color: var(--theme-bg) !important;
+    background-color: var(--theme-card-bg) !important;
 }
 
 .bg-gray-50 {

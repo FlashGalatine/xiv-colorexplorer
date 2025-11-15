@@ -8,19 +8,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>FFXIV Dye Mixer - Find Color Transitions | XIV Dye Tools</title>
+    <title>XIV Dye Mixer - Find Color Transitions | XIV Dye Tools</title>
     <meta name="description" content="Find intermediate dyes for smooth color transitions. Generate bridge colors between any two FFXIV dyes with HSV interpolation. Perfect for decorators and interior designers.">
     <meta name="keywords" content="FFXIV dye mixer, dye transitions, color gradients, bridge colors, dye combinations, interior design, housing, decorating">
     <!-- Open Graph / Discord embeds -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://xivdyetools.projectgalatine.com/dye-mixer_experimental.html">
-    <meta property="og:title" content="FFXIV Dye Mixer - Find Color Transitions (Experimental)">
+    <meta property="og:title" content="XIV Dye Mixer - Find Color Transitions (Experimental)">
     <meta property="og:description" content="Find intermediate dyes for smooth color transitions between any two FFXIV dyes. Experimental version.">
     <meta property="og:image" content="https://xivdyetools.projectgalatine.com/embed_icon.png">
     <!-- Twitter / X embeds -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://xivdyetools.projectgalatine.com/dye-mixer_experimental.html">
-    <meta property="twitter:title" content="FFXIV Dye Mixer - Find Color Transitions (Experimental)">
+    <meta property="twitter:title" content="XIV Dye Mixer - Find Color Transitions (Experimental)">
     <meta property="twitter:description" content="Find intermediate dyes for smooth color transitions. Try the latest experimental features.">
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
@@ -56,7 +56,7 @@
         }
 
         h1 {
-            font-family: "Cinzel", serif;
+            font-family: "Cinzel Decorative", serif;
             font-weight: 600;
         }
 
@@ -1039,18 +1039,20 @@
         <!-- Page title with navigation -->
         <div class="flex justify-between items-center gap-4 mb-8 flex-wrap">
             <div class="flex-1 text-center">
-                <h1 class="tool-title text-4xl font-bold mb-3">Dye Mixer <span class="text-2xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                <div class="flex justify-center items-center gap-3 mb-3">
+                    <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                    <h1 class="tool-title text-4xl font-bold">XIV Dye Mixer <span class="text-2xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                </div>
                 <p class="text-lg text-gray-600" style="color: var(--theme-text-muted);">
                     Find smooth color transitions between two dyes with interpolated intermediate colors
                 </p>
             </div>
-            <!-- Help Button & Navigation -->
+            <!-- Navigation -->
             <div class="flex items-center gap-3 flex-shrink-0">
-                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </button>
                 <div id="nav-container" class="component-loading">
                     <span>Loading navigation...</span>
                 </div>
@@ -1058,7 +1060,7 @@
         </div>
 
         <!-- Instructions -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+        <div class="bg-white rounded-lg p-6 mb-8">
             <h2 class="text-xl font-semibold mb-3">How it works</h2>
             <ul class="list-disc list-inside space-y-2 text-gray-700" style="color: var(--theme-text-muted);">
                 <li>Select your starting dye (0%) and ending dye (100%)</li>
@@ -1069,14 +1071,14 @@
         </div>
 
         <!-- Market Board Controls (Shared Component) -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+        <div class="bg-white rounded-lg p-6 mb-8">
             <div id="market-prices-container" class="component-loading">
                 <span>Loading market board...</span>
             </div>
         </div>
 
         <!-- Dye selectors -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+        <div class="bg-white rounded-lg p-6 mb-8">
             <h2 class="text-xl font-semibold mb-6">Select Starting & Ending Dyes</h2>
             <div class="dye-selector-grid">
                 <div class="dye-selector">
@@ -1102,7 +1104,7 @@
         </div>
 
         <!-- Gradient visualization -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg); position: relative;">
+        <div class="bg-white rounded-lg p-6 mb-8" style="position: relative;">
             <h2 class="text-xl font-semibold mb-4">Color Transition Gradient (Hover for color values)</h2>
             <div id="gradient-container" class="gradient-container gradient-horizontal" style="position: relative; cursor: crosshair;">
                 <div style="flex: 1; background-color: #cccccc;"></div>
@@ -1115,7 +1117,7 @@
         </div>
 
         <!-- Recommendation & Filter Options -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+        <div class="bg-white rounded-lg p-6 mb-8">
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Number of Intermediate Dyes -->
                 <div>
@@ -1189,7 +1191,7 @@
         </div>
 
         <!-- Dye recommendations -->
-        <div class="bg-white rounded-lg p-6 mb-8" style="background-color: var(--theme-card-bg);">
+        <div class="bg-white rounded-lg p-6 mb-8">
             <h2 class="text-xl font-semibold mb-6">Recommended Color Progression</h2>
             <div id="dye-cards-container" class="dye-cards-grid">
                 <!-- Dye cards will be generated here -->

@@ -101,6 +101,10 @@ Issues Found:
 - Run Lighthouse
 - Record results
 
+**REMARKS:**
+
+* All results have been exported to the feedback/ folder as HTML files.
+
 ---
 
 ## SESSION 2: RESPONSIVE DESIGN TESTING (45-60 minutes)
