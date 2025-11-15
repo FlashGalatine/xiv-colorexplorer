@@ -1,9 +1,3 @@
-<!-- EXPERIMENTAL VERSION BANNER -->
-<div class="experimental-banner">
-    <span class="experimental-badge">🧪 EXPERIMENTAL BUILD</span>
-    <span class="experimental-text">Testing phase - features may be unstable</span>
-</div>
-
 <div class="nav-controls">
     <div class="nav-dropdown inline-block">
         <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
@@ -103,7 +97,7 @@
 </div>
 
 <style>
-    /* Experimental banner styles */
+    /* Experimental banner styles - full width at top of page */
     .experimental-banner {
         display: flex;
         align-items: center;
@@ -118,6 +112,9 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         position: relative;
         z-index: 99;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
     }
 
     .experimental-badge {
@@ -297,3 +294,19 @@
         flex-shrink: 0;
     }
 </style>
+
+<!-- Script to inject experimental banner at page top -->
+<script>
+    // Create and inject experimental banner as first element in body
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!document.querySelector('.experimental-banner')) {
+            const banner = document.createElement('div');
+            banner.className = 'experimental-banner';
+            banner.innerHTML = `
+                <span class="experimental-badge">🧪 EXPERIMENTAL BUILD</span>
+                <span class="experimental-text">Testing phase - features may be unstable</span>
+            `;
+            document.body.insertBefore(banner, document.body.firstChild);
+        }
+    });
+</script>
