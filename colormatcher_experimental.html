@@ -25,6 +25,11 @@
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
+    <!-- PWA Metadata -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -834,7 +839,10 @@
             <div class="mb-4">
                 <label for="imageLoader" class="sr-only">Choose a file</label>
                 <input type="file" name="imageLoader" id="imageLoader" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 cursor-pointer"/>
+                <!-- Hidden camera input for mobile camera capture -->
+                <input type="file" name="cameraCapture" id="cameraCapture" accept="image/*" capture="environment" style="display: none;"/>
                 <p class="text-xs text-gray-500 mt-1">Drag & drop • Click to browse • Paste (Ctrl+V)</p>
+                <button id="cameraBtn" class="mt-2 w-full px-3 py-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded font-semibold text-sm transition min-h-[44px]" title="Capture photo from camera">📷 Take Photo</button>
             </div>
 
             <!-- Sample Size Control -->
@@ -1500,6 +1508,20 @@
         function setupEventListeners() {
             colorPicker.addEventListener('input', findClosestMatch);
             imageLoader.addEventListener('change', (e) => processImageFile(e.target.files[0]));
+
+            // Camera capture support (mobile)
+            const cameraBtn = document.getElementById('cameraBtn');
+            const cameraCapture = document.getElementById('cameraCapture');
+            if (cameraBtn && cameraCapture) {
+                cameraBtn.addEventListener('click', () => {
+                    cameraCapture.click();
+                });
+                cameraCapture.addEventListener('change', (e) => {
+                    processImageFile(e.target.files[0]);
+                    hapticSuccess();
+                });
+            }
+
             excludeMetallicCheckbox.addEventListener('change', findClosestMatch);
             excludeExtremesCheckbox.addEventListener('change', findClosestMatch);
 
@@ -1899,6 +1921,17 @@
                 });
         });
 
+    </script>
+
+    <!-- Service Worker Registration for PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((error) => console.log('Service Worker registration failed:', error));
+            });
+        }
     </script>
 
 </body>
