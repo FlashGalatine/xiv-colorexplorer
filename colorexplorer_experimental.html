@@ -50,12 +50,7 @@
     <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
     <script src="assets/js/shared-components.js"></script>
     <!-- Override initComponents for experimental navigation -->
-    <script>
-        function initComponents() {
-            loadComponent('components/nav-experimental.html', 'nav-container');
-            loadComponent('components/footer.html', 'footer-container');
-        }
-    </script>
+    <script>function initComponents(){loadComponent('components/nav-experimental.html','nav-container');loadComponent('components/footer.html','footer-container')}</script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -2043,21 +2038,9 @@
 
     <!-- Mobile Bottom Navigation Component -->
     <div id="mobile-nav-container" class="component-loading"></div>
-    <script>
-        fetch('components/mobile-bottom-nav.html').then(r => r.text()).then(html => {
-            document.getElementById('mobile-nav-container').innerHTML = html;
-        });
-    </script>
+    <script>fetch('components/mobile-bottom-nav.html').then(r=>r.text()).then(html=>{document.getElementById('mobile-nav-container').innerHTML=html});</script>
 
     <!-- Service Worker Registration for PWA Support -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(() => console.log('Service Worker registered'))
-                    .catch((error) => console.log('Service Worker registration failed:', error));
-            });
-        }
-    </script>
+    <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/service-worker.js').then(()=>console.log('Service Worker registered')).catch((error)=>console.log('Service Worker registration failed:',error))})}</script>
 </body>
 </html>
