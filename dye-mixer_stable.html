@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Dye Mixer - Find Color Transitions | XIV Dye Tools</title>
     <meta name="description" content="Find intermediate dyes for smooth color transitions. Generate bridge colors between any two FFXIV dyes with HSV interpolation. Perfect for decorators and interior designers.">
     <meta name="keywords" content="FFXIV dye mixer, dye transitions, color gradients, bridge colors, dye combinations, interior design, housing, decorating">
@@ -20,10 +25,22 @@
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
+    <!-- PWA Metadata -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
     <script src="assets/js/shared-components.js"></script>
+    <!-- Override initComponents for experimental navigation -->
+    <script>
+        function initComponents() {
+            loadComponent('components/nav-experimental.html', 'nav-container');
+            loadComponent('components/footer.html', 'footer-container');
+        }
+    </script>
     <style>
         /* Tool-specific styles for Dye Mixer */
 
@@ -194,7 +211,7 @@
         }
 
         .recommendation-btn {
-            padding: 0.5rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: 2px solid var(--theme-border);
             background-color: var(--theme-bg-secondary);
             color: var(--theme-text);
@@ -203,6 +220,10 @@
             font-weight: 500;
             transition: all 0.3s ease;
             font-size: 0.875rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .recommendation-btn:hover {
@@ -478,14 +499,19 @@
         }
 
         .saved-gradient-btn {
-            padding: 0.4rem 0.75rem;
+            padding: 0.6rem 1rem;
             border: none;
             border-radius: 0.25rem;
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
         }
 
         .saved-gradient-load {
@@ -505,22 +531,530 @@
         .saved-gradient-delete:hover {
             opacity: 0.9;
         }
+
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            /* Header adjustments */
+            .tool-title {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 0.875rem !important;
+            }
+
+            h1, h2, h3 {
+                font-size: 1rem !important;
+            }
+
+            main {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            /* Dye selector grid: single column on mobile */
+            .dye-selector-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            /* Position indicator */
+            .position-indicator {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            /* Gradient sizing on mobile */
+            .gradient-horizontal {
+                height: 80px;
+                margin: 1rem 0;
+            }
+
+            .gradient-vertical {
+                height: 250px;
+                margin: 1rem 0;
+            }
+
+            .gradient-section {
+                font-size: 0.7rem;
+            }
+
+            /* Recommendation buttons */
+            .recommendation-selector {
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+
+            .recommendation-btn {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.75rem;
+                min-height: 36px;
+                min-width: auto;
+            }
+
+            /* Dye cards grid: single column on mobile */
+            .dye-cards-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+
+            /* Dye card sizing */
+            .dye-swatch {
+                height: 60px;
+            }
+
+            .dye-name {
+                font-size: 0.85rem;
+            }
+
+            .dye-position {
+                font-size: 0.75rem;
+            }
+
+            /* Dye card hover behavior: show details on mobile tap */
+            .dye-card-details {
+                max-height: none;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
+
+            /* Warning boxes */
+            .warning-box {
+                padding: 0.75rem;
+                margin: 0.75rem 0;
+                font-size: 0.875rem;
+            }
+
+            /* Saved gradients list: stack on mobile */
+            .saved-gradient-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+
+            .saved-gradient-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .saved-gradient-btn {
+                width: 100%;
+                padding: 0.5rem !important;
+                font-size: 0.75rem;
+                min-height: 40px;
+            }
+
+            /* Toast notifications on mobile */
+            #toast-container {
+                top: 0.5rem;
+                right: 0.5rem;
+                left: 0.5rem;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: 100%;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            main {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            .tool-title {
+                font-size: 2rem !important;
+            }
+
+            h1 span {
+                font-size: 1rem !important;
+            }
+
+            /* Single column but more spacious */
+            .dye-selector-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.625rem !important;
+                font-size: 14px;
+                min-height: 40px;
+            }
+
+            /* Gradient sizing */
+            .gradient-horizontal {
+                height: 90px;
+            }
+
+            .gradient-vertical {
+                height: 300px;
+            }
+
+            /* Dye cards: 2 columns on tablet small */
+            .dye-cards-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Saved gradients: allow inline on tablet */
+            .saved-gradient-item {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .saved-gradient-buttons {
+                width: auto;
+                flex-direction: row;
+            }
+
+            .saved-gradient-btn {
+                width: auto;
+                padding: 0.6rem 1rem !important;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* 768px+ - Tablet Large & Desktop */
+        @media (min-width: 768px) {
+            main {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            .tool-title {
+                font-size: 2.5rem !important;
+            }
+
+            h1 span {
+                font-size: 1.5rem !important;
+            }
+
+            /* Two columns on larger tablets/desktop */
+            .dye-selector-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 2rem !important;
+            }
+
+            .dye-selector select {
+                padding: 0.75rem !important;
+                font-size: 1rem;
+                min-height: 44px;
+            }
+
+            /* Gradient: normal sizing */
+            .gradient-horizontal {
+                height: 120px;
+                margin: 2rem 0;
+            }
+
+            .gradient-vertical {
+                height: 400px;
+                margin: 2rem 0;
+            }
+
+            .gradient-section {
+                font-size: 0.875rem;
+            }
+
+            /* Dye cards: 3-4 columns on desktop */
+            .dye-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+                gap: 1.5rem !important;
+            }
+
+            .dye-swatch {
+                height: 100px;
+            }
+
+            /* Dye card hover behavior: only show details on hover */
+            .dye-card-details {
+                max-height: 0;
+                opacity: 0;
+                margin-top: 0;
+                padding-top: 0;
+                border-top: 1px solid transparent;
+            }
+
+            .dye-card:hover .dye-card-details {
+                max-height: 200px;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
+
+            /* Recommendation buttons: larger on desktop */
+            .recommendation-btn {
+                padding: 0.75rem 1.5rem !important;
+                font-size: 0.875rem;
+                min-height: 44px;
+            }
+
+            /* Saved gradients: side-by-side */
+            .saved-gradient-item {
+                flex-direction: row;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+            }
+
+            .saved-gradient-buttons {
+                width: auto;
+                gap: 0.5rem;
+            }
+
+            .saved-gradient-btn {
+                padding: 0.6rem 1rem !important;
+                width: auto;
+                min-width: 60px;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
+        @media (min-width: 1920px) {
+            body {
+                font-size: 16px;
+            }
+
+            main {
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            .tool-title {
+                font-size: 3rem !important;
+            }
+
+            h1 span {
+                font-size: 2rem !important;
+            }
+
+            h1, h2, h3 {
+                font-size: 1.5rem !important;
+            }
+
+            .dye-selector select {
+                padding: 1rem !important;
+                font-size: 1.125rem;
+                min-height: 48px;
+            }
+
+            .recommendation-btn {
+                padding: 1rem 2rem !important;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+
+            .dye-swatch {
+                height: 120px;
+            }
+
+            .dye-name {
+                font-size: 1rem;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+
+            main {
+                width: 100%;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            .tool-title {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.75rem !important;
+            }
+
+            .gradient-horizontal {
+                height: 60px;
+                margin: 0.5rem 0;
+            }
+
+            .gradient-vertical {
+                height: 200px;
+                margin: 0.5rem 0;
+            }
+
+            main {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            /* Tighter spacing on landscape */
+            .dye-selector-grid {
+                gap: 0.75rem !important;
+            }
+
+            .dye-cards-grid {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button,
+            .recommendation-btn,
+            .saved-gradient-btn {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active,
+            .recommendation-btn:active,
+            .saved-gradient-btn:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            select:active {
+                transform: scale(0.98);
+            }
+
+            /* Make dye cards always show details on touch devices */
+            .dye-card {
+                border-color: var(--theme-primary);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+            }
+
+            .dye-card-details {
+                max-height: 200px;
+                opacity: 1;
+                margin-top: 0.5rem;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--theme-border);
+            }
+        }
+
+        /* Mobile-responsive header layout */
+        @media (max-width: 768px) {
+            .flex.justify-between.items-center {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .flex.justify-between.items-center > div {
+                width: 100%;
+            }
+
+            .flex.justify-between.items-center .flex-shrink-0 {
+                margin-top: 1rem;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="theme-standard-light transition-colors duration-200">
-    <!-- Navigation -->
-    <div id="nav-container" class="component-loading">
-        <span>Loading navigation...</span>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Guide</h2>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Find smooth color transitions between two dyes. Select start and end dyes to see intermediate color recommendations.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">🌈</span>
+                <p><strong>Mobile Tip:</strong> Scroll through the gradient preview to see all color transitions!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Find intermediate dyes for smooth gradients</li>
+                    <li>Choose 3, 4, 7, or 9 intermediate steps</li>
+                    <li>Deviance scoring shows color accuracy</li>
+                    <li>Visual gradient preview with all dyes</li>
+                    <li>Market prices for budget planning</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">🎯</span>
+                <p><strong>Pro Tip:</strong> Lower deviance (0-5) means better match to the theoretical gradient position</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>More intermediate steps create smoother gradients</li>
+                    <li>Deviance shows how well each dye matches its ideal color</li>
+                    <li>Use for ombre effects or color fade designs</li>
+                    <li>Combine with accessibility checker for colorblind-friendly gradients</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Main content -->
     <main class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Page title -->
-        <div class="text-center mb-8">
-            <h1 class="tool-title text-4xl font-bold mb-3">Dye Mixer <span class="text-2xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">2</span></span></h1>
-            <p class="text-lg text-gray-600" style="color: var(--theme-text-muted);">
-                Find smooth color transitions between two dyes with interpolated intermediate colors
-            </p>
+        <!-- Page title with navigation -->
+        <div class="flex justify-between items-center gap-4 mb-8 flex-wrap">
+            <div class="flex-1 text-center">
+                <h1 class="tool-title text-4xl font-bold mb-3">Dye Mixer <span class="text-2xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                <p class="text-lg text-gray-600" style="color: var(--theme-text-muted);">
+                    Find smooth color transitions between two dyes with interpolated intermediate colors
+                </p>
+            </div>
+            <!-- Help Button & Navigation -->
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+                <div id="nav-container" class="component-loading">
+                    <span>Loading navigation...</span>
+                </div>
+            </div>
         </div>
 
         <!-- Instructions -->
@@ -622,10 +1156,10 @@
             <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
                 <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <button id="save-gradient-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex-1" style="background-color: #10b981;">
+                    <button id="save-gradient-btn" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex-1 min-h-[44px]" style="background-color: #10b981;">
                         💾 Save Gradient
                     </button>
-                    <button id="copy-url-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold flex-1" style="background-color: var(--theme-primary);">
+                    <button id="copy-url-btn" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold flex-1 min-h-[44px]" style="background-color: var(--theme-primary);">
                         🔗 Copy Share URL
                     </button>
                 </div>
@@ -635,7 +1169,7 @@
             <div class="mt-6 pt-6 border-t" style="border-top-color: var(--theme-border);">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Saved Gradients</h2>
-                    <button id="toggle-saved-gradients" class="text-sm px-2 py-1 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-100" style="color: var(--theme-text-muted); background-color: transparent;" title="Show/hide saved gradients">
+                    <button id="toggle-saved-gradients" class="px-3 py-2 rounded min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-100" style="color: var(--theme-text-muted); background-color: transparent;" title="Show/hide saved gradients">
                         ▼
                     </button>
                 </div>
@@ -734,6 +1268,19 @@
                     updateGradientVisualization();
                 });
 
+                // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+                // Initialize mobile keyboard helpers
+                if (isMobileDevice && typeof isMobileDevice === 'function') {
+                    // Prevent accidental zoom on input focus
+                    const inputs = document.querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        input.addEventListener('focus', function() {
+                            // Ensure font size is at least 16px to prevent iOS zoom
+                            this.style.fontSize = '16px';
+                        });
+                    });
+                }
+
             } catch (error) {
                 console.error('Failed to initialize Dye Mixer:', error);
                 showToast('Failed to load dye data', 'error');
@@ -769,12 +1316,12 @@
             // Dye selector changes
             document.getElementById('dye1-select').addEventListener('change', (e) => {
                 currentDye1 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
             });
 
             document.getElementById('dye2-select').addEventListener('change', (e) => {
                 currentDye2 = ffxivDyes.find(d => d.itemID === parseInt(e.target.value));
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
             });
 
             // Recommendation count buttons
@@ -783,7 +1330,7 @@
                     document.querySelectorAll('.recommendation-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentRecommendationCount = parseInt(btn.dataset.count);
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                 });
             });
 
@@ -800,7 +1347,7 @@
                     safeSetStorage('xivdyetools_dyemixer_filters', JSON.stringify(filters));
 
                     // Re-generate recommendations with new filters
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                 });
             });
 
@@ -851,6 +1398,10 @@
             updateGradientVisualization();
             generateAndDisplayRecommendations();
         }
+
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedValidateAndUpdate = debounce(validateAndUpdate, calculationDebounceTime);
 
         // ============================================
         // SECTION: COLOR INTERPOLATION
@@ -1470,7 +2021,7 @@
                     safeSetStorage('xivdyetools_dyemixer_filters', JSON.stringify(filters));
 
                     // Trigger update
-                    validateAndUpdate();
+                    debouncedValidateAndUpdate();
                     showToast(`✓ Loaded gradient: ${dye1.name} → ${dye2.name}`, 'success');
                 }
             }
@@ -1576,7 +2127,7 @@
                 });
 
                 // Validate and update display
-                validateAndUpdate();
+                debouncedValidateAndUpdate();
                 showToast(`✓ Loaded gradient: "${gradient.name}"`, 'success');
             } catch (error) {
                 console.error('Error loading saved gradient:', error);
@@ -1628,6 +2179,52 @@
                 "'": '&#039;'
             };
             return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // --- Help Modal Functions ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside of content
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpModal = document.getElementById('help-modal');
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    closeHelpModal();
+                }
+            });
+
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    closeHelpModal();
+                }
+            });
+        });
+    </script>
+
+    <!-- Mobile Bottom Navigation Component -->
+    <div id="mobile-nav-container" class="component-loading"></div>
+    <script>
+        fetch('components/mobile-bottom-nav.html').then(r => r.text()).then(html => {
+            document.getElementById('mobile-nav-container').innerHTML = html;
+        });
+    </script>
+
+    <!-- Service Worker Registration for PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((error) => console.log('Service Worker registration failed:', error));
+            });
         }
     </script>
 </body>

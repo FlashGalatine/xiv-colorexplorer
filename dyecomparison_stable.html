@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Dye Comparison Tool - Compare Up to 4 Dyes | XIV Dye Tools</title>
     <meta name="description" content="Compare up to 4 FFXIV dyes side-by-side with color distance matrix, RGB/HSV values, hue-saturation charts, and market prices. Perfect for finding similar dyes or understanding color differences.">
     <meta name="keywords" content="FFXIV dye comparison, compare dyes, dye colors, FF14 dyes, color distance, hue saturation, RGB values, HSV values, dye analysis">
@@ -20,6 +25,11 @@
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
+    <!-- PWA Metadata -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,16 +49,256 @@
         #hue-sat-container {
             background-color: var(--theme-bg-secondary);
             border-color: var(--theme-border);
+            overflow: auto;
         }
         #brightness-container {
             background-color: var(--theme-bg-secondary);
             border-color: var(--theme-border);
+            overflow: auto;
         }
         #hue-sat-canvas,
         #brightness-canvas {
             background-color: var(--theme-bg-secondary);
+            transition: transform 0.15s ease-out;
         }
-        /* 1080p Optimization */
+
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0.5rem !important;
+            }
+
+            /* Header adjustments */
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.875rem !important;
+            }
+
+            h2 {
+                font-size: 1rem !important;
+            }
+
+            h3 {
+                font-size: 0.875rem !important;
+            }
+
+            header p {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+            }
+
+            /* Nav container */
+            #nav-container {
+                display: block;
+                margin-top: 0.5rem;
+            }
+
+            /* Market board section */
+            .block.text-lg {
+                font-size: 0.875rem !important;
+            }
+
+            select {
+                padding: 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            /* Price controls section */
+            .bg-gray-50.rounded-lg {
+                padding: 1rem !important;
+            }
+
+            .flex.justify-between.items-center {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            /* Toggle sizing */
+            .toggle-bg {
+                width: 36px !important;
+                height: 22px !important;
+            }
+
+            .toggle-dot {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            /* Price checkboxes */
+            .space-y-1\\.5 > * + * {
+                margin-top: 0.375rem;
+            }
+
+            /* Info boxes */
+            .bg-blue-50 {
+                padding: 1rem !important;
+            }
+
+            .bg-blue-50 p {
+                font-size: 0.75rem;
+            }
+
+            /* Comparison grid: 1 column on mobile */
+            #comparison-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+
+            /* Comparison cards */
+            .comparison-card {
+                min-height: auto;
+                padding: 1rem !important;
+            }
+
+            /* Dye swatches smaller on mobile */
+            .dye-swatch {
+                height: 60px;
+            }
+
+            /* Text sizing in cards */
+            .space-y-2.text-sm > * {
+                margin-bottom: 0.5rem;
+            }
+
+            /* Buttons */
+            button {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+
+            /* Canvas containers: reduce initial height on mobile */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 300px;
+            }
+
+            /* Main content */
+            main {
+                margin-top: 0;
+            }
+
+            /* Distance matrix table */
+            table {
+                font-size: 0.75rem;
+            }
+
+            table th,
+            table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            .container {
+                padding: 0.75rem !important;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 1rem !important;
+            }
+
+            h2 {
+                font-size: 1.125rem !important;
+            }
+
+            /* Grid: 2 columns on tablet */
+            #comparison-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+            }
+
+            .comparison-card {
+                min-height: 350px;
+                padding: 1.25rem !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Canvas containers */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 350px;
+            }
+        }
+
+        /* 768px+ - Tablet Large */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+                padding: 1rem !important;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+            }
+
+            /* Grid: 3 columns on larger tablets */
+            #comparison-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1.25rem !important;
+            }
+
+            .comparison-card {
+                min-height: 380px;
+                padding: 1.5rem !important;
+            }
+
+            .dye-swatch {
+                height: 100px;
+            }
+
+            /* Canvas containers */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 400px;
+            }
+        }
+
+        /* 1024px+ - Desktop (original layout) */
+        @media (min-width: 1024px) {
+            #comparison-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+
+            .comparison-card {
+                min-height: 400px;
+                padding: 1.5rem;
+            }
+
+            .dye-swatch {
+                height: 120px;
+            }
+
+            /* Canvas containers: full height on desktop */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 500px;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
         @media (min-width: 1920px) {
             body {
                 font-size: 16px;
@@ -88,17 +338,139 @@
             label {
                 font-size: 1rem;
             }
+
+            /* Canvas containers: maximize on large desktop */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 600px;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            h1 {
+                font-size: 1.125rem !important;
+            }
+
+            header {
+                margin-bottom: 0.5rem;
+            }
+
+            .container {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            /* Canvas: reduce height on landscape */
+            #hue-sat-container,
+            #brightness-container {
+                max-height: 250px;
+            }
+
+            /* Comparison grid: tighter spacing */
+            #comparison-grid {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            select:active,
+            input:active {
+                transform: scale(0.98);
+            }
         }
     </style>
     <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
     <script src="assets/js/shared-components.js"></script>
+    <!-- Override initComponents for experimental navigation -->
+    <script>
+        function initComponents() {
+            loadComponent('components/nav-experimental.html', 'nav-container');
+            loadComponent('components/footer.html', 'footer-container');
+        }
+    </script>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Guide</h2>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Compare up to 4 FFXIV dyes side-by-side with visual charts and color distance metrics. Select dyes to see detailed comparisons.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">📊</span>
+                <p><strong>Mobile Tip:</strong> Pinch to zoom charts for detailed viewing of color relationships!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Compare up to 4 dyes simultaneously</li>
+                    <li>Color distance matrix shows similarity</li>
+                    <li>Hue-Saturation 2D chart visualization</li>
+                    <li>Brightness comparison chart</li>
+                    <li>Export as JSON or CSS formats</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">💡</span>
+                <p><strong>Pro Tip:</strong> Lower distance values (0-50) mean more similar colors</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>Use color distance to find similar or contrasting dyes</li>
+                    <li>Charts help visualize color relationships at a glance</li>
+                    <li>Export comparison data for reference or sharing</li>
+                    <li>Market prices help plan budget-friendly alternatives</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-8 2xl:mb-12">
-            <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
-                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">2</span></span></h1>
+            <div class="flex justify-between items-center gap-4 mb-2 flex-wrap">
+                <div class="flex-1 text-center">
+                    <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                </div>
+                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Compare FFXIV dyes side-by-side to see similarities and differences.
@@ -397,19 +769,19 @@
             <div class="bg-white rounded-xl shadow-md p-6 2xl:p-8 text-center">
                 <h2 class="text-xl 2xl:text-2xl font-bold text-gray-900 mb-4">Export Comparison</h2>
                 <div class="flex flex-wrap justify-center gap-3 2xl:gap-4">
-                    <button id="export-json-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium" disabled>
+                    <button id="export-json-btn" class="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium min-h-[44px]" disabled>
                         Export as JSON
                     </button>
-                    <button id="copy-summary-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium" disabled>
+                    <button id="copy-summary-btn" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium min-h-[44px]" disabled>
                         Copy Summary
                     </button>
-                    <button id="export-css-btn" class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium" disabled>
+                    <button id="export-css-btn" class="px-4 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium min-h-[44px]" disabled>
                         Export as CSS
                     </button>
-                    <button id="copy-hex-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium" disabled>
+                    <button id="copy-hex-btn" class="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium min-h-[44px]" disabled>
                         Copy Hex Codes
                     </button>
-                    <button id="clear-all-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium" disabled>
+                    <button id="clear-all-btn" class="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium min-h-[44px]" disabled>
                         Clear All
                     </button>
                 </div>
@@ -771,8 +1143,9 @@
             const chartHeight = height - topPadding - bottomPadding;
 
             // Optimization: Reduce resolution and upscale for faster rendering
-            // This reduces pixel calculations by ~75% while maintaining visual quality
-            const RESOLUTION_REDUCTION = 2; // 2x smaller = 4x fewer pixels
+            // Mobile: 4x reduction (6.25% of pixels) for better performance
+            // Desktop: 2x reduction (25% of pixels) for visual quality
+            const RESOLUTION_REDUCTION = isMobile() ? 4 : 2;
             const reducedWidth = Math.ceil(chartWidth / RESOLUTION_REDUCTION);
             const reducedHeight = Math.ceil(chartHeight / RESOLUTION_REDUCTION);
 
@@ -1005,6 +1378,104 @@
             tableContainer.innerHTML = tableHTML;
         }
 
+        // Debounced calculations for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateColorCharts = debounce(updateColorCharts, calculationDebounceTime);
+        const debouncedUpdateDistanceMatrix = debounce(updateDistanceMatrix, calculationDebounceTime);
+
+        // ===== PINCH-TO-ZOOM SUPPORT FOR CANVAS CHARTS =====
+
+        // Canvas zoom state
+        let canvasZoomState = {
+            hueSatScale: 1.0,
+            brightnessScale: 1.0,
+            minScale: 0.5,
+            maxScale: 3.0,
+            lastPinchTime: 0,
+            debounceDelay: 100
+        };
+
+        /**
+         * Apply zoom to canvas container
+         * @param {string} canvasId - ID of canvas element
+         * @param {number} scale - Zoom scale (0.5 to 3.0)
+         */
+        function applyCanvasZoom(canvasId, scale) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            // Clamp scale within min/max bounds
+            scale = Math.max(canvasZoomState.minScale, Math.min(canvasZoomState.maxScale, scale));
+
+            // Apply CSS transform
+            canvas.style.transform = `scale(${scale})`;
+            canvas.style.transformOrigin = 'center center';
+
+            // Update zoom state
+            if (canvasId === 'hue-sat-canvas') {
+                canvasZoomState.hueSatScale = scale;
+            } else if (canvasId === 'brightness-canvas') {
+                canvasZoomState.brightnessScale = scale;
+            }
+
+            // Trigger haptic feedback
+            hapticLight();
+        }
+
+        /**
+         * Handle pinch gesture on canvas
+         * @param {Object} pinchData - Pinch event data from TouchGestureManager
+         * @param {string} canvasId - ID of canvas element
+         */
+        function handleCanvasPinch(pinchData, canvasId) {
+            const now = Date.now();
+
+            // Debounce pinch events
+            if (now - canvasZoomState.lastPinchTime < canvasZoomState.debounceDelay) {
+                return;
+            }
+            canvasZoomState.lastPinchTime = now;
+
+            // Get current scale for this canvas
+            let currentScale = canvasId === 'hue-sat-canvas'
+                ? canvasZoomState.hueSatScale
+                : canvasZoomState.brightnessScale;
+
+            // Calculate new scale based on pinch delta
+            // pinchData.scale is ratio of current distance to previous distance
+            const scaleDelta = (pinchData.scale - 1.0) * 0.5; // Dampen the zoom speed
+            const newScale = currentScale + scaleDelta;
+
+            // Apply zoom
+            applyCanvasZoom(canvasId, newScale);
+        }
+
+        /**
+         * Initialize pinch-to-zoom listeners for canvas charts
+         */
+        function initializeCanvasPinchZoom() {
+            // Only initialize on touch devices
+            if (!isTouchDevice()) return;
+
+            // Hue-Saturation Chart
+            const hueSatContainer = document.getElementById('hue-sat-container');
+            if (hueSatContainer) {
+                const hueSatGesture = new TouchGestureManager(hueSatContainer);
+                hueSatGesture.on('onPinch', (pinchData) => {
+                    handleCanvasPinch(pinchData, 'hue-sat-canvas');
+                });
+            }
+
+            // Brightness Chart
+            const brightnessContainer = document.getElementById('brightness-container');
+            if (brightnessContainer) {
+                const brightnessGesture = new TouchGestureManager(brightnessContainer);
+                brightnessGesture.on('onPinch', (pinchData) => {
+                    handleCanvasPinch(pinchData, 'brightness-canvas');
+                });
+            }
+        }
+
         /**
          * Handle dye selection
          */
@@ -1020,8 +1491,8 @@
             }
 
             displayDye(index, selectedDyes[index]);
-            updateColorCharts();
-            updateDistanceMatrix();
+            debouncedUpdateColorCharts();
+            debouncedUpdateDistanceMatrix();
             updateExportButtons();
         }
 
@@ -1134,8 +1605,8 @@
                 selectedDyes[i] = null;
                 displayDye(i, null);
             }
-            updateColorCharts();
-            updateDistanceMatrix();
+            debouncedUpdateColorCharts();
+            debouncedUpdateDistanceMatrix();
             updateExportButtons();
         }
 
@@ -1249,7 +1720,7 @@
                         displayDye(index, dye);
                     }
                 });
-                updateDistanceMatrix();
+                debouncedUpdateDistanceMatrix();
 
                 statusDiv.textContent = `Updated ${uniqueIds.length} prices at ${cmpLastPriceUpdate.toLocaleTimeString()}`;
 
@@ -1349,6 +1820,9 @@
             // Initialize market board
             initializeMarketBoardComparison();
 
+            // Initialize pinch-to-zoom for canvas charts
+            initializeCanvasPinchZoom();
+
             // Load dye data
             safeFetchJSON('./assets/json/colors_xiv.json')
                 .then(data => {
@@ -1370,8 +1844,69 @@
                     console.error('Error loading dye data:', error);
                     alert('Could not load dye data. Please refresh the page.');
                 });
+
+            // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+            // Initialize mobile keyboard helpers
+            if (isMobileDevice && typeof isMobileDevice === 'function') {
+                // Prevent accidental zoom on input focus
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('focus', function() {
+                        // Ensure font size is at least 16px to prevent iOS zoom
+                        this.style.fontSize = '16px';
+                    });
+                });
+            }
         });
     </script>
 
+    <!-- Help Modal Functions -->
+    <script>
+        // --- Help Modal Functions ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside of content
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpModal = document.getElementById('help-modal');
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    closeHelpModal();
+                }
+            });
+
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    closeHelpModal();
+                }
+            });
+        });
+    </script>
+
+    <!-- Mobile Bottom Navigation Component -->
+    <div id="mobile-nav-container" class="component-loading"></div>
+    <script>
+        fetch('components/mobile-bottom-nav.html').then(r => r.text()).then(html => {
+            document.getElementById('mobile-nav-container').innerHTML = html;
+        });
+    </script>
+
+    <!-- Service Worker Registration for PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((error) => console.log('Service Worker registration failed:', error));
+            });
+        }
+    </script>
 </body>
 </html>

@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Color Harmony Explorer - Generate Dye Palettes | XIV Dye Tools</title>
     <meta name="description" content="Generate complementary, analogous, triadic, and tetradic color harmony palettes using FFXIV dyes. Perfect for finding dye combinations for gear, housing, and glamour. Color theory made easy for Final Fantasy XIV players.">
     <meta name="keywords" content="FFXIV dyes, color harmony, color palette, FF14 dyes, complementary colors, analogous colors, triadic colors, color theory, dye combinations, FFXIV glamour">
@@ -20,6 +25,11 @@
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
+    <!-- PWA Metadata -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
@@ -181,39 +191,440 @@
             transition: all 0.3s ease-out;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                padding: 0;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0.5rem !important;
+            }
+
+            /* Header adjustments */
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.95rem !important;
+            }
+
+            .flex.justify-center.items-center.gap-3 {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+
+            header p {
+                font-size: 0.875rem;
+                margin-top: 0.5rem;
+            }
+
+            /* Nav container inline adjustments */
+            #nav-container {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            /* Single column layout */
+            .app-container {
+                flex-direction: column;
+                min-height: auto;
+                gap: 0.5rem;
+            }
+
+            .left-sidebar {
+                width: 100%;
+                padding: 1rem;
+                max-height: none;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                overflow: visible;
+            }
+
+            .sidebar-section {
+                margin-bottom: 0.75rem;
+            }
+
+            .right-content {
+                max-width: 100%;
+                padding: 1rem;
+                overflow: visible;
+            }
+
+            /* Search input sizing */
+            #color-search,
+            #color-select,
+            #acquisition-filter,
+            #server-select {
+                padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+                font-size: 14px;
+                min-height: 40px;
+            }
+
+            /* Toggle sizing */
+            .toggle-bg {
+                width: 36px !important;
+                height: 22px !important;
+            }
+
+            .toggle-dot {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            /* Buttons */
+            button {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+
+            /* Export buttons wrap on mobile */
+            .flex.flex-wrap.gap-3.justify-center {
+                gap: 0.5rem !important;
+                flex-direction: column;
+            }
+
+            .flex.flex-wrap.gap-3.justify-center button {
+                width: 100%;
+            }
+
+            /* Color swatches smaller on mobile */
+            .color-swatch {
+                width: 60px !important;
+                height: 60px !important;
+                font-size: 11px;
+            }
+
+            /* Harmony grid: single column on mobile */
+            #harmony-results {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            /* Color wheel smaller on mobile */
+            .color-wheel {
+                width: 120px !important;
+                height: 120px !important;
+            }
+
+            .harmony-section.zoomed .color-wheel {
+                width: 180px !important;
+                height: 180px !important;
+            }
+
+            /* Harmony sections smaller */
+            .harmony-section {
+                padding: 1rem;
+            }
+
+            .harmony-section.zoomed {
+                width: 95vw;
+                max-height: 90vh;
+                padding: 1rem;
+            }
+
+            /* Text sizing */
+            label {
+                font-size: 0.75rem;
+            }
+
+            .text-sm {
+                font-size: 0.75rem;
+            }
+
+            .text-md {
+                font-size: 0.875rem;
+            }
+
+            /* Selected color display */
+            #selected-color-display {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            /* Price section more compact */
+            .sidebar-section.bg-gray-50 {
+                padding: 0.75rem;
+            }
+
+            .space-y-1.5 > * + * {
+                margin-top: 0.375rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            .container {
+                padding: 0.75rem !important;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 1.125rem !important;
+            }
+
+            /* Still single column but slightly more spacious */
             .app-container {
                 flex-direction: column;
             }
 
             .left-sidebar {
                 width: 100%;
-                max-height: none;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid #e5e7eb;
+                padding: 1.25rem;
             }
 
             .right-content {
-                max-width: 100%;
+                padding: 1.25rem;
             }
 
-            .harmony-section.zoomed {
-                width: 95vw;
-                max-height: 95vh;
+            /* Slightly larger swatches */
+            .color-swatch {
+                width: 70px !important;
+                height: 70px !important;
+            }
+
+            .color-wheel {
+                width: 140px !important;
+                height: 140px !important;
+            }
+
+            /* Export buttons: 2 columns on tablet */
+            .flex.flex-wrap.gap-3.justify-center {
+                gap: 0.75rem !important;
+            }
+        }
+
+        /* 768px+ - Tablet Large & Desktop */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+                padding: 1rem !important;
+            }
+
+            /* Two column layout on larger tablets */
+            .app-container {
+                flex-direction: row;
+            }
+
+            .left-sidebar {
+                width: 300px;
+                padding: 1.25rem;
+                position: sticky;
+                top: 0;
+            }
+
+            .right-content {
+                flex: 1;
+                padding: 1.25rem;
+            }
+
+            /* Harmony grid: 1 column */
+            #harmony-results {
+                grid-template-columns: 1fr !important;
+            }
+
+            .color-swatch {
+                width: 80px !important;
+                height: 80px !important;
+            }
+
+            .color-wheel {
+                width: 160px !important;
+                height: 160px !important;
+            }
+        }
+
+        /* 1024px+ - Desktop (original layout) */
+        @media (min-width: 1024px) {
+            .app-container {
+                flex-direction: row;
+            }
+
+            .left-sidebar {
+                width: 380px;
+                position: sticky;
+                border-right: 1px solid var(--theme-border);
+                border-bottom: none;
+            }
+
+            .right-content {
+                max-width: calc(100vw - 380px);
+            }
+
+            /* Harmony grid: 2 columns on desktop */
+            #harmony-results {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .color-swatch {
+                width: 100px !important;
+                height: 100px !important;
+            }
+
+            .color-wheel {
+                width: 200px !important;
+                height: 200px !important;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
+        @media (min-width: 1920px) {
+            .container {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h1 span {
+                font-size: 1.5rem !important;
+            }
+
+            .left-sidebar {
+                padding: 2rem;
+            }
+
+            .right-content {
+                padding: 2rem;
+            }
+        }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            .app-container {
+                width: 100%;
+            }
+
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            h1 {
+                font-size: 1.125rem !important;
+            }
+
+            header {
+                margin-bottom: 0.5rem;
+            }
+
+            .app-container {
+                min-height: auto;
+            }
+
+            .left-sidebar {
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+
+            .right-content {
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            input:active {
+                transform: scale(0.98);
             }
         }
     </style>
     <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
     <script src="assets/js/shared-components.js"></script>
+    <!-- Override initComponents for experimental navigation -->
+    <script>
+        function initComponents() {
+            loadComponent('components/nav-experimental.html', 'nav-container');
+            loadComponent('components/footer.html', 'footer-container');
+        }
+    </script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Guide</h2>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Generate harmonious color palettes based on color theory. Select a base dye and harmony type to discover complementary colors.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">🎨</span>
+                <p><strong>Mobile Tip:</strong> Pinch to zoom color wheels for detailed viewing!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Six harmony types: Complementary, Analogous, Triadic, Split-Complementary, Tetradic, and Square</li>
+                    <li>Real-time color wheel visualization</li>
+                    <li>Deviance scoring shows alignment with color theory</li>
+                    <li>Export palettes as JSON, CSS, or SCSS</li>
+                    <li>Optional market prices via Universalis API</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">💡</span>
+                <p><strong>Pro Tip:</strong> Lower deviance scores (0-2) indicate better color theory alignment</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>Use search bar to quickly find specific dyes</li>
+                    <li>Try different harmony types to discover new combinations</li>
+                    <li>Deviance score helps identify theoretically perfect matches</li>
+                    <li>Click "Show All 6 Harmonies" to compare all types at once</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-6">
-            <div class="flex justify-center items-center gap-3 mb-4">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">2</span></span></h1>
+            <div class="flex justify-between items-center gap-3 mb-4 flex-wrap">
+                <div class="flex-1 text-center">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900">FFXIV Dye Color Explorer <span class="text-2xl md:text-3xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                </div>
+                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
             </div>
             <p class="text-md text-gray-600 mt-2">
                 Discover color harmonies using the FFXIV dye palette.
@@ -637,6 +1048,10 @@
             const zoomOutBtn = section.querySelector('.zoom-out-btn');
             if (zoomInBtn) zoomInBtn.style.display = 'none';
             if (zoomOutBtn) zoomOutBtn.style.display = 'inline-block';
+
+            // Enable swipe navigation for zoomed view
+            harmonySwipeState.isActive = true;
+            harmonySwipeState.currentHarmonyType = harmonyType;
         }
 
         /**
@@ -662,6 +1077,190 @@
             const zoomOutBtn = zoomedSection.querySelector('.zoom-out-btn');
             if (zoomInBtn) zoomInBtn.style.display = 'inline-block';
             if (zoomOutBtn) zoomOutBtn.style.display = 'none';
+
+            // Clear swipe state
+            harmonySwipeState.isActive = false;
+        }
+
+        // ===== SWIPE GESTURE SUPPORT FOR ZOOMED HARMONY VIEW =====
+        let harmonySwipeState = {
+            isActive: false,
+            touchStartX: 0,
+            touchEndX: 0,
+            currentHarmonyType: null
+        };
+
+        // ===== SWIPE-TO-CLOSE SUPPORT FOR ZOOM BACKDROP MODAL =====
+        /**
+         * Swipe state tracker for modal close gesture
+         */
+        let modalSwipeState = {
+            isActive: false,
+            touchStartY: 0,
+            touchStartX: 0
+        };
+
+        /**
+         * Check if zoom backdrop modal is currently open
+         */
+        function isZoomBackdropOpen() {
+            const backdrop = document.getElementById('zoom-backdrop');
+            return backdrop && backdrop.classList.contains('active');
+        }
+
+        /**
+         * Handle touch start for modal swipe-to-close
+         */
+        function handleModalSwipeStart(e) {
+            if (!isZoomBackdropOpen()) return;
+
+            modalSwipeState.touchStartY = e.touches[0].clientY;
+            modalSwipeState.touchStartX = e.touches[0].clientX;
+            modalSwipeState.isActive = true;
+        }
+
+        /**
+         * Handle touch end for modal swipe-to-close
+         * Swipe up (>= 100px vertical) closes the modal
+         */
+        function handleModalSwipeEnd(e) {
+            if (!isZoomBackdropOpen() || !modalSwipeState.isActive) return;
+
+            const deltaY = modalSwipeState.touchStartY - e.changedTouches[0].clientY;
+            const deltaX = Math.abs(e.changedTouches[0].clientX - modalSwipeState.touchStartX);
+
+            // Swipe up to close (vertical movement >= 100px, horizontal < 30px)
+            if (deltaY >= 100 && deltaX < 30) {
+                zoomOut();
+                hapticSuccess();
+            }
+
+            modalSwipeState.isActive = false;
+        }
+
+        // ===== PINCH-TO-ZOOM SUPPORT FOR COLOR WHEEL SECTIONS =====
+        let harmonyGestureManagers = {}; // Store gesture managers per harmony type
+
+        /**
+         * Handle pinch gesture on harmony section
+         * Triggers zoom in/out based on pinch direction
+         * @param {Object} pinchData - Pinch event data from TouchGestureManager
+         * @param {string} harmonyType - Type of harmony section
+         */
+        function handleHarmonyPinch(pinchData, harmonyType) {
+            const section = document.querySelector(`.harmony-section[data-harmony-type="${harmonyType}"]`);
+            if (!section) return;
+
+            const isZoomed = section.classList.contains('zoomed');
+
+            // Pinch out (zoom in) - fingers moving apart
+            if (pinchData.isZoomIn && !isZoomed) {
+                zoomIn(harmonyType);
+            }
+            // Pinch in (zoom out) - fingers moving together
+            else if (!pinchData.isZoomIn && isZoomed) {
+                zoomOut();
+            }
+        }
+
+        /**
+         * Initialize pinch-to-zoom listeners for harmony sections
+         * Called after harmony sections are rendered
+         */
+        function initializeHarmonyPinchZoom() {
+            // Only initialize on touch devices
+            if (!isTouchDevice()) return;
+
+            // Clean up existing gesture managers
+            Object.values(harmonyGestureManagers).forEach(manager => {
+                if (manager && manager.destroy) {
+                    manager.destroy();
+                }
+            });
+            harmonyGestureManagers = {};
+
+            // Find all harmony sections
+            const harmonySections = document.querySelectorAll('.harmony-section');
+            harmonySections.forEach(section => {
+                const harmonyType = section.getAttribute('data-harmony-type');
+                if (!harmonyType) return;
+
+                // Create gesture manager for this section
+                const gestureManager = new TouchGestureManager(section);
+                gestureManager.on('onPinch', (pinchData) => {
+                    handleHarmonyPinch(pinchData, harmonyType);
+                });
+
+                // Store reference for cleanup
+                harmonyGestureManagers[harmonyType] = gestureManager;
+            });
+        }
+
+        /**
+         * Navigate to a different harmony type while staying zoomed
+         */
+        function navigateZoomedHarmony(direction) {
+            if (!harmonySwipeState.isActive) return;
+
+            const harmonyTypes = ['complementary', 'analogous', 'triadic', 'split-complementary', 'tetradic', 'square'];
+            const currentIndex = harmonyTypes.indexOf(harmonySwipeState.currentHarmonyType);
+            if (currentIndex === -1) return;
+
+            const newIndex = direction === 'next'
+                ? (currentIndex + 1) % harmonyTypes.length
+                : (currentIndex - 1 + harmonyTypes.length) % harmonyTypes.length;
+
+            const newHarmonyType = harmonyTypes[newIndex];
+
+            // Fade out current section
+            const currentSection = document.querySelector('.harmony-section.zoomed');
+            if (currentSection) {
+                currentSection.style.opacity = '0';
+                setTimeout(() => {
+                    currentSection.classList.remove('zoomed');
+
+                    // Show new section and fade in
+                    const newSection = document.querySelector(`.harmony-section[data-harmony-type="${newHarmonyType}"]`);
+                    if (newSection) {
+                        newSection.classList.add('zoomed');
+                        newSection.style.opacity = '0';
+                        setTimeout(() => {
+                            newSection.style.opacity = '1';
+                            harmonySwipeState.currentHarmonyType = newHarmonyType;
+                            hapticLight();
+                        }, 50);
+                    }
+                }, 200);
+            }
+        }
+
+        /**
+         * Handle touch start for swipe detection on zoomed harmony
+         */
+        function handleHarmonyTouchStart(e) {
+            if (!harmonySwipeState.isActive) return;
+            harmonySwipeState.touchStartX = e.changedTouches[0].screenX;
+        }
+
+        /**
+         * Handle touch end for swipe detection on zoomed harmony
+         */
+        function handleHarmonyTouchEnd(e) {
+            if (!harmonySwipeState.isActive) return;
+
+            harmonySwipeState.touchEndX = e.changedTouches[0].screenX;
+            const swipeThreshold = 50;
+            const swipeDistance = Math.abs(harmonySwipeState.touchEndX - harmonySwipeState.touchStartX);
+
+            if (swipeDistance > swipeThreshold) {
+                if (harmonySwipeState.touchEndX < harmonySwipeState.touchStartX) {
+                    // Swiped left - next harmony
+                    navigateZoomedHarmony('next');
+                } else {
+                    // Swiped right - previous harmony
+                    navigateZoomedHarmony('prev');
+                }
+            }
         }
 
         /**
@@ -1252,7 +1851,7 @@
             select.value = index;
             document.getElementById('color-search').value = '';
             document.getElementById('search-results').classList.add('hidden');
-            updateUI();
+            debouncedUpdateUI();
         }
 
         /**
@@ -1410,6 +2009,7 @@
             });
         }
 
+
         /**
          * Gets display text for acquisition/price (plain text - HTML formatting handled at display level)
          */
@@ -1507,7 +2107,7 @@
                     </div>
                     <button
                         onclick="copyToClipboard('${color.hex}')"
-                        class="ml-2 p-2 rounded-md ${textColor === 'text-black' ? 'hover:bg-black/10' : 'hover:bg-white/20'} transition opacity-0 group-hover:opacity-100"
+                        class="ml-2 p-3 rounded-md ${textColor === 'text-black' ? 'hover:bg-black/10' : 'hover:bg-white/20'} transition opacity-0 group-hover:opacity-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
                         title="Copy hex code"
                     >
                         <svg class="w-5 h-5 ${textColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1577,27 +2177,27 @@
                         <div class="flex gap-2">
                             <button
                                 onclick="copyPaletteHexCodes('${harmony.type}')"
-                                class="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition"
+                                class="px-4 py-2.5 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition min-h-[44px] flex items-center justify-center"
                                 title="Copy all hex codes from this palette"
                             >
                                 Copy All
                             </button>
                             <button
                                 onclick="zoomIn('${harmony.type}')"
-                                class="zoom-in-btn px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
+                                class="zoom-in-btn px-4 py-2.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition min-h-[44px] min-w-[44px] flex items-center justify-center"
                                 title="Zoom in on this harmony"
                             >
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                                 </svg>
                             </button>
                             <button
                                 onclick="zoomOut()"
-                                class="zoom-out-btn px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+                                class="zoom-out-btn px-4 py-2.5 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition min-h-[44px] min-w-[44px] flex items-center justify-center"
                                 title="Zoom out"
                                 style="display: none;"
                             >
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
                                 </svg>
                             </button>
@@ -1608,7 +2208,14 @@
                 `;
                 resultsContainer.appendChild(section);
             });
+
+            // Initialize pinch-to-zoom gestures after all harmony sections are rendered
+            initializeHarmonyPinchZoom();
         }
+
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateUI = debounce(updateUI, calculationDebounceTime);
 
         /**
          * Copies all hex codes from a specific palette
@@ -1751,7 +2358,7 @@
                     select.value = abyssalBlueIndex;
                 }
 
-                select.addEventListener('change', updateUI);
+                select.addEventListener('change', debouncedUpdateUI);
 
                 const checkbox = document.getElementById('exclude-metallic-checkbox');
                 checkbox.addEventListener('change', () => {
@@ -1776,12 +2383,12 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
                 const facewearCheckbox = document.getElementById('exclude-facewear-checkbox');
-                facewearCheckbox.addEventListener('change', updateUI);
+                facewearCheckbox.addEventListener('change', debouncedUpdateUI);
 
                 const extremesCheckbox = document.getElementById('exclude-extremes-checkbox');
                 extremesCheckbox.addEventListener('change', () => {
@@ -1806,7 +2413,7 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
@@ -1833,13 +2440,13 @@
                     }
 
                     if (select.options.length > 0) {
-                        updateUI();
+                        debouncedUpdateUI();
                     }
                 });
 
                 // Add event listeners for price category checkboxes
                 document.querySelectorAll('.price-category-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', updateUI);
+                    checkbox.addEventListener('change', debouncedUpdateUI);
                 });
 
                 // Add event listener for market price toggle
@@ -1851,7 +2458,7 @@
                     } else {
                         settingsPanel.style.display = 'none';
                     }
-                    updateUI();
+                    debouncedUpdateUI();
                 });
 
                 const searchInput = document.getElementById('color-search');
@@ -1874,7 +2481,33 @@
                     }
                 });
 
+                // Setup touch swipe listeners for zoomed harmony navigation (mobile)
+                if (isTouchDevice()) {
+                    document.addEventListener('touchstart', handleHarmonyTouchStart, false);
+                    document.addEventListener('touchend', handleHarmonyTouchEnd, false);
+
+                    // Add swipe-to-close gesture support for zoom backdrop modal
+                    const backdrop = document.getElementById('zoom-backdrop');
+                    if (backdrop) {
+                        backdrop.addEventListener('touchstart', handleModalSwipeStart, { passive: true });
+                        backdrop.addEventListener('touchend', handleModalSwipeEnd, { passive: true });
+                    }
+                }
+
                 updateUI();
+
+                // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+                // Initialize mobile keyboard helpers
+                if (isMobileDevice && typeof isMobileDevice === 'function') {
+                    // Prevent accidental zoom on input focus
+                    const inputs = document.querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        input.addEventListener('focus', function() {
+                            // Ensure font size is at least 16px to prevent iOS zoom
+                            this.style.fontSize = '16px';
+                        });
+                    });
+                }
             } catch (error) {
                 console.error("Detailed error:", error);
                 console.error("Error stack:", error.stack);
@@ -1883,9 +2516,54 @@
             }
         };
 
+        // --- Help Modal Functions ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside of content
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpModal = document.getElementById('help-modal');
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    closeHelpModal();
+                }
+            });
+
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    closeHelpModal();
+                }
+            });
+        });
+
     </script>
 
     <div id="footer-container" class="component-loading"></div>
 
+    <!-- Mobile Bottom Navigation Component -->
+    <div id="mobile-nav-container" class="component-loading"></div>
+    <script>
+        fetch('components/mobile-bottom-nav.html').then(r => r.text()).then(html => {
+            document.getElementById('mobile-nav-container').innerHTML = html;
+        });
+    </script>
+
+    <!-- Service Worker Registration for PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((error) => console.log('Service Worker registration failed:', error));
+            });
+        }
+    </script>
 </body>
 </html>

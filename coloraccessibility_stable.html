@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <!-- Mobile Web App Configuration -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>FFXIV Color Accessibility Checker - Simulate Colorblindness | XIV Dye Tools</title>
     <meta name="description" content="Check how FFXIV dyes appear to players with colorblindness. Simulate deuteranopia, protanopia, tritanopia, and achromatopsia. Compare dye distinguishability and get accessibility scores for glamour outfits.">
     <meta name="keywords" content="FFXIV colorblindness simulator, dye accessibility, color contrast, colorblind simulation, deuteranopia, protanopia, tritanopia, accessibility checker, XIV dyes, FF14">
@@ -20,6 +25,11 @@
     <meta property="twitter:image" content="https://xivdyetools.projectgalatine.com/embed_image.png">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="embed_icon.png">
+    <!-- PWA Metadata -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
@@ -273,7 +283,334 @@
 
 
 
-        /* 1080p Optimization */
+        /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
+
+        /* 375px - Mobile Small */
+        @media (max-width: 639px) {
+            body {
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0.5rem 0.5rem !important;
+            }
+
+            /* Header adjustments */
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h1 span {
+                font-size: 0.625rem !important;
+                padding: 0.25rem 0.5rem !important;
+            }
+
+            h2 {
+                font-size: 1rem !important;
+            }
+
+            h3 {
+                font-size: 0.875rem !important;
+            }
+
+            header p {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+            }
+
+            /* Nav container adjustments */
+            #nav-container {
+                display: block;
+                margin-left: 0 !important;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            /* Grid: single column on mobile */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            /* Left panel: remove sticky on mobile */
+            .lg\\:col-span-1 {
+                position: relative;
+            }
+
+            .sticky {
+                position: relative !important;
+                top: auto !important;
+            }
+
+            /* Card padding */
+            .bg-white.rounded-lg {
+                padding: 1rem !important;
+            }
+
+            /* Dye slots: stack vertically */
+            #dye-slots-container {
+                space-y: 0.5rem;
+            }
+
+            #dye-slots-container > div {
+                margin-bottom: 0.5rem;
+            }
+
+            /* Selects and inputs sizing */
+            select,
+            input[type="text"],
+            input[type="search"] {
+                padding: 0.5rem 0.5rem !important;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            input[type="range"] {
+                height: 24px;
+            }
+
+            /* Toggle sizing */
+            .toggle-bg {
+                width: 36px !important;
+                height: 22px !important;
+            }
+
+            .toggle-dot {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            /* Buttons */
+            button {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+
+            /* Dye swatch sizing */
+            .dye-swatch {
+                height: 60px;
+                font-size: 0.75rem;
+            }
+
+            /* Palette grid: responsive */
+            .palette-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+
+            .palette-item {
+                padding: 0.5rem 0;
+            }
+
+            .palette-label {
+                font-size: 0.625rem;
+                margin-top: 0.25rem;
+            }
+
+            /* Vision comparison grid */
+            .vision-comparison {
+                gap: 0.75rem !important;
+            }
+
+            .vision-header {
+                padding: 0.75rem;
+            }
+
+            .vision-title {
+                font-size: 0.85rem;
+            }
+
+            .vision-content {
+                padding: 0.75rem;
+            }
+
+            .vision-palette {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)) !important;
+                gap: 0.5rem !important;
+            }
+
+            .vision-swatch {
+                height: 50px;
+            }
+
+            /* Score card */
+            .score-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .score-value {
+                font-size: 2rem;
+            }
+
+            /* Warning cards */
+            .warning-card {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .warning-title {
+                font-size: 0.85rem;
+            }
+
+            /* Contrast table */
+            .contrast-table {
+                font-size: 0.75rem;
+            }
+
+            .contrast-table th,
+            .contrast-table td {
+                padding: 0.5rem;
+            }
+
+            /* Info boxes */
+            .bg-blue-50,
+            .bg-amber-50 {
+                padding: 1rem !important;
+            }
+
+            .bg-blue-50 p,
+            .bg-amber-50 p {
+                font-size: 0.75rem;
+            }
+
+            /* Hide desktop-only elements or adjust spacing */
+            main {
+                margin-top: 0;
+            }
+
+            .flex.gap-3 {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+
+            /* Checkbox spacing */
+            .space-y-2 > * + * {
+                margin-top: 0.5rem;
+            }
+
+            .space-y-4 > * + * {
+                margin-top: 0.75rem;
+            }
+
+            .space-y-6 > * + * {
+                margin-top: 1rem;
+            }
+        }
+
+        /* 640px - Tablet Small */
+        @media (min-width: 640px) and (max-width: 767px) {
+            .container {
+                padding: 0.75rem !important;
+            }
+
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h1 span {
+                font-size: 0.75rem !important;
+            }
+
+            h2 {
+                font-size: 1.125rem !important;
+            }
+
+            /* Still single column but more spacious */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Card padding */
+            .bg-white.rounded-lg {
+                padding: 1.25rem !important;
+            }
+
+            /* Palette grid: 2 columns */
+            .palette-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .dye-swatch {
+                height: 70px;
+            }
+
+            /* Vision palette: 3 columns */
+            .vision-palette {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        /* 768px+ - Tablet Large */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container {
+                padding: 1rem !important;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+            }
+
+            /* Two column on larger tablets */
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 300px 1fr !important;
+                gap: 1.5rem !important;
+            }
+
+            .lg\\:col-span-1 {
+                position: sticky;
+                top: 1rem;
+            }
+
+            /* Palette grid: 3 columns */
+            .palette-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            /* Vision palette: 4 columns */
+            .vision-palette {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+
+        /* 1024px+ - Desktop (original layout) */
+        @media (min-width: 1024px) {
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            .lg\\:col-span-1 {
+                position: sticky;
+                top: 2rem;
+            }
+
+            .lg\\:col-span-2 {
+                grid-column: span 2;
+            }
+
+            .dye-swatch {
+                height: 80px;
+            }
+
+            .palette-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+
+            .vision-palette {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)) !important;
+            }
+        }
+
+        /* 1920px+ - Large Desktop */
         @media (min-width: 1920px) {
             body {
                 font-size: 16px;
@@ -307,16 +644,124 @@
                 font-size: 1rem;
             }
         }
+
+        /* Portrait orientation on mobile */
+        @media (max-width: 767px) and (orientation: portrait) {
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            h1 {
+                font-size: 1.125rem !important;
+            }
+
+            header {
+                margin-bottom: 0.5rem;
+            }
+
+            .container {
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .grid.lg\\:grid-cols-3 {
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (max-width: 767px) {
+            button {
+                transition: transform 0.1s, opacity 0.1s;
+            }
+
+            button:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            input[type="range"]:active {
+                transform: scale(1.05);
+            }
+        }
     </style>
     <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
     <script src="assets/js/shared-components.js"></script>
+    <!-- Override initComponents for experimental navigation -->
+    <script>
+        function initComponents() {
+            loadComponent('components/nav-experimental.html', 'nav-container');
+            loadComponent('components/footer.html', 'footer-container');
+        }
+    </script>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Guide</h2>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Simulate how your glamour dyes appear to players with different types of colorblindness. Select up to 8 dyes and choose a vision type.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">👁️</span>
+                <p><strong>Mobile Tip:</strong> Swipe between vision types to quickly compare how your outfit appears!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Simulate 4 vision types: Deuteranopia, Protanopia, Tritanopia, and Achromatopsia</li>
+                    <li>Select up to 8 dyes for complete outfit coverage</li>
+                    <li>Accessibility scoring shows distinguishability</li>
+                    <li>Dual dye support for each armor piece</li>
+                    <li>Alternative dye suggestions for better contrast</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">🎨</span>
+                <p><strong>Pro Tip:</strong> Higher accessibility scores (80+) mean better distinguishability for colorblind players</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>Test critical color combinations first (main outfit pieces)</li>
+                    <li>Aim for accessibility scores above 70 for good visibility</li>
+                    <li>Use suggested alternatives if your colors are too similar</li>
+                    <li>Enable dual dyes to test complex glamour patterns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-8 2xl:mb-12">
-            <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
-                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Color Accessibility Checker <span class="text-xs md:text-sm 2xl:text-base font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">2</span></span></h1>
+            <div class="flex justify-between items-center gap-4 mb-2 flex-wrap">
+                <div class="flex-1 text-center">
+                    <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Color Accessibility Checker <span class="text-xs md:text-sm 2xl:text-base font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                </div>
+                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Plan accessible glamour outfits by simulating how your dye combinations appear to colorblind players.
@@ -468,7 +913,18 @@
 
                     <!-- Vision Simulations -->
                     <div id="simulations-section" class="hidden">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">How Colorblind Players See Your Colors</h2>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">How Colorblind Players See Your Colors</h2>
+                            <span class="text-xs text-gray-500 hidden md:hidden sm:inline-block">
+                                <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                                </svg>
+                                Swipe to change vision type
+                                <svg class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </span>
+                        </div>
                         <div class="vision-comparison" id="vision-comparison">
                             <!-- Vision simulations populated by JavaScript -->
                         </div>
@@ -527,6 +983,10 @@
             { primary: null, secondary: null }
         ];
         const dyeSlots = ['Head', 'Body', 'Hands', 'Legs', 'Feet', 'Weapon'];
+
+        // Vision type state management for swipe gestures
+        const visionTypes = ['normal', 'deuteranopia', 'protanopia', 'tritanopia', 'achromatopsia'];
+        let currentVisionIndex = 1; // Start at deuteranopia (default visible state)
 
         // Colorblindness transformation matrices (Brettel 1997)
         const colorblindMatrices = {
@@ -704,13 +1164,13 @@
                         <select id="dye-slot-${index}-primary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Primary...</option>
                         </select>
-                        <button onclick="clearDyeSlot(${index}, 'primary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                        <button onclick="clearDyeSlot(${index}, 'primary')" class="px-3 py-2 rounded-lg transition clear-button min-h-[44px] min-w-[44px] flex items-center justify-center">✕</button>
                     </div>
                     <div id="dye-secondary-${index}" class="flex gap-2 mb-2 hidden">
                         <select id="dye-slot-${index}-secondary" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Secondary...</option>
                         </select>
-                        <button onclick="clearDyeSlot(${index}, 'secondary')" class="px-2 py-2 rounded-lg transition clear-button">✕</button>
+                        <button onclick="clearDyeSlot(${index}, 'secondary')" class="px-3 py-2 rounded-lg transition clear-button min-h-[44px] min-w-[44px] flex items-center justify-center">✕</button>
                     </div>
                     <div id="dye-preview-${index}" class="mt-2 hidden">
                         <div class="dye-swatch" id="dye-swatch-${index}"></div>
@@ -769,7 +1229,7 @@
             }
 
             displayDyePreview(slotIndex);
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -831,7 +1291,7 @@
             element.value = '';
             slot[dyeType] = null;
             displayDyePreview(slotIndex);
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -854,7 +1314,7 @@
 
                 if (preview) preview.classList.add('hidden');
             });
-            updateVisualization();
+            debouncedUpdateVisualization();
         }
 
         /**
@@ -918,6 +1378,10 @@
             }
         }
 
+        // Debounced calculation for better mobile performance
+        const calculationDebounceTime = isMobile() ? 300 : 100;
+        const debouncedUpdateVisualization = debounce(updateVisualization, calculationDebounceTime);
+
         /**
          * Update original palette display
          */
@@ -935,6 +1399,108 @@
                 `;
                 grid.appendChild(div);
             });
+        }
+
+        /**
+         * Set all sliders to a specific vision type
+         * @param {string} visionType - 'normal', 'deuteranopia', 'protanopia', 'tritanopia', or 'achromatopsia'
+         */
+        function setVisionType(visionType) {
+            const sliders = {
+                deuteranopia: domCache.deuteranopiSlider,
+                protanopia: domCache.protanopiSlider,
+                tritanopia: domCache.tritanopiSlider
+            };
+
+            const values = {
+                deuteranopia: domCache.deuteranopiValue,
+                protanopia: domCache.protanopiValue,
+                tritanopia: domCache.tritanopiValue
+            };
+
+            // Reset all sliders to 0
+            Object.keys(sliders).forEach(type => {
+                if (sliders[type]) {
+                    sliders[type].value = 0;
+                    if (values[type]) {
+                        values[type].innerHTML = '<span class="number">0</span>%';
+                    }
+                }
+            });
+
+            // Set the specific vision type to 100% (or skip if 'normal' or 'achromatopsia')
+            if (visionType !== 'normal' && visionType !== 'achromatopsia' && sliders[visionType]) {
+                sliders[visionType].value = 100;
+                if (values[visionType]) {
+                    values[visionType].innerHTML = '<span class="number">100</span>%';
+                }
+            }
+
+            // Update visualization
+            debouncedUpdateVisualization();
+        }
+
+        /**
+         * Navigate to next vision type (swipe left)
+         */
+        function nextVisionType() {
+            currentVisionIndex = (currentVisionIndex + 1) % visionTypes.length;
+            setVisionType(visionTypes[currentVisionIndex]);
+
+            // Haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        /**
+         * Navigate to previous vision type (swipe right)
+         */
+        function previousVisionType() {
+            currentVisionIndex = (currentVisionIndex - 1 + visionTypes.length) % visionTypes.length;
+            setVisionType(visionTypes[currentVisionIndex]);
+
+            // Haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        /**
+         * Swipe gesture detection
+         */
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+        const swipeThreshold = 50; // Minimum distance for a swipe
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Only trigger if horizontal swipe is more dominant than vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Swipe left (next vision type)
+                if (deltaX < -swipeThreshold) {
+                    nextVisionType();
+                }
+                // Swipe right (previous vision type)
+                else if (deltaX > swipeThreshold) {
+                    previousVisionType();
+                }
+            }
         }
 
         /**
@@ -960,9 +1526,16 @@
                 const div = document.createElement('div');
                 div.className = 'vision-type';
 
+                // Determine if this vision type is currently active
+                const currentVisionType = visionTypes[currentVisionIndex];
+                const isActive = (vision.type === currentVisionType && vision.intensity > 0) ||
+                                 (currentVisionType === 'normal' && vision.intensity === 0);
+
                 const header = document.createElement('div');
                 header.className = 'vision-header';
-                header.innerHTML = `<div class="vision-title">${vision.name}</div>`;
+                // Add visual indicator for active vision type
+                const activeIndicator = isActive ? '<span style="color: #4f46e5; font-weight: bold;">● </span>' : '';
+                header.innerHTML = `<div class="vision-title">${activeIndicator}${vision.name}</div>`;
                 div.appendChild(header);
 
                 const content = document.createElement('div');
@@ -1373,7 +1946,7 @@
                                         <p class="font-medium text-gray-900">${dye.name}</p>
                                         <p class="text-xs text-gray-600">${dye.category} • ${dye.acquisition}</p>
                                     </div>
-                                    <button onclick="replaceDye(${slotInfo.slotIndex}, '${dye.itemID}')" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                    <button onclick="replaceDye(${slotInfo.slotIndex}, '${dye.itemID}')" class="px-4 py-2.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition min-h-[44px]">
                                         Use
                                     </button>
                                 </div>
@@ -1397,7 +1970,7 @@
                 document.getElementById(`dye-slot-${slotIndex}-primary`).value = itemId;
                 selectedDyes[slotIndex].primary = dye;
                 displayDyePreview(slotIndex);
-                updateVisualization();
+                debouncedUpdateVisualization();
             }
         }
 
@@ -1423,7 +1996,7 @@
             });
 
             if (itemIds.length > 0) {
-                updateVisualization();
+                debouncedUpdateVisualization();
                 return true;
             }
 
@@ -1548,7 +2121,7 @@
                         if (slider && value) {
                             slider.addEventListener('input', (e) => {
                                 value.innerHTML = `<span class="number">${e.target.value}</span>%`;
-                                updateVisualization();
+                                debouncedUpdateVisualization();
                             });
                         }
                     });
@@ -1581,14 +2154,29 @@
 
                     // Setup checkbox listeners using cached DOM elements
                     [
-                        { element: domCache.showWarnings, handler: updateVisualization },
-                        { element: domCache.showContrast, handler: updateVisualization },
-                        { element: domCache.showSuggestions, handler: updateVisualization }
+                        { element: domCache.showWarnings, handler: debouncedUpdateVisualization },
+                        { element: domCache.showContrast, handler: debouncedUpdateVisualization },
+                        { element: domCache.showSuggestions, handler: debouncedUpdateVisualization }
                     ].forEach(({ element, handler }) => {
                         if (element) {
                             element.addEventListener('change', handler);
                         }
                     });
+
+                    // Setup swipe gesture listeners for vision type navigation
+                    // Apply to the simulations section for swipe-based navigation
+                    const simulationsSection = document.getElementById('simulations-section');
+                    if (simulationsSection) {
+                        simulationsSection.addEventListener('touchstart', handleTouchStart, { passive: true });
+                        simulationsSection.addEventListener('touchend', handleTouchEnd, { passive: true });
+                    }
+
+                    // Also apply to the main results panel for broader touch area
+                    const resultsPanel = document.querySelector('.lg\\:col-span-2');
+                    if (resultsPanel) {
+                        resultsPanel.addEventListener('touchstart', handleTouchStart, { passive: true });
+                        resultsPanel.addEventListener('touchend', handleTouchEnd, { passive: true });
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading dyes:', error);
@@ -1596,8 +2184,66 @@
                         domCache.dyeSlotsContainer.innerHTML = '<p class="text-red-600">Error loading dye data.</p>';
                     }
                 });
+
+            // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+            // Initialize mobile keyboard helpers
+            if (isMobileDevice && typeof isMobileDevice === 'function') {
+                // Prevent accidental zoom on input focus
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('focus', function() {
+                        // Ensure font size is at least 16px to prevent iOS zoom
+                        this.style.fontSize = '16px';
+                    });
+                });
+            }
+        });
+
+        // --- Help Modal Functions ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside of content
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpModal = document.getElementById('help-modal');
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    closeHelpModal();
+                }
+            });
+
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    closeHelpModal();
+                }
+            });
         });
     </script>
 
+    <!-- Mobile Bottom Navigation Component -->
+    <div id="mobile-nav-container" class="component-loading"></div>
+    <script>
+        fetch('components/mobile-bottom-nav.html').then(r => r.text()).then(html => {
+            document.getElementById('mobile-nav-container').innerHTML = html;
+        });
+    </script>
+
+    <!-- Service Worker Registration for PWA Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((error) => console.log('Service Worker registration failed:', error));
+            });
+        }
+    </script>
 </body>
 </html>

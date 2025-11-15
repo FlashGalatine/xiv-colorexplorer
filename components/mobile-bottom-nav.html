@@ -1,0 +1,51 @@
+<!-- Mobile Bottom Navigation Component (PHASE 7.2) -->
+<!-- This component is loaded dynamically on mobile devices (≤768px) -->
+<!-- It provides quick navigation between all 5 tools with active state detection -->
+
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <a href="colormatcher_experimental.html" class="mobile-nav-item" data-tool="colormatcher">
+        <div class="mobile-nav-icon">🎨</div>
+        <div class="mobile-nav-label">Matcher</div>
+    </a>
+    <a href="colorexplorer_experimental.html" class="mobile-nav-item" data-tool="colorexplorer">
+        <div class="mobile-nav-icon">🎡</div>
+        <div class="mobile-nav-label">Explorer</div>
+    </a>
+    <a href="coloraccessibility_experimental.html" class="mobile-nav-item" data-tool="coloraccessibility">
+        <div class="mobile-nav-icon">👁️</div>
+        <div class="mobile-nav-label">Access</div>
+    </a>
+    <a href="dyecomparison_experimental.html" class="mobile-nav-item" data-tool="dyecomparison">
+        <div class="mobile-nav-icon">📊</div>
+        <div class="mobile-nav-label">Compare</div>
+    </a>
+    <a href="dye-mixer_experimental.html" class="mobile-nav-item" data-tool="dye-mixer">
+        <div class="mobile-nav-icon">🧪</div>
+        <div class="mobile-nav-label">Mixer</div>
+    </a>
+</nav>
+
+<script>
+    // ===== MOBILE BOTTOM NAVIGATION BAR (PHASE 7.2) =====
+    // Set the body class to have-bottom-nav for proper spacing
+    document.body.classList.add('has-bottom-nav');
+
+    // Determine current tool based on page filename
+    const currentPage = window.location.pathname.split('/').pop().replace('_experimental.html', '').replace('.html', '');
+    const toolMap = {
+        'colormatcher': 'colormatcher',
+        'colorexplorer': 'colorexplorer',
+        'coloraccessibility': 'coloraccessibility',
+        'dyecomparison': 'dyecomparison',
+        'dye-mixer': 'dye-mixer'
+    };
+
+    // Set active nav item based on current page
+    const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+    mobileNavItems.forEach(item => {
+        const toolName = item.dataset.tool;
+        if (toolName === toolMap[currentPage] || toolName.replace('-', '') === currentPage.replace('-', '')) {
+            item.classList.add('active');
+        }
+    });
+</script>
