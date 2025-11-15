@@ -158,6 +158,45 @@
             font-size: 1rem;
             margin-bottom: 0.75rem;
         }
+        /* Privacy Notice Styles */
+        .privacy-notice {
+            background-color: var(--theme-bg-secondary);
+            border: 1px solid var(--theme-border);
+            border-left: 3px solid #10b981; /* Green accent for trust */
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .privacy-notice-icon {
+            flex-shrink: 0;
+            font-size: 1.125rem;
+            line-height: 1.25;
+        }
+        .privacy-notice-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .privacy-notice-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--theme-text);
+            margin-bottom: 0.125rem;
+        }
+        .privacy-notice-text {
+            font-size: 0.75rem;
+            color: var(--theme-text-muted);
+            line-height: 1.4;
+        }
+        /* Dark theme adjustments for privacy notice */
+        body.theme-standard-dark .privacy-notice,
+        body.theme-hydaelyn-dark .privacy-notice,
+        body.theme-classic-ff-dark .privacy-notice,
+        body.theme-parchment-dark .privacy-notice,
+        body.theme-sugar-riot-dark .privacy-notice {
+            border-left-color: #34d399; /* Brighter green for dark mode */
+        }
         /* Toast Notification Styles */
         #toast-container {
             position: fixed;
@@ -893,6 +932,15 @@
                 <input type="file" name="cameraCapture" id="cameraCapture" accept="image/*" capture="environment" style="display: none;"/>
                 <p class="text-xs text-gray-500 mt-1">Drag & drop • Click to browse • Paste (Ctrl+V)</p>
                 <button id="cameraBtn" class="mt-2 w-full px-3 py-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded font-semibold text-sm transition min-h-[44px]" title="Capture photo from camera">📷 Take Photo</button>
+
+                <!-- Privacy Notice for Camera -->
+                <div class="privacy-notice">
+                    <span class="privacy-notice-icon" title="Privacy protected">🔒</span>
+                    <div class="privacy-notice-content">
+                        <p class="privacy-notice-title">Your privacy is protected</p>
+                        <p class="privacy-notice-text">Photos are processed locally in your browser and never stored on any server.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Sample Size Control -->
