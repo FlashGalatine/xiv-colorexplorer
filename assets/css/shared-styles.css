@@ -322,6 +322,7 @@ h2, h3 {
 
 .number {
     font-family: "Habibi", serif;
+    white-space: nowrap;
 }
 
 /* ===== FOOTER STYLES ===== */
