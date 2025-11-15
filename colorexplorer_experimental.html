@@ -31,8 +31,19 @@
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
+    <!-- ===== CRITICAL FONTS (Body text - minimal blocking) ===== -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- ===== DEFERRED DECORATIVE FONTS (Load after page render) ===== -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- ===== FALLBACK for no-script environments ===== -->
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400;700&family=Lexend:wght@400;500;600&family=Lexend+Giga:wght@400;500;600&family=Habibi&display=swap" rel="stylesheet">
+    </noscript>
     <!-- Shared Styles -->
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <style>
