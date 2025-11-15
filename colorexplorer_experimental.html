@@ -983,6 +983,10 @@
             const zoomOutBtn = section.querySelector('.zoom-out-btn');
             if (zoomInBtn) zoomInBtn.style.display = 'none';
             if (zoomOutBtn) zoomOutBtn.style.display = 'inline-block';
+
+            // Enable swipe navigation for zoomed view
+            harmonySwipeState.isActive = true;
+            harmonySwipeState.currentHarmonyType = harmonyType;
         }
 
         /**
@@ -1008,6 +1012,190 @@
             const zoomOutBtn = zoomedSection.querySelector('.zoom-out-btn');
             if (zoomInBtn) zoomInBtn.style.display = 'inline-block';
             if (zoomOutBtn) zoomOutBtn.style.display = 'none';
+
+            // Clear swipe state
+            harmonySwipeState.isActive = false;
+        }
+
+        // ===== SWIPE GESTURE SUPPORT FOR ZOOMED HARMONY VIEW =====
+        let harmonySwipeState = {
+            isActive: false,
+            touchStartX: 0,
+            touchEndX: 0,
+            currentHarmonyType: null
+        };
+
+        // ===== SWIPE-TO-CLOSE SUPPORT FOR ZOOM BACKDROP MODAL =====
+        /**
+         * Swipe state tracker for modal close gesture
+         */
+        let modalSwipeState = {
+            isActive: false,
+            touchStartY: 0,
+            touchStartX: 0
+        };
+
+        /**
+         * Check if zoom backdrop modal is currently open
+         */
+        function isZoomBackdropOpen() {
+            const backdrop = document.getElementById('zoom-backdrop');
+            return backdrop && backdrop.classList.contains('active');
+        }
+
+        /**
+         * Handle touch start for modal swipe-to-close
+         */
+        function handleModalSwipeStart(e) {
+            if (!isZoomBackdropOpen()) return;
+
+            modalSwipeState.touchStartY = e.touches[0].clientY;
+            modalSwipeState.touchStartX = e.touches[0].clientX;
+            modalSwipeState.isActive = true;
+        }
+
+        /**
+         * Handle touch end for modal swipe-to-close
+         * Swipe up (>= 100px vertical) closes the modal
+         */
+        function handleModalSwipeEnd(e) {
+            if (!isZoomBackdropOpen() || !modalSwipeState.isActive) return;
+
+            const deltaY = modalSwipeState.touchStartY - e.changedTouches[0].clientY;
+            const deltaX = Math.abs(e.changedTouches[0].clientX - modalSwipeState.touchStartX);
+
+            // Swipe up to close (vertical movement >= 100px, horizontal < 30px)
+            if (deltaY >= 100 && deltaX < 30) {
+                zoomOut();
+                hapticSuccess();
+            }
+
+            modalSwipeState.isActive = false;
+        }
+
+        // ===== PINCH-TO-ZOOM SUPPORT FOR COLOR WHEEL SECTIONS =====
+        let harmonyGestureManagers = {}; // Store gesture managers per harmony type
+
+        /**
+         * Handle pinch gesture on harmony section
+         * Triggers zoom in/out based on pinch direction
+         * @param {Object} pinchData - Pinch event data from TouchGestureManager
+         * @param {string} harmonyType - Type of harmony section
+         */
+        function handleHarmonyPinch(pinchData, harmonyType) {
+            const section = document.querySelector(`.harmony-section[data-harmony-type="${harmonyType}"]`);
+            if (!section) return;
+
+            const isZoomed = section.classList.contains('zoomed');
+
+            // Pinch out (zoom in) - fingers moving apart
+            if (pinchData.isZoomIn && !isZoomed) {
+                zoomIn(harmonyType);
+            }
+            // Pinch in (zoom out) - fingers moving together
+            else if (!pinchData.isZoomIn && isZoomed) {
+                zoomOut();
+            }
+        }
+
+        /**
+         * Initialize pinch-to-zoom listeners for harmony sections
+         * Called after harmony sections are rendered
+         */
+        function initializeHarmonyPinchZoom() {
+            // Only initialize on touch devices
+            if (!isTouchDevice()) return;
+
+            // Clean up existing gesture managers
+            Object.values(harmonyGestureManagers).forEach(manager => {
+                if (manager && manager.destroy) {
+                    manager.destroy();
+                }
+            });
+            harmonyGestureManagers = {};
+
+            // Find all harmony sections
+            const harmonySections = document.querySelectorAll('.harmony-section');
+            harmonySections.forEach(section => {
+                const harmonyType = section.getAttribute('data-harmony-type');
+                if (!harmonyType) return;
+
+                // Create gesture manager for this section
+                const gestureManager = new TouchGestureManager(section);
+                gestureManager.on('onPinch', (pinchData) => {
+                    handleHarmonyPinch(pinchData, harmonyType);
+                });
+
+                // Store reference for cleanup
+                harmonyGestureManagers[harmonyType] = gestureManager;
+            });
+        }
+
+        /**
+         * Navigate to a different harmony type while staying zoomed
+         */
+        function navigateZoomedHarmony(direction) {
+            if (!harmonySwipeState.isActive) return;
+
+            const harmonyTypes = ['complementary', 'analogous', 'triadic', 'split-complementary', 'tetradic', 'square'];
+            const currentIndex = harmonyTypes.indexOf(harmonySwipeState.currentHarmonyType);
+            if (currentIndex === -1) return;
+
+            const newIndex = direction === 'next'
+                ? (currentIndex + 1) % harmonyTypes.length
+                : (currentIndex - 1 + harmonyTypes.length) % harmonyTypes.length;
+
+            const newHarmonyType = harmonyTypes[newIndex];
+
+            // Fade out current section
+            const currentSection = document.querySelector('.harmony-section.zoomed');
+            if (currentSection) {
+                currentSection.style.opacity = '0';
+                setTimeout(() => {
+                    currentSection.classList.remove('zoomed');
+
+                    // Show new section and fade in
+                    const newSection = document.querySelector(`.harmony-section[data-harmony-type="${newHarmonyType}"]`);
+                    if (newSection) {
+                        newSection.classList.add('zoomed');
+                        newSection.style.opacity = '0';
+                        setTimeout(() => {
+                            newSection.style.opacity = '1';
+                            harmonySwipeState.currentHarmonyType = newHarmonyType;
+                            hapticLight();
+                        }, 50);
+                    }
+                }, 200);
+            }
+        }
+
+        /**
+         * Handle touch start for swipe detection on zoomed harmony
+         */
+        function handleHarmonyTouchStart(e) {
+            if (!harmonySwipeState.isActive) return;
+            harmonySwipeState.touchStartX = e.changedTouches[0].screenX;
+        }
+
+        /**
+         * Handle touch end for swipe detection on zoomed harmony
+         */
+        function handleHarmonyTouchEnd(e) {
+            if (!harmonySwipeState.isActive) return;
+
+            harmonySwipeState.touchEndX = e.changedTouches[0].screenX;
+            const swipeThreshold = 50;
+            const swipeDistance = Math.abs(harmonySwipeState.touchEndX - harmonySwipeState.touchStartX);
+
+            if (swipeDistance > swipeThreshold) {
+                if (harmonySwipeState.touchEndX < harmonySwipeState.touchStartX) {
+                    // Swiped left - next harmony
+                    navigateZoomedHarmony('next');
+                } else {
+                    // Swiped right - previous harmony
+                    navigateZoomedHarmony('prev');
+                }
+            }
         }
 
         /**
@@ -1955,6 +2143,9 @@
                 `;
                 resultsContainer.appendChild(section);
             });
+
+            // Initialize pinch-to-zoom gestures after all harmony sections are rendered
+            initializeHarmonyPinchZoom();
         }
 
         // Debounced calculation for better mobile performance
@@ -2224,6 +2415,19 @@
                         }
                     }
                 });
+
+                // Setup touch swipe listeners for zoomed harmony navigation (mobile)
+                if (isTouchDevice()) {
+                    document.addEventListener('touchstart', handleHarmonyTouchStart, false);
+                    document.addEventListener('touchend', handleHarmonyTouchEnd, false);
+
+                    // Add swipe-to-close gesture support for zoom backdrop modal
+                    const backdrop = document.getElementById('zoom-backdrop');
+                    if (backdrop) {
+                        backdrop.addEventListener('touchstart', handleModalSwipeStart, { passive: true });
+                        backdrop.addEventListener('touchend', handleModalSwipeEnd, { passive: true });
+                    }
+                }
 
                 updateUI();
             } catch (error) {

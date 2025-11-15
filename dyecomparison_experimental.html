@@ -49,14 +49,17 @@
         #hue-sat-container {
             background-color: var(--theme-bg-secondary);
             border-color: var(--theme-border);
+            overflow: auto;
         }
         #brightness-container {
             background-color: var(--theme-bg-secondary);
             border-color: var(--theme-border);
+            overflow: auto;
         }
         #hue-sat-canvas,
         #brightness-canvas {
             background-color: var(--theme-bg-secondary);
+            transition: transform 0.15s ease-out;
         }
 
         /* ========== MOBILE RESPONSIVE BREAKPOINTS ========== */
@@ -1315,6 +1318,99 @@
         const debouncedUpdateColorCharts = debounce(updateColorCharts, calculationDebounceTime);
         const debouncedUpdateDistanceMatrix = debounce(updateDistanceMatrix, calculationDebounceTime);
 
+        // ===== PINCH-TO-ZOOM SUPPORT FOR CANVAS CHARTS =====
+
+        // Canvas zoom state
+        let canvasZoomState = {
+            hueSatScale: 1.0,
+            brightnessScale: 1.0,
+            minScale: 0.5,
+            maxScale: 3.0,
+            lastPinchTime: 0,
+            debounceDelay: 100
+        };
+
+        /**
+         * Apply zoom to canvas container
+         * @param {string} canvasId - ID of canvas element
+         * @param {number} scale - Zoom scale (0.5 to 3.0)
+         */
+        function applyCanvasZoom(canvasId, scale) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            // Clamp scale within min/max bounds
+            scale = Math.max(canvasZoomState.minScale, Math.min(canvasZoomState.maxScale, scale));
+
+            // Apply CSS transform
+            canvas.style.transform = `scale(${scale})`;
+            canvas.style.transformOrigin = 'center center';
+
+            // Update zoom state
+            if (canvasId === 'hue-sat-canvas') {
+                canvasZoomState.hueSatScale = scale;
+            } else if (canvasId === 'brightness-canvas') {
+                canvasZoomState.brightnessScale = scale;
+            }
+
+            // Trigger haptic feedback
+            hapticLight();
+        }
+
+        /**
+         * Handle pinch gesture on canvas
+         * @param {Object} pinchData - Pinch event data from TouchGestureManager
+         * @param {string} canvasId - ID of canvas element
+         */
+        function handleCanvasPinch(pinchData, canvasId) {
+            const now = Date.now();
+
+            // Debounce pinch events
+            if (now - canvasZoomState.lastPinchTime < canvasZoomState.debounceDelay) {
+                return;
+            }
+            canvasZoomState.lastPinchTime = now;
+
+            // Get current scale for this canvas
+            let currentScale = canvasId === 'hue-sat-canvas'
+                ? canvasZoomState.hueSatScale
+                : canvasZoomState.brightnessScale;
+
+            // Calculate new scale based on pinch delta
+            // pinchData.scale is ratio of current distance to previous distance
+            const scaleDelta = (pinchData.scale - 1.0) * 0.5; // Dampen the zoom speed
+            const newScale = currentScale + scaleDelta;
+
+            // Apply zoom
+            applyCanvasZoom(canvasId, newScale);
+        }
+
+        /**
+         * Initialize pinch-to-zoom listeners for canvas charts
+         */
+        function initializeCanvasPinchZoom() {
+            // Only initialize on touch devices
+            if (!isTouchDevice()) return;
+
+            // Hue-Saturation Chart
+            const hueSatContainer = document.getElementById('hue-sat-container');
+            if (hueSatContainer) {
+                const hueSatGesture = new TouchGestureManager(hueSatContainer);
+                hueSatGesture.on('onPinch', (pinchData) => {
+                    handleCanvasPinch(pinchData, 'hue-sat-canvas');
+                });
+            }
+
+            // Brightness Chart
+            const brightnessContainer = document.getElementById('brightness-container');
+            if (brightnessContainer) {
+                const brightnessGesture = new TouchGestureManager(brightnessContainer);
+                brightnessGesture.on('onPinch', (pinchData) => {
+                    handleCanvasPinch(pinchData, 'brightness-canvas');
+                });
+            }
+        }
+
         /**
          * Handle dye selection
          */
@@ -1658,6 +1754,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize market board
             initializeMarketBoardComparison();
+
+            // Initialize pinch-to-zoom for canvas charts
+            initializeCanvasPinchZoom();
 
             // Load dye data
             safeFetchJSON('./assets/json/colors_xiv.json')

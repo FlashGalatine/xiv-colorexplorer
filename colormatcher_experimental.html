@@ -1460,6 +1460,54 @@
             document.getElementById('help-modal').classList.remove('show');
         }
 
+        // --- Modal Swipe-to-Close Support ---
+        /**
+         * Swipe state tracker for modal close gesture
+         */
+        let helpModalSwipeState = {
+            isActive: false,
+            touchStartY: 0,
+            touchStartX: 0
+        };
+
+        /**
+         * Check if help modal is currently open
+         */
+        function isHelpModalOpen() {
+            const modal = document.getElementById('help-modal');
+            return modal && modal.classList.contains('show');
+        }
+
+        /**
+         * Handle touch start for help modal swipe-to-close
+         */
+        function handleHelpModalSwipeStart(e) {
+            if (!isHelpModalOpen()) return;
+
+            helpModalSwipeState.touchStartY = e.touches[0].clientY;
+            helpModalSwipeState.touchStartX = e.touches[0].clientX;
+            helpModalSwipeState.isActive = true;
+        }
+
+        /**
+         * Handle touch end for help modal swipe-to-close
+         * Swipe up (>= 100px vertical) closes the modal
+         */
+        function handleHelpModalSwipeEnd(e) {
+            if (!isHelpModalOpen() || !helpModalSwipeState.isActive) return;
+
+            const deltaY = helpModalSwipeState.touchStartY - e.changedTouches[0].clientY;
+            const deltaX = Math.abs(e.changedTouches[0].clientX - helpModalSwipeState.touchStartX);
+
+            // Swipe up to close (vertical movement >= 100px, horizontal < 30px)
+            if (deltaY >= 100 && deltaX < 30) {
+                closeHelpModal();
+                hapticSuccess();
+            }
+
+            helpModalSwipeState.isActive = false;
+        }
+
         // --- Clipboard Paste Handler ---
         /**
          * Handle clipboard paste events with fallback support
@@ -1714,6 +1762,12 @@
                     closeHelpModal();
                 }
             });
+
+            // Add swipe-to-close gesture support for help modal (mobile)
+            if (isTouchDevice()) {
+                helpModal.addEventListener('touchstart', handleHelpModalSwipeStart, { passive: true });
+                helpModal.addEventListener('touchend', handleHelpModalSwipeEnd, { passive: true });
+            }
         }
 
         /**

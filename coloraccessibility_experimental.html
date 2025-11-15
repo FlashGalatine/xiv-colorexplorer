@@ -848,7 +848,18 @@
 
                     <!-- Vision Simulations -->
                     <div id="simulations-section" class="hidden">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">How Colorblind Players See Your Colors</h2>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">How Colorblind Players See Your Colors</h2>
+                            <span class="text-xs text-gray-500 hidden md:hidden sm:inline-block">
+                                <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                                </svg>
+                                Swipe to change vision type
+                                <svg class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </span>
+                        </div>
                         <div class="vision-comparison" id="vision-comparison">
                             <!-- Vision simulations populated by JavaScript -->
                         </div>
@@ -907,6 +918,10 @@
             { primary: null, secondary: null }
         ];
         const dyeSlots = ['Head', 'Body', 'Hands', 'Legs', 'Feet', 'Weapon'];
+
+        // Vision type state management for swipe gestures
+        const visionTypes = ['normal', 'deuteranopia', 'protanopia', 'tritanopia', 'achromatopsia'];
+        let currentVisionIndex = 1; // Start at deuteranopia (default visible state)
 
         // Colorblindness transformation matrices (Brettel 1997)
         const colorblindMatrices = {
@@ -1322,6 +1337,108 @@
         }
 
         /**
+         * Set all sliders to a specific vision type
+         * @param {string} visionType - 'normal', 'deuteranopia', 'protanopia', 'tritanopia', or 'achromatopsia'
+         */
+        function setVisionType(visionType) {
+            const sliders = {
+                deuteranopia: domCache.deuteranopiSlider,
+                protanopia: domCache.protanopiSlider,
+                tritanopia: domCache.tritanopiSlider
+            };
+
+            const values = {
+                deuteranopia: domCache.deuteranopiValue,
+                protanopia: domCache.protanopiValue,
+                tritanopia: domCache.tritanopiValue
+            };
+
+            // Reset all sliders to 0
+            Object.keys(sliders).forEach(type => {
+                if (sliders[type]) {
+                    sliders[type].value = 0;
+                    if (values[type]) {
+                        values[type].innerHTML = '<span class="number">0</span>%';
+                    }
+                }
+            });
+
+            // Set the specific vision type to 100% (or skip if 'normal' or 'achromatopsia')
+            if (visionType !== 'normal' && visionType !== 'achromatopsia' && sliders[visionType]) {
+                sliders[visionType].value = 100;
+                if (values[visionType]) {
+                    values[visionType].innerHTML = '<span class="number">100</span>%';
+                }
+            }
+
+            // Update visualization
+            debouncedUpdateVisualization();
+        }
+
+        /**
+         * Navigate to next vision type (swipe left)
+         */
+        function nextVisionType() {
+            currentVisionIndex = (currentVisionIndex + 1) % visionTypes.length;
+            setVisionType(visionTypes[currentVisionIndex]);
+
+            // Haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        /**
+         * Navigate to previous vision type (swipe right)
+         */
+        function previousVisionType() {
+            currentVisionIndex = (currentVisionIndex - 1 + visionTypes.length) % visionTypes.length;
+            setVisionType(visionTypes[currentVisionIndex]);
+
+            // Haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        /**
+         * Swipe gesture detection
+         */
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+        const swipeThreshold = 50; // Minimum distance for a swipe
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Only trigger if horizontal swipe is more dominant than vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Swipe left (next vision type)
+                if (deltaX < -swipeThreshold) {
+                    nextVisionType();
+                }
+                // Swipe right (previous vision type)
+                else if (deltaX > swipeThreshold) {
+                    previousVisionType();
+                }
+            }
+        }
+
+        /**
          * Update vision simulations
          */
         function updateVisionSimulations() {
@@ -1344,9 +1461,16 @@
                 const div = document.createElement('div');
                 div.className = 'vision-type';
 
+                // Determine if this vision type is currently active
+                const currentVisionType = visionTypes[currentVisionIndex];
+                const isActive = (vision.type === currentVisionType && vision.intensity > 0) ||
+                                 (currentVisionType === 'normal' && vision.intensity === 0);
+
                 const header = document.createElement('div');
                 header.className = 'vision-header';
-                header.innerHTML = `<div class="vision-title">${vision.name}</div>`;
+                // Add visual indicator for active vision type
+                const activeIndicator = isActive ? '<span style="color: #4f46e5; font-weight: bold;">● </span>' : '';
+                header.innerHTML = `<div class="vision-title">${activeIndicator}${vision.name}</div>`;
                 div.appendChild(header);
 
                 const content = document.createElement('div');
@@ -1973,6 +2097,21 @@
                             element.addEventListener('change', handler);
                         }
                     });
+
+                    // Setup swipe gesture listeners for vision type navigation
+                    // Apply to the simulations section for swipe-based navigation
+                    const simulationsSection = document.getElementById('simulations-section');
+                    if (simulationsSection) {
+                        simulationsSection.addEventListener('touchstart', handleTouchStart, { passive: true });
+                        simulationsSection.addEventListener('touchend', handleTouchEnd, { passive: true });
+                    }
+
+                    // Also apply to the main results panel for broader touch area
+                    const resultsPanel = document.querySelector('.lg\\:col-span-2');
+                    if (resultsPanel) {
+                        resultsPanel.addEventListener('touchstart', handleTouchStart, { passive: true });
+                        resultsPanel.addEventListener('touchend', handleTouchEnd, { passive: true });
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading dyes:', error);
