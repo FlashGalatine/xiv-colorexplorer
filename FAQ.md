@@ -20,7 +20,7 @@ A: The tools were developed with AI assistance, built using vanilla JavaScript. 
 **Q: Who made these tools?**
 A: XIV Dye Tools was created by Flash Galatine (Balmung) as a passion project for the FFXIV community.
 
-**Q: Why did v1.5.2 change my saved settings?**
+**Q: Why did v1.6.0 change my saved settings?**
 A: Version 1.5.2 standardized all localStorage keys to follow a consistent naming pattern (`xivdyetools_[toolname]_[setting]`). This prevents namespace collisions and improves code maintainability. Your settings will need to be reconfigured on first load, but future updates will preserve them. We apologize for the inconvenience—this was a necessary cleanup for long-term code quality.
 
 ---
