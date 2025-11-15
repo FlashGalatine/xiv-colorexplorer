@@ -553,6 +553,13 @@
     </style>
     <!-- Shared Components Script - Load early so DOMContentLoaded can initialize theme and components -->
     <script src="assets/js/shared-components.js"></script>
+    <!-- Override initComponents for experimental navigation -->
+    <script>
+        function initComponents() {
+            loadComponent('components/nav-experimental.html', 'nav-container');
+            loadComponent('components/footer.html', 'footer-container');
+        }
+    </script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 

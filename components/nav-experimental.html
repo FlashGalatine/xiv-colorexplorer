@@ -1,0 +1,299 @@
+<!-- EXPERIMENTAL VERSION BANNER -->
+<div class="experimental-banner">
+    <span class="experimental-badge">🧪 EXPERIMENTAL BUILD</span>
+    <span class="experimental-text">Testing phase - features may be unstable</span>
+</div>
+
+<div class="nav-controls">
+    <div class="nav-dropdown inline-block">
+        <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
+            Tools ▼
+        </button>
+        <div class="nav-dropdown-menu">
+            <a href="index.html" class="nav-dropdown-item">Home / All Tools</a>
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+            <div style="padding: 0.5rem 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-muted); letter-spacing: 0.05em;">Experimental</div>
+            <a href="dye-mixer_experimental.html" class="nav-dropdown-item">Dye Mixer</a>
+            <a href="colorexplorer_experimental.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+            <a href="colormatcher_experimental.html" class="nav-dropdown-item">Color Matcher</a>
+            <a href="dyecomparison_experimental.html" class="nav-dropdown-item">Dye Comparison</a>
+            <a href="coloraccessibility_experimental.html" class="nav-dropdown-item">Color Accessibility Checker</a>
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+            <div style="padding: 0.5rem 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-muted); letter-spacing: 0.05em;">Stable (v1.5.1)</div>
+            <a href="dye-mixer_stable.html" class="nav-dropdown-item">Dye Mixer</a>
+            <a href="colorexplorer_stable.html" class="nav-dropdown-item">Color Harmony Explorer</a>
+            <a href="colormatcher_stable.html" class="nav-dropdown-item">Color Matcher</a>
+            <a href="dyecomparison_stable.html" class="nav-dropdown-item">Dye Comparison</a>
+            <a href="coloraccessibility_stable.html" class="nav-dropdown-item">Color Accessibility Checker</a>
+        </div>
+    </div>
+
+    <div class="theme-switcher inline-block ml-4">
+        <button class="theme-switcher-toggle" onclick="toggleThemeSwitcher(this)" title="Change theme and appearance">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+            </svg>
+            <span class="text-xs ml-1">Theme</span>
+        </button>
+        <div class="theme-switcher-menu">
+            <!-- Standard Themes -->
+            <div class="theme-group-label">Standard</div>
+            <button class="theme-option" onclick="setTheme('standard-light')">
+                <span class="theme-dot" style="background-color: #ffffff; border: 1px solid #e5e7eb;"></span>
+                Light
+            </button>
+            <button class="theme-option" onclick="setTheme('standard-dark')">
+                <span class="theme-dot" style="background-color: #1f2937;"></span>
+                Dark
+            </button>
+
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+
+            <!-- Hydaelyn Themes -->
+            <div class="theme-group-label">Hydaelyn</div>
+            <button class="theme-option" onclick="setTheme('hydaelyn-light')">
+                <span class="theme-dot" style="background-color: #f0f9ff;"></span>
+                Light
+            </button>
+            <button class="theme-option" onclick="setTheme('hydaelyn-dark')">
+                <span class="theme-dot" style="background-color: #082f49;"></span>
+                Dark
+            </button>
+
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+
+            <!-- Classic FF Themes -->
+            <div class="theme-group-label">Classic FF</div>
+            <button class="theme-option" onclick="setTheme('classic-ff-light')">
+                <span class="theme-dot" style="background-color: #1e40af;"></span>
+                Light
+            </button>
+            <button class="theme-option" onclick="setTheme('classic-ff-dark')">
+                <span class="theme-dot" style="background-color: #030712;"></span>
+                Dark
+            </button>
+
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+
+            <!-- Parchment Themes -->
+            <div class="theme-group-label">Parchment</div>
+            <button class="theme-option" onclick="setTheme('parchment-light')">
+                <span class="theme-dot" style="background-color: #fef3c7;"></span>
+                Light
+            </button>
+            <button class="theme-option" onclick="setTheme('parchment-dark')">
+                <span class="theme-dot" style="background-color: #292415;"></span>
+                Dark
+            </button>
+
+            <hr style="margin: 0.5rem 0; opacity: 0.2;">
+
+            <!-- Sugar Riot Themes -->
+            <div class="theme-group-label">Sugar Riot</div>
+            <button class="theme-option" onclick="setTheme('sugar-riot-light')">
+                <span class="theme-dot" style="background-color: #fce7f3;"></span>
+                Light
+            </button>
+            <button class="theme-option" onclick="setTheme('sugar-riot-dark')">
+                <span class="theme-dot" style="background-color: #500724;"></span>
+                Dark
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Experimental banner styles */
+    .experimental-banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        color: #78350f;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 99;
+    }
+
+    .experimental-badge {
+        display: inline-block;
+        background-color: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+    }
+
+    .experimental-text {
+        font-size: 0.85rem;
+    }
+
+    /* Mobile experimental banner */
+    @media (max-width: 640px) {
+        .experimental-banner {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .experimental-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .experimental-text {
+            font-size: 0.75rem;
+        }
+    }
+
+    .nav-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 100;
+    }
+
+    @media (max-width: 768px) {
+        .nav-controls {
+            position: static;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .theme-switcher {
+        position: relative;
+        display: inline-block;
+    }
+
+    .theme-switcher-toggle {
+        background-color: transparent;
+        border: none;
+        color: var(--theme-primary);
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.2s, background-color 0.2s;
+        border-radius: 0.375rem;
+        /* Ensure minimum touch target size on mobile */
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+    }
+
+    .theme-switcher-toggle:hover {
+        color: var(--theme-primary-hover);
+        background-color: var(--theme-bg-secondary);
+    }
+
+    /* Touch feedback on mobile (no hover state) */
+    @media (hover: none) {
+        .theme-switcher-toggle:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+    }
+
+    .theme-switcher-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background-color: var(--theme-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 0.5rem;
+        min-width: 180px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    /* Mobile-optimized dropdown sizing - centered on screen */
+    @media (max-width: 639px) {
+        .theme-switcher-menu {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 70vh;
+            min-width: auto;
+            width: 90vw;
+            max-width: 340px;
+            top: auto;
+            bottom: auto;
+        }
+    }
+
+    .theme-group-label {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--theme-text-muted);
+        letter-spacing: 0.05em;
+    }
+
+    .theme-switcher-menu.show {
+        display: block;
+    }
+
+    .theme-option {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background-color: transparent;
+        border: none;
+        color: var(--theme-text);
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        /* Ensure minimum touch target size */
+        min-height: 44px;
+        justify-content: flex-start;
+    }
+
+    .theme-option:hover {
+        background-color: var(--theme-bg-secondary);
+    }
+
+    /* Mobile touch feedback */
+    @media (hover: none) {
+        .theme-option:active {
+            background-color: var(--theme-bg-secondary);
+            transform: scale(0.98);
+        }
+    }
+
+    /* Mobile-optimized padding */
+    @media (max-width: 639px) {
+        .theme-option {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+    }
+
+    .theme-dot {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.25rem;
+        flex-shrink: 0;
+    }
+</style>
