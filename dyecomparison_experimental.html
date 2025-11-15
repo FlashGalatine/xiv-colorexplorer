@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
     <!-- Mobile Web App Configuration -->
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -409,10 +409,68 @@
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Guide</h2>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Compare up to 4 FFXIV dyes side-by-side with visual charts and color distance metrics. Select dyes to see detailed comparisons.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">📊</span>
+                <p><strong>Mobile Tip:</strong> Pinch to zoom charts for detailed viewing of color relationships!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Compare up to 4 dyes simultaneously</li>
+                    <li>Color distance matrix shows similarity</li>
+                    <li>Hue-Saturation 2D chart visualization</li>
+                    <li>Brightness comparison chart</li>
+                    <li>Export as JSON or CSS formats</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">💡</span>
+                <p><strong>Pro Tip:</strong> Lower distance values (0-50) mean more similar colors</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>Use color distance to find similar or contrasting dyes</li>
+                    <li>Charts help visualize color relationships at a glance</li>
+                    <li>Export comparison data for reference or sharing</li>
+                    <li>Market prices help plan budget-friendly alternatives</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto p-4 md:p-8 flex-grow">
         <header class="text-center mb-8 2xl:mb-12">
-            <div class="flex justify-center items-center gap-4 mb-2 flex-wrap">
-                <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+            <div class="flex justify-between items-center gap-4 mb-2 flex-wrap">
+                <div class="flex-1 text-center">
+                    <h1 class="text-3xl md:text-4xl 2xl:text-5xl font-bold text-gray-900">FFXIV Dye Comparison Tool <span class="text-2xl md:text-3xl 2xl:text-4xl text-gray-500">v<span class="number">1</span>.<span class="number">5</span>.<span class="number">1</span></span></h1>
+                </div>
+                <button id="help-toggle" class="help-button" title="Help & Guide" onclick="openHelpModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
             </div>
             <p class="text-gray-600 mt-2 2xl:text-lg">
                 Compare FFXIV dyes side-by-side to see similarities and differences.
@@ -1786,8 +1844,98 @@
                     console.error('Error loading dye data:', error);
                     alert('Could not load dye data. Please refresh the page.');
                 });
+
+            // ===== MOBILE BOTTOM NAVIGATION BAR (PHASE 7.2) =====
+            // Set the body class to have-bottom-nav for proper spacing
+            document.body.classList.add('has-bottom-nav');
+
+            // Determine current tool based on page filename
+            const currentPage = window.location.pathname.split('/').pop().replace('_experimental.html', '').replace('.html', '');
+            const toolMap = {
+                'colormatcher': 'colormatcher',
+                'colorexplorer': 'colorexplorer',
+                'coloraccessibility': 'coloraccessibility',
+                'dyecomparison': 'dyecomparison',
+                'dye-mixer': 'dye-mixer'
+            };
+
+            // Set active nav item based on current page
+            const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+            mobileNavItems.forEach(item => {
+                const toolName = item.dataset.tool;
+                if (toolName === toolMap[currentPage] || toolName.replace('-', '') === currentPage.replace('-', '')) {
+                    item.classList.add('active');
+                }
+            });
+
+            // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+            // Initialize mobile keyboard helpers
+            if (isMobileDevice && typeof isMobileDevice === 'function') {
+                // Prevent accidental zoom on input focus
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('focus', function() {
+                        // Ensure font size is at least 16px to prevent iOS zoom
+                        this.style.fontSize = '16px';
+                    });
+                });
+            }
         });
     </script>
+
+    <!-- Help Modal Functions -->
+    <script>
+        // --- Help Modal Functions ---
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside of content
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpModal = document.getElementById('help-modal');
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    closeHelpModal();
+                }
+            });
+
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    closeHelpModal();
+                }
+            });
+        });
+    </script>
+
+    <!-- Mobile Bottom Navigation Bar (PHASE 7.2) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <a href="colormatcher_experimental.html" class="mobile-nav-item" data-tool="colormatcher">
+            <div class="mobile-nav-icon">🎨</div>
+            <div class="mobile-nav-label">Matcher</div>
+        </a>
+        <a href="colorexplorer_experimental.html" class="mobile-nav-item" data-tool="colorexplorer">
+            <div class="mobile-nav-icon">🎡</div>
+            <div class="mobile-nav-label">Explorer</div>
+        </a>
+        <a href="coloraccessibility_experimental.html" class="mobile-nav-item" data-tool="coloraccessibility">
+            <div class="mobile-nav-icon">👁️</div>
+            <div class="mobile-nav-label">Access</div>
+        </a>
+        <a href="dyecomparison_experimental.html" class="mobile-nav-item" data-tool="dyecomparison">
+            <div class="mobile-nav-icon">📊</div>
+            <div class="mobile-nav-label">Compare</div>
+        </a>
+        <a href="dye-mixer_experimental.html" class="mobile-nav-item" data-tool="dye-mixer">
+            <div class="mobile-nav-icon">🧪</div>
+            <div class="mobile-nav-label">Mixer</div>
+        </a>
+    </nav>
 
     <!-- Service Worker Registration for PWA Support -->
     <script>

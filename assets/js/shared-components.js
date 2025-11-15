@@ -1283,6 +1283,111 @@ function formatPrice(price) {
     return price.toLocaleString('en-US') + ' gil';
 }
 
+// ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+
+/**
+ * Mobile keyboard optimization utilities
+ * Handles viewport adjustments, focus management, and keyboard visibility
+ */
+
+// Detect if on mobile device
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           window.matchMedia('(max-width: 768px)').matches;
+}
+
+// Get current viewport height (accounts for keyboard)
+let lastViewportHeight = window.innerHeight;
+
+// Track keyboard visibility changes
+window.addEventListener('resize', function() {
+    const currentHeight = window.innerHeight;
+    const heightDifference = lastViewportHeight - currentHeight;
+
+    // If height decreased significantly, keyboard likely appeared
+    if (Math.abs(heightDifference) > 100 && isMobileDevice()) {
+        // Keyboard appeared - content may be hidden
+        // Ensure focused element is visible
+        const focused = document.activeElement;
+        if (focused && focused !== document.body) {
+            // Scroll focused element into view with a delay for keyboard animation
+            setTimeout(() => {
+                focused.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }, 100);
+        }
+    }
+
+    lastViewportHeight = currentHeight;
+});
+
+// Ensure inputs have proper focus visible styling
+document.addEventListener('DOMContentLoaded', function() {
+    if (!isMobileDevice()) return;
+
+    const inputs = document.querySelectorAll('input, select, textarea, button');
+
+    inputs.forEach(input => {
+        // Add focus-visible support for older browsers
+        input.addEventListener('focus', function() {
+            this.classList.add('has-focus');
+        });
+
+        input.addEventListener('blur', function() {
+            this.classList.remove('has-focus');
+        });
+
+        // Prevent text selection on double-tap for inputs
+        input.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Ensure body doesn't zoom on orientation change
+    window.addEventListener('orientationchange', function() {
+        // Reset viewport zoom on rotation
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            // Restore after animation completes
+            setTimeout(() => {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0');
+            }, 500);
+        }
+    });
+});
+
+/**
+ * Focus an element and ensure it's visible (useful for modal dialogs)
+ * @param {HTMLElement} element - Element to focus
+ */
+function focusAndScroll(element) {
+    if (!element) return;
+    element.focus();
+    if (isMobileDevice()) {
+        setTimeout(() => {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }, 100);
+    }
+}
+
+/**
+ * Close mobile keyboard programmatically
+ */
+function closeKeyboard() {
+    const focused = document.activeElement;
+    if (focused && focused !== document.body) {
+        focused.blur();
+    }
+}
+
 // ===== PAGE INITIALIZATION =====
 /**
  * Initialize all shared functionality when DOM is ready

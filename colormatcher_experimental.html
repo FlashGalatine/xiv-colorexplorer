@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
     <!-- Mobile Web App Configuration -->
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -628,10 +628,53 @@
     <div id="help-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Keyboard Shortcuts</h2>
+                <h2 class="modal-title">Help & Guide</h2>
                 <button class="modal-close" onclick="closeHelpModal()">×</button>
             </div>
-            <div class="shortcuts-group">
+
+            <!-- Quick Start Section -->
+            <div class="help-section">
+                <h3>Quick Start</h3>
+                <p>Find matching FFXIV dyes from images, color picker, or direct capture. Upload any image to extract colors and get instant dye matches.</p>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">📱</span>
+                <p><strong>Mobile Tip:</strong> Tap the camera icon to capture photos directly from your device camera!</p>
+            </div>
+
+            <!-- Key Features -->
+            <div class="help-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li>Upload images via drag-and-drop or file selection</li>
+                    <li>Paste images from clipboard (Ctrl+V / Cmd+V)</li>
+                    <li>Capture photos directly from device camera (mobile/desktop)</li>
+                    <li>Use color picker to select specific colors</li>
+                    <li>Click image to sample color with eyedropper</li>
+                </ul>
+            </div>
+
+            <!-- Mobile Tip -->
+            <div class="mobile-tip desktop-hidden">
+                <span class="mobile-tip-icon">👆</span>
+                <p><strong>Touch Gestures:</strong> Pinch to zoom the image, double-tap to fit to screen</p>
+            </div>
+
+            <!-- Tips & Tricks -->
+            <div class="help-section">
+                <h3>Tips & Tricks</h3>
+                <ul>
+                    <li>Larger sample sizes provide more accurate color matching</li>
+                    <li>Use the eyedropper to precisely sample specific areas</li>
+                    <li>Adjust zoom to examine fine details in images</li>
+                    <li>Market prices show when "Show Prices" is enabled</li>
+                </ul>
+            </div>
+
+            <!-- Keyboard Shortcuts (Desktop) -->
+            <div class="shortcuts-group mobile-hidden">
                 <h3>Image Input</h3>
                 <table class="shortcuts-table">
                     <thead>
@@ -648,7 +691,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="shortcuts-group">
+            <div class="shortcuts-group mobile-hidden">
                 <h3>Zoom Controls</h3>
                 <table class="shortcuts-table">
                     <thead>
@@ -681,7 +724,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="shortcuts-group">
+            <div class="shortcuts-group mobile-hidden">
                 <h3>Canvas Interactions</h3>
                 <table class="shortcuts-table">
                     <thead>
@@ -1986,6 +2029,42 @@
                     console.log('Color data loaded successfully.');
                     setupEventListeners(); // Set up event listeners after data is loaded
                     findClosestMatch();   // Perform initial match
+
+                    // ===== MOBILE BOTTOM NAVIGATION BAR (PHASE 7.2) =====
+                    // Set the body class to have-bottom-nav for proper spacing
+                    document.body.classList.add('has-bottom-nav');
+
+                    // Determine current tool based on page filename
+                    const currentPage = window.location.pathname.split('/').pop().replace('_experimental.html', '').replace('.html', '');
+                    const toolMap = {
+                        'colormatcher': 'colormatcher',
+                        'colorexplorer': 'colorexplorer',
+                        'coloraccessibility': 'coloraccessibility',
+                        'dyecomparison': 'dyecomparison',
+                        'dye-mixer': 'dye-mixer'
+                    };
+
+                    // Set active nav item based on current page
+                    const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+                    mobileNavItems.forEach(item => {
+                        const toolName = item.dataset.tool;
+                        if (toolName === toolMap[currentPage] || toolName.replace('-', '') === currentPage.replace('-', '')) {
+                            item.classList.add('active');
+                        }
+                    });
+
+                    // ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) =====
+                    // Initialize mobile keyboard helpers
+                    if (isMobileDevice && typeof isMobileDevice === 'function') {
+                        // Prevent accidental zoom on input focus
+                        const inputs = document.querySelectorAll('input, select, textarea');
+                        inputs.forEach(input => {
+                            input.addEventListener('focus', function() {
+                                // Ensure font size is at least 16px to prevent iOS zoom
+                                this.style.fontSize = '16px';
+                            });
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading color data:', error);
@@ -1994,6 +2073,30 @@
         });
 
     </script>
+
+    <!-- Mobile Bottom Navigation Bar (PHASE 7.2) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <a href="colormatcher_experimental.html" class="mobile-nav-item" data-tool="colormatcher">
+            <div class="mobile-nav-icon">🎨</div>
+            <div class="mobile-nav-label">Matcher</div>
+        </a>
+        <a href="colorexplorer_experimental.html" class="mobile-nav-item" data-tool="colorexplorer">
+            <div class="mobile-nav-icon">🎡</div>
+            <div class="mobile-nav-label">Explorer</div>
+        </a>
+        <a href="coloraccessibility_experimental.html" class="mobile-nav-item" data-tool="coloraccessibility">
+            <div class="mobile-nav-icon">👁️</div>
+            <div class="mobile-nav-label">Access</div>
+        </a>
+        <a href="dyecomparison_experimental.html" class="mobile-nav-item" data-tool="dyecomparison">
+            <div class="mobile-nav-icon">📊</div>
+            <div class="mobile-nav-label">Compare</div>
+        </a>
+        <a href="dye-mixer_experimental.html" class="mobile-nav-item" data-tool="dye-mixer">
+            <div class="mobile-nav-icon">🧪</div>
+            <div class="mobile-nav-label">Mixer</div>
+        </a>
+    </nav>
 
     <!-- Service Worker Registration for PWA Support -->
     <script>

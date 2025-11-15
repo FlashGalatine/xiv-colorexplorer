@@ -803,3 +803,529 @@ body.theme-sugar-riot-light button {
         font-size: 1.1rem;
     }
 }
+
+/* ===== HELP MODAL STYLES ===== */
+
+/* Base modal overlay */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+/* Desktop modal content */
+.modal-content {
+    background-color: var(--theme-card-bg);
+    border: 2px solid var(--theme-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--theme-border);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--theme-text);
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--theme-text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.modal-close:hover {
+    background-color: var(--theme-bg-secondary);
+    color: var(--theme-text);
+}
+
+/* Help modal sections */
+.help-section {
+    margin-bottom: 1.5rem;
+}
+
+.help-section:last-child {
+    margin-bottom: 0;
+}
+
+.help-section h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--theme-primary);
+    margin-bottom: 0.75rem;
+}
+
+.help-section p {
+    color: var(--theme-text);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.help-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-section li {
+    padding: 0.5rem 0;
+    color: var(--theme-text);
+    display: flex;
+    align-items: flex-start;
+}
+
+.help-section li::before {
+    content: "•";
+    color: var(--theme-primary);
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    line-height: 1.4;
+}
+
+/* Keyboard shortcuts table (desktop) */
+.shortcuts-group {
+    margin-bottom: 1.5rem;
+}
+
+.shortcuts-group h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--theme-primary);
+    margin-bottom: 0.75rem;
+}
+
+.shortcuts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.shortcuts-table th {
+    text-align: left;
+    padding: 0.5rem;
+    background-color: var(--theme-bg-secondary);
+    color: var(--theme-text);
+    font-weight: 600;
+    border-bottom: 2px solid var(--theme-border);
+}
+
+.shortcuts-table td {
+    padding: 0.5rem;
+    color: var(--theme-text);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.shortcuts-table tr:last-child td {
+    border-bottom: none;
+}
+
+.kbd {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--theme-bg-tertiary);
+    border: 1px solid var(--theme-border);
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+    color: var(--theme-text);
+}
+
+/* Mobile-optimized help modal */
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95vw;
+        max-width: 100%;
+        max-height: 90vh;
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 1rem;
+    }
+
+    .modal-header {
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+    }
+
+    .modal-close {
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    /* Simplify help sections for mobile */
+    .help-section {
+        margin-bottom: 1.25rem;
+    }
+
+    .help-section h3 {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .help-section p {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .help-section li {
+        padding: 0.625rem 0;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .help-section li::before {
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    /* Convert keyboard shortcuts table to simple list on mobile */
+    .shortcuts-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .shortcuts-table {
+        display: block;
+    }
+
+    .shortcuts-table thead {
+        display: none; /* Hide table headers on mobile */
+    }
+
+    .shortcuts-table tbody {
+        display: block;
+    }
+
+    .shortcuts-table tr {
+        display: flex;
+        flex-direction: column;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background-color: var(--theme-bg-secondary);
+        border-radius: 0.5rem;
+        border: 1px solid var(--theme-border);
+    }
+
+    .shortcuts-table td {
+        display: block;
+        padding: 0.25rem 0;
+        border: none;
+    }
+
+    .shortcuts-table td:first-child {
+        font-weight: 600;
+        color: var(--theme-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .kbd {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.9375rem;
+        margin-right: 0.25rem;
+    }
+
+    /* Mobile-specific tip boxes */
+    .mobile-tip {
+        background-color: var(--theme-bg-secondary);
+        border-left: 4px solid var(--theme-primary);
+        padding: 1rem;
+        margin: 0.75rem 0;
+        border-radius: 0.5rem;
+    }
+
+    .mobile-tip-icon {
+        display: inline-block;
+        margin-right: 0.5rem;
+        font-size: 1.25rem;
+    }
+
+    .mobile-tip p {
+        margin: 0;
+        font-size: 0.9375rem;
+        color: var(--theme-text);
+    }
+}
+
+/* Help button styling */
+.help-button {
+    background-color: var(--theme-bg-secondary);
+    color: var(--theme-primary);
+    border: 2px solid var(--theme-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.help-button:hover {
+    background-color: var(--theme-bg-tertiary);
+    border-color: var(--theme-primary);
+}
+
+@media (hover: none) {
+    .help-button:active {
+        transform: scale(0.95);
+        background-color: var(--theme-bg-tertiary);
+    }
+}
+
+/* ===== MOBILE BOTTOM NAVIGATION BAR (PHASE 7.2) ===== */
+
+/* Hide bottom nav on desktop, show only on mobile */
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* Bottom navigation bar - Mobile only (max-width: 768px) */
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background-color: var(--theme-bg);
+        border-top: 1px solid var(--theme-border);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 98;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        /* Ensure safe area on devices with notches/home indicators */
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+
+    /* Adjust height if there's safe area padding */
+    .mobile-bottom-nav {
+        height: calc(60px + max(0px, env(safe-area-inset-bottom)));
+    }
+
+    /* Individual navigation items */
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 8px 12px;
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+        color: var(--theme-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 0.75rem;
+        transition: color 0.2s, background-color 0.2s;
+        border-radius: 0.375rem;
+        flex: 1;
+        max-width: 80px;
+    }
+
+    /* Active state - current page */
+    .mobile-nav-item.active {
+        color: var(--theme-primary);
+    }
+
+    /* Touch feedback - no hover on mobile */
+    @media (hover: none) {
+        .mobile-nav-item:active {
+            background-color: var(--theme-bg-secondary);
+            transform: scale(0.95);
+        }
+    }
+
+    /* Hover state - desktop touch devices or trackpad */
+    @media (hover: hover) {
+        .mobile-nav-item:hover {
+            color: var(--theme-primary);
+            background-color: var(--theme-bg-secondary);
+        }
+    }
+
+    /* Icon styling within nav items */
+    .mobile-nav-icon {
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Label styling */
+    .mobile-nav-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Adjust main content to account for bottom nav */
+    body {
+        /* This will be set by individual pages if they have bottom nav */
+        --bottom-nav-height: 60px;
+    }
+
+    /* If a page uses the bottom nav, add padding to prevent content overlap */
+    body.has-bottom-nav main {
+        padding-bottom: calc(var(--bottom-nav-height) + max(0px, env(safe-area-inset-bottom)));
+    }
+
+    /* For pages with scrollable containers, ensure proper spacing */
+    .content-with-bottom-nav {
+        margin-bottom: calc(var(--bottom-nav-height) + max(0px, env(safe-area-inset-bottom)));
+    }
+}
+
+/* ===== MOBILE KEYBOARD OPTIMIZATION (PHASE 7.3) ===== */
+
+/* Prevent zoom on input focus (iOS Safari specific) */
+@media (max-width: 768px) {
+    input, select, textarea, button {
+        font-size: 16px !important;
+        /* Prevents iOS from zooming when input is focused */
+        /* Font size must be ≥16px for this to work */
+    }
+
+    /* Ensure form elements are keyboard-accessible */
+    input:focus, select:focus, textarea:focus {
+        outline: 2px solid var(--theme-primary);
+        outline-offset: 2px;
+    }
+
+    /* Improve select element appearance on mobile */
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    /* Improve color input on mobile */
+    input[type="color"] {
+        width: 60px;
+        height: 60px;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        /* Ensure touch target is large enough */
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+    }
+
+    /* Improve buttons for mobile touch */
+    button {
+        min-height: var(--touch-target-min);
+        padding: 0.75rem 1rem;
+    }
+
+    /* Number inputs optimization for mobile */
+    input[type="number"] {
+        font-size: 16px !important;
+    }
+
+    /* Text inputs optimization */
+    input[type="text"],
+    input[type="search"] {
+        font-size: 16px !important;
+    }
+
+    /* Ensure search inputs work well on mobile */
+    input[type="search"]::-webkit-search-cancel-button {
+        display: block;
+        -webkit-appearance: searchfield-cancel-button;
+        cursor: pointer;
+    }
+
+    /* Fix textarea for mobile keyboard */
+    textarea {
+        font-size: 16px !important;
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    /* Prevent zoom on orientation change */
+    @viewport {
+        width: device-width;
+        initial-scale: 1;
+        user-zoom: fixed;
+    }
+
+    /* Ensure inputs don't get hidden behind keyboard */
+    input:focus, select:focus, textarea:focus {
+        /* Scroll into view when focused - browser handles this automatically */
+        scroll-behavior: smooth;
+    }
+
+    /* Improve toggle switches for mobile keyboard context */
+    input[type="checkbox"] + label,
+    input[type="radio"] + label {
+        padding: 0.75rem;
+        display: inline-block;
+        min-height: var(--touch-target-min);
+        line-height: var(--touch-target-min);
+    }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        input, select, textarea, button {
+            padding-left: max(0.75rem, env(safe-area-inset-left));
+            padding-right: max(0.75rem, env(safe-area-inset-right));
+        }
+    }
+}
