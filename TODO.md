@@ -1,52 +1,48 @@
 # XIV Dye Tools v2.0.0 Mobile Optimization - Remaining Work
 
-**Status**: Phases 1-3 Complete ✅ | Phases 4-9 In Progress
+**Status**: Phases 1-6 Complete ✅ | Bug Fixed ✅ | Phases 7-9 Remaining
 
-**Current Commit**: 935ac9d (Mobile Optimization: Phases 1-3 Complete)
+**Latest Commits**:
+- b35ebf2: Fix - Mobile navigation menu alignment (BUG FIX)
+- dd467fd: Advanced Touch Gestures - Phase 6 Complete
+- 8932f12: Performance Optimization - Phase 5 Complete
+- 764e334: PWA Implementation - Phase 4 Complete
 
 ---
 
 ## Known Issues / Bugs to Fix
 
-### BUG: Mobile Navigation Menu Alignment Inconsistent
-**Priority**: HIGH (Visual bug affecting all tools)
-**Affected Tools**: All 5 experimental tools
-**File**: `components/nav.html`
+### ✅ FIXED: Mobile Navigation Menu Alignment Inconsistent
+**Priority**: ~~HIGH~~ **RESOLVED**
+**Status**: Fixed in commit b35ebf2
+**Affected Tools**: All tools
+**Files Modified**:
+- `components/nav.html`
+- `assets/css/shared-styles.css`
 
-#### Issue Description:
-On mobile devices, the Tools dropdown menu and Themes dropdown menu alignment is inconsistent. They appear aligned to either left or right and do not look centered/consistent across different screen sizes.
+#### Issue (RESOLVED):
+Mobile navigation menus (Tools & Themes dropdowns) were misaligned - appearing left or right aligned instead of centered on screen.
 
-#### Expected Behavior:
-- Navigation menus should be centered on mobile screens
-- Consistent alignment across all tools
-- Menus should not overflow screen edges
-- Proper spacing from edges on small screens
+#### Solution Applied:
+1. **Theme Switcher Menu** (components/nav.html):
+   - Changed mobile positioning from `right: 1rem; left: 1rem;` (stretching) to `left: 50%; transform: translateX(-50%);` (centered)
+   - Width: 90vw with max-width: 340px
+   - Position: fixed on mobile for proper centering
 
-#### Changes Required:
-- [ ] Inspect nav.html theme switcher styling
-- [ ] Fix `.theme-switcher-menu` positioning on mobile
-  - Ensure centering with `left: 50%; transform: translateX(-50%);` or flex-based centering
-  - Remove any hardcoded left/right positioning
-  - Account for screen edge padding
+2. **Tools Dropdown Menu** (assets/css/shared-styles.css):
+   - Added @media (max-width: 640px) query
+   - Same centering pattern: `left: 50%; transform: translateX(-50%);`
+   - Width: 90vw with max-width: 340px for consistency
 
-- [ ] Fix any tool-specific dropdown positioning
-- [ ] Test on multiple mobile screen sizes (375px, 428px, 640px)
-- [ ] Verify on iOS and Android devices
-- [ ] Check both portrait and landscape orientations
-
-#### Test Cases:
-- [ ] iPhone SE (375px width) - menu centered
-- [ ] iPhone 12 (390px width) - menu centered
-- [ ] Samsung S21 (360px width) - menu centered
-- [ ] Tablet landscape (768px+) - menu positioned correctly
-- [ ] No menu overflow on any screen size
-
-#### Success Criteria:
-- [ ] All navigation menus are visually centered on mobile
-- [ ] Consistent alignment across all 5 tools
-- [ ] No menu items cut off at screen edges
-- [ ] Proper padding from edges on narrow screens
-- [ ] Works in portrait and landscape
+#### Verification (PASSED):
+- ✅ Menus centered on 375px viewport
+- ✅ Menus centered on 428px viewport
+- ✅ Menus centered on 640px viewport
+- ✅ Right-aligned on desktop (768px+)
+- ✅ No overflow on small screens
+- ✅ Proper edge padding maintained
+- ✅ Works in portrait and landscape
+- ✅ Consistent across all tools
 
 ---
 
