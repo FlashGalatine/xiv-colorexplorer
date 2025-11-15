@@ -1051,7 +1051,26 @@
          * // See how red appears to someone with deuteranopia at 50% intensity
          * const simulated = applyColorblindness("#FF0000", "deuteranopia", 50);
          */
+
+        // ===== PERFORMANCE FIX 2: Memoize Color Transformations =====
+        // Cache for expensive color transformation calculations
+        const transformationCache = new Map();
+
+        function getCacheKey(hex, visionType, intensity) {
+            return `${hex}-${visionType}-${intensity}`;
+        }
+
+        function clearTransformationCache() {
+            transformationCache.clear();
+        }
+
         function applyColorblindness(hex, visionType, intensity) {
+            // Check cache first
+            const cacheKey = getCacheKey(hex, visionType, intensity);
+            if (transformationCache.has(cacheKey)) {
+                return transformationCache.get(cacheKey);
+            }
+
             const rgb = hexToRgb(hex);
             const matrix = colorblindMatrices[visionType];
 
@@ -1073,11 +1092,15 @@
             const finalB = b * (1 - intensityFraction) + newB * intensityFraction;
 
             // Convert from 0-1 range back to 0-255 range and return as hex
-            return rgbToHex(
+            const result = rgbToHex(
                 Math.round(finalR * 255),
                 Math.round(finalG * 255),
                 Math.round(finalB * 255)
             );
+
+            // Store in cache before returning
+            transformationCache.set(cacheKey, result);
+            return result;
         }
 
         /**
@@ -1097,6 +1120,12 @@
          * const gray = applyAchromatopsia("#0000FF", 75);
          */
         function applyAchromatopsia(hex, intensity) {
+            // Check cache first
+            const cacheKey = getCacheKey(hex, 'achromatopsia', intensity);
+            if (transformationCache.has(cacheKey)) {
+                return transformationCache.get(cacheKey);
+            }
+
             const rgb = hexToRgb(hex);
 
             // Calculate luminance using standard weighting (ITU-R BT.601)
@@ -1109,11 +1138,15 @@
             const finalG = rgb.g * (1 - intensityFraction) + luminance * intensityFraction;
             const finalB = rgb.b * (1 - intensityFraction) + luminance * intensityFraction;
 
-            return rgbToHex(
+            const result = rgbToHex(
                 Math.round(finalR),
                 Math.round(finalG),
                 Math.round(finalB)
             );
+
+            // Store in cache before returning
+            transformationCache.set(cacheKey, result);
+            return result;
         }
 
         /**
@@ -1383,20 +1416,39 @@
         /**
          * Update original palette display
          */
+        // ===== PERFORMANCE FIX 4: Reuse DOM Elements =====
         function updateOriginalPalette() {
             const activeDyes = getActiveDyes();
             const grid = document.getElementById('original-palette-grid');
-            grid.innerHTML = '';
+            const existingItems = grid.querySelectorAll('.palette-item');
 
-            activeDyes.forEach(dye => {
-                const div = document.createElement('div');
-                div.className = 'palette-item';
-                div.innerHTML = `
-                    <div class="dye-swatch" style="background-color: ${dye.hex}; display: block; height: 100px; border-radius: 0.5rem;"></div>
-                    <div class="palette-label">${dye.name}</div>
-                `;
-                grid.appendChild(div);
+            // Update or reuse existing items
+            activeDyes.forEach((dye, index) => {
+                let item = existingItems[index];
+
+                if (item) {
+                    // Reuse existing item - just update colors and text
+                    const swatch = item.querySelector('.dye-swatch');
+                    const label = item.querySelector('.palette-label');
+
+                    swatch.style.backgroundColor = dye.hex;
+                    label.textContent = dye.name;
+                } else {
+                    // Create new item only if needed
+                    const div = document.createElement('div');
+                    div.className = 'palette-item';
+                    div.innerHTML = `
+                        <div class="dye-swatch" style="background-color: ${dye.hex}; display: block; height: 100px; border-radius: 0.5rem;"></div>
+                        <div class="palette-label">${dye.name}</div>
+                    `;
+                    grid.appendChild(div);
+                }
             });
+
+            // Remove excess items if dyes were removed
+            for (let i = activeDyes.length; i < existingItems.length; i++) {
+                existingItems[i].remove();
+            }
         }
 
         /**
@@ -1520,7 +1572,13 @@
                 { name: 'Achromatopsia (Monochrome)', type: 'achromatopsia', intensity: 100 }
             ];
 
-            visions.forEach(vision => {
+            // ===== PERFORMANCE FIX 1: Lazy Render Vision Simulations =====
+            // Only render vision types that have intensity > 0 (or achromatopsia which is always visible)
+            const visionsToRender = visions.filter(vision =>
+                vision.intensity > 0 || vision.type === 'achromatopsia'
+            );
+
+            visionsToRender.forEach(vision => {
                 const div = document.createElement('div');
                 div.className = 'vision-type';
 
@@ -1673,6 +1731,7 @@
         /**
          * Update contrast matrix
          */
+        // ===== PERFORMANCE FIX 3: Chunk Contrast Matrix Rendering =====
         function updateContrastMatrix() {
             const activeDyes = getActiveDyes();
             const container = document.getElementById('contrast-container');
@@ -1682,20 +1741,27 @@
                 return;
             }
 
+            // Build header first
             let html = '<table class="contrast-table"><thead><tr><th>Dye</th>';
-
             activeDyes.forEach(dye => {
                 html += `<th>${dye.name}</th>`;
             });
-
             html += '</tr></thead><tbody>';
+            container.innerHTML = html;
 
-            activeDyes.forEach((dyeA, i) => {
-                html += `<tr><td class="font-medium">${dyeA.name}</td>`;
+            const tbody = container.querySelector('tbody');
+            let rowIndex = 0;
+
+            // Render rows asynchronously using requestIdleCallback
+            function renderNextRow() {
+                if (rowIndex >= activeDyes.length) return;
+
+                const dyeA = activeDyes[rowIndex];
+                let rowHtml = `<tr><td class="font-medium">${dyeA.name}</td>`;
 
                 activeDyes.forEach((dyeB, j) => {
-                    if (i === j) {
-                        html += '<td>-</td>';
+                    if (rowIndex === j) {
+                        rowHtml += '<td>-</td>';
                     } else {
                         const distance = getColorDistance(dyeA.hex, dyeB.hex);
                         let className = 'contrast-value contrast-low';
@@ -1706,15 +1772,41 @@
                             className = 'contrast-value contrast-medium';
                         }
 
-                        html += `<td class="${className}"><span class="number">${distance.toFixed(0)}</span></td>`;
+                        rowHtml += `<td class="${className}"><span class="number">${distance.toFixed(0)}</span></td>`;
                     }
                 });
 
-                html += '</tr>';
-            });
+                rowHtml += '</tr>';
+                const tr = document.createElement('tr');
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
 
-            html += '</tbody></table>';
-            container.innerHTML = html;
+                rowIndex++;
+                // Schedule next row with idle callback for smooth rendering
+                if (typeof requestIdleCallback !== 'undefined') {
+                    requestIdleCallback(renderNextRow, { timeout: 50 });
+                } else {
+                    // Fallback for browsers without requestIdleCallback
+                    setTimeout(renderNextRow, 0);
+                }
+            }
+
+            // Start rendering rows
+            if (typeof requestIdleCallback !== 'undefined') {
+                requestIdleCallback(renderNextRow);
+            } else {
+                setTimeout(renderNextRow, 0);
+            }
+
+            // Close table structure
+            setTimeout(() => {
+                if (!tbody.querySelector('tr:last-child')) {
+                    // Only add closing tag if not already added
+                    const closeTag = document.createElement('tr');
+                    closeTag.style.display = 'none';
+                    tbody.appendChild(closeTag);
+                }
+            }, activeDyes.length * 55); // Estimate completion time
         }
 
         /**
@@ -2119,6 +2211,8 @@
                         if (slider && value) {
                             slider.addEventListener('input', (e) => {
                                 value.innerHTML = `<span class="number">${e.target.value}</span>%`;
+                                // Invalidate transformation cache when intensity changes
+                                clearTransformationCache();
                                 debouncedUpdateVisualization();
                             });
                         }
