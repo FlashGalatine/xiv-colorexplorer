@@ -975,9 +975,12 @@
         function handleHelpModalSwipeStart(e) {
             if (!isHelpModalOpen()) return;
 
-            helpModalSwipeState.touchStartY = e.touches[0].clientY;
-            helpModalSwipeState.touchStartX = e.touches[0].clientX;
-            helpModalSwipeState.isActive = true;
+            // Guard against empty touch array
+            if (e.touches && e.touches.length > 0) {
+                helpModalSwipeState.touchStartY = e.touches[0].clientY;
+                helpModalSwipeState.touchStartX = e.touches[0].clientX;
+                helpModalSwipeState.isActive = true;
+            }
         }
 
         /**
@@ -986,6 +989,9 @@
          */
         function handleHelpModalSwipeEnd(e) {
             if (!isHelpModalOpen() || !helpModalSwipeState.isActive) return;
+
+            // Guard against empty touch array
+            if (!e.changedTouches || e.changedTouches.length === 0) return;
 
             const deltaY = helpModalSwipeState.touchStartY - e.changedTouches[0].clientY;
             const deltaX = Math.abs(e.changedTouches[0].clientX - helpModalSwipeState.touchStartX);

@@ -600,9 +600,12 @@
         function handleModalSwipeStart(e) {
             if (!isZoomBackdropOpen()) return;
 
-            modalSwipeState.touchStartY = e.touches[0].clientY;
-            modalSwipeState.touchStartX = e.touches[0].clientX;
-            modalSwipeState.isActive = true;
+            // Guard against empty touch array
+            if (e.touches && e.touches.length > 0) {
+                modalSwipeState.touchStartY = e.touches[0].clientY;
+                modalSwipeState.touchStartX = e.touches[0].clientX;
+                modalSwipeState.isActive = true;
+            }
         }
 
         /**
@@ -611,6 +614,9 @@
          */
         function handleModalSwipeEnd(e) {
             if (!isZoomBackdropOpen() || !modalSwipeState.isActive) return;
+
+            // Guard against empty touch array
+            if (!e.changedTouches || e.changedTouches.length === 0) return;
 
             const deltaY = modalSwipeState.touchStartY - e.changedTouches[0].clientY;
             const deltaX = Math.abs(e.changedTouches[0].clientX - modalSwipeState.touchStartX);
@@ -725,7 +731,10 @@
          */
         function handleHarmonyTouchStart(e) {
             if (!harmonySwipeState.isActive) return;
-            harmonySwipeState.touchStartX = e.changedTouches[0].screenX;
+            // Guard against empty touch array
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                harmonySwipeState.touchStartX = e.changedTouches[0].screenX;
+            }
         }
 
         /**
@@ -733,6 +742,9 @@
          */
         function handleHarmonyTouchEnd(e) {
             if (!harmonySwipeState.isActive) return;
+
+            // Guard against empty touch array
+            if (!e.changedTouches || e.changedTouches.length === 0) return;
 
             harmonySwipeState.touchEndX = e.changedTouches[0].screenX;
             const swipeThreshold = 50;
