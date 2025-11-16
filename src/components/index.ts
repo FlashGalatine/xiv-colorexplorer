@@ -26,3 +26,6 @@ export { DyeMixerTool } from './dye-mixer-tool';
 export { ColorblindnessDisplay, type VisionTypeInfo } from './colorblindness-display';
 export { OutfitSlotSelector, type OutfitSlot } from './outfit-slot-selector';
 export { AccessibilityCheckerTool, type AccessibilityResult } from './accessibility-checker-tool';
+export { ImageUploadDisplay } from './image-upload-display';
+export { ColorPickerDisplay } from './color-picker-display';
+export { ColorMatcherTool } from './color-matcher-tool';
