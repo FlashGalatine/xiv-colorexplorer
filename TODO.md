@@ -15,7 +15,7 @@
 | **Phase 9.5** | Mobile Navigation & UX | ✅ COMPLETE | Mobile nav, theme menu, responsive |
 | **Phase 10** | Testing & Validation | ✅ COMPLETE | All browsers, all breakpoints, all features |
 | **Phase 11** | Code Quality & Documentation | ✅ COMPLETE | JSDoc, filterDyes(), error handling |
-| **Phase 12** | Architecture Refactor | 🔲 FUTURE | TypeScript, build system (Vite) |
+| **Phase 12** | Architecture Refactor | 🔲 PLANNED | TypeScript, Vite, 70% code dedup, v2.0.0 |
 
 ---
 
@@ -312,75 +312,199 @@
 
 ---
 
-## 🔲 Phase 12: Architecture Refactor (FUTURE)
+## 🔲 Phase 12: Architecture Refactor (PLANNED - v2.0.0)
 
-### TypeScript Migration
-- [ ] Set up TypeScript compiler
-- [ ] Create type definitions for data structures
-  - Dye interface
-  - Color objects (RGB, HSV, Hex)
-  - Tool configuration objects
-- [ ] Migrate utility functions to TypeScript
-  - Add strict null checking
-  - Add parameter types
-  - Add return types
-- [ ] Benefits:
-  - Compile-time error checking
-  - Better IDE autocomplete
-  - Documentation via types
-  - Refactoring safety
+**Status**: 🔲 PLANNED (Ready to Start After Phase 11)
+**Target Version**: v2.0.0
+**Estimated Timeline**: 6-8 weeks
+**Complexity**: High | **Risk Level**: Medium
 
-### Build System Setup (Vite)
-- [ ] Install and configure Vite
-- [ ] Set up development server
-  - Fast hot module replacement
-  - Component preprocessing
-- [ ] Create production build
-  - Minification
-  - Asset bundling
-  - Code splitting (optional)
-- [ ] Deprecate experimental/stable split
-  - Single source of truth
-  - Easier development workflow
-- [ ] Update deployment process
+### Planning Documents
+- 📄 **PHASE_12_ROADMAP.md** - Comprehensive planning (1,266 lines)
+  - 7 detailed sub-phases with specific deliverables
+  - Performance targets and metrics
+  - Risk mitigation strategies
+  - Migration strategy with zero-downtime deployment
+  - Success criteria and KPIs
 
-### Component Extraction
-- [ ] Extract reusable UI components
-  - Color picker modal
-  - Dropdown selectors
-  - Toast notifications
-  - Chart rendering library
-- [ ] Create component library
-  - Documented API
-  - Consistent styling
-  - Accessibility built-in
-- [ ] Share components across tools
-  - Reduce duplication
-  - Consistent UX
-  - Easier maintenance
+- ✅ **PHASE_12_CHECKLIST.md** - Granular implementation checklist
+  - 350+ actionable checkboxes
+  - Weekly breakdown with completion gates
+  - Test coverage goals and coverage targets
+  - Pre-release verification checklist
+  - Device and browser testing matrix
 
-### State Management
-- [ ] Implement centralized state management
-  - Consider: Redux, Zustand, or vanilla module pattern
-  - Global app state
-  - Tool-specific state
-- [ ] Replace localStorage with state system
-  - Automatic persistence layer
-  - State synchronization across tabs
-  - Time-travel debugging (optional)
+### 12.1 Build System Setup (Week 1-2)
+- [ ] Vite 5.x configuration
+  - [ ] Install Vite and dependencies
+  - [ ] Create vite.config.ts with aliases
+  - [ ] Enable TypeScript compilation
+  - [ ] Set up dev server with HMR
 
-### Performance Optimizations
-- [ ] Profile rendering performance
-  - Identify bottlenecks
-  - Optimize canvas operations
-  - Reduce re-renders
-- [ ] Implement lazy loading
-  - Load tools on demand
-  - Defer non-critical resources
-- [ ] Add service worker support
-  - Offline functionality
-  - Cache strategies
-  - Background sync
+- [ ] TypeScript 5.x strict mode
+  - [ ] Create tsconfig.json
+  - [ ] Enable strict mode ("strict": true)
+  - [ ] Configure path aliases
+  - [ ] Set target to ES2020
+
+- [ ] ESLint & Prettier setup
+  - [ ] Configure TypeScript ESLint
+  - [ ] Create Prettier config
+  - [ ] Set up pre-commit hooks (optional)
+
+- [ ] Vitest testing framework
+  - [ ] Install Vitest, jsdom, @testing-library
+  - [ ] Create vitest.config.ts
+  - [ ] Set up coverage reporting
+
+**Target**: `npm run dev` works, `npm run build` creates dist/, tests runnable
+
+### 12.2 TypeScript Migration (Week 3-4)
+- [ ] Core Services (5 services)
+  - [ ] `color-service.ts` - Color conversions, colorblindness simulation
+  - [ ] `dye-service.ts` - Dye database, filtering, searching
+  - [ ] `storage-service.ts` - localStorage wrapper with generics
+  - [ ] `theme-service.ts` - Theme management and persistence
+  - [ ] `api-service.ts` - Universalis API integration, caching
+
+- [ ] Shared Utilities
+  - [ ] `shared/types.ts` - Global TypeScript interfaces
+  - [ ] `shared/utils.ts` - 30+ helper functions
+  - [ ] `shared/constants.ts` - Magic numbers, configurations
+  - [ ] `shared/error-handler.ts` - Centralized error handling
+
+- [ ] Unit Tests (2,500+ lines)
+  - [ ] Service tests: ≥85% coverage
+  - [ ] Utility tests: ≥95% coverage
+  - [ ] **Target**: 0 `any` types in service layer
+
+**Deliverable**: 5 type-safe, well-tested services replacing 1,600+ duplicate lines
+
+### 12.3 Component Layer (Week 5)
+- [ ] Reusable UI Components
+  - [ ] `BaseComponent` abstract class
+  - [ ] Theme Switcher component
+  - [ ] Mobile Navigation component
+  - [ ] Footer component
+  - [ ] Market Prices component
+
+- [ ] Component Testing
+  - [ ] Rendering tests
+  - [ ] Event binding tests
+  - [ ] Accessibility verification
+  - [ ] **Target**: ≥80% coverage per component
+
+**Deliverable**: 5 composable, testable UI components with consistent patterns
+
+### 12.4 Tool Applications Migration (Week 6-8)
+- [ ] Color Matcher (Pattern Tool)
+  - [ ] types.ts, logic.ts, ui.ts, handlers.ts
+  - [ ] styles.css, __tests__/ directory
+  - [ ] Verify 100% feature parity with v1.6.x
+
+- [ ] Color Accessibility
+  - [ ] Complex: 5 vision types, 6 outfit slots, dual dyes
+  - [ ] Brettel matrices, accessibility scoring
+
+- [ ] Color Explorer
+  - [ ] 6 harmony algorithms, canvas visualization
+
+- [ ] Dye Comparison
+  - [ ] 3 chart types, distance matrices
+
+- [ ] Dye Mixer
+  - [ ] Interpolation algorithm, gradient visualization
+
+- [ ] All Tools Tests
+  - [ ] ≥85% coverage per tool
+  - [ ] **Total**: 2,500+ lines of test code
+  - [ ] Algorithm byte-by-byte comparison with v1.6.x
+
+**Deliverable**: 5 fully typed, well-tested tools with 100% functional parity
+
+### 12.5 Integration & Build Optimization (Week 8)
+- [ ] Single Entry Point
+  - [ ] src/main.ts - Application bootstrap
+  - [ ] src/index.html - Unified HTML entry
+  - [ ] src/app-initializer.ts - Tool loading logic
+
+- [ ] Build Optimization
+  - [ ] Code splitting strategy
+  - [ ] Lazy loading for tools
+  - [ ] Service worker (src/service-worker.ts)
+  - [ ] **Target**: Bundle ≤500KB gzipped (70% reduction from v1.6.x)
+
+- [ ] Performance Gains
+  - [ ] Load time: 3.2s → 1.5s (53% faster)
+  - [ ] Paint time: 2.8s → 0.8s (71% faster)
+  - [ ] Bundle size: 1,500KB → 450KB (70% reduction)
+
+**Deliverable**: Optimized production bundle with excellent performance metrics
+
+### 12.6 Testing & Validation (Week 8-9)
+- [ ] Unit Test Coverage
+  - [ ] Services: ≥90% coverage
+  - [ ] Tools: ≥85% coverage
+  - [ ] Overall: ≥80% coverage minimum
+
+- [ ] Browser Testing Matrix
+  - [ ] Chrome, Firefox, Safari, Edge
+  - [ ] Mobile (375px), Tablet (768px), Desktop (1920px)
+  - [ ] Light/Dark modes on all devices
+
+- [ ] Accessibility Compliance
+  - [ ] WCAG 2.1 AA standard
+  - [ ] Keyboard navigation
+  - [ ] Screen reader support
+  - [ ] Color contrast verification
+
+- [ ] Performance Validation
+  - [ ] Lighthouse ≥90 target
+  - [ ] Load time <2 seconds
+  - [ ] No console errors/warnings
+
+**Deliverable**: Comprehensive test suite and validation across all platforms
+
+### 12.7 Documentation & Release (Week 9)
+- [ ] Developer Documentation
+  - [ ] ARCHITECTURE.md - Design decisions
+  - [ ] DEVELOPER_GUIDE.md - Setup and workflow
+  - [ ] API_DOCUMENTATION.md - Service interfaces
+  - [ ] TESTING_GUIDE.md - Test procedures
+  - [ ] MIGRATION_GUIDE.md - v1.6.x → v2.0.0
+
+- [ ] User Documentation
+  - [ ] Update README.md for v2.0.0
+  - [ ] Update CHANGELOG.md with full details
+  - [ ] Update CLAUDE.md with new architecture
+
+- [ ] Release Process
+  - [ ] Pre-release checklist validation
+  - [ ] Version bump to 2.0.0
+  - [ ] Git tag creation
+  - [ ] GitHub release with changelog
+  - [ ] Production deployment
+
+**Deliverable**: Complete documentation and released v2.0.0
+
+### Success Criteria for Phase 12
+- ✅ 100% TypeScript strict mode compliance
+- ✅ 0 ESLint warnings
+- ✅ ≥80% test coverage overall
+- ✅ 0 console errors in any browser
+- ✅ Bundle ≤500KB gzipped
+- ✅ Load time <2 seconds
+- ✅ 100% feature parity with v1.6.x
+- ✅ All 5 tools working identically
+- ✅ All themes rendering correctly
+- ✅ localStorage compatibility maintained
+
+### Strategic Impact
+- 🎯 Eliminates 1,600+ lines of code duplication
+- 🎯 Modern TypeScript-first architecture
+- 🎯 Foundation for future enhancements
+- 🎯 Industry-standard tooling (Vite, TypeScript, Vitest)
+- 🎯 Significantly improved developer experience
 
 ---
 
