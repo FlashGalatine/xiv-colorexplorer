@@ -11,23 +11,152 @@
  */
 
 :root {
-  /* Will be populated with CSS custom properties during Phase 12.3 */
+  /* Default theme variables (updated dynamically by ThemeService) */
   --theme-primary: #4f46e5;
-  --theme-bg: #ffffff;
+  --theme-background: #ffffff;
   --theme-text: #1f2937;
   --theme-border: #e5e7eb;
-  --theme-bg-secondary: #f9fafb;
-  --theme-card-bg: #ffffff;
+  --theme-background-secondary: #f9fafb;
+  --theme-card-background: #ffffff;
   --theme-text-muted: #6b7280;
 }
 
-/* Theme variants will be defined here */
-body.standard-light {
+/* =====================================================
+   STANDARD THEME (Light/Dark)
+   ===================================================== */
+html.theme-standard-light {
   color-scheme: light;
 }
 
-body.standard-dark {
+html.theme-standard-dark {
   color-scheme: dark;
 }
 
-/* Additional themes to be implemented in Phase 12.3 */
+/* =====================================================
+   HYDAELYN THEME (Light/Dark)
+   ===================================================== */
+html.theme-hydaelyn-light {
+  color-scheme: light;
+}
+
+html.theme-hydaelyn-dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   CLASSIC THEME (Light/Dark)
+   ===================================================== */
+html.theme-classic-light {
+  color-scheme: light;
+}
+
+html.theme-classic-dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   PARCHMENT THEME (Light/Dark)
+   ===================================================== */
+html.theme-parchment-light {
+  color-scheme: light;
+}
+
+html.theme-parchment-dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   SUGAR RIOT THEME (Light/Dark)
+   ===================================================== */
+html.theme-sugar-riot-light {
+  color-scheme: light;
+}
+
+html.theme-sugar-riot-dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   GLOBAL STYLES USING THEME VARIABLES
+   ===================================================== */
+
+/* Apply theme colors to body */
+body {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+/* Apply to text elements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--theme-text);
+}
+
+p {
+  color: var(--theme-text);
+}
+
+/* Apply to links */
+a {
+  color: var(--theme-primary);
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Apply to cards and containers */
+.bg-white {
+  background-color: var(--theme-card-background);
+  color: var(--theme-text);
+}
+
+.dark\:bg-gray-800 {
+  background-color: var(--theme-card-background);
+  color: var(--theme-text);
+}
+
+/* Apply to borders */
+.border {
+  border-color: var(--theme-border);
+}
+
+/* Apply to muted text */
+.text-gray-600,
+.dark\:text-gray-300,
+.text-gray-500,
+.dark\:text-gray-400 {
+  color: var(--theme-text-muted);
+}
+
+/* Apply to backgrounds */
+.bg-gray-100,
+.dark\:bg-gray-700 {
+  background-color: var(--theme-background-secondary);
+}
+
+/* Apply primary color to buttons and highlights */
+.bg-blue-600,
+.focus\:ring-blue-500 {
+  background-color: var(--theme-primary);
+}
+
+.text-blue-600 {
+  color: var(--theme-primary);
+}
+
+/* Ensure inputs use theme colors */
+input,
+textarea,
+select {
+  background-color: var(--theme-card-background);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--theme-primary);
+  outline: none;
+}

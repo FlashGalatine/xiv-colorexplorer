@@ -71,6 +71,10 @@ export class ColorInterpolationDisplay extends BaseComponent {
       return;
     }
 
+    // Add Distance explanation legend
+    const legend = this.renderDistanceLegend();
+    wrapper.appendChild(legend);
+
     // Gradient bar
     const gradientBar = this.renderGradientBar();
     wrapper.appendChild(gradientBar);
@@ -86,6 +90,90 @@ export class ColorInterpolationDisplay extends BaseComponent {
     this.container.innerHTML = '';
     this.element = wrapper;
     this.container.appendChild(this.element);
+  }
+
+  /**
+   * Render the Distance explanation legend
+   */
+  private renderDistanceLegend(): HTMLElement {
+    const container = this.createElement('div', {
+      className:
+        'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-3',
+    });
+
+    // Title with info icon
+    const title = this.createElement('div', {
+      className: 'flex items-center gap-2 font-semibold text-sm text-blue-900 dark:text-blue-200',
+    });
+
+    const icon = this.createElement('span', {
+      textContent: 'ℹ️',
+      className: 'text-base',
+    });
+
+    const titleText = this.createElement('span', {
+      textContent: 'Understanding Distance',
+    });
+
+    title.appendChild(icon);
+    title.appendChild(titleText);
+    container.appendChild(title);
+
+    // Explanation
+    const explanation = this.createElement('div', {
+      className: 'text-xs text-blue-800 dark:text-blue-300 space-y-2',
+    });
+
+    const p1 = this.createElement('p', {
+      textContent:
+        'Distance measures how closely the matched dye\'s color compares to the theoretical color at that transition point.',
+      className: 'leading-relaxed',
+    });
+    explanation.appendChild(p1);
+
+    const p2 = this.createElement('p', {
+      textContent: 'Lower distance = better match. A distance of 0 means a perfect match.',
+      className: 'leading-relaxed font-semibold',
+    });
+    explanation.appendChild(p2);
+
+    container.appendChild(explanation);
+
+    // Color scale legend
+    const scaleLabel = this.createElement('div', {
+      textContent: 'Quality Scale:',
+      className: 'text-xs font-semibold text-blue-900 dark:text-blue-200 mt-2',
+    });
+    container.appendChild(scaleLabel);
+
+    const scaleItems = [
+      { range: '≤30', color: 'text-green-600 dark:text-green-400 font-semibold', label: 'Excellent match' },
+      { range: '31-60', color: 'text-blue-600 dark:text-blue-400 font-semibold', label: 'Good match' },
+      { range: '61-100', color: 'text-yellow-600 dark:text-yellow-400 font-semibold', label: 'Fair match' },
+      { range: '>100', color: 'text-red-600 dark:text-red-400 font-semibold', label: 'Poor match' },
+    ];
+
+    for (const item of scaleItems) {
+      const scaleItem = this.createElement('div', {
+        className: 'flex gap-2 text-xs',
+      });
+
+      const rangeSpan = this.createElement('span', {
+        textContent: `${item.range}:`,
+        className: `${item.color} w-14`,
+      });
+
+      const labelSpan = this.createElement('span', {
+        textContent: item.label,
+        className: 'text-blue-700 dark:text-blue-300',
+      });
+
+      scaleItem.appendChild(rangeSpan);
+      scaleItem.appendChild(labelSpan);
+      explanation.appendChild(scaleItem);
+    }
+
+    return container;
   }
 
   /**
