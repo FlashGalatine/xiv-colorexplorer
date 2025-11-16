@@ -1,0 +1,1338 @@
+# 🧪 Phase 10: Testing & Validation - Detailed Checklist
+
+**Current Version:** v1.6.0
+**Phase Status:** Ready to Begin
+**Estimated Time:** 3-5 hours
+**Date Started:** November 15, 2025
+
+---
+
+## 📋 Quick Navigation
+
+- [Pre-Test Setup](#pre-test-setup)
+- [Browser Compatibility Testing](#browser-compatibility-testing)
+- [Mobile & Touch Testing](#mobile--touch-testing)
+- [Responsive Design Testing](#responsive-design-testing)
+- [Feature-Specific Testing](#feature-specific-testing)
+- [localStorage Persistence Testing](#localstorage-persistence-testing)
+- [Error Scenario Testing](#error-scenario-testing)
+- [Performance Testing](#performance-testing)
+- [Results & Issues](#results--issues)
+
+---
+
+## 🔧 Pre-Test Setup
+
+### Environment Check
+- [ ] Local HTTP server running (`python -m http.server 8000`)
+- [ ] Can access http://localhost:8000 in browser
+- [ ] Browser DevTools available (F12)
+- [ ] CSP set to **DEVELOPMENT** mode (allows localhost)
+  - [ ] coloraccessibility_stable.html
+  - [ ] colorexplorer_stable.html
+  - [ ] colormatcher_stable.html
+  - [ ] dyecomparison_stable.html
+  - [ ] dye-mixer_stable.html
+
+### Test Results Template
+```
+Browser: _______________
+OS: ___________________
+Date: __________________
+Tester: ________________
+
+Test Name: _______________
+Status: ☐ PASS ☐ FAIL ☐ PARTIAL
+Notes: _____________________
+```
+
+---
+
+## 🌐 Browser Compatibility Testing
+
+### Chrome/Chromium (Primary)
+**Browser:** Chrome/Chromium v120+
+**Start Time:** __________ | **End Time:** __________
+
+**Homepage (index.html)**
+- [ ] Page loads without errors
+- [ ] All 5 tool cards visible
+- [ ] Tools dropdown works (click "Tools" button)
+- [ ] Theme switcher works (click "Theme" button)
+- [ ] Console has no errors (F12 → Console tab)
+- [ ] All styles apply correctly
+- [ ] Images load properly
+
+**Color Accessibility Checker**
+- [ ] Loads without errors
+- [ ] Dye slots render
+- [ ] Intensity sliders visible
+- [ ] All 4 vision types available in dropdown
+- [ ] Vision comparison panels render
+- [ ] Accessibility score displays (0-100)
+- [ ] Console: zero errors
+
+**Color Harmony Explorer**
+- [ ] Loads without errors
+- [ ] Base color selector works
+- [ ] All 6 harmony types in dropdown
+- [ ] Color wheel displays
+- [ ] Harmony colors render
+- [ ] Zoom buttons functional
+- [ ] Export buttons present (CSV/JSON/SCSS)
+- [ ] Console: zero errors
+
+**Color Matcher**
+- [ ] Loads without errors
+- [ ] Image upload area visible
+- [ ] Color picker functional
+- [ ] Eyedropper tool visible
+- [ ] Sample size dropdown works
+- [ ] Console: zero errors
+
+**Dye Comparison**
+- [ ] Loads without errors
+- [ ] 4 dye selectors visible
+- [ ] Distance matrix renders
+- [ ] Hue-Saturation chart renders
+- [ ] Brightness chart renders
+- [ ] Export buttons functional
+- [ ] Console: zero errors
+
+**Dye Mixer (Experimental)**
+- [ ] Loads without errors
+- [ ] Gradient creator visible
+- [ ] Save button functional
+- [ ] Saved gradients display
+- [ ] Console: zero errors
+
+**✓ Chrome Test Summary**
+- [ ] All pages load
+- [ ] Zero console errors
+- [ ] All interactive elements respond
+- [ ] All charts/visualizations render
+
+---
+
+### Firefox (Secondary)
+**Browser:** Firefox v121+
+**Start Time:** __________ | **End Time:** __________
+
+**Run same test suite as Chrome:**
+- [ ] Homepage
+- [ ] Color Accessibility Checker
+- [ ] Color Harmony Explorer
+- [ ] Color Matcher
+- [ ] Dye Comparison
+- [ ] Dye Mixer
+
+**Firefox-Specific Checks**
+- [ ] Font rendering identical to Chrome
+- [ ] Color accuracy matches Chrome
+- [ ] Canvas charts render smoothly
+- [ ] Touch scrolling works on mobile viewport
+- [ ] No WebGL errors (if applicable)
+
+**Issues Found:**
+_________________________________
+
+**✓ Firefox Test Summary**
+- [ ] Passes same tests as Chrome
+- [ ] No Firefox-specific issues
+
+---
+
+### Safari (iOS 12+)
+**Browser:** Safari on macOS/iOS
+**Device:** ________________
+**Start Time:** __________ | **End Time:** __________
+
+**Critical Safari Checks**
+- [ ] Loads without CORS errors
+- [ ] Service Worker registration succeeds
+- [ ] localStorage works
+- [ ] fetch() calls succeed
+- [ ] CSS Grid/Flexbox render correctly
+- [ ] SVG icons display properly
+- [ ] Font loading doesn't block layout
+
+**Same Feature Test Suite**
+- [ ] Homepage
+- [ ] Color Accessibility Checker
+- [ ] Color Harmony Explorer
+- [ ] Color Matcher
+- [ ] Dye Comparison
+- [ ] Dye Mixer
+
+**Safari-Specific Issues**
+- [ ] Check for `-webkit-` prefix issues
+- [ ] Verify `input[type="range"]` styling
+- [ ] Test `fixed` positioning (iOS quirks)
+- [ ] Verify `touch-action` properties
+
+**Issues Found:**
+_________________________________
+
+**✓ Safari Test Summary**
+- [ ] All features functional
+- [ ] No Safari-specific bugs
+
+---
+
+### Edge (Chromium-based)
+**Browser:** Edge v120+
+**Start Time:** __________ | **End Time:** __________
+
+**Quick Validation (should match Chrome)**
+- [ ] Homepage loads correctly
+- [ ] All 5 tools accessible
+- [ ] Theme switching works
+- [ ] Navigation menus responsive
+- [ ] No console errors
+- [ ] All interactive elements respond
+
+**Edge-Specific Notes:**
+Since Edge is Chromium-based, it should match Chrome behavior. Flag any differences.
+
+**Issues Found:**
+_________________________________
+
+**✓ Edge Test Summary**
+- [ ] Behavior matches Chrome
+
+---
+
+## 📱 Mobile & Touch Testing
+
+### iOS Touch Testing
+**Device:** iPad/iPhone ________________
+**iOS Version:** ____________
+**Browser:** Safari
+**Start Time:** __________ | **End Time:** __________
+
+**Touch Gesture Tests**
+- [ ] Single tap on buttons works (no double-tap delay)
+- [ ] Swipe gestures work (if applicable)
+- [ ] Long-press doesn't trigger context menu
+- [ ] Two-finger pinch zoom works
+- [ ] Touch scrolling smooth and responsive
+- [ ] No "stuck" hover states after touch
+
+**Tool-Specific Touch Tests**
+
+**Color Accessibility Checker**
+- [ ] Tap intensity sliders responsive
+- [ ] Slider drag smooth
+- [ ] Touch targets minimum 44×44px
+- [ ] Vision panels scrollable on small screens
+
+**Color Harmony Explorer**
+- [ ] Base color picker works via touch
+- [ ] Color wheel touch responsive
+- [ ] Zoom buttons easy to tap
+- [ ] Touch keyboard appears/hides properly
+
+**Color Matcher**
+- [ ] Image upload works via camera
+- [ ] Color picker touch responsive
+- [ ] Eyedropper tool usable on touch
+- [ ] Zoom controls responsive
+
+**Dye Comparison**
+- [ ] Dye selector dropdowns touch responsive
+- [ ] Charts scrollable/pinch-zoomable
+- [ ] Export buttons easily tappable
+
+**Dye Mixer**
+- [ ] Gradient creation touch-friendly
+- [ ] Save button responsive
+- [ ] Gradient list scrollable
+
+**Performance on Mobile**
+- [ ] No lag when tapping buttons (< 100ms)
+- [ ] Charts render without jank
+- [ ] No layout shifts during interactions
+- [ ] Battery drain acceptable (no continuous loops)
+
+**Issues Found:**
+_________________________________
+
+**✓ iOS Touch Test Summary**
+- [ ] All touch interactions smooth
+- [ ] All buttons respond to taps
+- [ ] No performance issues
+
+---
+
+### Android Touch Testing
+**Device:** Android phone/tablet ________________
+**Android Version:** ____________
+**Browser:** Chrome/Firefox
+**Start Time:** __________ | **End Time:** __________
+
+**Same Touch Test Suite**
+- [ ] Single tap responsive
+- [ ] Swipe gestures work
+- [ ] Long-press behavior correct
+- [ ] Pinch zoom functional
+- [ ] Touch scrolling smooth
+
+**Android-Specific Checks**
+- [ ] Back button navigation works
+- [ ] Soft keyboard doesn't hide buttons
+- [ ] Color picker popups position correctly
+- [ ] Text selection works without interference
+- [ ] No double-tap zoom (should be disabled via viewport)
+
+**Issues Found:**
+_________________________________
+
+**✓ Android Touch Test Summary**
+- [ ] Touch interactions work correctly
+- [ ] No Android-specific issues
+
+---
+
+## 📐 Responsive Design Testing
+
+### Desktop: 1440px (Large)
+**Viewport:** 1440×900 (or maximize window)
+**Browser:** Chrome
+**Start Time:** __________ | **End Time:** __________
+
+**Layout Checks**
+- [ ] All elements visible without scroll
+- [ ] Spacing proportional
+- [ ] Charts render at full size
+- [ ] Navigation positioned correctly
+- [ ] No horizontal scrollbar
+
+**Each Tool at 1440px**
+- [ ] Color Accessibility: All 6 slots visible
+- [ ] Color Harmony: Color wheel large & usable
+- [ ] Color Matcher: Upload area prominent
+- [ ] Dye Comparison: All 4 dyes visible
+- [ ] Dye Mixer: Gradient list visible
+
+**✓ Desktop 1440px Summary**
+- [ ] Layout optimal for large screens
+
+---
+
+### Desktop: 1080p
+**Viewport:** 1920×1080 (or resize window)
+**Browser:** Chrome
+**Start Time:** __________ | **End Time:** __________
+
+**Layout Checks**
+- [ ] All elements visible
+- [ ] Spacing looks good
+- [ ] No cramped layouts
+- [ ] Navigation accessible
+- [ ] Charts full-size
+
+**Chart Rendering**
+- [ ] Hue-Saturation chart clear
+- [ ] Brightness chart readable
+- [ ] Distance matrix accessible
+- [ ] All text readable
+
+**✓ Desktop 1080p Summary**
+- [ ] Standard desktop layout optimal
+
+---
+
+### Tablet: 768px
+**Viewport:** 768×1024 (iPad landscape)
+**Browser:** Chrome DevTools (device emulation)
+**Start Time:** __________ | **End Time:** __________
+
+**Responsive Behavior**
+- [ ] Layout stacks appropriately
+- [ ] Sidebar collapses if needed
+- [ ] Touch targets remain ≥44×44px
+- [ ] Navigation adapts (dropdown/hamburger)
+- [ ] No horizontal scrolling
+
+**Each Tool at 768px**
+- [ ] Color Accessibility: Slots stack vertically
+- [ ] Color Harmony: Color wheel resizes
+- [ ] Color Matcher: Upload area responsive
+- [ ] Dye Comparison: Charts stack vertically
+- [ ] Dye Mixer: Interface remains usable
+
+**Portrait vs Landscape**
+- [ ] Portrait (768×1024): Single column
+- [ ] Landscape (1024×768): Two columns where applicable
+- [ ] Orientation change smooth
+
+**✓ Tablet 768px Summary**
+- [ ] Medium screen layout appropriate
+
+---
+
+### Mobile: 375px
+**Viewport:** 375×667 (iPhone SE size)
+**Browser:** Chrome DevTools (device emulation)
+**Start Time:** __________ | **End Time:** __________
+
+**Mobile Layout**
+- [ ] Single column layout
+- [ ] Navigation accessible (dropdown/hamburger)
+- [ ] Touch targets ≥44×44px minimum
+- [ ] No horizontal scrolling
+- [ ] Text readable (no zoom needed)
+
+**Font Sizes at 375px**
+- [ ] Body text: 13px (readable without zoom)
+- [ ] Headers: 1.25rem+ (distinct)
+- [ ] Buttons: 44px min height
+
+**Each Tool at 375px**
+- [ ] Color Accessibility: Input fields stacked
+- [ ] Color Harmony: Single column, scrollable
+- [ ] Color Matcher: Upload area full width
+- [ ] Dye Comparison: Selectors stacked, charts scrollable
+- [ ] Dye Mixer: Controls accessible
+
+**Interaction at Mobile**
+- [ ] Dropdowns don't overflow screen
+- [ ] Modal dialogs centered & dismissible
+- [ ] Swipe gestures work as intended
+- [ ] No "pinch to zoom" required
+
+**Performance on Mobile**
+- [ ] Charts don't cause jank
+- [ ] Scrolling smooth (60fps target)
+- [ ] No layout shift during load
+
+**✓ Mobile 375px Summary**
+- [ ] Fully functional on smallest screens
+
+---
+
+## 🛠️ Feature-Specific Testing
+
+### Color Accessibility Checker
+
+#### Vision Simulation Accuracy
+**Test:** Select a dye and check each vision type produces different result
+**Steps:**
+1. Open Color Accessibility Checker
+2. Select "Jet Black" in first dye slot
+3. Set first outfit slot to "Head"
+4. Select each vision type in dropdown
+5. Observe preview changes
+
+- [ ] **Deuteranopia (Red-Green):** Red/green indistinguishable, blues distinct
+- [ ] **Protanopia (Red-Green):** Red/green indistinguishable, blues distinct
+- [ ] **Tritanopia (Blue-Yellow):** Blue/yellow indistinguishable, reds distinct
+- [ ] **Achromatopsia (Monochrome):** All colors grayscale
+
+**Expected:** Each vision type shows distinctly different color palette
+
+---
+
+#### Accessibility Score (0-100)
+**Test:** Score changes based on vision type difficulty
+**Steps:**
+1. Select 2 similar-color dyes (e.g., "Sky Blue" + "Storm Blue")
+2. Apply to outfit slots
+3. Change vision type
+4. Note accessibility score changes
+
+- [ ] Score updates for each vision type
+- [ ] Score range: 0-100
+- [ ] Similar colors = low score (harder to distinguish)
+- [ ] Contrasting colors = high score (easier to distinguish)
+
+**Expected:** Scores reflect actual visual difficulty
+
+---
+
+#### Dual Dyes Feature
+**Test:** Secondary dye selection and persistence
+**Steps:**
+1. Enable "Dual Dyes" toggle
+2. Select primary + secondary dyes
+3. Set outfit slots
+4. Refresh page
+
+- [ ] [ ] Dual dyes toggle visible
+- [ ] Secondary dye selector appears when enabled
+- [ ] Both dyes render in preview
+- [ ] Settings persist after refresh
+
+**Expected:** Dual dyes work and persist
+
+---
+
+#### Contrast Ratio Calculations
+**Test:** Contrast ratios display correctly
+**Steps:**
+1. Select dyes with known contrast difference
+2. Note displayed contrast ratio
+3. Verify manually (expected range: 1.0-21.0)
+
+- [ ] Contrast ratios display for each vision type
+- [ ] Values in realistic range (1.0-21.0)
+- [ ] Higher contrast = better accessibility
+
+**Expected:** Contrast ratios accurate
+
+---
+
+#### All 6 Outfit Slots
+**Test:** All slots functional and independent
+**Steps:**
+1. Select different dyes for each slot:
+   - Head, Body, Hands, Legs, Feet, Weapon
+2. Change each slot independently
+3. Verify visualization updates
+
+- [ ] Head slot: ✓
+- [ ] Body slot: ✓
+- [ ] Hands slot: ✓
+- [ ] Legs slot: ✓
+- [ ] Feet slot: ✓
+- [ ] Weapon slot: ✓
+
+**Expected:** All 6 slots functional and independent
+
+---
+
+### Color Harmony Explorer
+
+#### All 6 Harmony Types
+**Test:** Each harmony type displays correctly
+**Base Color:** Select "Ocean Blue" (or any blue)
+
+- [ ] **Complementary:** Shows opposite color on wheel
+- [ ] **Analogous:** Shows adjacent colors (±30°)
+- [ ] **Triadic:** Shows 3 colors equally spaced (120°)
+- [ ] **Split-Complementary:** Shows complement + 2 colors nearby
+- [ ] **Tetradic:** Shows 4 colors (2 complementary pairs)
+- [ ] **Square:** Shows 4 colors at 90° spacing
+
+**Expected:** Each type shows correct angle spacing
+
+---
+
+#### Color Wheel Highlighting
+**Test:** Color wheel highlights correct positions
+**Steps:**
+1. Select Complementary harmony
+2. Observe which colors light up on wheel
+3. Change base color
+4. Wheel updates correctly
+
+- [ ] Base color highlighted
+- [ ] Harmony colors highlighted
+- [ ] Non-harmony colors dimmed
+- [ ] Highlights change with base color
+- [ ] Highlights change with harmony type
+
+**Expected:** Correct highlighting for each harmony
+
+---
+
+#### Zoom Functionality
+**Test:** Zoom controls work for detailed view
+**Steps:**
+1. Click zoom button on chart
+2. View larger color wheel
+3. Click again to close
+
+- [ ] Zoom button toggles expanded view
+- [ ] Expanded view clearly visible
+- [ ] Close button works
+- [ ] Modal dismisses on background click
+
+**Expected:** Zoom feature functional
+
+---
+
+#### Market Prices (Optional API)
+**Test:** Market board prices display correctly
+**Steps:**
+1. Enable "Show Market Prices" toggle
+2. Observe prices display for dyes
+3. Disable toggle
+4. Prices disappear
+
+- [ ] Toggle enables/disables prices
+- [ ] Prices fetch from Universalis API
+- [ ] Prices update in real-time (if data changes)
+- [ ] Works without API (graceful fallback)
+
+**Expected:** Prices optional but functional when enabled
+
+---
+
+#### Export Formats
+**Test:** Each export format valid
+
+**CSV Export:**
+1. Click Export → CSV
+2. File downloads
+3. Open in spreadsheet application
+- [ ] CSV opens in Excel/Sheets
+- [ ] Data properly formatted
+- [ ] Colors and values correct
+
+**JSON Export:**
+1. Click Export → JSON
+2. File downloads
+3. Validate JSON syntax
+- [ ] Valid JSON syntax
+- [ ] Color data preserved
+- [ ] Can re-import if applicable
+
+**SCSS Export:**
+1. Click Export → SCSS
+2. File downloads
+3. Check SCSS syntax
+- [ ] Valid SCSS syntax
+- [ ] Variables defined correctly
+- [ ] Colors as RGB/Hex
+
+**Expected:** All formats export correctly
+
+---
+
+### Color Matcher
+
+#### Image Upload Methods
+
+**Drag & Drop:**
+1. Drag image file onto upload area
+2. Release
+
+- [ ] Image accepted
+- [ ] Preview appears
+- [ ] Matching dye displays
+
+**File Input:**
+1. Click "Select Image"
+2. Choose file from system
+
+- [ ] File dialog opens
+- [ ] Image selectable
+- [ ] Preview and match work
+
+**Clipboard Paste:**
+1. Copy image to clipboard (Ctrl+C)
+2. Click on page
+3. Paste (Ctrl+V)
+
+- [ ] Paste works without dialog
+- [ ] Image preview appears
+- [ ] Matching works
+
+**Camera Capture (Mobile):**
+1. Click camera button
+2. Grant permissions
+3. Take photo
+
+- [ ] Camera opens
+- [ ] Photo captures
+- [ ] Matching dye displays
+
+**Expected:** All 4 input methods work
+
+---
+
+#### Color Picker Hex Input
+**Test:** Manual hex color entry
+**Steps:**
+1. Type hex code (e.g., #FF5733)
+2. Press Enter or click Match button
+3. Closest dye displays
+
+- [ ] Hex input accepts 6-digit hex
+- [ ] Matching dye found
+- [ ] Color preview shows input color
+- [ ] Matching accuracy reasonable
+
+**Expected:** Manual color input works
+
+---
+
+#### Eyedropper Tool
+**Test:** Sample colors from image
+**Steps:**
+1. Upload image
+2. Click eyedropper tool
+3. Click on color in image
+
+- [ ] Click registers on image
+- [ ] Color sampled
+- [ ] Matching dye displays
+- [ ] Works multiple times without reload
+
+**Expected:** Eyedropper functional
+
+---
+
+#### Sample Size Averaging
+**Test:** Different sample sizes produce different matches
+**Steps:**
+1. Upload varied-color image
+2. Set sample size to 1×1
+3. Match color
+4. Note dye name
+5. Change to 64×64
+6. Match color
+7. Compare results
+
+- [ ] 1×1: Single pixel (might be noise)
+- [ ] 64×64: Average of area (more stable)
+- [ ] Larger samples generally more consistent
+
+**Expected:** Sample size affects accuracy as intended
+
+---
+
+#### Zoom Controls
+**Test:** Image zoom functionality
+**Steps:**
+1. Upload image
+2. Click Fit button
+3. Click Width button
+4. Click ± buttons
+5. Click Reset
+
+- [ ] Fit: Image fits screen
+- [ ] Width: Image scales to width
+- [ ] +: Zoom in
+- [ ] -: Zoom out
+- [ ] Reset: Return to default
+
+**Expected:** All zoom controls work
+
+---
+
+### Dye Comparison
+
+#### Distance Matrix Rendering
+**Test:** Color distance table displays correctly
+**Steps:**
+1. Select 2 dyes in first two slots
+2. Observe distance matrix
+3. Add more dyes to slots
+4. Matrix expands
+
+- [ ] Matrix renders (table format)
+- [ ] Distances calculated (0-441 range)
+- [ ] Color coding: Green (close) → Red (far)
+- [ ] Matrix updates as dyes change
+
+**Expected:** Matrix renders with accurate distances
+
+---
+
+#### Hue-Saturation 2D Chart
+**Test:** Color wheel chart displays all quadrants
+**Steps:**
+1. Select 2 dyes in different positions on wheel
+2. Observe chart
+3. Select 4 dyes spread around wheel
+
+- [ ] Chart renders (canvas-based)
+- [ ] All 4 quadrants visible (not cut off)
+- [ ] Dye positions accurate on wheel
+- [ ] Chart smooth (no artifacts)
+
+**Expected:** Chart shows all quadrants, not just partial
+
+---
+
+#### Brightness 1D Chart
+**Test:** Brightness comparison bar
+**Steps:**
+1. Select dyes with brightness difference
+2. Observe brightness chart
+
+- [ ] Chart renders (linear)
+- [ ] Dye bars show brightness
+- [ ] Darker dyes show lower
+- [ ] Lighter dyes show higher
+
+**Expected:** Brightness chart accurate
+
+---
+
+#### Export Functionality
+**Test:** Export selected dyes
+**Steps:**
+1. Select 2-4 dyes
+2. Click Export → JSON
+3. Click Export → CSS
+4. Verify formats
+
+**JSON:**
+- [ ] Valid JSON
+- [ ] Contains dye data
+
+**CSS:**
+- [ ] Valid CSS syntax
+- [ ] Color variables defined
+- [ ] Can paste into stylesheet
+
+**Expected:** Both export formats work
+
+---
+
+#### Copy to Clipboard
+**Test:** Copy individual dye hex codes
+**Steps:**
+1. Click hex code (e.g., #FF0000)
+2. Verify copy confirmation (toast)
+3. Paste into another app
+
+- [ ] Click registers
+- [ ] Toast notification appears
+- [ ] Hex code copied to clipboard
+- [ ] Paste works in other apps
+
+**Expected:** Copy functionality works
+
+---
+
+### Dye Mixer (Experimental)
+
+#### Gradient Calculation
+**Test:** Intermediate dyes calculate correctly
+**Steps:**
+1. Select 2 endpoint dyes (contrasting colors)
+2. Specify 3-5 intermediate steps
+3. Observe calculated dyes
+
+- [ ] Intermediate dyes display
+- [ ] Colors form smooth gradient
+- [ ] Number of steps matches input
+- [ ] No duplicate dyes
+
+**Expected:** Gradients calculate smoothly
+
+---
+
+#### Saved Gradients
+**Test:** Save and load gradients
+**Steps:**
+1. Create a gradient
+2. Name it
+3. Click Save
+4. Verify "Saved Gradients" list updates
+5. Refresh page
+6. Saved gradient should reappear
+
+- [ ] Save button works
+- [ ] Name input captures
+- [ ] Saved list updates
+- [ ] Persists after refresh
+
+**Expected:** Gradients save and persist
+
+---
+
+#### localStorage Persistence
+**Test:** Verify localStorage save/load
+**Steps:**
+1. Open DevTools (F12)
+2. Go to Application → Storage → localStorage
+3. Create/save a gradient
+4. Observe localStorage key: `xivdyetools_dyemixer_gradients`
+5. Refresh page
+6. Gradient should reappear
+
+- [ ] localStorage key exists after save
+- [ ] Contains gradient data
+- [ ] Survives page refresh
+- [ ] Survives hard refresh (Ctrl+Shift+R)
+
+**Expected:** localStorage properly updates
+
+---
+
+#### Export Gradient
+**Test:** Export gradient data
+**Steps:**
+1. Create gradient
+2. Click Export
+3. File downloads
+
+- [ ] Export button works
+- [ ] File format valid (JSON/CSV)
+- [ ] Data complete
+- [ ] Can re-import (if applicable)
+
+**Expected:** Export functional
+
+---
+
+---
+
+## 💾 localStorage Persistence Testing
+
+### Theme Persistence
+**Test:** Theme selection survives page refresh
+**Steps:**
+1. Open any tool page
+2. Click Theme button
+3. Select "Parchment Dark" theme
+4. Observe page changes to parchment color
+5. Press Ctrl+R (refresh)
+6. Observe theme persists
+
+- [ ] **Refresh (Ctrl+R):** Theme persists
+- [ ] **Hard Refresh (Ctrl+Shift+R):** Theme persists
+- [ ] **Close/reopen browser:** Theme persists
+- [ ] **Different tool page:** Theme applies there too
+
+**Check DevTools:**
+1. Open DevTools (F12)
+2. Go to Application → Storage → localStorage
+3. Look for key: `xivdyetools_theme`
+4. Value should be: `parchment-dark`
+
+- [ ] localStorage key exists
+- [ ] Value matches selected theme
+- [ ] Updates when theme changes
+
+**Expected:** Theme persists across sessions
+
+---
+
+### Tool-Specific Settings
+**Test:** Tool settings persist
+**Steps:**
+
+**Color Accessibility Checker:**
+1. Enable "Dual Dyes" toggle
+2. Set dyes
+3. Refresh page
+- [ ] Dual dyes setting persists
+- [ ] Dye selections persist
+
+**Color Harmony Explorer:**
+1. Select "Triadic" harmony
+2. Refresh page
+- [ ] Harmony type selection persists
+
+**Color Matcher:**
+1. Set sample size to 16×16
+2. Refresh page
+- [ ] Sample size setting persists
+
+**Dye Mixer:**
+1. Create and save gradient
+2. Refresh page
+- [ ] Saved gradients persist
+- [ ] List repopulates
+
+**Expected:** All tool settings persist
+
+---
+
+### localStorage Limits
+**Test:** Application handles large data
+**Steps:**
+1. Create many saved gradients in Dye Mixer (10+)
+2. Verify all save without error
+3. Check localStorage size
+
+- [ ] No "quota exceeded" errors
+- [ ] All gradients save
+- [ ] All gradients load
+- [ ] No data loss
+
+**Expected:** Application handles storage appropriately
+
+---
+
+### Corrupted Data Handling
+**Test:** Application handles bad localStorage data
+**Steps:**
+1. Open DevTools → Storage → localStorage
+2. Find localStorage entry (e.g., `xivdyetools_dyemixer_gradients`)
+3. Manually corrupt data (add invalid characters)
+4. Refresh page
+
+- [ ] Page loads without error
+- [ ] Graceful fallback to defaults
+- [ ] No crash or console error
+- [ ] User can continue using app
+
+**Expected:** Bad data handled gracefully
+
+---
+
+---
+
+## ⚠️ Error Scenario Testing
+
+### Missing DOM Elements
+**Test:** App handles missing HTML elements gracefully
+**Scenario:** Edit HTML to remove element, then test
+
+**Process:**
+1. Open DevTools → Elements
+2. Find element (e.g., dye selector)
+3. Right-click → Delete element
+4. Trigger action that uses element
+
+- [ ] No crash
+- [ ] No "Cannot read property of null" error
+- [ ] Graceful fallback
+- [ ] App continues working
+
+**Expected:** No critical errors
+
+---
+
+### Invalid Color Values
+**Test:** App handles bad color data
+**Steps:**
+1. Color Matcher: Paste invalid hex (#GGGGGG)
+2. Harmony Explorer: Manually set bad value in storage
+3. Accessibility Checker: Invalid dye selection
+
+- [ ] No crash
+- [ ] Error message (if applicable)
+- [ ] App recovers
+- [ ] User can continue
+
+**Expected:** Invalid colors handled safely
+
+---
+
+### Network Failures (API Unavailable)
+**Test:** App works without Universalis API
+**Steps:**
+1. Open DevTools → Network
+2. Disable internet (or block universalis.app)
+3. Load Color Harmony with market prices enabled
+4. Observe behavior
+
+- [ ] Page loads (API calls fail gracefully)
+- [ ] Prices don't show (expected)
+- [ ] No console errors (might have warning)
+- [ ] App fully functional
+
+**Expected:** API failure doesn't break app
+
+---
+
+### File Input Cancellation
+**Test:** App handles user canceling file dialog
+**Steps:**
+1. Open Color Matcher
+2. Click "Select Image"
+3. Click Cancel button (don't select file)
+4. Observe app state
+
+- [ ] No error
+- [ ] Page remains responsive
+- [ ] Can try upload again
+- [ ] No hung requests
+
+**Expected:** Cancellation handled cleanly
+
+---
+
+### Image Load Failures
+**Test:** App handles bad image files
+**Steps:**
+1. Create invalid image file (text file with .jpg extension)
+2. Upload via Color Matcher
+3. Observe behavior
+
+- [ ] Error message appears (if expected)
+- [ ] No crash
+- [ ] Can try another image
+- [ ] App responsive
+
+**Expected:** Bad images handled gracefully
+
+---
+
+### Malformed JSON Data
+**Test:** App handles corrupted JSON
+**Steps:**
+1. Create gradient and save in Dye Mixer
+2. Open DevTools → Storage → localStorage
+3. Find saved gradients key
+4. Edit JSON to break syntax (remove comma, etc.)
+5. Refresh page
+6. Try to load gradients
+
+- [ ] No crash
+- [ ] Error logged to console (for dev)
+- [ ] Gradients list might empty (acceptable)
+- [ ] App continues working
+- [ ] Can still create new gradients
+
+**Expected:** Bad JSON handled gracefully
+
+---
+
+### Empty/Null Data
+**Test:** App handles missing data
+**Steps:**
+1. Dye Comparison: Try selecting no dyes
+2. Accessibility Checker: Try submitting empty slots
+3. Harmony Explorer: Try with unselected color
+
+- [ ] App responds appropriately
+- [ ] Shows helpful message (if applicable)
+- [ ] Doesn't crash
+- [ ] Stays responsive
+
+**Expected:** Missing data doesn't crash app
+
+---
+
+---
+
+## ⚡ Performance Testing
+
+### Page Load Time
+**Test:** Measure initial page load
+**Browser:** Chrome (with throttling if available)
+**Steps:**
+1. Open DevTools → Network tab
+2. Disable cache (to simulate first visit)
+3. Reload page
+4. Note total load time
+
+**Measurement:**
+- [ ] DOMContentLoaded: < 2 seconds (target)
+- [ ] Full Load: < 3 seconds (target)
+- [ ] First Paint: < 1 second
+- [ ] Largest Contentful Paint: < 2 seconds
+
+**Record Actual Times:**
+- DOMContentLoaded: ________ ms
+- Full Load: ________ ms
+- First Paint: ________ ms
+
+**Expected:** Page loads reasonably fast
+
+---
+
+### Color Calculations
+**Test:** Measure calculation responsiveness
+**Steps:**
+1. Open Color Accessibility Checker
+2. Change intensity slider rapidly
+3. Observe update responsiveness
+
+**Measurement:**
+- [ ] Updates appear instantly (< 100ms)
+- [ ] No lag while dragging slider
+- [ ] Vision panels update smoothly
+
+**Record Times:**
+- Slider response time: ________ ms
+
+**Expected:** < 100ms response
+
+---
+
+### Canvas Rendering (FPS)
+**Test:** Charts render at 60 FPS target
+**Browser:** Chrome DevTools with Performance monitor
+**Steps:**
+1. Open DevTools → More → Rendering options
+2. Enable "FPS meter"
+3. Load Dye Comparison with charts
+4. Observe FPS counter
+
+**Measurement:**
+- [ ] Hue-Sat chart: 50+ FPS (smooth)
+- [ ] Brightness chart: 50+ FPS (smooth)
+- [ ] No jank or stutters
+- [ ] Zoom smooth
+
+**Record Average FPS:**
+- Hue-Sat: ________ fps
+- Brightness: ________ fps
+
+**Expected:** Smooth rendering at 60 FPS target
+
+---
+
+### Memory Usage
+**Test:** Check for memory leaks with heavy use
+**Steps:**
+1. Open DevTools → Memory tab
+2. Take heap snapshot
+3. Use app heavily (switch pages, toggle UI, etc.)
+4. Wait 30 seconds
+5. Take another heap snapshot
+6. Compare
+
+**Measurement:**
+- [ ] No large jumps in memory
+- [ ] Garbage collection works
+- [ ] Memory stable over time
+
+**Record:** Heap before: ________ MB | after: ________ MB
+
+**Expected:** No memory leaks
+
+---
+
+### Debouncing/Throttling
+**Test:** Verify debouncing works (prevents excessive updates)
+**Steps:**
+1. Open DevTools → Console
+2. Type rapidly in color input
+3. Observe console logs (if any)
+
+**Expected:** Updates batched, not fired for every keystroke
+
+---
+
+---
+
+## 📊 Results & Issues
+
+### Summary Statistics
+**Total Tests:** ________ / 150+
+**Passed:** ________ ✓
+**Failed:** ________ ✗
+**Partial/Notes:** ________ ⚠️
+
+**Pass Rate:** ________%
+
+---
+
+### Issues Found
+
+#### Critical Issues (Blocks Release)
+```
+Issue #: _____
+Title: _____________________________
+Severity: CRITICAL
+Tool: _____________________________
+Steps to Reproduce: _____________________________
+Expected: _____________________________
+Actual: _____________________________
+Console Error: _____________________________
+Workaround: N/A or _____________________________
+```
+
+#### High Priority Issues (Should Fix)
+```
+Issue #: _____
+Title: _____________________________
+Severity: HIGH
+Tool: _____________________________
+Details: _____________________________
+Impact: User experience affected but not blocked
+```
+
+#### Medium Priority Issues (Nice to Fix)
+```
+Issue #: _____
+Title: _____________________________
+Severity: MEDIUM
+Tool: _____________________________
+Details: _____________________________
+```
+
+#### Low Priority Issues (Optional)
+```
+Issue #: _____
+Title: _____________________________
+Severity: LOW
+Tool: _____________________________
+Notes: Minor cosmetic or edge case issue
+```
+
+---
+
+### Browser-Specific Issues
+
+**Chrome Issues:**
+_________________________________
+
+**Firefox Issues:**
+_________________________________
+
+**Safari Issues:**
+_________________________________
+
+**Edge Issues:**
+_________________________________
+
+**Mobile Issues:**
+_________________________________
+
+---
+
+### Device-Specific Issues
+
+**Desktop (1440px):**
+_________________________________
+
+**Tablet (768px):**
+_________________________________
+
+**Mobile (375px):**
+_________________________________
+
+**iPhone:**
+_________________________________
+
+**Android:**
+_________________________________
+
+---
+
+### Performance Issues
+
+**Slow Load:**
+_________________________________
+
+**Unresponsive Calculations:**
+_________________________________
+
+**Canvas Jank:**
+_________________________________
+
+**Memory Leak Suspected:**
+_________________________________
+
+---
+
+## ✅ Sign-Off
+
+**Tested By:** _____________________________
+**Date Completed:** _____________________________
+**Version Tested:** v1.6.0
+**Status:** ☐ PASS ☐ FAIL ☐ PARTIAL
+
+**Notes:**
+_________________________________
+
+**Ready for Production:** ☐ Yes ☐ No
+
+---
+
+## 📝 Next Steps
+
+If **PASS:** Proceed to Phase 11 (Code Quality & Documentation)
+
+If **FAIL:** Create issues from "Issues Found" section, fix, and re-test
+
+If **PARTIAL:** Document partial pass items, prioritize fixes
+
+---
+
+**Testing Started:** November 15, 2025
+**Testing Completed:** __________________
+**Total Time Spent:** __________________
+
