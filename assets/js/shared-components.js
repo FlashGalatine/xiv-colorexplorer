@@ -1527,6 +1527,24 @@ function closeKeyboard() {
  * 3. initComponents() - Load nav and footer from component files
  * 4. removeLoadingPlaceholders() - Clean up loading indicators
  */
+/**
+ * Explicitly expose utility functions to global window object
+ * This ensures they're accessible from all HTML files and event handlers
+ * regardless of script loading order or timing issues
+ */
+window.safeParseInt = safeParseInt;
+window.parseJSONSafe = parseJSONSafe;
+window.safeGetStorage = safeGetStorage;
+window.safeSetStorage = safeSetStorage;
+window.getThemeColor = getThemeColor;
+window.setTheme = setTheme;
+window.initTheme = initTheme;
+window.loadComponent = loadComponent;
+window.initComponents = initComponents;
+window.escapeHTML = escapeHTML;
+window.initEventDelegation = initEventDelegation;
+window.safeFetchJSON = safeFetchJSON;
+
 document.addEventListener('DOMContentLoaded', () => {
     try {
         migrateThemePreferences();     // Migrate old dark mode keys to new system
