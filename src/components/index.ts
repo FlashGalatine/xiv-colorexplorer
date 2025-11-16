@@ -16,3 +16,5 @@ export { AppLayout } from './app-layout';
 export { ThemeSwitcher } from './theme-switcher';
 export { DyeSelector, type DyeSelectorOptions } from './dye-selector';
 export { ColorDisplay, type ColorDisplayOptions } from './color-display';
+export { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
+export { HarmonyGeneratorTool } from './harmony-generator-tool';
