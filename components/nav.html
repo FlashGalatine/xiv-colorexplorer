@@ -1,6 +1,6 @@
 <div class="nav-controls">
     <div class="nav-dropdown inline-block">
-        <button class="nav-dropdown-toggle" onclick="toggleDropdown(this)">
+        <button class="nav-dropdown-toggle" data-toggle="nav-dropdown" title="Navigate to other tools">
             Tools ▼
         </button>
         <div class="nav-dropdown-menu">
@@ -14,7 +14,7 @@
     </div>
 
     <div class="theme-switcher inline-block ml-4">
-        <button class="theme-switcher-toggle" onclick="toggleThemeSwitcher(this)" title="Change theme and appearance">
+        <button class="theme-switcher-toggle" data-toggle="theme-switcher" title="Change theme and appearance">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
             </svg>
@@ -23,11 +23,11 @@
         <div class="theme-switcher-menu">
             <!-- Standard Themes -->
             <div class="theme-group-label">Standard</div>
-            <button class="theme-option" onclick="setTheme('standard-light')">
+            <button class="theme-option" data-theme="standard-light">
                 <span class="theme-dot" style="background-color: #ffffff; border: 1px solid #e5e7eb;"></span>
                 Light
             </button>
-            <button class="theme-option" onclick="setTheme('standard-dark')">
+            <button class="theme-option" data-theme="standard-dark">
                 <span class="theme-dot" style="background-color: #1f2937;"></span>
                 Dark
             </button>
@@ -36,11 +36,11 @@
 
             <!-- Hydaelyn Themes -->
             <div class="theme-group-label">Hydaelyn</div>
-            <button class="theme-option" onclick="setTheme('hydaelyn-light')">
+            <button class="theme-option" data-theme="hydaelyn-light">
                 <span class="theme-dot" style="background-color: #f0f9ff;"></span>
                 Light
             </button>
-            <button class="theme-option" onclick="setTheme('hydaelyn-dark')">
+            <button class="theme-option" data-theme="hydaelyn-dark">
                 <span class="theme-dot" style="background-color: #082f49;"></span>
                 Dark
             </button>
@@ -49,11 +49,11 @@
 
             <!-- Classic FF Themes -->
             <div class="theme-group-label">Classic FF</div>
-            <button class="theme-option" onclick="setTheme('classic-ff-light')">
+            <button class="theme-option" data-theme="classic-ff-light">
                 <span class="theme-dot" style="background-color: #1e40af;"></span>
                 Light
             </button>
-            <button class="theme-option" onclick="setTheme('classic-ff-dark')">
+            <button class="theme-option" data-theme="classic-ff-dark">
                 <span class="theme-dot" style="background-color: #030712;"></span>
                 Dark
             </button>
@@ -62,11 +62,11 @@
 
             <!-- Parchment Themes -->
             <div class="theme-group-label">Parchment</div>
-            <button class="theme-option" onclick="setTheme('parchment-light')">
+            <button class="theme-option" data-theme="parchment-light">
                 <span class="theme-dot" style="background-color: #fef3c7;"></span>
                 Light
             </button>
-            <button class="theme-option" onclick="setTheme('parchment-dark')">
+            <button class="theme-option" data-theme="parchment-dark">
                 <span class="theme-dot" style="background-color: #292415;"></span>
                 Dark
             </button>
@@ -75,11 +75,11 @@
 
             <!-- Sugar Riot Themes -->
             <div class="theme-group-label">Sugar Riot</div>
-            <button class="theme-option" onclick="setTheme('sugar-riot-light')">
+            <button class="theme-option" data-theme="sugar-riot-light">
                 <span class="theme-dot" style="background-color: #fce7f3;"></span>
                 Light
             </button>
-            <button class="theme-option" onclick="setTheme('sugar-riot-dark')">
+            <button class="theme-option" data-theme="sugar-riot-dark">
                 <span class="theme-dot" style="background-color: #500724;"></span>
                 Dark
             </button>

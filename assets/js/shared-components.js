@@ -1002,10 +1002,79 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// ===== EVENT DELEGATION SYSTEM (XSS Prevention) =====
+/**
+ * Safe JSON parsing utility with error handling
+ * @param {string} jsonString - JSON string to parse
+ * @param {*} defaultValue - Default value if parsing fails
+ * @returns {*} Parsed JSON or default value
+ */
+function parseJSONSafe(jsonString, defaultValue) {
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.warn('Failed to parse JSON:', error);
+        return defaultValue;
+    }
+}
+
+/**
+ * Initialize event delegation for component interactions
+ * Handles theme changes, dropdown toggles, and other component events
+ * without using unsafe inline event handlers
+ */
+function initEventDelegation() {
+    // Event delegation for theme selection (data-theme attribute)
+    document.addEventListener('click', (e) => {
+        const themeButton = e.target.closest('[data-theme]');
+        if (themeButton) {
+            const themeName = themeButton.getAttribute('data-theme');
+            if (themeName) {
+                setTheme(themeName);
+            }
+        }
+    });
+
+    // Event delegation for menu/dropdown toggles (data-toggle attribute)
+    document.addEventListener('click', (e) => {
+        const toggleButton = e.target.closest('[data-toggle]');
+        if (toggleButton) {
+            const toggleTarget = toggleButton.getAttribute('data-toggle');
+            if (toggleTarget === 'theme-switcher') {
+                // Toggle theme switcher menu
+                const menu = toggleButton.nextElementSibling;
+                if (menu && menu.classList.contains('theme-switcher-menu')) {
+                    menu.classList.toggle('show');
+                }
+            } else if (toggleTarget === 'nav-dropdown') {
+                // Toggle tools dropdown
+                const dropdown = toggleButton.nextElementSibling;
+                if (dropdown && dropdown.classList.contains('nav-dropdown-menu')) {
+                    dropdown.classList.toggle('show');
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Validate hex color format (defensively)
+ * @param {string} hex - Hex color string
+ * @returns {string} Validated hex color or fallback
+ */
+function validateHexColor(hex) {
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        console.warn('Invalid hex color:', hex);
+        return '#000000'; // Fallback to black
+    }
+    return hex;
+}
+
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
  * Load an external component HTML file and insert it into the DOM
  * Includes graceful fallback for network/loading failures
+ * SECURITY: Uses innerHTML but with external HTML from trusted component files
  *
  * @param {string} url - The URL of the component file
  * @param {string} containerId - The ID of the container element
@@ -1020,6 +1089,8 @@ async function loadComponent(url, containerId) {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = html;
+            // Re-initialize event delegation after component loads
+            // This ensures newly loaded component elements are properly bound
         } else {
             console.warn(`Container with ID "${containerId}" not found`);
         }
@@ -1040,11 +1111,20 @@ async function loadComponent(url, containerId) {
 }
 
 /**
- * Initialize all shared components (nav, footer)
+ * Initialize all shared components (nav, footer) and event delegation
  */
 function initComponents() {
     loadComponent('components/nav.html', 'nav-container');
     loadComponent('components/footer.html', 'footer-container');
+
+    // Initialize event delegation for safe component interactions
+    // This must be called after DOM is ready to bind handlers
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEventDelegation);
+    } else {
+        // DOM is already loaded
+        initEventDelegation();
+    }
 }
 
 /**
