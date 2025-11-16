@@ -1031,6 +1031,11 @@ function initEventDelegation() {
             const themeName = themeButton.getAttribute('data-theme');
             if (themeName) {
                 setTheme(themeName);
+                // Auto-close theme switcher menu after selection
+                const themeMenu = document.querySelector('.theme-switcher-menu.show');
+                if (themeMenu) {
+                    themeMenu.classList.remove('show');
+                }
             }
         }
     });

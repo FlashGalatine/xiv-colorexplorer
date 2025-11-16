@@ -152,9 +152,12 @@
 
     @media (max-width: 768px) {
         .nav-controls {
-            position: static;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
+            /* Keep position: fixed on mobile to stay at top-right */
+            /* Only adjust spacing and padding for mobile */
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem;
+            gap: 0.5rem;
         }
     }
 
