@@ -6,15 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 XIV Dye Tools is a client-side web application providing four specialized tools for Final Fantasy XIV players to explore dye colors:
 
-1. **Color Accessibility Checker** (v1.6.0) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
-2. **Color Harmony Explorer** (v1.6.0) - Generate harmonious color palettes using color theory
-3. **Color Matcher** (v1.6.0) - Upload images and find closest matching FFXIV dyes
-4. **Dye Comparison** (v1.6.0) - Compare up to 4 dyes with color distance matrices and visualizations
-5. **Dye Mixer** (v1.6.0) - Find intermediate dyes for smooth color transitions (experimental)
+1. **Color Accessibility Checker** (v1.6.1) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
+2. **Color Harmony Explorer** (v1.6.1) - Generate harmonious color palettes using color theory
+3. **Color Matcher** (v1.6.1) - Upload images and find closest matching FFXIV dyes
+4. **Dye Comparison** (v1.6.1) - Compare up to 4 dyes with color distance matrices and visualizations
+5. **Dye Mixer** (v1.6.1) - Find intermediate dyes for smooth color transitions (experimental)
 
-**Current Status**: v1.6.0 Production (Phase 9.5 Mobile Navigation & UX Improvements)
+**Current Status**: v1.6.1 Production (Phase 11 Code Quality & Documentation)
 **Repository**: Main branch only, no feature branches
-**Deployment**: All experimental versions synced with stable (v1.6.0)
+**Deployment**: All experimental versions synced with stable (v1.6.1)
 **Latest Session**: 2025-11-16 - Mobile navigation fixes and responsive design optimization
 
 ## Architecture: The Monolithic Pattern

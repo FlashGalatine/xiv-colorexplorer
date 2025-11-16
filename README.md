@@ -11,7 +11,7 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### 🎨 Dye Mixer (v1.6.0)
+### 🎨 Dye Mixer (v1.6.1)
 Find smooth color transitions between any two FFXIV dyes using HSV color space interpolation. Perfect for decorators and interior designers discovering bridge colors for housing projects.
 
 **Core Features:**
@@ -45,7 +45,7 @@ Find smooth color transitions between any two FFXIV dyes using HSV color space i
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **XSS Protection** - HTML escaping for safety in dynamic content
 
-### ♿ Color Accessibility Checker (v1.6.0)
+### ♿ Color Accessibility Checker (v1.6.1)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
 
 > **⚠ BETA Notice:** This tool uses scientific colorblindness simulation algorithms (Brettel 1997), but has not been validated with actual colorblind players. We recommend testing with real users for critical designs. Feedback from users with colorblindness experience is greatly appreciated!
@@ -74,7 +74,7 @@ Simulate how FFXIV dyes appear to players with colorblindness and ensure your gl
 - **One-Click Replacement** - Replace problematic dyes with suggestions and watch the issue count update automatically
 - **Hue-Saturation Matching** - Finds similar dyes based on color space to preserve intended color scheme
 
-### 🎨 Color Harmony Explorer (v1.6.0)
+### 🎨 Color Harmony Explorer (v1.6.1)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
 - **Complementary** - Colors opposite on the color wheel
 - **Analogous** - Colors adjacent on the color wheel
@@ -91,7 +91,7 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v1.6.0)
+### 🔍 Color Matcher (v1.6.1)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
 **New in v1.3.0:**
@@ -147,7 +147,7 @@ Upload an image or pick a color to find the closest matching FFXIV dye with an i
 - **Exclude Metallic Dyes** - Optional checkbox to remove metallic finishes from results
 - **Exclude Pure White & Jet Black** - Optional checkbox (default: OFF) for extreme colors
 
-### ⚖️ Dye Comparison (v1.6.0)
+### ⚖️ Dye Comparison (v1.6.1)
 Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Core Comparison Features:**
@@ -208,7 +208,7 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Theme System (v1.6.0)
+### 🌓 Theme System (v1.6.1)
 Comprehensive theme system with 10 theme variants (5 themes × light/dark), all fully WCAG compliant:
 
 **Available Themes:**
@@ -248,11 +248,11 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
   - Quick access to experimental features
   - Feature highlights and navigation
   - Responsive design adapts to all device sizes
-- **Color Accessibility Checker (Stable v1.6.0)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
-- **Color Harmony Explorer (Stable v1.6.0)**: Open `colorexplorer_stable.html` for the main tool
-- **Color Matcher (Stable v1.6.0)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
-- **Dye Comparison (Stable v1.6.0)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
-- **Dye Mixer (Stable v1.6.0)**: Open `dye-mixer_stable.html` for finding smooth color transitions
+- **Color Accessibility Checker (Stable v1.6.1)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
+- **Color Harmony Explorer (Stable v1.6.1)**: Open `colorexplorer_stable.html` for the main tool
+- **Color Matcher (Stable v1.6.1)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
+- **Dye Comparison (Stable v1.6.1)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
+- **Dye Mixer (Stable v1.6.1)**: Open `dye-mixer_stable.html` for finding smooth color transitions
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
   - On mobile devices (≤768px): Bottom navigation bar for easy tool access
   - On larger displays (>768px): Tools dropdown in header as fallback navigation
@@ -298,11 +298,11 @@ That's it! No installation or build process needed.
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
 3. **Access all tools** from the portal:
-   - Color Accessibility Checker (v1.6.0)
-   - Color Harmony Explorer (v1.6.0)
-   - Color Matcher (v1.6.0)
-   - Dye Comparison (v1.6.0)
-   - Dye Mixer (v1.6.0)
+   - Color Accessibility Checker (v1.6.1)
+   - Color Harmony Explorer (v1.6.1)
+   - Color Matcher (v1.6.1)
+   - Dye Comparison (v1.6.1)
+   - Dye Mixer (v1.6.1)
 4. **Develop new features**:
    - Edit `*_experimental.html` files for testing new features
    - Thoroughly test in all browsers, themes, and responsive sizes

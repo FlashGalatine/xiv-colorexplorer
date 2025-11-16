@@ -5,9 +5,11 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - Phase 10 & 11 Testing & Code Quality - 2025-11-16
+## [1.6.1] - Phase 11 Code Quality & Documentation Excellence - 2025-11-16
 
 **Phases Complete**: Phase 10 (Comprehensive Testing) + Phase 11 (Code Quality & Documentation)
+
+**Release Summary**: v1.6.1 includes major code quality improvements, comprehensive JSDoc documentation, unified dye filtering utility, and standardized error handling patterns across all tools.
 
 ### Added
 
@@ -308,7 +310,7 @@ All devices:
 
 ### Changed
 
-- **Version Bumps**: All tools and documentation updated to v1.6.0
+- **Version Bumps**: All tools and documentation updated to v1.6.1
 
 ### Technical Details
 
