@@ -1165,17 +1165,23 @@ async function loadComponent(url, containerId) {
 
 /**
  * Initialize all shared components (nav, footer) and event delegation
+ * CRITICAL: Waits for components to load BEFORE initializing event delegation
+ * to ensure the DOM elements exist when event listeners are attached
  */
-function initComponents() {
-    loadComponent('components/nav.html', 'nav-container');
-    loadComponent('components/footer.html', 'footer-container');
+async function initComponents() {
+    try {
+        // Load both components in parallel and wait for completion
+        await Promise.all([
+            loadComponent('components/nav.html', 'nav-container'),
+            loadComponent('components/footer.html', 'footer-container')
+        ]);
 
-    // Initialize event delegation for safe component interactions
-    // This must be called after DOM is ready to bind handlers
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initEventDelegation);
-    } else {
-        // DOM is already loaded
+        // Initialize event delegation AFTER components are loaded
+        // This ensures all DOM elements exist when listeners are attached
+        initEventDelegation();
+    } catch (error) {
+        console.error('Error initializing components:', error);
+        // Still initialize event delegation even if components fail to load
         initEventDelegation();
     }
 }
@@ -1550,12 +1556,12 @@ window.escapeHTML = escapeHTML;
 window.initEventDelegation = initEventDelegation;
 window.safeFetchJSON = safeFetchJSON;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         migrateThemePreferences();     // Migrate old dark mode keys to new system
         initTheme();                   // Theme now handles both light/dark modes
-        initComponents();
-        initEventDelegation();         // Initialize event delegation for nav/theme toggles
+        await initComponents();        // Wait for components to load BEFORE event delegation
+        // Note: initEventDelegation() is now called inside initComponents()
         removeLoadingPlaceholders();
     } catch (error) {
         console.error('Error in shared-components initialization:', error);

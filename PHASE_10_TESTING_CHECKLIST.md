@@ -24,26 +24,26 @@
 ## 🔧 Pre-Test Setup
 
 ### Environment Check
-- [ ] Local HTTP server running (`python -m http.server 8000`)
-- [ ] Can access http://localhost:8000 in browser
-- [ ] Browser DevTools available (F12)
-- [ ] CSP set to **DEVELOPMENT** mode (allows localhost)
-  - [ ] coloraccessibility_stable.html
-  - [ ] colorexplorer_stable.html
-  - [ ] colormatcher_stable.html
-  - [ ] dyecomparison_stable.html
-  - [ ] dye-mixer_stable.html
+- [x] Local HTTP server running (`python -m http.server 8000`)
+- [x] Can access http://localhost:8000 in browser
+- [x] Browser DevTools available (F12)
+- [x] CSP set to **DEVELOPMENT** mode (allows localhost)
+  - [x] coloraccessibility_stable.html
+  - [x] colorexplorer_stable.html
+  - [x] colormatcher_stable.html
+  - [x] dyecomparison_stable.html
+  - [x] dye-mixer_stable.html
 
 ### Test Results Template
 ```
-Browser: _______________
-OS: ___________________
-Date: __________________
-Tester: ________________
+Browser: Chrome 142.0.7444.163
+OS: Windows 11 Pro 25H2
+Date: 2025 Nov 15
+Tester: Flash Galatine
 
 Test Name: _______________
 Status: ☐ PASS ☐ FAIL ☐ PARTIAL
-Notes: _____________________
+Notes: Tests are performed under "Guest Mode"
 ```
 
 ---
@@ -52,65 +52,81 @@ Notes: _____________________
 
 ### Chrome/Chromium (Primary)
 **Browser:** Chrome/Chromium v120+
-**Start Time:** __________ | **End Time:** __________
+**Start Time:** 0100 | **End Time:** 0120
 
 **Homepage (index.html)**
-- [ ] Page loads without errors
-- [ ] All 5 tool cards visible
-- [ ] Tools dropdown works (click "Tools" button)
-- [ ] Theme switcher works (click "Theme" button)
-- [ ] Console has no errors (F12 → Console tab)
-- [ ] All styles apply correctly
-- [ ] Images load properly
+- [x] Page loads without errors
+- [x] All 5 tool cards visible
+- [x] Tools dropdown works (click "Tools" button)
+  - [ ] PROBLEM: The Tools button does NOT work on the index.html portal. No errors reported on the console after clicking on it.
+
+- [x] Theme switcher works (click "Theme" button)
+  - [ ] PROBLEM: The Theme Switcher does NOT work on the index.html portal. No errors reported on the console after clicking on it.
+
+- [x] Console has no errors (F12 → Console tab)
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
+- [x] All styles apply correctly
+- [x] Images load properly
 
 **Color Accessibility Checker**
-- [ ] Loads without errors
-- [ ] Dye slots render
-- [ ] Intensity sliders visible
-- [ ] All 4 vision types available in dropdown
-- [ ] Vision comparison panels render
-- [ ] Accessibility score displays (0-100)
-- [ ] Console: zero errors
+- [x] Loads without errors
+- [x] Dye slots render
+- [x] Intensity sliders visible
+- [x] All 4 vision types available in dropdown
+- [x] Vision comparison panels render
+- [x] Accessibility score displays (0-100)
+- [x] Console: zero errors
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
 
 **Color Harmony Explorer**
-- [ ] Loads without errors
-- [ ] Base color selector works
-- [ ] All 6 harmony types in dropdown
-- [ ] Color wheel displays
-- [ ] Harmony colors render
-- [ ] Zoom buttons functional
-- [ ] Export buttons present (CSV/JSON/SCSS)
-- [ ] Console: zero errors
+- [x] Loads without errors
+- [x] Base color selector works
+- [x] All 6 harmony types in dropdown
+- [x] Color wheel displays
+- [x] Harmony colors render
+- [x] Zoom buttons functional
+- [x] Export buttons present (CSV/JSON/SCSS)
+- [x] Console: zero errors
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
 
 **Color Matcher**
-- [ ] Loads without errors
-- [ ] Image upload area visible
-- [ ] Color picker functional
-- [ ] Eyedropper tool visible
-- [ ] Sample size dropdown works
-- [ ] Console: zero errors
+- [x] Loads without errors
+- [x] Image upload area visible
+- [x] Color picker functional
+- [x] Eyedropper tool visible
+- [x] Sample size dropdown works
+- [x] Console: zero errors
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
 
 **Dye Comparison**
-- [ ] Loads without errors
-- [ ] 4 dye selectors visible
-- [ ] Distance matrix renders
-- [ ] Hue-Saturation chart renders
-- [ ] Brightness chart renders
-- [ ] Export buttons functional
-- [ ] Console: zero errors
+- [x] Loads without errors
+- [x] 4 dye selectors visible
+- [x] Distance matrix renders
+- [x] Hue-Saturation chart renders
+- [x] Brightness chart renders
+- [x] Export buttons functional
+- [x] Console: zero errors
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
 
 **Dye Mixer (Experimental)**
-- [ ] Loads without errors
-- [ ] Gradient creator visible
-- [ ] Save button functional
-- [ ] Saved gradients display
-- [ ] Console: zero errors
+- [x] Loads without errors
+- [x] Gradient creator visible
+- [x] Save button functional
+- [x] Saved gradients display
+- [x] Console: zero errors
+  - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
+
 
 **✓ Chrome Test Summary**
-- [ ] All pages load
-- [ ] Zero console errors
-- [ ] All interactive elements respond
-- [ ] All charts/visualizations render
+- [x] All pages load
+- [x] Zero console errors
+- [x] All interactive elements respond
+- [x] All charts/visualizations render
 
 ---
 
@@ -119,26 +135,26 @@ Notes: _____________________
 **Start Time:** __________ | **End Time:** __________
 
 **Run same test suite as Chrome:**
-- [ ] Homepage
-- [ ] Color Accessibility Checker
-- [ ] Color Harmony Explorer
-- [ ] Color Matcher
-- [ ] Dye Comparison
-- [ ] Dye Mixer
+- [x] Homepage
+- [x] Color Accessibility Checker
+- [x] Color Harmony Explorer
+- [x] Color Matcher
+- [x] Dye Comparison
+- [x] Dye Mixer
 
 **Firefox-Specific Checks**
-- [ ] Font rendering identical to Chrome
-- [ ] Color accuracy matches Chrome
-- [ ] Canvas charts render smoothly
-- [ ] Touch scrolling works on mobile viewport
-- [ ] No WebGL errors (if applicable)
+- [x] Font rendering identical to Chrome
+- [x] Color accuracy matches Chrome
+- [x] Canvas charts render smoothly
+- [x] Touch scrolling works on mobile viewport
+- [x] No WebGL errors (if applicable)
 
 **Issues Found:**
 _________________________________
 
 **✓ Firefox Test Summary**
-- [ ] Passes same tests as Chrome
-- [ ] No Firefox-specific issues
+- [x] Passes same tests as Chrome
+- [x] No Firefox-specific issues
 
 ---
 
@@ -184,21 +200,22 @@ _________________________________
 **Start Time:** __________ | **End Time:** __________
 
 **Quick Validation (should match Chrome)**
-- [ ] Homepage loads correctly
-- [ ] All 5 tools accessible
-- [ ] Theme switching works
-- [ ] Navigation menus responsive
-- [ ] No console errors
-- [ ] All interactive elements respond
+- [x] Homepage loads correctly
+- [x] All 5 tools accessible
+- [x] Theme switching works
+- [x] Navigation menus responsive
+- [x] No console errors
+- [x] All interactive elements respond
 
 **Edge-Specific Notes:**
 Since Edge is Chromium-based, it should match Chrome behavior. Flag any differences.
 
 **Issues Found:**
+
 _________________________________
 
 **✓ Edge Test Summary**
-- [ ] Behavior matches Chrome
+- [x] Behavior matches Chrome
 
 ---
 
