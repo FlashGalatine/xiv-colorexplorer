@@ -1,0 +1,33 @@
+/**
+ * XIV Dye Tools v2.0.0 - Theme Definitions
+ * Phase 12: Modular CSS for theme management
+ *
+ * 10 theme variants with light/dark modes:
+ * 1. Standard (Light/Dark)
+ * 2. Hydaelyn (Light/Dark)
+ * 3. Classic FF (Light/Dark)
+ * 4. Parchment (Light/Dark)
+ * 5. Sugar Riot (Light/Dark)
+ */
+
+:root {
+  /* Will be populated with CSS custom properties during Phase 12.3 */
+  --theme-primary: #4f46e5;
+  --theme-bg: #ffffff;
+  --theme-text: #1f2937;
+  --theme-border: #e5e7eb;
+  --theme-bg-secondary: #f9fafb;
+  --theme-card-bg: #ffffff;
+  --theme-text-muted: #6b7280;
+}
+
+/* Theme variants will be defined here */
+body.standard-light {
+  color-scheme: light;
+}
+
+body.standard-dark {
+  color-scheme: dark;
+}
+
+/* Additional themes to be implemented in Phase 12.3 */

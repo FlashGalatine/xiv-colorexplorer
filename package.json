@@ -1,9 +1,19 @@
 {
   "name": "xivdyetools",
-  "version": "1.6.0",
+  "version": "2.0.0-alpha.1",
   "description": "A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.",
   "main": "index.html",
+  "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
     "build:css": "tailwindcss -i ./src/tailwind-input.css -o ./assets/css/tailwind.css",
     "build:css:watch": "tailwindcss -i ./src/tailwind-input.css -o ./assets/css/tailwind.css --watch"
   },
@@ -14,14 +24,30 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/FlashGalatine/xivdyetools/issues"
   },
   "homepage": "https://github.com/FlashGalatine/xivdyetools#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitest/ui": "^1.0.4",
+    "@vitest/coverage-v8": "^1.0.4",
     "autoprefixer": "^10.4.22",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-vitest": "^0.3.1",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.18"
+    "prettier": "^3.1.0",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.3.2",
+    "vite": "^5.0.8",
+    "vitest": "^1.0.4",
+    "@testing-library/dom": "^9.3.3",
+    "@testing-library/user-event": "^14.5.1",
+    "jsdom": "^23.0.1",
+    "@types/node": "^20.10.4"
   }
 }

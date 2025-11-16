@@ -1,0 +1,10 @@
+node_modules
+dist
+*.html
+*.md
+coverage
+.git
+.vscode
+*.config.js
+vitest.config.ts
+vite.config.ts
