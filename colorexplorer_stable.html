@@ -1998,7 +1998,7 @@
                 console.error("Detailed error:", error);
                 console.error("Error stack:", error.stack);
                 const main = document.querySelector('main');
-                main.innerHTML = `<p class="text-center text-red-500">Error: Could not load color data. Please check the console for details.<br>Error: ${error.message}</p>`;
+                main.innerHTML = `<p class="text-center text-red-500">Error: Could not load color data. Please check the console for details.<br>Error: ${escapeHTML(error.message)}</p>`;
             }
         };
 

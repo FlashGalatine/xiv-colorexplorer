@@ -1070,6 +1070,24 @@ function validateHexColor(hex) {
     return hex;
 }
 
+/**
+ * Escape HTML special characters to prevent XSS attacks
+ * Converts dangerous characters into HTML entities
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped text safe for innerHTML
+ * @example
+ * escapeHTML("<script>alert('XSS')</script>")
+ * // Returns: "&lt;script&gt;alert('XSS')&lt;/script&gt;"
+ */
+function escapeHTML(text) {
+    if (typeof text !== 'string') {
+        return String(text);
+    }
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
  * Load an external component HTML file and insert it into the DOM
