@@ -1430,7 +1430,7 @@
 
             if (!dyeParam) return false;
 
-            const itemIds = dyeParam.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            const itemIds = dyeParam.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
 
             itemIds.forEach((itemId, index) => {
                 if (index >= 6) return; // Max 6 slots
@@ -1459,7 +1459,7 @@
                 const selectId = `dye-select-${i}`;
                 const select = document.getElementById(selectId);
                 if (select && select.value) {
-                    const itemId = parseInt(select.value);
+                    const itemId = parseInt(select.value, 10);
                     const dye = ffxivDyes.find(d => d.itemID == itemId);
                     if (dye && selectedDyes[i - 1].primary === null) {
                         document.getElementById(`dye-slot-${i - 1}-primary`).value = itemId;
