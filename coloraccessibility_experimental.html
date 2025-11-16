@@ -912,9 +912,9 @@
             const container = document.getElementById('vision-comparison');
             container.innerHTML = '';
 
-            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
-            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
-            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+            const deuteranopiaIntensity = safeParseInt('deuteranopia-slider', 0);
+            const protanopiaIntensity = safeParseInt('protanopia-slider', 0);
+            const tritanopiaIntensity = safeParseInt('tritanopia-slider', 0);
 
             const visions = [
                 { name: 'Deuteranopia (Red-Green)', type: 'deuteranopia', intensity: deuteranopiaIntensity },
@@ -982,9 +982,9 @@
             const warningsHeader = document.getElementById('warnings-header');
             container.innerHTML = '';
 
-            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
-            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
-            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+            const deuteranopiaIntensity = safeParseInt('deuteranopia-slider', 0);
+            const protanopiaIntensity = safeParseInt('protanopia-slider', 0);
+            const tritanopiaIntensity = safeParseInt('tritanopia-slider', 0);
 
             const warnings = [];
 
@@ -1173,9 +1173,9 @@
 
             document.getElementById('score-section').classList.remove('hidden');
 
-            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
-            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
-            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+            const deuteranopiaIntensity = safeParseInt('deuteranopia-slider', 0);
+            const protanopiaIntensity = safeParseInt('protanopia-slider', 0);
+            const tritanopiaIntensity = safeParseInt('tritanopia-slider', 0);
 
             let distinguishabilityScore = 100;
             const visionTypes = [
@@ -1237,9 +1237,9 @@
             const activeDyes = getActiveDyes();
             const problematic = new Set();
 
-            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
-            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
-            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+            const deuteranopiaIntensity = safeParseInt('deuteranopia-slider', 0);
+            const protanopiaIntensity = safeParseInt('protanopia-slider', 0);
+            const tritanopiaIntensity = safeParseInt('tritanopia-slider', 0);
 
             const visionTypes = [
                 { type: 'deuteranopia', intensity: deuteranopiaIntensity },
@@ -1309,9 +1309,9 @@
             }
 
             const problematicPairs = [];
-            const deuteranopiaIntensity = parseInt(document.getElementById('deuteranopia-slider').value);
-            const protanopiaIntensity = parseInt(document.getElementById('protanopia-slider').value);
-            const tritanopiaIntensity = parseInt(document.getElementById('tritanopia-slider').value);
+            const deuteranopiaIntensity = safeParseInt('deuteranopia-slider', 0);
+            const protanopiaIntensity = safeParseInt('protanopia-slider', 0);
+            const tritanopiaIntensity = safeParseInt('tritanopia-slider', 0);
 
             const visionTypes = [
                 { type: 'deuteranopia', intensity: deuteranopiaIntensity },

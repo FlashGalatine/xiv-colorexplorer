@@ -847,7 +847,10 @@
         }
 
         function getAverageColor(x, y) {
-            const size = parseInt(sampleSizeSelect.value, 10);
+            // Safe parseInt with null check and default fallback
+            const size = (sampleSizeSelect && sampleSizeSelect.value)
+                ? parseInt(sampleSizeSelect.value, 10)
+                : 1;
             const halfSize = Math.floor(size / 2);
             const startX = Math.max(0, Math.floor(x - halfSize));
             const startY = Math.max(0, Math.floor(y - halfSize));

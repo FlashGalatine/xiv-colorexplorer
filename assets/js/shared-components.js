@@ -1088,6 +1088,36 @@ function escapeHTML(text) {
     return div.innerHTML;
 }
 
+/**
+ * Safely get an element's value with null checking and default fallback
+ * @param {string} elementId - The element ID to get
+ * @param {*} defaultValue - Default value if element missing or empty
+ * @returns {*} Element value or default value
+ */
+function safeGetElementValue(elementId, defaultValue = '') {
+    const element = document.getElementById(elementId);
+    if (!element || element.value === undefined) {
+        return defaultValue;
+    }
+    return element.value;
+}
+
+/**
+ * Safely parse integer from element value with radix and default
+ * @param {string} elementId - The element ID to get value from
+ * @param {number} defaultValue - Default value if parsing fails
+ * @param {number} radix - Radix for parseInt (default: 10)
+ * @returns {number} Parsed integer or default value
+ */
+function safeParseInt(elementId, defaultValue = 0, radix = 10) {
+    const value = safeGetElementValue(elementId, null);
+    if (value === null) {
+        return defaultValue;
+    }
+    const parsed = parseInt(value, radix);
+    return isNaN(parsed) ? defaultValue : parsed;
+}
+
 // ===== COMPONENT LOADING FUNCTIONS =====
 /**
  * Load an external component HTML file and insert it into the DOM
