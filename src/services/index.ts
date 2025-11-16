@@ -9,7 +9,6 @@
 
 // Import service classes for internal use
 import { ColorService } from './color-service';
-import { DyeService } from './dye-service';
 import { StorageService } from './storage-service';
 import { ThemeService } from './theme-service';
 import { APIService } from './api-service';
@@ -41,7 +40,9 @@ export function initializeServices(): void {
     console.info('✅ DyeService ready');
 
     // StorageService checks availability
-    console.info(`✅ StorageService: ${StorageService.isAvailable() ? 'Available' : 'Not available'}`);
+    console.info(
+      `✅ StorageService: ${StorageService.isAvailable() ? 'Available' : 'Not available'}`
+    );
 
     // APIService initializes on first getInstance
     console.info('✅ APIService ready');

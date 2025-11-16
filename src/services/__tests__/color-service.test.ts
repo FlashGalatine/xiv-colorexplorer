@@ -5,7 +5,6 @@
 
 import { describe, it, expect } from 'vitest';
 import { ColorService } from '../color-service';
-import { createHexColor } from '@shared/types';
 
 describe('ColorService', () => {
   // ============================================================================

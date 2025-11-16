@@ -135,7 +135,7 @@ describe('DyeService', () => {
       if (allDyes.length > 0) {
         const excludedId = allDyes[0].id;
         const results = service.filterDyes({ excludeIds: [excludedId] });
-        const hasExcluded = results.some(d => d.id === excludedId);
+        const hasExcluded = results.some((d) => d.id === excludedId);
         expect(hasExcluded).toBe(false);
       }
     });
@@ -143,7 +143,7 @@ describe('DyeService', () => {
     it('should filter by price range', () => {
       const service = DyeService.getInstance();
       const results = service.filterDyes({ minPrice: 100, maxPrice: 500 });
-      results.forEach(dye => {
+      results.forEach((dye) => {
         expect(dye.cost).toBeGreaterThanOrEqual(100);
         expect(dye.cost).toBeLessThanOrEqual(500);
       });

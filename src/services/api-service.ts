@@ -15,10 +15,9 @@ import {
   UNIVERSALIS_API_RETRY_COUNT,
   UNIVERSALIS_API_RETRY_DELAY,
   API_CACHE_TTL,
-  API_DEBOUNCE_DELAY,
   API_RATE_LIMIT_DELAY,
 } from '@shared/constants';
-import { retry, sleep, debounce } from '@shared/utils';
+import { retry, sleep } from '@shared/utils';
 import { appStorage } from './storage-service';
 
 // ============================================================================
@@ -63,10 +62,7 @@ export class APIService {
    */
   private loadCacheFromStorage(): void {
     try {
-      const cached = appStorage.getItem<Record<string, CachedData<PriceData>>>(
-        'price_cache',
-        {}
-      );
+      const cached = appStorage.getItem<Record<string, CachedData<PriceData>>>('price_cache', {});
 
       if (cached && typeof cached === 'object') {
         for (const [key, value] of Object.entries(cached)) {
@@ -192,14 +188,14 @@ export class APIService {
 
       // Create pending request
       const promise = this.fetchPriceData(itemID, worldID, dataCenterID).then(
-        data => {
+        (data) => {
           this.pendingRequests.delete(cacheKey);
           if (data) {
             this.setCachedPrice(cacheKey, data);
           }
           return data;
         },
-        error => {
+        (error) => {
           this.pendingRequests.delete(cacheKey);
           throw error;
         }

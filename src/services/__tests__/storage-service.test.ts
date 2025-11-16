@@ -3,8 +3,8 @@
  * Tests for safe localStorage wrapper
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { StorageService, NamespacedStorage } from '../storage-service';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { StorageService } from '../storage-service';
 
 describe('StorageService', () => {
   beforeEach(() => {
@@ -251,7 +251,7 @@ describe('StorageService', () => {
       }
 
       StorageService.setItemWithTTL('expireKey', 'value', 10); // 10ms TTL
-      await new Promise(resolve => setTimeout(resolve, 50)); // Wait 50ms
+      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait 50ms
 
       const result = StorageService.getItemWithTTL('expireKey');
       expect(result).toBeNull();
@@ -264,7 +264,7 @@ describe('StorageService', () => {
       }
 
       StorageService.setItemWithTTL('expireKey2', 'value', 10);
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const result = StorageService.getItemWithTTL('expireKey2', 'default');
       expect(result).toBe('default');
@@ -333,7 +333,7 @@ describe('StorageService', () => {
 
       expect(ns.getItemWithTTL('key')).toBe('value');
 
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       expect(ns.getItemWithTTL('key')).toBeNull();
     });

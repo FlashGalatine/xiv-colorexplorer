@@ -7,7 +7,7 @@
  * @module shared/constants
  */
 
-import type { ThemeName, VisionType, ColorblindMatrices, Matrix3x3 } from './types';
+import type { ThemeName, VisionType, ColorblindMatrices } from './types';
 
 // ============================================================================
 // Application Metadata

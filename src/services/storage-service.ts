@@ -27,7 +27,7 @@ export class StorageService {
       localStorage.setItem(test, 'test');
       localStorage.removeItem(test);
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -192,7 +192,7 @@ export class StorageService {
       }
 
       return localStorage.getItem(key) !== null;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -234,7 +234,7 @@ export class StorageService {
       }
 
       return localStorage.length;
-    } catch (error) {
+    } catch (_error) {
       return 0;
     }
   }

@@ -1,0 +1,448 @@
+/**
+ * XIV Dye Tools v2.0.0 - Color Display Component
+ *
+ * Phase 12: Architecture Refactor
+ * UI component for displaying dye colors and their properties
+ *
+ * @module components/color-display
+ */
+
+import { BaseComponent } from './base-component';
+import { ColorService } from '@services/index';
+import type { Dye } from '@shared/types';
+
+/**
+ * Options for color display initialization
+ */
+export interface ColorDisplayOptions {
+  showHex?: boolean;
+  showRGB?: boolean;
+  showHSV?: boolean;
+  showDistance?: boolean;
+  showAccessibility?: boolean;
+  comparisonDye?: Dye | null;
+}
+
+/**
+ * Color display component - shows color information and properties
+ * Can display single colors or compare two colors
+ */
+export class ColorDisplay extends BaseComponent {
+  private displayDye: Dye | null = null;
+  private comparisonDye: Dye | null = null;
+  private options: ColorDisplayOptions;
+
+  constructor(container: HTMLElement, options: ColorDisplayOptions = {}) {
+    super(container);
+    this.options = {
+      showHex: options.showHex ?? true,
+      showRGB: options.showRGB ?? true,
+      showHSV: options.showHSV ?? true,
+      showDistance: options.showDistance ?? true,
+      showAccessibility: options.showAccessibility ?? true,
+      comparisonDye: options.comparisonDye ?? null,
+    };
+    this.comparisonDye = this.options.comparisonDye ?? null;
+  }
+
+  /**
+   * Render the color display component
+   */
+  render(): void {
+    const wrapper = this.createElement('div', {
+      className: 'space-y-4',
+    });
+
+    if (!this.displayDye) {
+      const emptyState = this.createElement('div', {
+        className:
+          'flex items-center justify-center h-40 bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700',
+      });
+
+      const emptyText = this.createElement('div', {
+        textContent: 'No color selected',
+        className: 'text-center text-gray-500 dark:text-gray-400',
+      });
+
+      emptyState.appendChild(emptyText);
+      wrapper.appendChild(emptyState);
+
+      this.container.innerHTML = '';
+      this.element = wrapper;
+      this.container.appendChild(this.element);
+      return;
+    }
+
+    // Main color display area
+    const colorArea = this.createElement('div', {
+      className: 'grid grid-cols-1 md:grid-cols-2 gap-4',
+    });
+
+    // Primary color card
+    const primaryCard = this.renderColorCard(this.displayDye, 'Primary');
+    colorArea.appendChild(primaryCard);
+
+    // Comparison color card (if available)
+    if (this.comparisonDye) {
+      const comparisonCard = this.renderColorCard(this.comparisonDye, 'Comparison');
+      colorArea.appendChild(comparisonCard);
+    }
+
+    wrapper.appendChild(colorArea);
+
+    // Color comparison metrics (if comparison dye is set)
+    if (this.comparisonDye && this.options.showDistance) {
+      const metricsSection = this.renderComparisonMetrics();
+      wrapper.appendChild(metricsSection);
+    }
+
+    // Color properties section
+    const propertiesSection = this.renderColorProperties();
+    wrapper.appendChild(propertiesSection);
+
+    // Accessibility section (if enabled)
+    if (this.options.showAccessibility) {
+      const accessibilitySection = this.renderAccessibilityInfo();
+      wrapper.appendChild(accessibilitySection);
+    }
+
+    this.container.innerHTML = '';
+    this.element = wrapper;
+    this.container.appendChild(this.element);
+  }
+
+  /**
+   * Render a single color card
+   */
+  private renderColorCard(dye: Dye, label: string): HTMLElement {
+    const card = this.createElement('div', {
+      className: 'p-4 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3',
+    });
+
+    // Label
+    const labelDiv = this.createElement('div', {
+      textContent: label,
+      className: 'text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide',
+    });
+    card.appendChild(labelDiv);
+
+    // Color swatch
+    const swatch = this.createElement('div', {
+      className: 'w-full h-24 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-md',
+      attributes: {
+        style: `background-color: ${dye.hex}`,
+      },
+    });
+    card.appendChild(swatch);
+
+    // Dye name
+    const nameDiv = this.createElement('div', {
+      textContent: dye.name,
+      className: 'text-lg font-bold text-gray-900 dark:text-white',
+    });
+    card.appendChild(nameDiv);
+
+    // Dye info grid
+    const infoGrid = this.createElement('div', {
+      className: 'grid grid-cols-2 gap-2 text-sm',
+    });
+
+    if (this.options.showHex) {
+      const hexItem = this.createElement('div', {
+        className: 'space-y-1',
+      });
+      const hexLabel = this.createElement('div', {
+        textContent: 'Hex',
+        className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+      });
+      const hexValue = this.createElement('div', {
+        textContent: dye.hex,
+        className:
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+        attributes: {
+          'data-copy': dye.hex,
+          title: 'Click to copy',
+        },
+      });
+      hexItem.appendChild(hexLabel);
+      hexItem.appendChild(hexValue);
+      infoGrid.appendChild(hexItem);
+    }
+
+    if (this.options.showRGB) {
+      const rgbItem = this.createElement('div', {
+        className: 'space-y-1',
+      });
+      const rgbLabel = this.createElement('div', {
+        textContent: 'RGB',
+        className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+      });
+      const rgbValue = this.createElement('div', {
+        textContent: `${dye.rgb.r}, ${dye.rgb.g}, ${dye.rgb.b}`,
+        className: 'font-mono text-gray-900 dark:text-white',
+      });
+      rgbItem.appendChild(rgbLabel);
+      rgbItem.appendChild(rgbValue);
+      infoGrid.appendChild(rgbItem);
+    }
+
+    if (this.options.showHSV) {
+      const hsvItems = [
+        { label: 'H', value: Math.round(dye.hsv.h) },
+        { label: 'S', value: Math.round(dye.hsv.s) },
+        { label: 'V', value: Math.round(dye.hsv.v) },
+      ];
+
+      for (const item of hsvItems) {
+        const hsvItem = this.createElement('div', {
+          className: 'space-y-1',
+        });
+        const hsvLabel = this.createElement('div', {
+          textContent: item.label,
+          className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+        });
+        const hsvValue = this.createElement('div', {
+          textContent: `${item.value}${item.label === 'H' ? '°' : '%'}`,
+          className: 'font-mono text-gray-900 dark:text-white',
+        });
+        hsvItem.appendChild(hsvLabel);
+        hsvItem.appendChild(hsvValue);
+        infoGrid.appendChild(hsvItem);
+      }
+    }
+
+    card.appendChild(infoGrid);
+
+    return card;
+  }
+
+  /**
+   * Render comparison metrics
+   */
+  private renderComparisonMetrics(): HTMLElement {
+    if (!this.comparisonDye) {
+      return this.createElement('div');
+    }
+
+    const section = this.createElement('div', {
+      className:
+        'p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 space-y-2',
+    });
+
+    const title = this.createElement('div', {
+      textContent: 'Color Comparison',
+      className: 'font-semibold text-blue-900 dark:text-blue-100',
+    });
+    section.appendChild(title);
+
+    // Color distance
+    const distance = ColorService.getColorDistance(this.displayDye!.hex, this.comparisonDye.hex);
+    const distanceDiv = this.createElement('div', {
+      className: 'text-sm text-blue-800 dark:text-blue-200',
+    });
+    distanceDiv.innerHTML = `
+      <div><strong>Color Distance:</strong> ${distance.toFixed(2)} (0-441.67 scale)</div>
+      <div class="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div class="bg-blue-500 h-2 rounded-full" style="width: ${(distance / 441.67) * 100}%"></div>
+      </div>
+    `;
+    section.appendChild(distanceDiv);
+
+    // Contrast ratio
+    const contrast = ColorService.getContrastRatio(this.displayDye!.hex, this.comparisonDye.hex);
+    const contrastDiv = this.createElement('div', {
+      textContent: `Contrast Ratio: ${contrast.toFixed(2)}:1`,
+      className: 'text-sm text-blue-800 dark:text-blue-200',
+    });
+    section.appendChild(contrastDiv);
+
+    // WCAG compliance
+    const wcagAA = ColorService.meetsWCAGAA(this.displayDye!.hex, this.comparisonDye.hex);
+    const wcagAAA = ColorService.meetsWCAGAAA(this.displayDye!.hex, this.comparisonDye.hex);
+    const wcagDiv = this.createElement('div', {
+      className: 'text-sm text-blue-800 dark:text-blue-200',
+    });
+    wcagDiv.innerHTML = `
+      <div>WCAG AA: <span class="${wcagAA ? 'text-green-600 font-semibold' : 'text-red-600'}">${wcagAA ? '✓ Pass' : '✗ Fail'}</span></div>
+      <div>WCAG AAA: <span class="${wcagAAA ? 'text-green-600 font-semibold' : 'text-red-600'}">${wcagAAA ? '✓ Pass' : '✗ Fail'}</span></div>
+    `;
+    section.appendChild(wcagDiv);
+
+    return section;
+  }
+
+  /**
+   * Render color properties
+   */
+  private renderColorProperties(): HTMLElement {
+    if (!this.displayDye) {
+      return this.createElement('div');
+    }
+
+    const section = this.createElement('div', {
+      className:
+        'p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 space-y-2',
+    });
+
+    const title = this.createElement('div', {
+      textContent: 'Color Properties',
+      className: 'font-semibold text-gray-900 dark:text-white mb-3',
+    });
+    section.appendChild(title);
+
+    const properties = [
+      { label: 'Category', value: this.displayDye.category },
+      { label: 'Acquisition', value: this.displayDye.acquisition },
+      { label: 'Item ID', value: String(this.displayDye.itemID) },
+      {
+        label: 'Cost',
+        value: this.displayDye.cost ? `${this.displayDye.cost.toLocaleString()} Gil` : 'N/A',
+      },
+      { label: 'Brightness', value: `${Math.round(this.displayDye.hsv.v)}%` },
+      { label: 'Saturation', value: `${Math.round(this.displayDye.hsv.s)}%` },
+    ];
+
+    for (const prop of properties) {
+      const propDiv = this.createElement('div', {
+        className: 'flex justify-between text-sm',
+      });
+
+      const label = this.createElement('span', {
+        textContent: prop.label,
+        className: 'font-medium text-gray-700 dark:text-gray-300',
+      });
+
+      const value = this.createElement('span', {
+        textContent: prop.value,
+        className: 'text-gray-900 dark:text-white font-mono',
+      });
+
+      propDiv.appendChild(label);
+      propDiv.appendChild(value);
+      section.appendChild(propDiv);
+    }
+
+    return section;
+  }
+
+  /**
+   * Render accessibility information
+   */
+  private renderAccessibilityInfo(): HTMLElement {
+    if (!this.displayDye) {
+      return this.createElement('div');
+    }
+
+    const section = this.createElement('div', {
+      className:
+        'p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 space-y-2',
+    });
+
+    const title = this.createElement('div', {
+      textContent: 'Accessibility',
+      className: 'font-semibold text-purple-900 dark:text-purple-100',
+    });
+    section.appendChild(title);
+
+    const luminance = ColorService.getPerceivedLuminance(this.displayDye.hex);
+    const isLight = ColorService.isLightColor(this.displayDye.hex);
+
+    const infoDiv = this.createElement('div', {
+      className: 'text-sm text-purple-800 dark:text-purple-200 space-y-1',
+    });
+
+    const luminanceValue = this.createElement('div', {
+      textContent: `Perceived Luminance: ${(luminance * 100).toFixed(1)}%`,
+    });
+
+    const brightnessValue = this.createElement('div', {
+      textContent: `Brightness Classification: ${isLight ? 'Light' : 'Dark'}`,
+    });
+
+    const textColor = ColorService.getOptimalTextColor(this.displayDye.hex);
+
+    const textColorValue = this.createElement('div', {});
+    textColorValue.innerHTML = `
+      Optimal Text Color: <span style="color: ${textColor}; font-weight: bold;">${textColor}</span>
+    `;
+
+    infoDiv.appendChild(luminanceValue);
+    infoDiv.appendChild(brightnessValue);
+    infoDiv.appendChild(textColorValue);
+
+    section.appendChild(infoDiv);
+
+    return section;
+  }
+
+  /**
+   * Bind event listeners
+   */
+  bindEvents(): void {
+    // Copy-to-clipboard functionality
+    const copyableElements = this.querySelectorAll<HTMLElement>('[data-copy]');
+    for (const element of copyableElements) {
+      this.on(element, 'click', async (event) => {
+        event.preventDefault();
+        const text = element.getAttribute('data-copy');
+        if (text) {
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = element.textContent;
+            element.textContent = 'Copied!';
+            setTimeout(() => {
+              element.textContent = originalText;
+            }, 2000);
+          } catch (error) {
+            console.warn('Failed to copy to clipboard:', error);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Set the dye to display
+   */
+  setDye(dye: Dye | null): void {
+    this.displayDye = dye;
+    this.update();
+  }
+
+  /**
+   * Set the comparison dye
+   */
+  setComparisonDye(dye: Dye | null): void {
+    this.comparisonDye = dye;
+    this.update();
+  }
+
+  /**
+   * Get current displayed dye
+   */
+  getDye(): Dye | null {
+    return this.displayDye;
+  }
+
+  /**
+   * Get component state
+   */
+  protected getState(): Record<string, unknown> {
+    return {
+      displayDye: this.displayDye,
+      comparisonDye: this.comparisonDye,
+    };
+  }
+
+  /**
+   * Set component state
+   */
+  protected setState(newState: Record<string, unknown>): void {
+    if (newState.displayDye === null || typeof newState.displayDye === 'object') {
+      this.displayDye = newState.displayDye as Dye | null;
+    }
+    if (newState.comparisonDye === null || typeof newState.comparisonDye === 'object') {
+      this.comparisonDye = newState.comparisonDye as Dye | null;
+    }
+  }
+}
