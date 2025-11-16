@@ -18,3 +18,6 @@ export { DyeSelector, type DyeSelectorOptions } from './dye-selector';
 export { ColorDisplay, type ColorDisplayOptions } from './color-display';
 export { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 export { HarmonyGeneratorTool } from './harmony-generator-tool';
+export { ColorDistanceMatrix } from './color-distance-matrix';
+export { DyeComparisonChart, type ChartType } from './dye-comparison-chart';
+export { DyeComparisonTool } from './dye-comparison-tool';
