@@ -48,6 +48,43 @@ Notes: Tests are performed under "Guest Mode"
 
 ---
 
+## 🐛 Bug Discovery & Resolution (Found During Phase 10)
+
+### Navigation Menu Bug - CRITICAL (FIXED ✅)
+
+**Issue:** Tools and Theme dropdown buttons were non-functional on both index.html and all tool pages during initial Phase 10 testing.
+
+**Root Cause:** Async timing issue in component loading:
+- shared-components.js defined an async `initComponents()` function
+- Each tool file (5 files total) defined their own synchronous `initComponents()` function
+- Tool's synchronous version shadowed the async version due to JavaScript hoisting
+- `initEventDelegation()` was called before nav component HTML was inserted into DOM
+- Event listeners were attached to elements that didn't exist yet
+
+**Solution Implemented:**
+1. Made `initComponents()` in shared-components.js async with proper Promise.all() for parallel loading
+2. Updated DOMContentLoaded handler to await component loading
+3. Made `initComponents()` in all 5 tool files async and added explicit `initEventDelegation()` calls
+4. Added guards to prevent duplicate event delegation initialization
+5. Added debug logging for troubleshooting
+
+**Files Modified:**
+- ✅ assets/js/shared-components.js (async fix + guards + logging)
+- ✅ coloraccessibility_stable.html (async initComponents)
+- ✅ colorexplorer_stable.html (async initComponents)
+- ✅ colormatcher_stable.html (async initComponents)
+- ✅ dyecomparison_stable.html (async initComponents)
+- ✅ dye-mixer_stable.html (async initComponents)
+
+**Commits Made:**
+- a4d5d5f: Bugfix HIGH - Fix navigation menu not working on index.html
+- 76eca21: Enhancement - Add guards and debugging to initEventDelegation()
+- 1c71557: Bugfix CRITICAL - Fix navigation menus on all tool pages
+
+**Status:** ✅ RESOLVED - Navigation buttons now working on all pages (index.html + all 5 tools)
+
+---
+
 ## 🌐 Browser Compatibility Testing
 
 ### Chrome/Chromium (Primary)
@@ -58,10 +95,10 @@ Notes: Tests are performed under "Guest Mode"
 - [x] Page loads without errors
 - [x] All 5 tool cards visible
 - [x] Tools dropdown works (click "Tools" button)
-  - [ ] PROBLEM: The Tools button does NOT work on the index.html portal. No errors reported on the console after clicking on it.
+  - [x] FIXED: Tools button now functions correctly (see Bug Discovery & Resolution section)
 
 - [x] Theme switcher works (click "Theme" button)
-  - [ ] PROBLEM: The Theme Switcher does NOT work on the index.html portal. No errors reported on the console after clicking on it.
+  - [x] FIXED: Theme switcher now functions correctly (see Bug Discovery & Resolution section)
 
 - [x] Console has no errors (F12 → Console tab)
   - [ ] There are errors related to Cloudflare Insights conflicting with the CSP. See logs in the feedback/chrome-logs/ folder.
