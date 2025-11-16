@@ -16,7 +16,15 @@ import { initializeServices, getServicesStatus } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
 
 // Import components
-import { AppLayout } from '@components/index';
+import {
+  AppLayout,
+  BaseComponent,
+  HarmonyGeneratorTool,
+  DyeComparisonTool,
+  DyeMixerTool,
+  AccessibilityCheckerTool,
+  ColorMatcherTool,
+} from '@components/index';
 
 /**
  * Initialize the application
@@ -51,23 +59,131 @@ async function initializeApp(): Promise<void> {
     const appLayout = new AppLayout(appContainer);
     appLayout.init();
 
-    // Get content container and add placeholder
+    // Get content container and initialize tools
     const contentContainer = appLayout.getContentContainer();
-    if (contentContainer) {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'text-center py-16';
-      placeholder.innerHTML = `
-        <div class="space-y-4">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Welcome to XIV Dye Tools</h2>
-          <p class="text-gray-600 dark:text-gray-300">Phase 12 Architecture Refactor - Component System Ready</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Tools will be loaded in Phase 12.4</p>
-        </div>
-      `;
-      contentContainer.appendChild(placeholder);
+    if (!contentContainer) {
+      throw new Error('Content container not found');
     }
 
+    // Define available tools
+    interface ToolDefinition {
+      id: string;
+      name: string;
+      icon: string;
+      description: string;
+      component: new (container: HTMLElement) => BaseComponent;
+    }
+
+    const tools: ToolDefinition[] = [
+      {
+        id: 'harmony',
+        name: 'Color Harmony',
+        icon: '🎨',
+        description: 'Generate harmonious color palettes',
+        component: HarmonyGeneratorTool,
+      },
+      {
+        id: 'matcher',
+        name: 'Color Matcher',
+        icon: '🎯',
+        description: 'Match colors from images',
+        component: ColorMatcherTool,
+      },
+      {
+        id: 'accessibility',
+        name: 'Accessibility',
+        icon: '👁️',
+        description: 'Simulate colorblindness',
+        component: AccessibilityCheckerTool,
+      },
+      {
+        id: 'comparison',
+        name: 'Dye Comparison',
+        icon: '📊',
+        description: 'Compare up to 4 dyes',
+        component: DyeComparisonTool,
+      },
+      {
+        id: 'mixer',
+        name: 'Dye Mixer',
+        icon: '🎭',
+        description: 'Find intermediate dyes',
+        component: DyeMixerTool,
+      },
+    ];
+
+    // Create tool navigation
+    const navContainer = document.createElement('div');
+    navContainer.className = 'border-b border-gray-200 dark:border-gray-700 mb-6';
+
+    const toolButtonsContainer = document.createElement('div');
+    toolButtonsContainer.className = 'flex flex-wrap gap-2 pb-4';
+
+    let currentTool: InstanceType<typeof BaseComponent> | null = null;
+    let currentToolContainer: HTMLElement | null = null;
+
+    const loadTool = (toolId: string): void => {
+      // Clean up current tool
+      if (currentTool) {
+        currentTool.destroy();
+        currentTool = null;
+      }
+
+      // Clear container
+      if (currentToolContainer) {
+        currentToolContainer.innerHTML = '';
+      }
+
+      // Find tool definition
+      const toolDef = tools.find((t) => t.id === toolId);
+      if (!toolDef) {
+        console.error(`Tool not found: ${toolId}`);
+        return;
+      }
+
+      // Create tool instance
+      currentToolContainer = document.createElement('div');
+      currentTool = new toolDef.component(currentToolContainer);
+      currentTool.init();
+      contentContainer!.appendChild(currentToolContainer);
+
+      // Update button styles
+      document.querySelectorAll('[data-tool-id]').forEach((btn) => {
+        btn.classList.toggle('bg-blue-600 text-white', btn.getAttribute('data-tool-id') === toolId);
+        btn.classList.toggle(
+          'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white',
+          btn.getAttribute('data-tool-id') !== toolId
+        );
+      });
+
+      console.info(`📌 Loaded tool: ${toolDef.name}`);
+    };
+
+    // Create tool buttons
+    tools.forEach((tool) => {
+      const btn = document.createElement('button');
+      btn.setAttribute('data-tool-id', tool.id);
+      btn.className =
+        'px-4 py-2 rounded-lg font-medium transition-colors ' +
+        (tool.id === 'harmony'
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600');
+      btn.innerHTML = `${tool.icon} ${tool.name}`;
+      btn.title = tool.description;
+      btn.addEventListener('click', () => {
+        void loadTool(tool.id);
+      });
+      toolButtonsContainer.appendChild(btn);
+    });
+
+    navContainer.appendChild(toolButtonsContainer);
+    contentContainer.appendChild(navContainer);
+
+    // Load the default tool (harmony)
+    void loadTool('harmony');
+
     console.info('✅ Application initialized successfully');
-    console.info('📦 Phase 12.3 components integrated • Phase 12.4 tools ready to integrate');
+    console.info('📦 Phase 12: All 5 tools integrated and ready');
   } catch (error) {
     const appError = ErrorHandler.log(error);
     console.error('❌ Failed to initialize application:', appError);
