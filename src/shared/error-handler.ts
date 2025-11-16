@@ -101,8 +101,13 @@ export class ErrorHandler {
     const appError = error instanceof AppError ? error : this.normalize(error);
 
     // In production, send to error tracking service
-    if (typeof window !== 'undefined' && (window as any).Sentry) {
-      (window as any).Sentry.captureException(appError);
+    if (
+      typeof window !== 'undefined' &&
+      (window as { Sentry?: { captureException: (error: AppError) => void } }).Sentry
+    ) {
+      (
+        window as unknown as { Sentry: { captureException: (error: AppError) => void } }
+      ).Sentry.captureException(appError);
     }
   }
 
@@ -125,7 +130,7 @@ export function withErrorHandling<T>(fn: () => T, fallback?: T): T | undefined {
   try {
     return fn();
   } catch (error) {
-    const appError = ErrorHandler.log(error);
+    ErrorHandler.log(error);
     if (fallback !== undefined) {
       return fallback;
     }
@@ -143,7 +148,7 @@ export async function withAsyncErrorHandling<T>(
   try {
     return await fn();
   } catch (error) {
-    const appError = ErrorHandler.log(error);
+    ErrorHandler.log(error);
     if (fallback !== undefined) {
       return fallback;
     }

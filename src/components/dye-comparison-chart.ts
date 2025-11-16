@@ -8,7 +8,6 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**
@@ -27,11 +26,7 @@ export class DyeComparisonChart extends BaseComponent {
   private chartWidth: number = 600;
   private chartHeight: number = 400;
 
-  constructor(
-    container: HTMLElement,
-    chartType: ChartType = 'hue-saturation',
-    dyes: Dye[] = []
-  ) {
+  constructor(container: HTMLElement, chartType: ChartType = 'hue-saturation', dyes: Dye[] = []) {
     super(container);
     this.chartType = chartType;
     this.dyes = dyes;
@@ -61,7 +56,8 @@ export class DyeComparisonChart extends BaseComponent {
 
     // Canvas container
     const canvasContainer = this.createElement('div', {
-      className: 'rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800',
+      className:
+        'rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800',
     });
 
     this.canvas = this.createElement('canvas', {
@@ -112,9 +108,9 @@ export class DyeComparisonChart extends BaseComponent {
     if (!ctx) return;
 
     // Get computed style for dark mode detection
-    const bgColor = window
-      .getComputedStyle(this.canvas.parentElement || document.body)
-      .backgroundColor;
+    const bgColor = window.getComputedStyle(
+      this.canvas.parentElement || document.body
+    ).backgroundColor;
     const isDarkMode = bgColor.includes('rgb') && parseInt(bgColor.split(',')[0]) < 128;
 
     const textColor = isDarkMode ? '#FFFFFF' : '#000000';
@@ -134,7 +130,11 @@ export class DyeComparisonChart extends BaseComponent {
   /**
    * Draw hue-saturation chart
    */
-  private drawHueSaturationChart(ctx: CanvasRenderingContext2D, textColor: string, gridColor: string): void {
+  private drawHueSaturationChart(
+    ctx: CanvasRenderingContext2D,
+    textColor: string,
+    gridColor: string
+  ): void {
     const padding = 40;
     const width = this.chartWidth - padding * 2;
     const height = this.chartHeight - padding * 2;
@@ -229,7 +229,11 @@ export class DyeComparisonChart extends BaseComponent {
   /**
    * Draw brightness chart
    */
-  private drawBrightnessChart(ctx: CanvasRenderingContext2D, textColor: string, gridColor: string): void {
+  private drawBrightnessChart(
+    ctx: CanvasRenderingContext2D,
+    textColor: string,
+    gridColor: string
+  ): void {
     const padding = 40;
     const width = this.chartWidth - padding * 2;
     const height = this.chartHeight - padding * 2;

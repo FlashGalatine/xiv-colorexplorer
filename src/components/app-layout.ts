@@ -52,7 +52,8 @@ export class AppLayout extends BaseComponent {
    */
   private renderHeader(): HTMLElement {
     const header = this.createElement('header', {
-      className: 'bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm',
+      className:
+        'bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm',
     });
 
     const nav = this.createElement('nav', {
@@ -99,8 +100,7 @@ export class AppLayout extends BaseComponent {
    */
   private renderFooter(): HTMLElement {
     const footer = this.createElement('footer', {
-      className:
-        'bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12',
+      className: 'bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12',
     });
 
     const footerContent = this.createElement('div', {
@@ -108,7 +108,8 @@ export class AppLayout extends BaseComponent {
     });
 
     const copyright = this.createElement('div', {
-      innerHTML: 'XIV Dye Tools v2.0.0 • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS',
+      innerHTML:
+        'XIV Dye Tools v2.0.0 • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS',
     });
 
     footerContent.appendChild(copyright);

@@ -68,7 +68,8 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     // Slot selector section
     const selectorSection = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const selectorLabel = this.createElement('h3', {
@@ -157,9 +158,6 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const primaryHex = slot.primary!.hex;
     const secondaryHex = slot.secondary?.hex;
 
-    // Analyze primary dye
-    const primaryLuminance = ColorService.getPerceivedLuminance(primaryHex);
-
     // Background colors for contrast testing
     const lightBg = '#FFFFFF';
     const darkBg = '#000000';
@@ -167,7 +165,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const contrastLight = ColorService.getContrastRatio(primaryHex, lightBg);
     const contrastDark = ColorService.getContrastRatio(primaryHex, darkBg);
 
-    // Use the better contrast ratio
+    // Use the better contrast ratio (min value used for edge case handling)
     const contrastScore = Math.round(Math.min(contrastLight, contrastDark) * 20);
 
     // Check if primary and secondary are distinguishable
@@ -217,7 +215,8 @@ export class AccessibilityCheckerTool extends BaseComponent {
    */
   private renderSummary(): HTMLElement {
     const summary = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
     });
 
     const title = this.createElement('h3', {
@@ -235,27 +234,37 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'grid grid-cols-3 gap-4',
     });
 
-    const scoreCard = this.renderStatCard('Overall Contrast', String(avgContrast), this.getScoreColor(avgContrast));
+    const scoreCard = this.renderStatCard(
+      'Overall Contrast',
+      String(avgContrast),
+      this.getScoreColor(avgContrast)
+    );
     overallScore.appendChild(scoreCard);
 
-    const slotsCard = this.renderStatCard('Slots Analyzed', String(this.results.length), 'text-blue-600 dark:text-blue-400');
+    const slotsCard = this.renderStatCard(
+      'Slots Analyzed',
+      String(this.results.length),
+      'text-blue-600 dark:text-blue-400'
+    );
     overallScore.appendChild(slotsCard);
 
     const warningCount = this.results.reduce((sum, r) => sum + r.warnings.length, 0);
-    const warningColor = warningCount === 0 ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400';
+    const warningColor =
+      warningCount === 0
+        ? 'text-green-600 dark:text-green-400'
+        : 'text-yellow-600 dark:text-yellow-400';
     const warningsCard = this.renderStatCard('Warnings', String(warningCount), warningColor);
     overallScore.appendChild(warningsCard);
 
     summary.appendChild(overallScore);
 
     // Warnings list
-    const allWarnings = this.results.flatMap((r) =>
-      r.warnings.map((w) => `${r.slotName}: ${w}`)
-    );
+    const allWarnings = this.results.flatMap((r) => r.warnings.map((w) => `${r.slotName}: ${w}`));
 
     if (allWarnings.length > 0) {
       const warningsSection = this.createElement('div', {
-        className: 'mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg',
+        className:
+          'mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg',
       });
 
       const warningsTitle = this.createElement('div', {
@@ -322,12 +331,14 @@ export class AccessibilityCheckerTool extends BaseComponent {
    */
   private renderSlotAnalysis(result: AccessibilityResult): HTMLElement {
     const section = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
     });
 
     // Header with slot icon
     const header = this.createElement('div', {
-      className: 'flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700',
+      className:
+        'flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700',
     });
 
     const titleDiv = this.createElement('div', {
@@ -355,10 +366,18 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'grid grid-cols-2 gap-3',
     });
 
-    const contrastCard = this.renderMetricCard('Contrast Score', result.contrastScore, this.getScoreColor(result.contrastScore));
+    const contrastCard = this.renderMetricCard(
+      'Contrast Score',
+      result.contrastScore,
+      this.getScoreColor(result.contrastScore)
+    );
     metrics.appendChild(contrastCard);
 
-    const distinguishCard = this.renderMetricCard('Distinguishability', Math.round(result.distinguishability), 'text-blue-600 dark:text-blue-400');
+    const distinguishCard = this.renderMetricCard(
+      'Distinguishability',
+      Math.round(result.distinguishability),
+      'text-blue-600 dark:text-blue-400'
+    );
     metrics.appendChild(distinguishCard);
 
     section.appendChild(metrics);
@@ -420,7 +439,9 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
       // Initialize colorblindness displays for each result
       for (const result of this.results) {
-        const displayContainer = this.querySelector<HTMLElement>(`#colorblindness-${result.slotId}`);
+        const displayContainer = this.querySelector<HTMLElement>(
+          `#colorblindness-${result.slotId}`
+        );
         if (displayContainer) {
           const display = new ColorblindnessDisplay(displayContainer, result.primaryHex);
           display.init();

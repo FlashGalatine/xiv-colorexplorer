@@ -7,8 +7,6 @@
  * @module shared/utils
  */
 
-import type { HexColor } from './types';
-import { createHexColor } from './types';
 import {
   RGB_MIN,
   RGB_MAX,
@@ -254,14 +252,14 @@ export function intersection<T>(array1: T[], array2: T[]): T[] {
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return new Date(obj.getTime()) as any;
+  if (obj instanceof Date) return new Date(obj.getTime()) as T;
   if (obj instanceof Array) {
-    return obj.map((item) => deepClone(item)) as any;
+    return obj.map((item) => deepClone(item)) as T;
   }
   if (obj instanceof Object) {
     const clonedObj = {} as T;
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         clonedObj[key] = deepClone(obj[key]);
       }
     }
@@ -273,13 +271,16 @@ export function deepClone<T>(obj: T): T {
 /**
  * Merge two objects recursively
  */
-export function mergeObjects<T extends Record<string, any>>(target: T, source: Partial<T>): T {
-  const result = { ...target } as any;
+export function mergeObjects<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
+  const result = { ...target } as Record<string, unknown>;
   for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      const sourceValue = source[key] as any;
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      const sourceValue = source[key];
       if (typeof sourceValue === 'object' && sourceValue !== null && !Array.isArray(sourceValue)) {
-        result[key] = mergeObjects(result[key] || {}, sourceValue);
+        result[key] = mergeObjects(
+          (result[key] as Record<string, unknown>) || {},
+          sourceValue as Partial<Record<string, unknown>>
+        );
       } else {
         result[key] = sourceValue;
       }
@@ -302,7 +303,7 @@ export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
 /**
  * Omit specific properties from an object
  */
-export function omit<T extends Record<string, any>, K extends keyof T>(
+export function omit<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   ...keys: K[]
 ): Omit<T, K> {
@@ -440,7 +441,7 @@ export function isValidURL(url: string): boolean {
 /**
  * Debounce a function to delay its execution
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: never[]) => void>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -460,7 +461,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle a function to limit its execution frequency
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: never[]) => void>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {

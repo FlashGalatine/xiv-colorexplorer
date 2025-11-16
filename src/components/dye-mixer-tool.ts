@@ -55,7 +55,8 @@ export class DyeMixerTool extends BaseComponent {
 
     // Dye selector section
     const selectorSection = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const selectorLabel = this.createElement('h3', {
@@ -73,7 +74,8 @@ export class DyeMixerTool extends BaseComponent {
 
     // Settings section
     const settingsSection = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
 
     const settingsLabel = this.createElement('h3', {
@@ -97,7 +99,8 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const stepInput = this.createElement('input', {
-      className: 'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+      className:
+        'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
       attributes: {
         type: 'range',
         min: '2',
@@ -191,7 +194,8 @@ export class DyeMixerTool extends BaseComponent {
     colorSpaceContainer.appendChild(hsvLabel);
 
     const colorSpaceHint = this.createElement('p', {
-      textContent: 'HSV typically produces more natural-looking transitions. RGB is linear but more mathematically straightforward.',
+      textContent:
+        'HSV typically produces more natural-looking transitions. RGB is linear but more mathematically straightforward.',
       className: 'text-xs text-gray-600 dark:text-gray-400',
     });
 
@@ -313,7 +317,12 @@ export class DyeMixerTool extends BaseComponent {
   /**
    * Calculate interpolation steps
    */
-  private calculateInterpolation(startDye: Dye, endDye: Dye, steps: number, colorSpace: 'rgb' | 'hsv'): InterpolationStep[] {
+  private calculateInterpolation(
+    startDye: Dye,
+    endDye: Dye,
+    steps: number,
+    colorSpace: 'rgb' | 'hsv'
+  ): InterpolationStep[] {
     const result: InterpolationStep[] = [];
 
     for (let i = 0; i < steps; i++) {
@@ -352,7 +361,9 @@ export class DyeMixerTool extends BaseComponent {
       const excludeIds = [startDye.id, endDye.id];
       const matchedDye = dyeService.findClosestDye(theoreticalColor, excludeIds);
 
-      const distance = matchedDye ? ColorService.getColorDistance(theoreticalColor, matchedDye.hex) : Infinity;
+      const distance = matchedDye
+        ? ColorService.getColorDistance(theoreticalColor, matchedDye.hex)
+        : Infinity;
 
       result.push({
         position: t,

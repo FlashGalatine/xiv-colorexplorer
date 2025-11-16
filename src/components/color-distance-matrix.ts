@@ -76,8 +76,7 @@ export class ColorDistanceMatrix extends BaseComponent {
     });
 
     const table = this.createElement('table', {
-      className:
-        'w-full text-sm border-collapse bg-white dark:bg-gray-800',
+      className: 'w-full text-sm border-collapse bg-white dark:bg-gray-800',
     });
 
     // Header row
@@ -163,10 +162,7 @@ export class ColorDistanceMatrix extends BaseComponent {
           cell.textContent = '0.0';
           cell.className += ' bg-gray-100 dark:bg-gray-700/50';
         } else {
-          const distance = ColorService.getColorDistance(
-            this.dyes[i].hex,
-            this.dyes[j].hex
-          );
+          const distance = ColorService.getColorDistance(this.dyes[i].hex, this.dyes[j].hex);
           cell.textContent = distance.toFixed(1);
 
           // Color code: green → yellow → red

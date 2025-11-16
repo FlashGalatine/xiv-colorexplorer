@@ -96,7 +96,8 @@ export class ColorPickerDisplay extends BaseComponent {
         id: 'color-picker',
         value: this.selectedColor,
       },
-      className: 'w-full h-10 rounded-lg cursor-pointer border border-gray-300 dark:border-gray-600',
+      className:
+        'w-full h-10 rounded-lg cursor-pointer border border-gray-300 dark:border-gray-600',
     });
 
     pickerContainer.appendChild(pickerLabel);
@@ -203,7 +204,7 @@ export class ColorPickerDisplay extends BaseComponent {
     const eyedropperBtn = this.querySelector<HTMLButtonElement>('#eyedropper-btn');
     if (eyedropperBtn) {
       this.on(eyedropperBtn, 'click', () => {
-        this.activateEyedropper();
+        void this.activateEyedropper();
       });
     }
   }
@@ -245,17 +246,21 @@ export class ColorPickerDisplay extends BaseComponent {
    */
   private async activateEyedropper(): Promise<void> {
     try {
-      const eyeDropper = (window as any).EyeDropper;
-      const result = await new eyeDropper().open();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const EyeDropperClass = (window as any).EyeDropper as new () => {
+        open: () => Promise<{ sRGBHex?: string }>;
+      };
+      const eyeDropper = new EyeDropperClass();
+      const result = await eyeDropper.open();
 
       if (result && result.sRGBHex) {
         this.selectedColor = result.sRGBHex;
         this.updateDisplay();
         this.emit('color-selected', { color: this.selectedColor });
       }
-    } catch (error) {
+    } catch {
       // User cancelled or error occurred
-      console.log('Eyedropper cancelled or not supported');
+      console.info('Eyedropper cancelled or not supported');
     }
   }
 
@@ -263,12 +268,7 @@ export class ColorPickerDisplay extends BaseComponent {
    * Set color from image coordinates
    * Used by ColorMatcher for eyedropper from image
    */
-  setColorFromImage(
-    canvas: HTMLCanvasElement,
-    x: number,
-    y: number,
-    sampleSize: number = 1
-  ): void {
+  setColorFromImage(canvas: HTMLCanvasElement, x: number, y: number, sampleSize: number = 1): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -281,7 +281,10 @@ export class ColorPickerDisplay extends BaseComponent {
     const imageData = ctx.getImageData(startX, startY, width, height);
     const data = imageData.data;
 
-    let r = 0, g = 0, b = 0, count = 0;
+    let r = 0,
+      g = 0,
+      b = 0,
+      count = 0;
 
     for (let i = 0; i < data.length; i += 4) {
       r += data[i];

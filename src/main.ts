@@ -40,7 +40,7 @@ async function initializeApp(): Promise<void> {
 
     // Log service status
     const status = await getServicesStatus();
-    console.table({
+    console.info({
       'Theme Service': status.theme.current,
       'Storage Service': status.storage.available ? 'Available' : 'Unavailable',
       'API Service': status.api.available ? `Available (${status.api.latency}ms)` : 'Unavailable',

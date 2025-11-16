@@ -95,7 +95,8 @@ export class ImageUploadDisplay extends BaseComponent {
     // Keyboard shortcut hint
     const shortcut = this.createElement('div', {
       textContent: '💡 Tip: Paste an image using Ctrl+V (Cmd+V on Mac)',
-      className: 'p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
+      className:
+        'p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
     });
     wrapper.appendChild(shortcut);
 
@@ -124,18 +125,33 @@ export class ImageUploadDisplay extends BaseComponent {
       // Drag and drop
       this.on(dropZone, 'dragover', (e: Event) => {
         e.preventDefault();
-        dropZone.classList.add('border-blue-500', 'dark:border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/10');
+        dropZone.classList.add(
+          'border-blue-500',
+          'dark:border-blue-400',
+          'bg-blue-50',
+          'dark:bg-blue-900/10'
+        );
         this.isDragging = true;
       });
 
       this.on(dropZone, 'dragleave', () => {
-        dropZone.classList.remove('border-blue-500', 'dark:border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/10');
+        dropZone.classList.remove(
+          'border-blue-500',
+          'dark:border-blue-400',
+          'bg-blue-50',
+          'dark:bg-blue-900/10'
+        );
         this.isDragging = false;
       });
 
       this.on(dropZone, 'drop', (e: Event) => {
         e.preventDefault();
-        dropZone.classList.remove('border-blue-500', 'dark:border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/10');
+        dropZone.classList.remove(
+          'border-blue-500',
+          'dark:border-blue-400',
+          'bg-blue-50',
+          'dark:bg-blue-900/10'
+        );
         this.isDragging = false;
 
         const dragEvent = e as DragEvent;
@@ -170,7 +186,7 @@ export class ImageUploadDisplay extends BaseComponent {
             pasteEvent.preventDefault();
             const blob = items[i].getAsFile();
             if (blob) {
-              this.handleFiles(new DataTransfer().items[0].getAsFile() as any ? [blob] : (blob as any));
+              this.handleFiles([blob] as unknown as FileList);
             }
           }
         }
@@ -297,7 +313,10 @@ export class ImageUploadDisplay extends BaseComponent {
     const imageData = ctx.getImageData(startX, startY, width, height);
     const data = imageData.data;
 
-    let r = 0, g = 0, b = 0, count = 0;
+    let r = 0,
+      g = 0,
+      b = 0,
+      count = 0;
 
     for (let i = 0; i < data.length; i += 4) {
       r += data[i];

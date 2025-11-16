@@ -55,7 +55,8 @@ export class DyeComparisonTool extends BaseComponent {
 
     // Dye selector section
     const selectorSection = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const selectorLabel = this.createElement('h3', {
@@ -189,7 +190,8 @@ export class DyeComparisonTool extends BaseComponent {
 
     for (const dye of this.selectedDyes) {
       const tag = this.createElement('div', {
-        className: 'inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full',
+        className:
+          'inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full',
       });
 
       const swatch = this.createElement('div', {
@@ -309,7 +311,11 @@ export class DyeComparisonTool extends BaseComponent {
     if (!hueSatContainer || !brightnessContainer) return;
 
     if (!this.hueSatChart) {
-      this.hueSatChart = new DyeComparisonChart(hueSatContainer, 'hue-saturation', this.selectedDyes);
+      this.hueSatChart = new DyeComparisonChart(
+        hueSatContainer,
+        'hue-saturation',
+        this.selectedDyes
+      );
       this.hueSatChart.init();
     } else {
       this.hueSatChart.updateDyes(this.selectedDyes);
@@ -317,7 +323,11 @@ export class DyeComparisonTool extends BaseComponent {
     }
 
     if (!this.brightnessChart) {
-      this.brightnessChart = new DyeComparisonChart(brightnessContainer, 'brightness', this.selectedDyes);
+      this.brightnessChart = new DyeComparisonChart(
+        brightnessContainer,
+        'brightness',
+        this.selectedDyes
+      );
       this.brightnessChart.init();
     } else {
       this.brightnessChart.updateDyes(this.selectedDyes);
@@ -426,7 +436,7 @@ export class DyeComparisonTool extends BaseComponent {
       if (resultArea) {
         resultArea.value = hex;
         resultArea.select();
-        navigator.clipboard.writeText(hex);
+        void navigator.clipboard.writeText(hex);
       }
     });
   }
@@ -448,8 +458,10 @@ export class DyeComparisonTool extends BaseComponent {
       })),
       statistics: {
         count: this.selectedDyes.length,
-        averageSaturation: this.selectedDyes.reduce((sum, d) => sum + d.hsv.s, 0) / this.selectedDyes.length,
-        averageBrightness: this.selectedDyes.reduce((sum, d) => sum + d.hsv.v, 0) / this.selectedDyes.length,
+        averageSaturation:
+          this.selectedDyes.reduce((sum, d) => sum + d.hsv.s, 0) / this.selectedDyes.length,
+        averageBrightness:
+          this.selectedDyes.reduce((sum, d) => sum + d.hsv.v, 0) / this.selectedDyes.length,
       },
     };
     return JSON.stringify(data, null, 2);

@@ -8,7 +8,6 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**

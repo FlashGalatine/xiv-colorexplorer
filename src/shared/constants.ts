@@ -281,7 +281,7 @@ export const FEATURE_FLAGS = {
 export const PATTERNS = {
   HEX_COLOR: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
   RGB_COLOR: /^rgb\(\d+,\s*\d+,\s*\d+\)$/,
-  URL: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+  URL: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   ALPHANUMERIC: /^[a-zA-Z0-9]*$/,
 } as const;

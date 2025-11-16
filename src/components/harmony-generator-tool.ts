@@ -181,7 +181,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const divider = this.createElement('div', {
       className: 'relative',
     });
-    divider.innerHTML = '<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or</span></div>';
+    divider.innerHTML =
+      '<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or</span></div>';
     inputMethods.appendChild(divider);
 
     // Dye selector
@@ -200,10 +201,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const storedDyeSelectorContainer = dyeSelectorContainer;
 
     // Store for use in bindEvents
-    (this as any)._hexInput = storedHexInput;
-    (this as any)._colorPicker = storedColorPicker;
-    (this as any)._generateBtn = storedGenerateBtn;
-    (this as any)._dyeSelectorContainer = storedDyeSelectorContainer;
+    (this as unknown as Record<string, HTMLElement>)._hexInput = storedHexInput;
+    (this as unknown as Record<string, HTMLElement>)._colorPicker = storedColorPicker;
+    (this as unknown as Record<string, HTMLElement>)._generateBtn = storedGenerateBtn;
+    (this as unknown as Record<string, HTMLElement>)._dyeSelectorContainer =
+      storedDyeSelectorContainer;
 
     return section;
   }
@@ -242,7 +244,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     section.appendChild(label);
 
     // Store for event binding
-    (this as any)._pricesCheckbox = checkbox;
+    (this as unknown as Record<string, HTMLElement>)._pricesCheckbox = checkbox;
 
     return section;
   }
@@ -251,11 +253,15 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Bind event listeners
    */
   bindEvents(): void {
-    const hexInput = (this as any)._hexInput as HTMLInputElement;
-    const colorPicker = (this as any)._colorPicker as HTMLInputElement;
-    const generateBtn = (this as any)._generateBtn as HTMLButtonElement;
-    const dyeSelectorContainer = (this as any)._dyeSelectorContainer as HTMLElement;
-    const pricesCheckbox = (this as any)._pricesCheckbox as HTMLInputElement;
+    const hexInput = (this as unknown as Record<string, HTMLElement>)._hexInput as HTMLInputElement;
+    const colorPicker = (this as unknown as Record<string, HTMLElement>)
+      ._colorPicker as HTMLInputElement;
+    const generateBtn = (this as unknown as Record<string, HTMLElement>)
+      ._generateBtn as HTMLButtonElement;
+    const dyeSelectorContainer = (this as unknown as Record<string, HTMLElement>)
+      ._dyeSelectorContainer as HTMLElement;
+    const pricesCheckbox = (this as unknown as Record<string, HTMLElement>)
+      ._pricesCheckbox as HTMLInputElement;
 
     if (hexInput && colorPicker) {
       // Sync hex input and color picker

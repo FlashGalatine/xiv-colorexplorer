@@ -8,7 +8,6 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**
@@ -187,7 +186,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
   /**
    * Render a single step item
    */
-  private renderStepItem(step: InterpolationStep, index: number): HTMLElement {
+  private renderStepItem(step: InterpolationStep, _index: number): HTMLElement {
     const item = this.createElement('div', {
       className:
         'flex items-center gap-3 p-2 rounded border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors',

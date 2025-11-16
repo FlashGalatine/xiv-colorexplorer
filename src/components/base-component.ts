@@ -377,7 +377,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
     if (!this.element) return;
 
     for (const [key, value] of Object.entries(styles)) {
-      (this.element.style as any)[key] = value;
+      (this.element.style as unknown as Record<string, string>)[key] = value as string;
     }
   }
 
@@ -404,8 +404,8 @@ export abstract class BaseComponent implements ComponentLifecycle {
    * Log debug info
    */
   debug(): void {
-    console.group(`🔍 ${this.constructor.name} Debug Info`);
-    console.table(this.getDebugInfo());
-    console.groupEnd();
+    console.info(`🔍 ${this.constructor.name} Debug Info`);
+    console.info(this.getDebugInfo());
+    console.info('--- End Debug Info ---');
   }
 }

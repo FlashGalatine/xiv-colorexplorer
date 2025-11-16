@@ -253,7 +253,17 @@ export class APIService {
   /**
    * Fetch with timeout
    */
-  private async fetchWithTimeout(url: string, timeoutMs: number): Promise<any> {
+  private async fetchWithTimeout(
+    url: string,
+    timeoutMs: number
+  ): Promise<{
+    currentAveragePriceNQ?: number;
+    currentAveragePriceHQ?: number;
+    minPriceNQ?: number;
+    minPriceHQ?: number;
+    maxPriceNQ?: number;
+    maxPriceHQ?: number;
+  }> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -278,7 +288,17 @@ export class APIService {
   /**
    * Parse and validate API response
    */
-  private parseApiResponse(data: any, itemID: number): PriceData | null {
+  private parseApiResponse(
+    data: {
+      currentAveragePriceNQ?: number;
+      currentAveragePriceHQ?: number;
+      minPriceNQ?: number;
+      minPriceHQ?: number;
+      maxPriceNQ?: number;
+      maxPriceHQ?: number;
+    },
+    itemID: number
+  ): PriceData | null {
     try {
       // Extract current market board data
       if (!data.currentAveragePriceNQ && !data.currentAveragePriceHQ) {
@@ -376,7 +396,7 @@ export class APIService {
     try {
       const response = await fetch(`${UNIVERSALIS_API_BASE}/stats`);
       return response.ok;
-    } catch (_error) {
+    } catch {
       return false;
     }
   }
@@ -392,7 +412,7 @@ export class APIService {
       const latency = Date.now() - start;
 
       return { available, latency };
-    } catch (_error) {
+    } catch {
       return { available: false, latency: -1 };
     }
   }

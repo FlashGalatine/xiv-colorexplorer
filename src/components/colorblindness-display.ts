@@ -153,7 +153,8 @@ export class ColorblindnessDisplay extends BaseComponent {
    */
   private renderVisionTypeCard(visionType: VisionTypeInfo): HTMLElement {
     const card = this.createElement('div', {
-      className: 'rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow',
+      className:
+        'rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow',
     });
 
     // Color swatch
@@ -198,7 +199,8 @@ export class ColorblindnessDisplay extends BaseComponent {
    */
   private renderColorValueRow(visionType: VisionTypeInfo): HTMLElement {
     const row = this.createElement('div', {
-      className: 'flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0',
+      className:
+        'flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0',
     });
 
     // Vision type name

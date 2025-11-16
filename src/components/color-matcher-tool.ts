@@ -10,7 +10,6 @@
 import { BaseComponent } from './base-component';
 import { ImageUploadDisplay } from './image-upload-display';
 import { ColorPickerDisplay } from './color-picker-display';
-import { ColorDisplay } from './color-display';
 import { ColorService, dyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
@@ -59,7 +58,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Image upload
     const uploadContainer = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const uploadTitle = this.createElement('h3', {
@@ -77,7 +77,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Color picker
     const pickerContainer = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const pickerTitle = this.createElement('h3', {
@@ -97,7 +98,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Settings section
     const settingsSection = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
     });
 
     const settingsTitle = this.createElement('h3', {
@@ -121,7 +123,8 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const sampleInput = this.createElement('input', {
-      className: 'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+      className:
+        'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
       attributes: {
         type: 'range',
         min: '1',
@@ -226,7 +229,8 @@ export class ColorMatcherTool extends BaseComponent {
     resultsContainer.innerHTML = '';
 
     const section = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
     });
 
     const sectionTitle = this.createElement('h3', {
@@ -361,7 +365,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Results section
     const section = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
 
     const title = this.createElement('h3', {
@@ -372,7 +377,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Best match
     const bestMatchSection = this.createElement('div', {
-      className: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 space-y-2',
+      className:
+        'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 space-y-2',
     });
 
     const bestMatchLabel = this.createElement('div', {
@@ -421,7 +427,8 @@ export class ColorMatcherTool extends BaseComponent {
    */
   private renderDyeCard(dye: Dye, sampledColor: string): HTMLElement {
     const card = this.createElement('div', {
-      className: 'flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600',
+      className:
+        'flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600',
     });
 
     // Swatches
@@ -472,7 +479,8 @@ export class ColorMatcherTool extends BaseComponent {
     // Category badge
     const category = this.createElement('div', {
       textContent: dye.category,
-      className: 'text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-medium',
+      className:
+        'text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-medium',
     });
     card.appendChild(category);
 

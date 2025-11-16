@@ -54,7 +54,8 @@ export class OutfitSlotSelector extends BaseComponent {
 
     // Dual dyes toggle
     const toggleSection = this.createElement('div', {
-      className: 'flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800',
+      className:
+        'flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800',
     });
 
     const checkbox = this.createElement('input', {
@@ -103,7 +104,8 @@ export class OutfitSlotSelector extends BaseComponent {
    */
   private renderSlotCard(slot: OutfitSlot): HTMLElement {
     const card = this.createElement('div', {
-      className: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3',
     });
 
     // Slot header
@@ -249,7 +251,9 @@ export class OutfitSlotSelector extends BaseComponent {
       }
 
       if (this.enableDualDyes) {
-        const secondaryContainer = this.querySelector<HTMLElement>(`#dye-selector-${slot.id}-secondary`);
+        const secondaryContainer = this.querySelector<HTMLElement>(
+          `#dye-selector-${slot.id}-secondary`
+        );
 
         if (secondaryContainer && !this.dyeSelectors.has(`${slot.id}-secondary`)) {
           const selector = new DyeSelector(secondaryContainer, {
