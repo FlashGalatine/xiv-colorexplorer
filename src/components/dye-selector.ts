@@ -19,6 +19,7 @@ export interface DyeSelectorOptions {
   allowMultiple?: boolean;
   showCategories?: boolean;
   showPrices?: boolean;
+  excludeFacewear?: boolean;
 }
 
 /**
@@ -39,6 +40,7 @@ export class DyeSelector extends BaseComponent {
       allowMultiple: options.allowMultiple ?? true,
       showCategories: options.showCategories ?? true,
       showPrices: options.showPrices ?? false,
+      excludeFacewear: options.excludeFacewear ?? true,
     };
   }
 
@@ -94,7 +96,13 @@ export class DyeSelector extends BaseComponent {
       allBtn.classList.add('bg-blue-500', 'text-white');
       categoryContainer.appendChild(allBtn);
 
-      const categories = DyeService.getInstance().getCategories();
+      let categories = DyeService.getInstance().getCategories();
+
+      // Exclude Facewear from category list if option is enabled
+      if (this.options.excludeFacewear) {
+        categories = categories.filter((cat) => cat !== 'Facewear');
+      }
+
       for (const category of categories) {
         const categoryBtn = this.createElement('button', {
           textContent: category,
@@ -399,6 +407,11 @@ export class DyeSelector extends BaseComponent {
   private getFilteredDyes(): Dye[] {
     const dyeService = DyeService.getInstance();
     let dyes = dyeService.getAllDyes();
+
+    // Exclude Facewear by default
+    if (this.options.excludeFacewear) {
+      dyes = dyes.filter((d) => d.category !== 'Facewear');
+    }
 
     // Filter by category
     if (this.currentCategory) {
