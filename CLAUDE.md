@@ -750,6 +750,100 @@ function safeFetchJSON(url, fallbackData = []) {
 - Toast notifications for errors
 - Graceful fallback if API unavailable
 
+## Error Handling Standards (Phase 11)
+
+All fetch() calls must follow standardized error handling patterns to ensure robust, user-friendly behavior.
+
+### Pattern 1: JSON API Calls (Universalis API, Market Data)
+
+**Standard Pattern** (use `safeFetchJSON()` from shared-components.js):
+```javascript
+const prices = await safeFetchJSON(
+    'https://universalis.app/api/v2/aggregated/Crystal/1/primary',
+    []  // fallback data
+);
+```
+
+**Manual Pattern** (if `safeFetchJSON()` unavailable):
+```javascript
+try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return data;
+} catch (error) {
+    console.error(`Failed to fetch from ${url}:`, error);
+    showToast('Error loading data. Using cached values.', 'error');
+    return fallbackData;
+}
+```
+
+### Pattern 2: HTML Component Loading (nav, footer, mobile nav)
+
+**Correct Pattern** (with error handling):
+```javascript
+fetch('components/nav.html')
+    .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.text();
+    })
+    .then(html => {
+        document.getElementById('nav-container').innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Failed to load nav component:', error);
+        // Component is optional - app still works without it
+        // No showToast needed - navigation available through other means
+    });
+```
+
+**❌ AVOID** (no error handling):
+```javascript
+// BAD - no catch block, silent failures
+fetch('components/nav.html')
+    .then(r => r.text())
+    .then(html => { document.getElementById('nav-container').innerHTML = html; });
+```
+
+### Pattern 3: Async/Await with Try-Catch (Server Data)
+
+**Standard Pattern** (Data Centers, Worlds):
+```javascript
+async function loadServerData() {
+    try {
+        const [dcResponse, worldsResponse] = await Promise.all([
+            fetch('/assets/json/data-centers.json'),
+            fetch('/assets/json/worlds.json')
+        ]);
+
+        if (!dcResponse.ok || !worldsResponse.ok) {
+            throw new Error('Failed to load server data');
+        }
+
+        const dataCenters = await dcResponse.json();
+        const worlds = await worldsResponse.json();
+
+        // Process data...
+        updateUI(dataCenters, worlds);
+    } catch (error) {
+        console.error('Error loading server data:', error);
+        showToast('Error loading server list. Please refresh.', 'error');
+        // Fallback to empty state or previous values
+    }
+}
+```
+
+### Error Handling Checklist
+
+When adding fetch() calls:
+- [ ] Has `.catch()` or `try-catch` block
+- [ ] Error logged to console with descriptive message
+- [ ] User shown toast notification if data loading is critical
+- [ ] Fallback data provided if endpoint fails
+- [ ] HTTP status checked (`!response.ok`)
+- [ ] Content-Type validated if applicable
+- [ ] No silent failures (every error path is handled)
+
 ### FFXIV Data Sources
 
 - **Dye Database**: Manual curation from FFXIV Gamerescape + in-game testing

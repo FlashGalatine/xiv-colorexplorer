@@ -1482,7 +1482,20 @@
 
     <!-- Mobile Bottom Navigation Component -->
     <div id="mobile-nav-container" class="component-loading"></div>
-    <script>fetch('components/mobile-bottom-nav.html').then(r=>r.text()).then(html=>{document.getElementById('mobile-nav-container').innerHTML=html});</script>
+    <script>
+        fetch('components/mobile-bottom-nav.html')
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.text();
+            })
+            .then(html => {
+                document.getElementById('mobile-nav-container').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Failed to load mobile navigation:', error);
+                // Navigation is optional - app works without it
+            });
+    </script>
 
     <!-- Service Worker Registration for PWA Support -->
     <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/service-worker.js').then(()=>console.log('Service Worker registered')).catch((error)=>console.log('Service Worker registration failed:',error))})}</script>

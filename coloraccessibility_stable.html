@@ -410,10 +410,23 @@
         // Cache for expensive color transformation calculations
         const transformationCache = new Map();
 
+        /**
+         * Generate a cache key for colorblindness transformation results
+         * @param {string} hex - Hex color code (e.g., "#FF0000")
+         * @param {string} visionType - Type of colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
+         * @param {number} intensity - Intensity level (0-100)
+         * @returns {string} Unique cache key combining all parameters
+         * @private
+         */
         function getCacheKey(hex, visionType, intensity) {
             return `${hex}-${visionType}-${intensity}`;
         }
 
+        /**
+         * Clear all cached colorblindness transformations
+         * Used when settings change to ensure fresh calculations
+         * @private
+         */
         function clearTransformationCache() {
             transformationCache.clear();
         }
@@ -504,7 +517,17 @@
         }
 
         /**
-         * Calculate relative luminance for contrast ratio
+         * Calculate relative luminance of a color according to WCAG standards
+         * Used for calculating contrast ratios between colors to ensure accessibility
+         * Algorithm: https://www.w3.org/WAI/WCAG21/Techniques/general/G17
+         *
+         * @param {string} hex - Hex color code (e.g., "#FF0000")
+         * @returns {number} Relative luminance value (0-1), higher = brighter
+         * @private
+         *
+         * @example
+         * const lum = getRelativeLuminance("#FFFFFF"); // Returns ~1.0 for white
+         * const lum2 = getRelativeLuminance("#000000"); // Returns 0 for black
          */
         function getRelativeLuminance(hex) {
             const rgb = hexToRgb(hex);
@@ -512,10 +535,12 @@
             let g = rgb.g / 255;
             let b = rgb.b / 255;
 
+            // Apply gamma correction for sRGB color space
             r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
             g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
             b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
 
+            // Standard WCAG luminance coefficients (weighted by human perception)
             return 0.2126 * r + 0.7152 * g + 0.0722 * b;
         }
 
@@ -1681,7 +1706,20 @@
 
     <!-- Mobile Bottom Navigation Component -->
     <div id="mobile-nav-container" class="component-loading"></div>
-    <script>fetch('components/mobile-bottom-nav.html').then(r=>r.text()).then(html=>{document.getElementById('mobile-nav-container').innerHTML=html});</script>
+    <script>
+        fetch('components/mobile-bottom-nav.html')
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.text();
+            })
+            .then(html => {
+                document.getElementById('mobile-nav-container').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Failed to load mobile navigation:', error);
+                // Navigation is optional - app works without it
+            });
+    </script>
 
     <!-- Service Worker Registration for PWA Support -->
     <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/service-worker.js').then(()=>console.log('Service Worker registered')).catch((error)=>console.log('Service Worker registration failed:',error))})}</script>
