@@ -1019,17 +1019,33 @@ function parseJSONSafe(jsonString, defaultValue) {
 }
 
 /**
+ * Flag to prevent duplicate event delegation initialization
+ */
+let eventDelegationInitialized = false;
+
+/**
  * Initialize event delegation for component interactions
  * Handles theme changes, dropdown toggles, and other component events
  * without using unsafe inline event handlers
+ *
+ * GUARD: Prevents multiple initializations on single page
  */
 function initEventDelegation() {
+    // Guard: Prevent duplicate initialization
+    if (eventDelegationInitialized) {
+        console.log('Event delegation already initialized, skipping duplicate');
+        return;
+    }
+    eventDelegationInitialized = true;
+    console.log('Initializing event delegation for navigation and theme controls');
+
     // Event delegation for theme selection (data-theme attribute)
     document.addEventListener('click', (e) => {
         const themeButton = e.target.closest('[data-theme]');
         if (themeButton) {
             const themeName = themeButton.getAttribute('data-theme');
             if (themeName) {
+                console.log(`Theme button clicked: ${themeName}`);
                 setTheme(themeName);
                 // Auto-close theme switcher menu after selection
                 const themeMenu = document.querySelector('.theme-switcher-menu.show');
@@ -1047,15 +1063,21 @@ function initEventDelegation() {
             const toggleTarget = toggleButton.getAttribute('data-toggle');
             if (toggleTarget === 'theme-switcher') {
                 // Toggle theme switcher menu
+                console.log('Theme switcher toggle clicked');
                 const menu = toggleButton.nextElementSibling;
                 if (menu && menu.classList.contains('theme-switcher-menu')) {
                     menu.classList.toggle('show');
+                } else {
+                    console.warn('Theme switcher menu not found as nextElementSibling');
                 }
             } else if (toggleTarget === 'nav-dropdown') {
                 // Toggle tools dropdown
+                console.log('Nav dropdown toggle clicked');
                 const dropdown = toggleButton.nextElementSibling;
                 if (dropdown && dropdown.classList.contains('nav-dropdown-menu')) {
                     dropdown.classList.toggle('show');
+                } else {
+                    console.warn('Nav dropdown menu not found as nextElementSibling');
                 }
             }
         }
