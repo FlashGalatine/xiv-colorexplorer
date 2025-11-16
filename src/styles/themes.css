@@ -80,83 +80,124 @@ html.theme-sugar-riot-dark {
    GLOBAL STYLES USING THEME VARIABLES
    ===================================================== */
 
-/* Apply theme colors to body */
+/* Apply theme colors to body and root */
+html {
+  background-color: var(--theme-background) !important;
+  color: var(--theme-text) !important;
+}
+
 body {
-  background-color: var(--theme-background);
-  color: var(--theme-text);
-  border-color: var(--theme-border);
+  background-color: var(--theme-background) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
 }
 
 /* Apply to text elements */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--theme-text);
+  color: var(--theme-text) !important;
 }
 
 p {
-  color: var(--theme-text);
+  color: var(--theme-text) !important;
 }
 
 /* Apply to links */
 a {
-  color: var(--theme-primary);
+  color: var(--theme-primary) !important;
 }
 
 a:hover {
   opacity: 0.8;
 }
 
-/* Apply to cards and containers */
-.bg-white {
-  background-color: var(--theme-card-background);
-  color: var(--theme-text);
-}
+/* =====================================================
+   AGGRESSIVE BACKGROUND OVERRIDES FOR TAILWIND
+   Using !important to override Tailwind utility specificity
+   ===================================================== */
 
+/* White backgrounds → card background */
+.bg-white,
 .dark\:bg-gray-800 {
-  background-color: var(--theme-card-background);
-  color: var(--theme-text);
+  background-color: var(--theme-card-background) !important;
+  color: var(--theme-text) !important;
 }
 
-/* Apply to borders */
-.border {
-  border-color: var(--theme-border);
-}
-
-/* Apply to muted text */
-.text-gray-600,
-.dark\:text-gray-300,
-.text-gray-500,
-.dark\:text-gray-400 {
-  color: var(--theme-text-muted);
-}
-
-/* Apply to backgrounds */
+/* Gray backgrounds → secondary background */
+.bg-gray-50,
 .bg-gray-100,
-.dark\:bg-gray-700 {
-  background-color: var(--theme-background-secondary);
+.dark\:bg-gray-700,
+.dark\:bg-gray-700\/50 {
+  background-color: var(--theme-background-secondary) !important;
+  color: var(--theme-text) !important;
 }
 
-/* Apply primary color to buttons and highlights */
+/* Borders */
+.border,
+.border-gray-200,
+.dark\:border-gray-700,
+.border-gray-100,
+.dark\:border-gray-600 {
+  border-color: var(--theme-border) !important;
+}
+
+/* Text colors - muted */
+.text-gray-600,
+.text-gray-500,
+.text-gray-400,
+.dark\:text-gray-300,
+.dark\:text-gray-400 {
+  color: var(--theme-text-muted) !important;
+}
+
+/* Text colors - regular */
+.text-gray-900,
+.dark\:text-white {
+  color: var(--theme-text) !important;
+}
+
+/* Primary colors (buttons, accents) */
 .bg-blue-600,
+.bg-blue-500,
+.text-blue-600,
+.text-blue-500 {
+  background-color: var(--theme-primary) !important;
+  color: var(--theme-primary) !important;
+}
+
 .focus\:ring-blue-500 {
-  background-color: var(--theme-primary);
+  --tw-ring-color: var(--theme-primary) !important;
 }
 
-.text-blue-600 {
-  color: var(--theme-primary);
-}
-
-/* Ensure inputs use theme colors */
+/* Form elements */
 input,
 textarea,
 select {
-  background-color: var(--theme-card-background);
-  color: var(--theme-text);
-  border-color: var(--theme-border);
+  background-color: var(--theme-card-background) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--theme-primary);
-  outline: none;
+  border-color: var(--theme-primary) !important;
+  outline: none !important;
+  --tw-ring-color: var(--theme-primary) !important;
+}
+
+/* Card and container backgrounds */
+.bg-gradient-to-r {
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-primary)) !important;
+}
+
+/* Opacity overrides for dark mode backgrounds */
+.dark\:bg-gray-900,
+.dark\:bg-gray-800 {
+  background-color: var(--theme-card-background) !important;
+}
+
+/* Additional common patterns */
+.rounded-lg,
+.rounded {
+  background-color: inherit;
 }
