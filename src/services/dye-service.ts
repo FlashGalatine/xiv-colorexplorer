@@ -10,10 +10,7 @@
 import type { Dye } from '@shared/types';
 import { ErrorCode, AppError } from '@shared/types';
 import { ColorService } from './color-service';
-
-// TODO: Import dye database from assets/json/colors_xiv.json in Phase 12.3
-// For now, initialize with empty array - will be populated in Phase 12.2.2
-const dyesJSON: unknown[] = [];
+import dyesJSON from '../../assets/json/colors_xiv.json';
 
 // ============================================================================
 // Dye Service Class
