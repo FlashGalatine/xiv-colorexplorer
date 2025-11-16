@@ -12,10 +12,10 @@ XIV Dye Tools is a client-side web application providing four specialized tools 
 4. **Dye Comparison** (v1.6.1) - Compare up to 4 dyes with color distance matrices and visualizations
 5. **Dye Mixer** (v1.6.1) - Find intermediate dyes for smooth color transitions (experimental)
 
-**Current Status**: v1.6.1 Production (Phase 11 Code Quality & Documentation)
-**Repository**: Main branch only, no feature branches
+**Current Status**: v1.6.1 Production (Phase 11 Complete) / Phase 12 Planning (Ready to Start)
+**Repository**: Main branch (stable v1.6.x) + experimental branch (Phase 12 development)
 **Deployment**: All experimental versions synced with stable (v1.6.1)
-**Latest Session**: 2025-11-16 - Mobile navigation fixes and responsive design optimization
+**Latest Session**: 2025-11-16 - Phase 12 planning suite complete, experimental branch created for Phase 12 development
 
 ## Architecture: The Monolithic Pattern
 
@@ -240,6 +240,77 @@ copy dyecomparison_experimental.html dyecomparison_stable.html
 # Verify copies were successful
 dir *_stable.html
 ```
+
+### Phase 12 Development Workflow (v2.0.0 - TypeScript + Vite)
+
+**Git Strategy for Phase 12**:
+- `main` branch = stable v1.6.x (production-ready)
+- `experimental` branch = Phase 12 development (TypeScript/Vite refactor)
+- Feature branches off `experimental` for each sub-phase (12.1, 12.2, etc.)
+
+**When Phase 12 Starts**:
+
+```bash
+# Clone or pull the experimental branch
+git clone -b experimental https://github.com/FlashGalatine/xivdyetools.git
+git checkout experimental
+
+# Create feature branch for current phase (e.g., Phase 12.1)
+git checkout -b phase-12.1/build-system
+
+# Work on Phase 12.1 tasks...
+# Commit regularly with clear messages
+git commit -m "Phase 12.1: Setup Vite configuration with TypeScript support"
+
+# Push to remote
+git push -u origin phase-12.1/build-system
+
+# When ready, create PR: phase-12.1/build-system → experimental
+# After review and testing, merge to experimental
+```
+
+**Branch Strategy**:
+```
+main (v1.6.x stable)
+└── experimental (Phase 12 development)
+    ├── phase-12.1/build-system
+    ├── phase-12.2/services
+    ├── phase-12.3/components
+    ├── phase-12.4/tools
+    ├── phase-12.5/integration
+    ├── phase-12.6/testing
+    └── phase-12.7/release
+```
+
+**Commit Message Pattern for Phase 12**:
+```
+Phase 12.X: Brief description
+
+- Detailed change 1
+- Detailed change 2
+- Detailed change 3
+
+Checklist: See PHASE_12_CHECKLIST.md
+```
+
+**Switching Branches**:
+```bash
+# Work on v1.6.x bugs (if needed)
+git checkout main
+
+# Work on Phase 12 development
+git checkout experimental
+
+# Work on specific Phase 12 sub-task
+git checkout phase-12.2/services
+```
+
+**Important Notes**:
+- ✅ Always keep `main` branch stable (v1.6.x)
+- ✅ All Phase 12 work happens on `experimental` branch
+- ✅ Feature branches should be short-lived (1-2 weeks max)
+- ✅ Merge feature branch to `experimental` when complete
+- ✅ Final Phase 12: merge `experimental` → `main` as v2.0.0 release
 
 ### Searching the Codebase
 

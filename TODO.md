@@ -318,6 +318,11 @@
 **Target Version**: v2.0.0
 **Estimated Timeline**: 6-8 weeks
 **Complexity**: High | **Risk Level**: Medium
+**Git Strategy**: `experimental` branch for Phase 12 development (created 2025-11-16)
+**Branch Structure**:
+- `main` = stable v1.6.x
+- `experimental` = Phase 12 TypeScript/Vite development
+- Feature branches off `experimental` for each sub-phase (12.1-12.7)
 
 ### Planning Documents
 - 📄 **PHASE_12_ROADMAP.md** - Comprehensive planning (1,266 lines)
