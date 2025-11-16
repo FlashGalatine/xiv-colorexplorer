@@ -517,7 +517,7 @@
         /**
          * Convert interpolated HSV color to hex
          */
-        function hsv2hex(h, s, v) {
+        function hsvToHex(h, s, v) {
             const rgb = hsvToRgb(h, s, v);
             return rgbToHex(Math.round(rgb.r), Math.round(rgb.g), Math.round(rgb.b));
         }
@@ -572,7 +572,7 @@
             positions.forEach((position, index) => {
                 const positionPercent = position * 100;
                 const idealColor = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
-                const idealHex = hsv2hex(idealColor.h, idealColor.s, idealColor.v);
+                const idealHex = hsvToHex(idealColor.h, idealColor.s, idealColor.v);
 
                 // Find closest dye to ideal color (respecting filters)
                 const closestDye = findClosestDyeToColor(idealHex);
@@ -671,7 +671,7 @@
             for (let i = 0; i <= steps; i++) {
                 const position = i / steps;
                 const interpolated = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
-                const color = hsv2hex(interpolated.h, interpolated.s, interpolated.v);
+                const color = hsvToHex(interpolated.h, interpolated.s, interpolated.v);
                 sections.push(color);
             }
 
@@ -701,7 +701,7 @@
 
                 // Interpolate color at position
                 const interpolated = interpolateColorHSV(currentDye1.hex, currentDye2.hex, position);
-                const hex = hsv2hex(interpolated.h, interpolated.s, interpolated.v);
+                const hex = hsvToHex(interpolated.h, interpolated.s, interpolated.v);
 
                 // Update tooltip
                 tooltipColor.style.backgroundColor = hex;

@@ -1393,43 +1393,7 @@
             return Math.round(rating * 10) / 10;
         }
 
-        /**
-         * Convert HSV (Hue, Saturation, Value) to RGB color
-         *
-         * @param {number} h - Hue in degrees (0-360)
-         * @param {number} s - Saturation as percentage (0-100)
-         * @param {number} v - Value/Brightness as percentage (0-100)
-         * @returns {Object} RGB object with properties r, g, b (0-255)
-         *
-         * @example
-         * const rgb = hsvToRgb(0, 100, 100); // Red: { r: 255, g: 0, b: 0 }
-         */
-        function hsvToRgb(h, s, v) {
-            // Normalize saturation and value to 0-1 range
-            s /= 100;
-            v /= 100;
-
-            // Calculate chroma and intermediate variables
-            const c = v * s;
-            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-            const m = v - c;
-
-            // Determine RGB components based on hue sector
-            let r_prime, g_prime, b_prime;
-            if (h >= 0 && h < 60) { [r_prime, g_prime, b_prime] = [c, x, 0]; }
-            else if (h >= 60 && h < 120) { [r_prime, g_prime, b_prime] = [x, c, 0]; }
-            else if (h >= 120 && h < 180) { [r_prime, g_prime, b_prime] = [0, c, x]; }
-            else if (h >= 180 && h < 240) { [r_prime, g_prime, b_prime] = [0, x, c]; }
-            else if (h >= 240 && h < 300) { [r_prime, g_prime, b_prime] = [x, 0, c]; }
-            else { [r_prime, g_prime, b_prime] = [c, 0, x]; }
-
-            // Convert to 0-255 range and return
-            return {
-                r: Math.round((r_prime + m) * 255),
-                g: Math.round((g_prime + m) * 255),
-                b: Math.round((b_prime + m) * 255)
-            };
-        }
+        // hsvToRgb() function is provided by shared-components.js - using shared implementation
 
         /**
          * Finds the closest color
