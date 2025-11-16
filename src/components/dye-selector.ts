@@ -148,9 +148,11 @@ export class DyeSelector extends BaseComponent {
 
         const removeBtn = this.createElement('button', {
           textContent: '✕',
-          className: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white',
+          className:
+            'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dye-remove-btn',
           attributes: {
             'data-dye-id': String(dye.id),
+            type: 'button',
           },
         });
 
@@ -175,9 +177,10 @@ export class DyeSelector extends BaseComponent {
     for (const dye of this.filteredDyes) {
       const dyeCard = this.createElement('button', {
         className:
-          'p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left',
+          'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left',
         attributes: {
           'data-dye-id': String(dye.id),
+          type: 'button',
         },
       });
 
@@ -234,8 +237,10 @@ export class DyeSelector extends BaseComponent {
     // Find clear button by nth-of-type or by searching for the button after search input
     const clearBtn = this.querySelector<HTMLButtonElement>('button:nth-of-type(2)');
     const categoryButtons = this.querySelectorAll<HTMLButtonElement>('[data-category]');
-    const dyeButtons = this.querySelectorAll<HTMLButtonElement>(
-      '[data-dye-id]:not([data-dye-id=""])'
+    const dyeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
+
+    console.info(
+      `🎨 DyeSelector bindEvents: Found ${categoryButtons.length} categories, ${dyeButtons.length} dyes`
     );
 
     // Search functionality
@@ -291,10 +296,15 @@ export class DyeSelector extends BaseComponent {
     }
 
     // Dye selection
+    console.info(`🎨 DyeSelector: Attaching click handlers to ${dyeButtons.length} dye buttons`);
     for (const dyeBtn of dyeButtons) {
       this.on(dyeBtn, 'click', () => {
         const dyeId = parseInt(dyeBtn.getAttribute('data-dye-id') || '0', 10);
         const dye = DyeService.getInstance().getDyeById(dyeId);
+
+        console.info(
+          `🎨 DyeSelector: Clicked dye ID ${dyeId}, found dye: ${dye?.name || 'NOT FOUND'}`
+        );
 
         if (!dye) return;
 
@@ -303,12 +313,15 @@ export class DyeSelector extends BaseComponent {
           const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
           if (index >= 0) {
             this.selectedDyes.splice(index, 1);
+            console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
           } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
             this.selectedDyes.push(dye);
+            console.info(`🎨 DyeSelector: Selected ${dye.name}`);
           }
         } else {
           // Single selection
           this.selectedDyes = [dye];
+          console.info(`🎨 DyeSelector: Selected ${dye.name} (single)`);
         }
 
         this.update();
@@ -317,9 +330,7 @@ export class DyeSelector extends BaseComponent {
     }
 
     // Remove selected dye buttons
-    const removeButtons = this.querySelectorAll<HTMLButtonElement>(
-      'button:has(>span[data-dye-id])'
-    );
+    const removeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-remove-btn');
     for (const removeBtn of removeButtons) {
       this.on(removeBtn, 'click', (event) => {
         event.preventDefault();
