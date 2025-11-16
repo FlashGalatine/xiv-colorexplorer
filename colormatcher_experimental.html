@@ -210,8 +210,8 @@
         </div>
     </div>
 
-    <!-- Two Column Layout - Optimized for 1080p -->
-    <div id="mainContainer" class="w-full flex-1 grid grid-cols-3 gap-4" style="grid-template-columns: 380px 1fr;">
+    <!-- Responsive Layout - Adapts from single column (mobile) to two column (desktop) -->
+    <div id="mainContainer" class="w-full flex-1 grid gap-4">
 
         <!-- LEFT COLUMN: Dye Information -->
         <div class="bg-white rounded-xl shadow-lg p-5 flex flex-col">
@@ -550,29 +550,22 @@
 
             // Use timeout to ensure all layout calculations are fully complete
             setTimeout(() => {
-                // Measure the imageContainer (the flex column) for height
-                const imageContainer = document.getElementById('imageContainer');
-                const containerRect = imageContainer.getBoundingClientRect();
+                // Dynamically measure the canvas wrapper's actual dimensions
+                const canvasWrapperRect = canvasWrapper.getBoundingClientRect();
+                let availableWidth = canvasWrapperRect.width;
+                let availableHeight = canvasWrapperRect.height;
 
-                // Get height from container
-                let availableHeight = containerRect.height;
-
-                // Account for the help text below canvas (~30px)
-                availableHeight -= 30;
-
-                // Calculate width accounting for the full layout:
-                // Body padding (p-3): 24px total (12px each side)
-                // Grid: 380px (left) + 16px gap + 1fr (right)
-                // Right column div (p-5): 40px total padding (20px each side)
-                // Plus account for page scrollbar if one exists
-                const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-                let availableWidth = window.innerWidth - 24 - 380 - 16 - 40 - scrollbarWidth;
+                // Apply padding: canvas wrapper has padding-4 (1rem = 16px each side)
+                availableWidth -= 32;
+                availableHeight -= 32;
 
                 const scaleX = availableWidth / originalImageWidth;
                 const scaleY = availableHeight / originalImageHeight;
 
                 // Use the smaller scale to ensure the entire image fits
-                zoomScale = Math.min(scaleX, scaleY, 1.0); // Don't zoom in beyond 100%
+                // Ensure zoom is never negative, zero, or exceeds 100% zoom-in
+                zoomScale = Math.min(scaleX, scaleY, 1.0);
+                zoomScale = Math.max(zoomScale, 0.25); // Minimum 0.25x zoom
                 updateCanvasZoom();
 
                 // Reset scroll after canvas is rendered
@@ -591,15 +584,15 @@
 
             // Use timeout to ensure all layout calculations are fully complete
             setTimeout(() => {
-                // Calculate width accounting for the full layout:
-                // Body padding (p-3): 24px total (12px each side)
-                // Grid: 380px (left) + 16px gap + 1fr (right)
-                // Right column div (p-5): 40px total padding (20px each side)
-                // Plus account for page scrollbar if one exists
-                const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-                let availableWidth = window.innerWidth - 24 - 380 - 16 - 40 - scrollbarWidth;
+                // Dynamically measure the canvas wrapper's actual width
+                const canvasWrapperRect = canvasWrapper.getBoundingClientRect();
+                let availableWidth = canvasWrapperRect.width;
 
-                zoomScale = availableWidth / originalImageWidth;
+                // Apply padding: canvas wrapper has padding-4 (1rem = 16px each side)
+                availableWidth -= 32;
+
+                // Ensure zoom is never negative or zero
+                zoomScale = Math.max(availableWidth / originalImageWidth, 0.25);
                 updateCanvasZoom();
 
                 // Reset scroll after canvas is rendered
