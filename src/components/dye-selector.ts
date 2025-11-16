@@ -231,9 +231,8 @@ export class DyeSelector extends BaseComponent {
    */
   bindEvents(): void {
     const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
-    const clearBtn =
-      this.querySelector<HTMLButtonElement>('button:has-text("Clear")') ||
-      this.querySelector('button:nth-of-type(2)');
+    // Find clear button by nth-of-type or by searching for the button after search input
+    const clearBtn = this.querySelector<HTMLButtonElement>('button:nth-of-type(2)');
     const categoryButtons = this.querySelectorAll<HTMLButtonElement>('[data-category]');
     const dyeButtons = this.querySelectorAll<HTMLButtonElement>(
       '[data-dye-id]:not([data-dye-id=""])'
