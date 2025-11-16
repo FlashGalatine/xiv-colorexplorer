@@ -21,3 +21,5 @@ export { HarmonyGeneratorTool } from './harmony-generator-tool';
 export { ColorDistanceMatrix } from './color-distance-matrix';
 export { DyeComparisonChart, type ChartType } from './dye-comparison-chart';
 export { DyeComparisonTool } from './dye-comparison-tool';
+export { ColorInterpolationDisplay, type InterpolationStep } from './color-interpolation-display';
+export { DyeMixerTool } from './dye-mixer-tool';
