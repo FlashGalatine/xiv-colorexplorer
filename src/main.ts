@@ -149,11 +149,31 @@ async function initializeApp(): Promise<void> {
 
       // Update button styles
       document.querySelectorAll('[data-tool-id]').forEach((btn) => {
-        btn.classList.toggle('bg-blue-600 text-white', btn.getAttribute('data-tool-id') === toolId);
-        btn.classList.toggle(
-          'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white',
-          btn.getAttribute('data-tool-id') !== toolId
+        const isSelected = btn.getAttribute('data-tool-id') === toolId;
+        // Remove all style classes
+        btn.classList.remove(
+          'bg-blue-600',
+          'text-white',
+          'bg-gray-200',
+          'dark:bg-gray-700',
+          'text-gray-900',
+          'dark:text-white',
+          'hover:bg-gray-300',
+          'dark:hover:bg-gray-600'
         );
+        // Add appropriate classes for current state
+        if (isSelected) {
+          btn.classList.add('bg-blue-600', 'text-white');
+        } else {
+          btn.classList.add(
+            'bg-gray-200',
+            'dark:bg-gray-700',
+            'text-gray-900',
+            'dark:text-white',
+            'hover:bg-gray-300',
+            'dark:hover:bg-gray-600'
+          );
+        }
       });
 
       console.info(`📌 Loaded tool: ${toolDef.name}`);
