@@ -1550,6 +1550,7 @@ document.addEventListener('DOMContentLoaded', () => {
         migrateThemePreferences();     // Migrate old dark mode keys to new system
         initTheme();                   // Theme now handles both light/dark modes
         initComponents();
+        initEventDelegation();         // Initialize event delegation for nav/theme toggles
         removeLoadingPlaceholders();
     } catch (error) {
         console.error('Error in shared-components initialization:', error);
