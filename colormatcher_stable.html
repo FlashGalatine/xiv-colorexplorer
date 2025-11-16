@@ -563,9 +563,11 @@
                 const scaleY = availableHeight / originalImageHeight;
 
                 // Use the smaller scale to ensure the entire image fits
-                // Ensure zoom is never negative, zero, or exceeds 100% zoom-in
+                // Ensure zoom doesn't exceed 100% zoom-in
                 zoomScale = Math.min(scaleX, scaleY, 1.0);
-                zoomScale = Math.max(zoomScale, 0.25); // Minimum 0.25x zoom
+                // Set minimum to the smaller scale (allows any image to fit, even if scrolling required)
+                // But never allow negative or zero zoom
+                zoomScale = Math.max(zoomScale, 0.1);
                 updateCanvasZoom();
 
                 // Reset scroll after canvas is rendered
@@ -591,8 +593,10 @@
                 // Apply padding: canvas wrapper has padding-4 (1rem = 16px each side)
                 availableWidth -= 32;
 
-                // Ensure zoom is never negative or zero
-                zoomScale = Math.max(availableWidth / originalImageWidth, 0.25);
+                // Calculate zoom to fit width
+                zoomScale = availableWidth / originalImageWidth;
+                // Never allow negative, zero, or less than 10% zoom
+                zoomScale = Math.max(zoomScale, 0.1);
                 updateCanvasZoom();
 
                 // Reset scroll after canvas is rendered
