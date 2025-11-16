@@ -161,9 +161,9 @@
         }
     }
 
-    /* Hide Tools dropdown only on phone sizes (≤640px) since bottom nav provides tool navigation */
-    /* On tablets/iPad (641px+), keep Tools dropdown visible because bottom nav is hidden */
-    @media (max-width: 640px) {
+    /* Hide Tools dropdown whenever bottom nav is visible (≤768px) to avoid redundancy */
+    /* Show Tools dropdown when bottom nav is hidden (769px+) as fallback navigation */
+    @media (max-width: 768px) {
         .nav-dropdown {
             display: none !important;
         }
