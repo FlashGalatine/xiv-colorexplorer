@@ -12,6 +12,7 @@ export {
   type EventHandler,
   type ComponentLifecycle,
 } from './base-component';
+export { AppLayout } from './app-layout';
 export { ThemeSwitcher } from './theme-switcher';
 export { DyeSelector, type DyeSelectorOptions } from './dye-selector';
 export { ColorDisplay, type ColorDisplayOptions } from './color-display';
