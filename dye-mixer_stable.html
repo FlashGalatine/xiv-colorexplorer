@@ -430,7 +430,7 @@
             try {
                 const saved = safeGetStorage('xivdyetools_dyemixer_filters', null);
                 if (saved) {
-                    const filters = JSON.parse(saved);
+                    const filters = parseJSONSafe(saved, {});
                     if (filters.metallic) document.getElementById('exclude-metallic').checked = true;
                     if (filters.pastel) document.getElementById('exclude-pastel').checked = true;
                     if (filters.dark) document.getElementById('exclude-dark').checked = true;
@@ -992,7 +992,7 @@
             };
 
             try {
-                const savedGradients = JSON.parse(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'));
+                const savedGradients = parseJSONSafe(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'), []);
                 savedGradients.push(gradient);
                 safeSetStorage('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
                 showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
@@ -1103,7 +1103,7 @@
             const noGradientsText = document.getElementById('no-saved-gradients-text');
 
             try {
-                const savedGradients = JSON.parse(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'));
+                const savedGradients = parseJSONSafe(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'), []);
 
                 if (!savedGradients || savedGradients.length === 0) {
                     container.innerHTML = '';
@@ -1164,7 +1164,7 @@
          */
         function loadSavedGradient(index) {
             try {
-                const savedGradients = JSON.parse(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'));
+                const savedGradients = parseJSONSafe(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'), []);
 
                 if (!savedGradients || !savedGradients[index]) {
                     showToast('Gradient not found', 'error');
@@ -1208,7 +1208,7 @@
          */
         function deleteSavedGradient(index) {
             try {
-                const savedGradients = JSON.parse(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'));
+                const savedGradients = parseJSONSafe(safeGetStorage('xivdyetools_dyemixer_gradients', '[]'), []);
 
                 if (!savedGradients || !savedGradients[index]) {
                     showToast('Gradient not found', 'error');
