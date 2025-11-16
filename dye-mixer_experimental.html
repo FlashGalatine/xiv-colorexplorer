@@ -747,9 +747,11 @@
                 else if (deviance > 7) devianceClass = 'deviance-fair';
                 else if (deviance > 6) devianceClass = 'deviance-good';
 
-                const positionText = rec.positions.length === 1
-                    ? `<span class="number">${rec.positions[0].toFixed(1)}</span>%`
-                    : `<span class="number">${rec.positions[0].toFixed(1)}</span>-<span class="number">${rec.positions[rec.positions.length - 1].toFixed(1)}</span>%`;
+                const positionText = (rec.positions && rec.positions.length > 0)
+                    ? (rec.positions.length === 1
+                        ? `<span class="number">${rec.positions[0].toFixed(1)}</span>%`
+                        : `<span class="number">${rec.positions[0].toFixed(1)}</span>-<span class="number">${rec.positions[rec.positions.length - 1].toFixed(1)}</span>%`)
+                    : '<span class="number">—</span>%';
 
                 // Calculate RGB and HSV values for color details
                 const rgb = hexToRgb(rec.dye.hex);

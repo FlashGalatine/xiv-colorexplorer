@@ -847,6 +847,9 @@
         }
 
         function getAverageColor(x, y) {
+            // Verify canvas context is initialized
+            if (!ctx || !ctx.canvas) return '#000000';
+
             // Safe parseInt with null check and default fallback
             const size = (sampleSizeSelect && sampleSizeSelect.value)
                 ? parseInt(sampleSizeSelect.value, 10)
