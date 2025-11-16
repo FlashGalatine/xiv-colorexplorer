@@ -156,8 +156,11 @@
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
+    }
 
-        /* Hide Tools dropdown on mobile since bottom nav provides tool navigation */
+    /* Hide Tools dropdown only on phone sizes (≤640px) since bottom nav provides tool navigation */
+    /* On tablets/iPad (641px+), keep Tools dropdown visible because bottom nav is hidden */
+    @media (max-width: 640px) {
         .nav-dropdown {
             display: none;
         }
