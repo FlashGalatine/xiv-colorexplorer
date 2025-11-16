@@ -242,16 +242,29 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
 - **XIV Dye Tools Official Website**: [https://xivdyetools.projectgalatine.com/](https://xivdyetools.projectgalatine.com/)
   - Access all tools online without any installation
   - Live version with latest features and updates
+  - Fully optimized for mobile, tablet, and desktop devices
 - **XIV Dye Tools Portal** (Home): Open `index.html` in any modern web browser to access all tools
   - Showcases all tools in a beautiful grid layout
   - Quick access to experimental features
   - Feature highlights and navigation
+  - Responsive design adapts to all device sizes
 - **Color Accessibility Checker (Stable v1.6.0)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
 - **Color Harmony Explorer (Stable v1.6.0)**: Open `colorexplorer_stable.html` for the main tool
 - **Color Matcher (Stable v1.6.0)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
 - **Dye Comparison (Stable v1.6.0)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
 - **Dye Mixer (Stable v1.6.0)**: Open `dye-mixer_stable.html` for finding smooth color transitions
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
+  - On mobile devices (≤768px): Bottom navigation bar for easy tool access
+  - On larger displays (>768px): Tools dropdown in header as fallback navigation
+
+### Mobile Optimization
+
+All tools are fully optimized for mobile and tablet devices:
+- **Responsive Design**: Automatically adapts layout from mobile (375px) through tablets (768px) to desktop (1920px+)
+- **Touch-Friendly Navigation**: 44px minimum touch targets on all buttons and controls
+- **Optimized Input Methods**: Clipboard paste support, drag-drop, and touch-friendly pickers
+- **Bottom Navigation on Mobile**: Smart navigation system that switches between bottom nav (mobile) and Tools dropdown (desktop)
+- **Theme System**: Full 10-theme support on all device sizes with persistent preferences
 
 No installation or server required! All tools work directly in your browser.
 

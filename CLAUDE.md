@@ -12,9 +12,10 @@ XIV Dye Tools is a client-side web application providing four specialized tools 
 4. **Dye Comparison** (v1.6.0) - Compare up to 4 dyes with color distance matrices and visualizations
 5. **Dye Mixer** (v1.6.0) - Find intermediate dyes for smooth color transitions (experimental)
 
-**Current Status**: v1.6.0 Production (Phase 8 Performance optimization)
+**Current Status**: v1.6.0 Production (Phase 9.5 Mobile Navigation & UX Improvements)
 **Repository**: Main branch only, no feature branches
 **Deployment**: All experimental versions synced with stable (v1.6.0)
+**Latest Session**: 2025-11-16 - Mobile navigation fixes and responsive design optimization
 
 ## Architecture: The Monolithic Pattern
 
@@ -171,6 +172,55 @@ Content-Security-Policy: The page's settings blocked an inline script
 |------|-------------|-----------|----------|
 | **Development** | `'self' localhost:*` | `'self' 'unsafe-inline' localhost:*` | Local testing |
 | **Production** | `'self'` | `'self' 'unsafe-inline'` | Live deployment |
+
+### Phase 9.5: Mobile Navigation Strategy (Current)
+
+**Important Update (2025-11-16)**: Mobile navigation has been optimized with synchronized breakpoints and responsive design.
+
+**Navigation Strategy Overview**:
+- **Mobile Devices (≤768px)**: Bottom navigation bar visible, Tools dropdown hidden
+- **Tablet/Desktop (>768px)**: Tools dropdown visible in header, bottom nav hidden
+- **Perfect Breakpoint Alignment**: Both systems use 768px breakpoint for zero navigation redundancy
+
+**Key Improvements**:
+
+1. **Breakpoint Synchronization**
+   - Tools dropdown hides at `max-width: 768px` using `display: none !important;`
+   - Bottom nav shows for all screens ≤768px
+   - Prevents overlapping navigation controls
+   - Users see exactly one navigation system at any viewport size
+
+2. **CSS Specificity Handling**
+   - Global CSS rules (shared-styles.css) can override media queries
+   - Solution: Add `!important` flag to force responsive behavior
+   - Example: `.nav-dropdown { display: none !important; }` at 768px breakpoint
+
+3. **Fixed Positioning Strategy**
+   - Theme button and Tools dropdown both use `position: fixed` on all screen sizes
+   - Keep fixed on mobile instead of switching to static positioning
+   - Maintains top-right corner placement across all devices
+   - Adjust only spacing values (padding, gap) for mobile: 0.5rem instead of 1rem
+
+4. **UX Improvements**
+   - Theme menu auto-closes after selection (no need to tap outside)
+   - Implemented via JavaScript event delegation in `initEventDelegation()`
+   - Improves mobile interaction pattern
+
+**Testing Checklist for Mobile Navigation**:
+- [ ] Mobile portrait (375px): Tools hidden, bottom nav visible
+- [ ] Mobile landscape (812px): Tools visible, bottom nav hidden
+- [ ] Tablet (768px): Tools hidden, bottom nav visible (edge case)
+- [ ] iPad Air (820px): Tools visible, bottom nav hidden
+- [ ] Theme button positioned at top-right on all sizes
+- [ ] Theme menu closes after selection on all devices
+- [ ] No console errors related to navigation
+
+**When Modifying Navigation Components**:
+1. Changes to `components/nav.html` affect all stable tools
+2. Always apply identical changes to `components/nav-experimental.html`
+3. Test at multiple breakpoints: 375px, 640px, 768px, 820px, 1024px
+4. Verify breakpoint alignment with bottom nav implementation
+5. Check that position: fixed works correctly with z-index layering
 
 ### Syncing Experimental to Stable (Windows Commands)
 

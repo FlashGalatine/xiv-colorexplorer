@@ -5,6 +5,139 @@ All notable changes to the XIV Dye Tools project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - Phase 9.5 Mobile Navigation & UX Improvements - 2025-11-16
+
+**Deployed to Production**: All 11 HTML files (stable and experimental) + service worker
+
+### Added
+
+- **Mobile Navigation Improvements (Phase 9.5)**
+  - Fixed Google Fonts CSP blocking - Added `https://fonts.googleapis.com` to style-src directive
+    - Applied to all 11 HTML files (5 tools × 2 versions + index.html)
+    - Eliminates yellow deprecation warnings in Chrome console
+    - Fonts now properly cached from self-hosted WOFF2 assets
+
+  - Fixed Tools Dropdown Mobile Hiding
+    - Added `!important` flag to force media query rule application at 768px breakpoint
+    - Resolves CSS cascade issue where global rules were overriding responsive design
+    - Tools dropdown now properly hidden on mobile/tablet (≤768px)
+    - Tools dropdown visible as fallback on large displays (>768px)
+
+  - Fixed Theme Button Positioning on Mobile
+    - Kept `position: fixed` on mobile instead of changing to `position: static`
+    - Theme button now stays at top-right corner on all device sizes
+    - Adjusted padding/gap for compact mobile display (0.5rem spacing)
+    - Ensures consistent navigation placement across all viewports
+
+### Changed
+
+- **Mobile Navigation Strategy**
+  - Perfect breakpoint alignment at 768px for both Tools dropdown and bottom nav
+  - Eliminates navigation redundancy: only one navigation system visible at any breakpoint
+  - Bottom nav visible on small devices (≤768px), Tools dropdown visible on large displays (>768px)
+  - Improves mobile user experience by reducing UI clutter
+
+- **UX Improvements**
+  - Theme menu now auto-closes after selection via JavaScript event delegation
+    - No need to manually tap outside menu
+    - Better mobile interaction pattern
+  - Updated service worker cache version from v2.0.0 to v3.0.0
+    - Invalidates cached assets to ensure latest CSS/JS served to users
+    - Added missing components to precache: nav-experimental.html, mobile-bottom-nav.html, market-prices.html
+
+### Fixed
+
+- **CSS Specificity Issue in Mobile Layout**
+  - Problem: Global CSS rules in shared-styles.css were overriding media query rules
+  - Solution: Added `!important` flag to `.nav-dropdown { display: none !important; }` at max-width: 768px
+  - Result: Mobile hiding now works correctly across all tools
+
+- **Theme Button Missing Positioning**
+  - Problem: Theme button was floating below description on mobile instead of staying top-right
+  - Cause: Media query was changing `position: fixed` to `position: static`, breaking layout
+  - Solution: Keep `position: fixed` on all screen sizes, only adjust spacing values
+  - Result: Button positioned consistently at top-right corner on all devices
+
+- **Navigation Redundancy at Tablet Sizes**
+  - Problem: iPad Mini (768px) showed both Tools dropdown AND bottom nav simultaneously
+  - Root cause: Breakpoint misalignment - Tools hiding at 640px, bottom nav at 768px
+  - Solution: Changed Tools dropdown hiding to 768px to match bottom nav breakpoint exactly
+  - Result: Perfect navigation synchronization with no overlapping controls
+
+### Technical Details
+
+**Files Modified**:
+- `components/nav.html` - Tools dropdown CSS and Theme button positioning
+- `components/nav-experimental.html` - Applied identical fixes to experimental version
+- `assets/js/shared-components.js` - Added auto-close functionality for theme menu
+- `service-worker.js` - Updated CACHE_NAME and precache URLs
+- All 11 HTML files - Added fonts.googleapis.com to CSP style-src directive
+
+**CSS Changes**:
+```css
+@media (max-width: 768px) {
+    .nav-dropdown {
+        display: none !important;  /* Force mobile hiding */
+    }
+    .nav-controls {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+}
+```
+
+**JavaScript Changes**:
+```javascript
+// Auto-close theme menu after selection
+document.addEventListener('click', (e) => {
+    const themeButton = e.target.closest('[data-theme]');
+    if (themeButton && themeButton.getAttribute('data-theme')) {
+        setTheme(themeButton.getAttribute('data-theme'));
+        const themeMenu = document.querySelector('.theme-switcher-menu.show');
+        if (themeMenu) {
+            themeMenu.classList.remove('show');
+        }
+    }
+});
+```
+
+**Commits**:
+- d1d7d93: Fix - Allow Google Fonts in Content Security Policy
+- 78a4b87: Fix - Apply mobile nav fixes to experimental nav component
+- fda53fc: Fix - Adjust Tools dropdown hiding breakpoint for proper tablet/iPad support
+- d293ff4: Critical - Update service worker cache version to force update
+- 7e9fdd0: Critical - Add !important flag to Tools dropdown hiding rule
+- 1c54346: UX - Fix Theme button positioning and add auto-close menu behavior
+- 5cf9bb9: Fix - Adjust Tools dropdown hiding breakpoint from 640px to 768px
+
+### Testing Validation
+
+Mobile portrait (390px iPhone emulation):
+- ✅ Tools dropdown hidden
+- ✅ Bottom nav visible
+- ✅ Theme button at top-right corner
+- ✅ Theme menu closes after selection
+
+Tablet (768px iPad mini):
+- ✅ Tools dropdown hidden
+- ✅ Bottom nav visible
+- ✅ No navigation redundancy
+- ✅ Theme button positioned correctly
+
+iPad Air (820px) and larger:
+- ✅ Tools dropdown visible
+- ✅ Bottom nav hidden
+- ✅ Theme button at top-right corner
+
+All devices:
+- ✅ No console errors or warnings (yellow font warnings are acceptable deprecation notices)
+- ✅ Theme switching works correctly across all sizes
+- ✅ Navigation flows smoothly at breakpoint transitions
+
+---
+
 ## [1.6.0] - Phase 8 Performance Optimization - 2025-11-15
 
 **Released to Production**: All 5 tools (experimental and stable synced)
