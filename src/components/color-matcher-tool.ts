@@ -348,7 +348,11 @@ export class ColorMatcherTool extends BaseComponent {
     const resultsContainer = this.querySelector<HTMLElement>('#results-container');
     if (!resultsContainer) return;
 
-    resultsContainer.innerHTML = '';
+    // Clear any existing match results, but preserve the image
+    const existingResults = resultsContainer.querySelector('[data-results-section]');
+    if (existingResults) {
+      existingResults.remove();
+    }
 
     // Find closest dyes
     const closestDye = dyeService.findClosestDye(hex);
@@ -368,6 +372,7 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
+    section.setAttribute('data-results-section', 'true');
 
     const title = this.createElement('h3', {
       textContent: 'Matched Dyes',
