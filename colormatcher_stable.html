@@ -623,6 +623,28 @@
         // Core color conversion functions (hexToRgb, rgbToHex, colorDistance) provided by shared-components.js
         // APIThrottler class and apiThrottler instance now provided by shared-components.js
 
+        /**
+         * Find the closest matching FFXIV dye to the user's selected color
+         *
+         * Algorithm: Euclidean distance in RGB color space
+         * - Calculates distance from user color to all available dyes
+         * - Returns dye with smallest distance as closest match
+         * - Always excludes: Facewear category dyes
+         * - Optionally excludes: Metallic dyes, Pure White, Jet Black (based on checkboxes)
+         *
+         * Special Logic: Pure White and Jet Black are excluded from normal filtering but
+         * will be suggested if they are an exact/near-exact match (distance < 5) to ensure
+         * these important colors can still be suggested when appropriate.
+         *
+         * @returns {void} Results displayed in UI: match name, hex code, item ID, and market price
+         * @see colorDistance - RGB distance calculation function from shared-components.js
+         * @see excludeMetallicCheckbox - User filter checkbox
+         * @see excludeExtremesCheckbox - User filter checkbox for Pure White/Jet Black
+         *
+         * @example
+         * // User picks #FF6B6B, finds closest dye match
+         * // Returns: "Pomegranate" (#E84040) with distance ~25 in RGB space
+         */
         function findClosestMatch() {
             if (ffxivDyes.length === 0) {
                 console.log("Color data not loaded yet.");

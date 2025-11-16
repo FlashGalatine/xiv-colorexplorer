@@ -527,7 +527,24 @@
         // ============================================
 
         /**
-         * Check if a dye should be excluded based on filter settings
+         * Check if a dye should be excluded based on active filter settings
+         *
+         * Evaluates the dye against all enabled filter checkboxes:
+         * - Exclude Metallic: Filters dyes with "Metallic" in name
+         * - Exclude Pastel: Filters dyes with "Pastel" in name
+         * - Exclude Dark: Filters dyes with "Dark" in name
+         * - Exclude Cosmic: Filters dyes from Cosmic Exploration or Cosmic Fortunes
+         *
+         * @param {Object} dye - The dye object to check
+         * @param {string} dye.name - Display name of the dye (e.g., "Metallic Gold")
+         * @param {string} dye.acquisition - Source of the dye (e.g., "Cosmic Exploration")
+         * @returns {boolean} True if dye matches any active filter and should be excluded, false otherwise
+         *
+         * @example
+         * const dye = { name: "Metallic Gold", acquisition: "Weaver" };
+         * if (isDyeExcluded(dye)) {
+         *     // Skip this dye in recommendations
+         * }
          */
         function isDyeExcluded(dye) {
             // Check Metallic filter
