@@ -1,7 +1,7 @@
 // XIV Dye Tools Service Worker
 // Provides offline support and intelligent caching for all tools
 
-const CACHE_NAME = 'xiv-dye-tools-v2.0.0';
+const CACHE_NAME = 'xiv-dye-tools-v3.0.0';
 const RUNTIME_CACHE = 'xiv-dye-tools-runtime';
 const IMAGE_CACHE = 'xiv-dye-tools-images';
 
@@ -20,7 +20,10 @@ const PRECACHE_URLS = [
   '/assets/json/data-centers.json',
   '/assets/json/worlds.json',
   '/components/nav.html',
+  '/components/nav-experimental.html',
   '/components/footer.html',
+  '/components/mobile-bottom-nav.html',
+  '/components/market-prices.html',
   '/manifest.json'
 ];
 
