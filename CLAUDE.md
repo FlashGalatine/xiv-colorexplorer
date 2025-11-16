@@ -134,6 +134,44 @@ http-server
 - Without HTTP server, you'll see: `fetch() errors`, missing nav/footer, broken components
 - Always use local preview when testing experimental versions
 
+### Content Security Policy (CSP) - Development Setup
+
+**Important:** Phase 9 added CSP headers to all HTML files for security. However, CSP can be restrictive for localhost testing.
+
+**If you see CSP errors in console:**
+```
+Content-Security-Policy: The page's settings blocked an inline script
+(script-src-elem) from being executed...
+```
+
+**Solution - Switch to Development CSP:**
+
+1. Open any HTML file (e.g., `dyecomparison_stable.html`)
+2. Find the CSP meta tags (around lines 6-9)
+3. **Comment out PRODUCTION CSP** and **uncomment DEVELOPMENT CSP**:
+
+```html
+<!-- DEVELOPMENT CSP: Uncomment for localhost testing (allows inline scripts) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' localhost:*; script-src 'self' 'unsafe-inline' localhost:*; ...">
+
+<!-- PRODUCTION CSP: Used for deployed version (strict, blocks inline scripts) -->
+<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; ..."> -->
+```
+
+4. **Hard refresh browser** (Ctrl+Shift+R / Cmd+Shift+R)
+5. CSP errors should disappear ✅
+
+**Important Before Deploying:**
+- **Revert to PRODUCTION CSP** (comment dev, uncomment prod)
+- Production CSP is stricter and safer for live deployment
+- See `CSP-DEV.md` for complete CSP documentation
+
+**Quick CSP Comparison:**
+| Mode | default-src | script-src | Best for |
+|------|-------------|-----------|----------|
+| **Development** | `'self' localhost:*` | `'self' 'unsafe-inline' localhost:*` | Local testing |
+| **Production** | `'self'` | `'self' 'unsafe-inline'` | Live deployment |
+
 ### Syncing Experimental to Stable (Windows Commands)
 
 ```bash
