@@ -1056,7 +1056,12 @@
         // --- Event Listeners Setup ---
         function setupEventListeners() {
             colorPicker.addEventListener('input', debouncedFindClosestMatch);
-            imageLoader.addEventListener('change', (e) => processImageFile(e.target.files[0]));
+            imageLoader.addEventListener('change', (e) => {
+                // Validate file input before processing
+                if (e.target.files && e.target.files.length > 0) {
+                    processImageFile(e.target.files[0]);
+                }
+            });
 
             // Camera capture support (mobile)
             const cameraBtn = document.getElementById('cameraBtn');
@@ -1066,8 +1071,11 @@
                     cameraCapture.click();
                 });
                 cameraCapture.addEventListener('change', (e) => {
-                    processImageFile(e.target.files[0]);
-                    hapticSuccess();
+                    // Validate file input before processing
+                    if (e.target.files && e.target.files.length > 0) {
+                        processImageFile(e.target.files[0]);
+                        hapticSuccess();
+                    }
                 });
             }
 
@@ -1225,8 +1233,11 @@
             });
 
             document.body.addEventListener('drop', (e) => {
-                const file = e.dataTransfer.files[0];
-                processImageFile(file);
+                // Validate drag-drop files before processing
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    processImageFile(file);
+                }
             });
 
             // Clipboard paste support with fallback
