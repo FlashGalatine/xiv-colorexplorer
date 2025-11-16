@@ -1549,6 +1549,87 @@ function closeKeyboard() {
     }
 }
 
+// ===== DYE FILTERING UTILITIES =====
+/**
+ * Filter dye list based on multiple exclusion criteria
+ *
+ * Unified filtering logic for all dye-related tools. Supports:
+ * - Metallic dyes (name-based)
+ * - Pastel dyes (name-based)
+ * - Dark dyes (name-based)
+ * - Cosmic dyes (acquisition-based)
+ * - Facewear category
+ * - Extremes: Pure White and Jet Black (special handling)
+ *
+ * @param {Array} dyeList - The full list of FFXIV dyes to filter
+ * @param {Object} filterOptions - Filtering criteria
+ * @param {boolean} [filterOptions.excludeMetallic=false] - Filter out dyes with "Metallic" in name
+ * @param {boolean} [filterOptions.excludePastel=false] - Filter out dyes with "Pastel" in name
+ * @param {boolean} [filterOptions.excludeDark=false] - Filter out dyes with "Dark" in name
+ * @param {boolean} [filterOptions.excludeCosmic=false] - Filter out dyes with Cosmic acquisition
+ * @param {boolean} [filterOptions.excludeFacewear=false] - Filter out dyes with Facewear category
+ * @param {boolean} [filterOptions.excludeExtremes=false] - Filter out Pure White and Jet Black
+ * @param {boolean} [filterOptions.fallbackToFull=true] - If no dyes pass filters, return full list instead of empty
+ * @returns {Array} Filtered dye list (or full list if all filtered out and fallbackToFull=true)
+ *
+ * @example
+ * // Filter for recommendations (exclude metallic and cosmic)
+ * const filtered = filterDyes(allDyes, {
+ *     excludeMetallic: true,
+ *     excludeCosmic: true
+ * });
+ *
+ * @example
+ * // Filter for color matching (always exclude facewear, optionally exclude extremes)
+ * const filtered = filterDyes(allDyes, {
+ *     excludeFacewear: true,
+ *     excludeMetallic: isMtlChecked,
+ *     excludeExtremes: isExtremesChecked
+ * });
+ */
+function filterDyes(dyeList, filterOptions = {}) {
+    const {
+        excludeMetallic = false,
+        excludePastel = false,
+        excludeDark = false,
+        excludeCosmic = false,
+        excludeFacewear = false,
+        excludeExtremes = false,
+        fallbackToFull = true
+    } = filterOptions;
+
+    let filtered = dyeList.filter(dye => {
+        // Check Metallic filter
+        if (excludeMetallic && dye.name.toLowerCase().includes('metallic')) return false;
+
+        // Check Pastel filter
+        if (excludePastel && dye.name.toLowerCase().includes('pastel')) return false;
+
+        // Check Dark filter
+        if (excludeDark && dye.name.toLowerCase().includes('dark')) return false;
+
+        // Check Cosmic filter
+        if (excludeCosmic && (dye.acquisition === 'Cosmic Exploration' || dye.acquisition === 'Cosmic Fortunes')) {
+            return false;
+        }
+
+        // Check Facewear category filter
+        if (excludeFacewear && dye.category === 'Facewear') return false;
+
+        // Check Extremes filter
+        if (excludeExtremes && (dye.name === 'Pure White' || dye.name === 'Jet Black')) return false;
+
+        return true;
+    });
+
+    // If filtering removed all dyes and fallback is enabled, return full list
+    if (filtered.length === 0 && fallbackToFull) {
+        return dyeList;
+    }
+
+    return filtered;
+}
+
 // ===== PAGE INITIALIZATION =====
 /**
  * Initialize all shared functionality when DOM is ready
@@ -1577,6 +1658,7 @@ window.initComponents = initComponents;
 window.escapeHTML = escapeHTML;
 window.initEventDelegation = initEventDelegation;
 window.safeFetchJSON = safeFetchJSON;
+window.filterDyes = filterDyes;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
