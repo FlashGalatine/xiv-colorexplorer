@@ -11,21 +11,17 @@ export default defineConfig({
     sourcemap: true,
     target: 'ES2020',
     reportCompressedSize: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor': ['node_modules'],
-          'color-algorithms': [
-            './src/services/color-service.ts',
-            './src/apps/color-accessibility/logic.ts',
-          ],
-          'api-integration': [
-            './src/services/api-service.ts',
-            './src/components/market-prices/component.ts',
-          ],
-        },
-      },
-    },
+    emptyOutDir: true,
+    // Code splitting will be configured in Phase 12.2 after services are created
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks: {
+    //       'vendor': ['node_modules'],
+    //       'color-algorithms': ['./src/services/color-service.ts'],
+    //       'api-integration': ['./src/services/api-service.ts'],
+    //     },
+    //   },
+    // },
   },
 
   server: {

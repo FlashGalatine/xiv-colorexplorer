@@ -13,8 +13,6 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
     "paths": {
       "@/*": ["./src/*"],
@@ -27,10 +25,5 @@
     "types": ["vitest/globals", "node"]
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules"],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ]
+  "exclude": ["dist", "node_modules"]
 }
