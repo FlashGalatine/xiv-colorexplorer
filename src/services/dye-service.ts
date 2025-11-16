@@ -49,13 +49,24 @@ export class DyeService {
    */
   private initialize(): void {
     try {
-      // Load dyes from imported JSON (type cast as Dye[] for now)
+      // Load dyes from imported JSON
       const loadedDyes = Array.isArray(dyesJSON) ? dyesJSON : Object.values(dyesJSON);
-      this.dyes = loadedDyes as Dye[];
 
-      if (!Array.isArray(this.dyes) || this.dyes.length === 0) {
+      if (!Array.isArray(loadedDyes) || loadedDyes.length === 0) {
         throw new Error('Invalid dye database format');
       }
+
+      // Normalize dyes: map itemID to id if needed
+      this.dyes = loadedDyes.map((dye: unknown) => {
+        const normalizedDye = dye as Record<string, unknown>;
+
+        // If the dye has itemID but no id, use itemID as the id
+        if (normalizedDye.itemID && !normalizedDye.id) {
+          normalizedDye.id = normalizedDye.itemID;
+        }
+
+        return normalizedDye as unknown as Dye;
+      });
 
       // Build ID map for fast lookups
       this.dyesByIdMap.clear();
