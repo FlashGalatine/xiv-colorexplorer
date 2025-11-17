@@ -135,8 +135,8 @@ export class ThemeSwitcher extends BaseComponent {
           // Close dropdown
           this.closeDropdown(button, dropdown);
 
-          // Update visual state
-          this.update();
+          // Note: update() is automatically called by the theme subscription in onMount()
+          // No need to call it here, as it would cause duplicate renders
 
           // Emit change event for other components
           this.emit('theme-changed', { theme: themeId });
