@@ -6,71 +6,113 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 XIV Dye Tools is a client-side web application providing four specialized tools for Final Fantasy XIV players to explore dye colors:
 
-1. **Color Accessibility Checker** (v1.6.1) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
-2. **Color Harmony Explorer** (v1.6.1) - Generate harmonious color palettes using color theory
-3. **Color Matcher** (v1.6.1) - Upload images and find closest matching FFXIV dyes
-4. **Dye Comparison** (v1.6.1) - Compare up to 4 dyes with color distance matrices and visualizations
-5. **Dye Mixer** (v1.6.1) - Find intermediate dyes for smooth color transitions (experimental)
+1. **Color Accessibility Checker** (v2.0.0) - Simulate colorblindness (deuteranopia, protanopia, tritanopia, achromatopsia)
+2. **Color Harmony Explorer** (v2.0.0) - Generate harmonious color palettes using color theory
+3. **Color Matcher** (v2.0.0) - Upload images and find closest matching FFXIV dyes
+4. **Dye Comparison** (v2.0.0) - Compare up to 4 dyes with color distance matrices and visualizations
+5. **Dye Mixer** (v2.0.0) - Find intermediate dyes for smooth color transitions
 
-**Current Status**: v1.6.1 Production (Phase 11 Complete) / Phase 12 Planning (Ready to Start)
-**Repository**: Main branch (stable v1.6.x) + experimental branch (Phase 12 development)
-**Deployment**: All experimental versions synced with stable (v1.6.1)
-**Latest Session**: 2025-11-16 - Phase 12 planning suite complete, experimental branch created for Phase 12 development
+**Current Status**: v2.0.0 Production (Phase 12 Complete - TypeScript/Vite Migration)
+**Repository**: Main branch (stable v2.0.0 TypeScript/Vite)
+**Deployment**: All tools deployed with modern architecture (TypeScript, Lit, Vite)
+**Latest Session**: 2025-11-17 - Phase 12 TypeScript/Vite refactor complete, critical issues resolved
 
-## Architecture: The Monolithic Pattern
+## Architecture: v2.0.0 TypeScript + Vite + Lit
 
-### Why Monolithic HTML Files?
+### Modern Component-Based Architecture
 
-Each tool is implemented as a **single self-contained HTML file** (~1,500-1,900 lines):
-- No build process required (pure vanilla HTML/CSS/JavaScript)
-- No external framework dependencies
-- Easy for users to download/inspect/modify individual tools
-- Reduces deployment complexity
+v2.0.0 refactored from monolithic HTML files to a modern TypeScript + Lit component architecture:
 
-**Implications**: High code duplication across the 4 tools (same utility functions in each file). This is intentional for now but represents ~800 duplicate lines that could be extracted in a future phase.
+**Key Benefits**:
+- **Type Safety**: Full TypeScript with strict mode enabled
+- **Modular Design**: Service layer + component layer separation of concerns
+- **Build Optimization**: Vite for fast development and optimized production builds
+- **No Duplication**: Shared services used across all tools
+- **Easy Testing**: Unit tests for all services (140 tests, 100% pass rate)
+- **Framework Agnostic**: Lit for web components, framework-independent
 
-### File Organization
+**Legacy Files**: Original monolithic HTML files (v1.6.x) preserved in `legacy/` folder for historical reference
+
+### File Organization (v2.0.0)
 
 ```
-XIVDyeTools/
-├── index.html                                      # Portal landing page
-├── coloraccessibility_stable.html                 # Production versions
-├── colorexplorer_stable.html
-├── colormatcher_stable.html
-├── dyecomparison_stable.html
-├── dye-mixer_stable.html
-├── coloraccessibility_experimental.html           # Development versions (in sync)
-├── colorexplorer_experimental.html
-├── colormatcher_experimental.html
-├── dyecomparison_experimental.html
-├── dye-mixer_experimental.html
+src/
+├── main.ts                                         # Application entry point
+├── index.html                                      # HTML shell
+├── components/                                     # Lit web components
+│   ├── app-layout.ts                              # Main application shell
+│   ├── accessibility-checker-tool.ts              # Colorblindness simulator
+│   ├── color-matcher-tool.ts                      # Image color matching
+│   ├── dye-comparison-chart.ts                    # Multi-dye visualization
+│   ├── dye-mixer-tool.ts                          # Color interpolation
+│   ├── base-component.ts                          # Base class for all components
+│   ├── color-wheel-display.ts                     # Harmony visualization
+│   ├── harmony-type.ts                            # Harmony type selector
+│   ├── dye-selector.ts                            # Dye dropdown component
+│   ├── theme-switcher.ts                          # Theme selection UI
+│   ├── tools-dropdown.ts                          # Tools navigation
+│   ├── mobile-bottom-nav.ts                       # Mobile navigation bar
+│   └── index.ts                                   # Component exports
 │
-├── components/
-│   ├── nav.html                                   # Theme switcher + tools dropdown
-│   └── footer.html                                # Footer component
+├── services/                                       # Business logic layer
+│   ├── api-service.ts                             # Universalis API integration
+│   ├── color-service.ts                           # Color algorithms (accessibility, harmony)
+│   ├── dye-service.ts                             # Dye database management
+│   ├── storage-service.ts                         # localStorage wrapper
+│   ├── theme-service.ts                           # 10-theme system
+│   └── __tests__/                                 # Unit tests (100% pass rate)
+│
+├── shared/                                         # Shared utilities
+│   ├── constants.ts                               # Application constants
+│   ├── types.ts                                   # TypeScript type definitions
+│   └── utils.ts                                   # Helper functions
+│
+├── styles/                                         # Styling
+│   ├── globals.css                                # Global styles
+│   ├── themes.css                                 # 10 theme CSS variables
+│   └── components.css                             # Component-specific styles
 │
 ├── assets/
-│   ├── css/shared-styles.css                      # 10 theme definitions + utilities
-│   ├── js/shared-components.js                    # Theme functions, storage utilities
-│   └── json/
-│       ├── colors_xiv.json                        # ~125 FFXIV dyes database
-│       ├── data-centers.json                      # FFXIV data centers
-│       └── worlds.json                            # FFXIV worlds per data center
+│   ├── json/
+│   │   ├── colors_xiv.json                        # ~125 FFXIV dyes database
+│   │   ├── data-centers.json                      # FFXIV data centers
+│   │   └── worlds.json                            # FFXIV worlds per data center
+│   └── icons/                                      # SVG and icon assets
 │
-├── README.md                                      # User-facing documentation
-├── CHANGELOG.md                                   # Detailed version history
-├── FAQ.md                                         # User FAQs
-└── LICENSE                                        # MIT License
+├── public/                                         # Static assets
+│   ├── favicon.ico
+│   ├── favicon.png
+│   └── logo.svg
+│
+├── dist/                                           # Build output (production)
+├── package.json                                    # Dependencies and build scripts
+├── vite.config.ts                                  # Vite configuration
+├── tailwind.config.js                              # Tailwind CSS configuration
+├── tsconfig.json                                   # TypeScript configuration
+│
+├── README.md                                       # User documentation
+├── CHANGELOG.md                                    # Version history
+├── FAQ.md                                          # User FAQs
+├── CLAUDE.md                                       # (This file) Development guide
+├── TODO.md                                         # Development roadmap
+└── LICENSE                                         # MIT License
 ```
 
-### Experimental/Stable Workflow
+### Legacy Files (v1.6.x)
 
-**Always edit `*_experimental.html` files, never stable directly.**
+**Location**: `legacy/` folder contains original monolithic HTML files:
+- `legacy/coloraccessibility_stable.html`
+- `legacy/colorexplorer_stable.html`
+- `legacy/colormatcher_stable.html`
+- `legacy/dyecomparison_stable.html`
+- `legacy/dye-mixer_stable.html`
+- (+ experimental versions)
 
-1. Make changes to `colormatcher_experimental.html`, etc.
-2. Test thoroughly: all browsers, light/dark modes, responsive design, error scenarios
-3. Copy entire content to corresponding `*_stable.html`
-4. Commit with message: "Feature: Description" or "Experimental Sync: ..."
+These are preserved for historical reference and comparison but are **not actively maintained**.
+
+### Development Workflow (v2.0.0)
+
+**No experimental/stable branching needed** - TypeScript build system provides testing separation:
 
 **Testing Checklist Before Syncing to Stable**:
 - [ ] Works in Chrome, Firefox, Safari, Edge
@@ -103,75 +145,76 @@ XIVDyeTools/
 
 ## Quick Commands & Development Workflow
 
-### Running Local Preview
+### Development Environment Setup
 
-**Option 1: Python (Built-in on Mac/Linux)**:
+**Prerequisites**:
 ```bash
-# Navigate to project directory
-cd /path/to/XIVDyeTools
-
-# Python 3.x
-python -m http.server 8000
-
-# Python 2.x (deprecated)
-python -m SimpleHTTPServer 8000
-
-# Then open: http://localhost:8000
+# Install Node.js 16+ and npm 8+
+# Then install project dependencies
+npm install
 ```
 
-**Option 2: Node.js (if installed)**:
+### Common npm Commands
+
+**Development Server** (with hot reload):
 ```bash
-# Install globally once
-npm install -g http-server
-
-# Run from project directory
-http-server
-
-# Then open: http://localhost:8080
+npm run dev
+# Opens http://localhost:5173 automatically
+# Watches for changes and rebuilds automatically
 ```
 
-**Why Local Preview Matters**:
-- Components load via `fetch()` - requires HTTP, not `file://` protocol
-- Without HTTP server, you'll see: `fetch() errors`, missing nav/footer, broken components
-- Always use local preview when testing experimental versions
-
-### Content Security Policy (CSP) - Development Setup
-
-**Important:** Phase 9 added CSP headers to all HTML files for security. However, CSP can be restrictive for localhost testing.
-
-**If you see CSP errors in console:**
-```
-Content-Security-Policy: The page's settings blocked an inline script
-(script-src-elem) from being executed...
+**Production Build**:
+```bash
+npm run build
+# Creates optimized dist/ folder for deployment
+# Runs linting, type checking, and build process
 ```
 
-**Solution - Switch to Development CSP:**
-
-1. Open any HTML file (e.g., `dyecomparison_stable.html`)
-2. Find the CSP meta tags (around lines 6-9)
-3. **Comment out PRODUCTION CSP** and **uncomment DEVELOPMENT CSP**:
-
-```html
-<!-- DEVELOPMENT CSP: Uncomment for localhost testing (allows inline scripts) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' localhost:*; script-src 'self' 'unsafe-inline' localhost:*; ...">
-
-<!-- PRODUCTION CSP: Used for deployed version (strict, blocks inline scripts) -->
-<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; ..."> -->
+**Preview Production Build** (before deploying):
+```bash
+npm run preview
+# Serves the production build locally
+# Visit http://localhost:4173 to test
 ```
 
-4. **Hard refresh browser** (Ctrl+Shift+R / Cmd+Shift+R)
-5. CSP errors should disappear ✅
+**Run Tests**:
+```bash
+npm run test
+# Runs all unit tests (140 tests, 100% pass rate)
+# Coverage report: npm run test -- --coverage
+```
 
-**Important Before Deploying:**
-- **Revert to PRODUCTION CSP** (comment dev, uncomment prod)
-- Production CSP is stricter and safer for live deployment
-- See `CSP-DEV.md` for complete CSP documentation
+**Run Linter**:
+```bash
+npm run lint
+# Checks TypeScript syntax and style rules
+# Automatically fixes fixable issues
+```
 
-**Quick CSP Comparison:**
-| Mode | default-src | script-src | Best for |
-|------|-------------|-----------|----------|
-| **Development** | `'self' localhost:*` | `'self' 'unsafe-inline' localhost:*` | Local testing |
-| **Production** | `'self'` | `'self' 'unsafe-inline'` | Live deployment |
+**Build Checklist Before Committing**:
+```bash
+npm run lint      # ✓ All code style checks pass
+npm run test      # ✓ All tests pass (140/140)
+npm run build     # ✓ Production build succeeds
+npm run preview   # ✓ Preview runs without errors
+```
+
+### Testing Checklist
+
+**Before Committing Changes**:
+- [ ] `npm run lint` passes with 0 errors
+- [ ] `npm run test` shows 140/140 tests passing
+- [ ] `npm run build` completes without warnings
+- [ ] `npm run preview` opens without console errors
+- [ ] All 5 tools load and function correctly in preview
+- [ ] Theme switcher works (all 10 themes)
+- [ ] localStorage persistence works (refresh page, settings retained)
+
+**Browser Testing** (after `npm run preview`):
+1. Open Chrome - test all tools, all themes
+2. Open Firefox - verify compatibility
+3. Responsive: Test at 375px, 768px, 1024px viewport sizes
+4. DevTools Console: Should show 0 errors, 0 warnings
 
 ### Phase 9.5: Mobile Navigation Strategy (Current)
 

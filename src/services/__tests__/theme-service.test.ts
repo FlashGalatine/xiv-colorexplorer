@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import type { ThemeName } from '@shared/types';
 import { ThemeService } from '../theme-service';
 import { StorageService } from '../storage-service';
 
@@ -63,15 +64,15 @@ describe('ThemeService Integration', () => {
       const lightTheme = 'standard-light';
       const darkTheme = 'standard-dark';
 
-      ThemeService.setTheme(lightTheme as any);
+      ThemeService.setTheme(lightTheme as ThemeName);
       expect(ThemeService.getCurrentTheme()).toBe(lightTheme);
 
-      ThemeService.setTheme(darkTheme as any);
+      ThemeService.setTheme(darkTheme as ThemeName);
       expect(ThemeService.getCurrentTheme()).toBe(darkTheme);
     });
 
     it('should toggle dark mode', () => {
-      ThemeService.setTheme('standard-light' as any);
+      ThemeService.setTheme('standard-light' as ThemeName);
       ThemeService.toggleDarkMode();
 
       expect(ThemeService.getCurrentTheme()).toBe('standard-dark');
@@ -82,12 +83,12 @@ describe('ThemeService Integration', () => {
 
     it('should validate theme names', () => {
       expect(() => {
-        ThemeService.setTheme('invalid-theme' as any);
+        ThemeService.setTheme('invalid-theme' as ThemeName);
       }).toThrow();
     });
 
     it('should reset to default theme', () => {
-      ThemeService.setTheme('parchment-dark' as any);
+      ThemeService.setTheme('parchment-dark' as ThemeName);
       ThemeService.resetToDefault();
 
       const theme = ThemeService.getCurrentTheme();
@@ -118,10 +119,10 @@ describe('ThemeService Integration', () => {
     });
 
     it('should identify dark mode correctly', () => {
-      ThemeService.setTheme('sugar-riot-light' as any);
+      ThemeService.setTheme('sugar-riot-light' as ThemeName);
       expect(ThemeService.isDarkMode()).toBe(false);
 
-      ThemeService.setTheme('sugar-riot-dark' as any);
+      ThemeService.setTheme('sugar-riot-dark' as ThemeName);
       expect(ThemeService.isDarkMode()).toBe(true);
     });
   });
@@ -145,7 +146,7 @@ describe('ThemeService Integration', () => {
     });
 
     it('should get color from current theme palette', () => {
-      ThemeService.setTheme('classic-dark' as any);
+      ThemeService.setTheme('classic-dark' as ThemeName);
 
       const primary = ThemeService.getColor('primary');
       expect(primary).toBeDefined();
@@ -165,10 +166,10 @@ describe('ThemeService Integration', () => {
 
     it('should distinguish light and dark theme backgrounds', () => {
       // Light theme backgrounds should be lighter than dark
-      ThemeService.setTheme('standard-light' as any);
+      ThemeService.setTheme('standard-light' as ThemeName);
       const lightBg = ThemeService.getColor('background');
 
-      ThemeService.setTheme('standard-dark' as any);
+      ThemeService.setTheme('standard-dark' as ThemeName);
       const darkBg = ThemeService.getColor('background');
 
       expect(lightBg).not.toBe(darkBg);
@@ -189,7 +190,7 @@ describe('ThemeService Integration', () => {
       // Clear storage first to get clean state
       StorageService.clear();
 
-      ThemeService.setTheme('parchment-light' as any);
+      ThemeService.setTheme('parchment-light' as ThemeName);
       // appStorage uses double prefix (xivdyetools_xivdyetools_theme)
       const saved = StorageService.getItem('xivdyetools_xivdyetools_theme');
       expect(saved).toBe('parchment-light');
@@ -203,7 +204,7 @@ describe('ThemeService Integration', () => {
 
       StorageService.clear();
 
-      ThemeService.setTheme('hydaelyn-dark' as any);
+      ThemeService.setTheme('hydaelyn-dark' as ThemeName);
       const current = ThemeService.getCurrentTheme();
       expect(current).toBe('hydaelyn-dark');
     });
@@ -236,7 +237,7 @@ describe('ThemeService Integration', () => {
         notifiedTheme = theme;
       });
 
-      ThemeService.setTheme('sugar-riot-light' as any);
+      ThemeService.setTheme('sugar-riot-light' as ThemeName);
       expect(notifiedTheme).toBe('sugar-riot-light');
 
       unsubscribe();
@@ -249,7 +250,7 @@ describe('ThemeService Integration', () => {
       const unsub1 = ThemeService.subscribe((t) => themes1.push(t));
       const unsub2 = ThemeService.subscribe((t) => themes2.push(t));
 
-      ThemeService.setTheme('classic-dark' as any);
+      ThemeService.setTheme('classic-dark' as ThemeName);
 
       expect(themes1.length).toBeGreaterThan(0);
       expect(themes2.length).toBeGreaterThan(0);
@@ -265,11 +266,11 @@ describe('ThemeService Integration', () => {
         callCount++;
       });
 
-      ThemeService.setTheme('standard-light' as any);
+      ThemeService.setTheme('standard-light' as ThemeName);
       const firstCount = callCount;
 
       unsubscribe();
-      ThemeService.setTheme('standard-dark' as any);
+      ThemeService.setTheme('standard-dark' as ThemeName);
 
       expect(callCount).toBe(firstCount);
     });
@@ -286,7 +287,7 @@ describe('ThemeService Integration', () => {
         return;
       }
 
-      ThemeService.setTheme('hydaelyn-light' as any);
+      ThemeService.setTheme('hydaelyn-light' as ThemeName);
       const root = document.documentElement;
 
       expect(root.classList.contains('theme-hydaelyn-light')).toBe(true);
@@ -298,7 +299,7 @@ describe('ThemeService Integration', () => {
         return;
       }
 
-      ThemeService.setTheme('parchment-dark' as any);
+      ThemeService.setTheme('parchment-dark' as ThemeName);
       const root = document.documentElement;
 
       const primaryColor = root.style.getPropertyValue('--theme-primary');
@@ -311,10 +312,10 @@ describe('ThemeService Integration', () => {
         return;
       }
 
-      ThemeService.setTheme('classic-light' as any);
+      ThemeService.setTheme('classic-light' as ThemeName);
       const root = document.documentElement;
 
-      ThemeService.setTheme('sugar-riot-dark' as any);
+      ThemeService.setTheme('sugar-riot-dark' as ThemeName);
 
       expect(root.classList.contains('theme-classic-light')).toBe(false);
       expect(root.classList.contains('theme-sugar-riot-dark')).toBe(true);
@@ -342,14 +343,14 @@ describe('ThemeService Integration', () => {
     expectedThemes.forEach((themeName) => {
       it(`should support ${themeName} theme`, () => {
         expect(() => {
-          ThemeService.setTheme(themeName as any);
+          ThemeService.setTheme(themeName as ThemeName);
         }).not.toThrow();
 
         expect(ThemeService.getCurrentTheme()).toBe(themeName);
       });
 
       it(`should provide valid palette for ${themeName}`, () => {
-        ThemeService.setTheme(themeName as any);
+        ThemeService.setTheme(themeName as ThemeName);
         const theme = ThemeService.getCurrentThemeObject();
 
         expect(theme.palette.primary).toMatch(/^#[0-9A-Fa-f]{6}$/);

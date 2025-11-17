@@ -369,7 +369,7 @@ export class ColorMatcherTool extends BaseComponent {
     section.appendChild(canvasContainer);
 
     // Image interaction
-    this.setupImageInteraction(canvas, image, canvasContainer);
+    this.setupImageInteraction(canvas, image);
 
     resultsContainer.appendChild(section);
 
@@ -390,11 +390,7 @@ export class ColorMatcherTool extends BaseComponent {
   /**
    * Setup image click/drag interaction
    */
-  private setupImageInteraction(
-    canvas: HTMLCanvasElement,
-    image: HTMLImageElement,
-    canvasContainer: HTMLElement
-  ): void {
+  private setupImageInteraction(canvas: HTMLCanvasElement, image: HTMLImageElement): void {
     let isDragging = false;
     let startX = 0;
     let startY = 0;

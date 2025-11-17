@@ -222,17 +222,6 @@ export class DyeSelector extends BaseComponent {
         );
       }
 
-      // DEBUG: Log all attributes on the button
-      console.debug(`🎨 DyeSelector render: Button for "${dye.name}" (ID: ${dye.id})`, {
-        hasClass: dyeCard.classList.contains('dye-select-btn'),
-        attributes: {
-          'data-dye-id': dyeCard.getAttribute('data-dye-id'),
-          type: dyeCard.getAttribute('type'),
-          class: dyeCard.getAttribute('class'),
-        },
-        allAttributesCount: dyeCard.attributes.length,
-      });
-
       const dyeCardContent = this.createElement('div', {
         className: 'space-y-1',
       });
@@ -353,34 +342,14 @@ export class DyeSelector extends BaseComponent {
         const mouseEvent = event as MouseEvent;
         let target = mouseEvent.target as HTMLElement | null;
 
-        // DEBUG: Log initial click target
-        console.debug(
-          `🎨 DyeSelector click: Initial target tag="${target?.tagName}" class="${target?.className.substring(0, 50)}"`
-        );
-
         // Traverse up the DOM tree to find a dye-select-btn
-        let traversalSteps = 0;
         while (target && !target.classList.contains('dye-select-btn')) {
-          console.debug(
-            `🎨 DyeSelector: Traversal step ${++traversalSteps}: tag="${target.tagName}" class="${target.className.substring(0, 50)}"`
-          );
           target = target.parentElement;
         }
 
         if (!target || !target.classList.contains('dye-select-btn')) {
-          console.debug(
-            `🎨 DyeSelector: No .dye-select-btn found after traversal, returning early`
-          );
           return;
         }
-
-        console.debug(`🎨 DyeSelector: Found .dye-select-btn after ${traversalSteps} steps`, {
-          tag: target.tagName,
-          class: target.className,
-          allAttributes: Array.from(target.attributes).map(
-            (attr) => `${attr.name}="${attr.value}"`
-          ),
-        });
 
         const dyeIdAttr = target.getAttribute('data-dye-id');
         console.info(`🎨 DyeSelector: Button clicked, data-dye-id attribute: "${dyeIdAttr}"`);

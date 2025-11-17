@@ -6,7 +6,7 @@
 A: XIV Dye Tools is a free suite of five client-side web utilities designed to help FFXIV players with color and dye management. The tools include Dye Mixer, Color Accessibility Checker, Color Harmony Explorer, Color Matcher, and Dye Comparison—all available at https://xivdyetools.projectgalatine.com/
 
 **Q: What's the current version?**
-A: Version **1.5.2** (released November 14, 2025). This version includes aggressive code cleanup and optimization for better maintainability. See the CHANGELOG.md for detailed release notes.
+A: Version **v2.0.0** (released November 17, 2025). This is a major architectural refactor using TypeScript and Vite, with improved performance and maintainability. See the CHANGELOG.md for detailed release notes.
 
 **Q: Do these tools cost money?**
 A: No, all tools are completely free with no ads, paywalls, or premium features.
@@ -20,8 +20,8 @@ A: The tools were developed with AI assistance, built using vanilla JavaScript. 
 **Q: Who made these tools?**
 A: XIV Dye Tools was created by Flash Galatine (Balmung) as a passion project for the FFXIV community.
 
-**Q: Why did v1.6.0 change my saved settings?**
-A: Version 1.5.2 standardized all localStorage keys to follow a consistent naming pattern (`xivdyetools_[toolname]_[setting]`). This prevents namespace collisions and improves code maintainability. Your settings will need to be reconfigured on first load, but future updates will preserve them. We apologize for the inconvenience—this was a necessary cleanup for long-term code quality.
+**Q: Why did v2.0.0 change my saved settings?**
+A: Version v2.0.0 migrated from the monolithic HTML architecture to a modern TypeScript/Vite-based system. This required updating how settings are stored. All localStorage keys now follow a consistent naming pattern (`xivdyetools_[setting]`). Your settings will need to be reconfigured on first load, but future updates will preserve them. We apologize for the inconvenience—this was a necessary refactor for long-term code quality and performance.
 
 ---
 
@@ -173,7 +173,7 @@ A: Report it on GitHub (https://github.com/FlashGalatine/xivdyetools/issues) or 
 ## Accessibility & Features
 
 **Q: Is there a colorblindness simulator?**
-A: Yes! Color Accessibility Checker (BETA v1.5.0) simulates deuteranopia, protanopia, tritanopia, and monochrome vision. This helps ensure your glamour choices are distinguishable for all players.
+A: Yes! Color Accessibility Checker (v2.0.0) simulates deuteranopia, protanopia, tritanopia, and monochrome vision. This helps ensure your glamour choices are distinguishable for all players.
 
 **Q: What languages are supported?**
 A: Currently English only, but the tools are language-agnostic for most features (color data is universal).
@@ -199,7 +199,7 @@ A: Each tool is a single self-contained HTML file (~1,500-1,900 lines) with embe
 A: Yes! The project is open source under the MIT license. Since there's no complex build process, you can easily modify and test the tools locally. Check out the GitHub repository (https://github.com/FlashGalatine/xivdyetools) and CLAUDE.md for development guidelines.
 
 **Q: How are duplicate functions handled across tools?**
-A: Version 1.5.2 removed ~164 lines of duplicate code by consolidating all shared utilities in `shared-components.js`. All tools now reference a single implementation for:
+A: Version v2.0.0 eliminated code duplication by refactoring the monolithic HTML files into modular TypeScript components and services. All tools now reference a single implementation from the service layer for:
 - Color conversion functions (hexToRgb, rgbToHex, rgbToHsv, hsvToRgb)
 - Color distance calculations (Euclidean RGB space)
 - Storage functions (safeGetStorage, safeSetStorage)

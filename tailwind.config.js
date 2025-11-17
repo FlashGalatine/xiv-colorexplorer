@@ -4,7 +4,7 @@ module.exports = {
   // However, our custom theme system (CSS variables + theme classes) overrides this
   // and provides the actual dark/light mode behavior through CSS custom properties
   content: [
-    "./**/*.html",  // Scan all HTML files in root and subdirectories
+    "./index.html",  // Scan main HTML file
     "./src/**/*.{ts,tsx}",  // Also scan TypeScript/TSX files
   ],
   theme: {
