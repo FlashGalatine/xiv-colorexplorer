@@ -64,9 +64,10 @@ export class MarketBoard extends BaseComponent {
    */
   async loadServerData(): Promise<void> {
     try {
+      // Fetch JSON files from assets directory
       const [dcResponse, worldsResponse] = await Promise.all([
-        fetch('/assets/json/data-centers.json'),
-        fetch('/assets/json/worlds.json'),
+        fetch('../assets/json/data-centers.json'),
+        fetch('../assets/json/worlds.json'),
       ]);
 
       if (!dcResponse.ok || !worldsResponse.ok) {
@@ -75,6 +76,15 @@ export class MarketBoard extends BaseComponent {
 
       this.dataCenters = await dcResponse.json();
       this.worlds = await worldsResponse.json();
+
+      console.log('Loaded data centers:', this.dataCenters.length);
+      console.log('Loaded worlds:', this.worlds.length);
+
+      // Re-populate server dropdown after data loads
+      const serverSelect = this.querySelector<HTMLSelectElement>('#mb-server-select');
+      if (serverSelect) {
+        this.populateServerDropdown(serverSelect);
+      }
     } catch (error) {
       console.error('Error loading server data:', error);
       // Use fallback empty arrays - component will still render but server selection disabled
@@ -116,11 +126,20 @@ export class MarketBoard extends BaseComponent {
 
     const serverSelect = this.createElement('select', {
       className:
-        'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm',
+        'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition text-sm',
       attributes: {
         id: 'mb-server-select',
+        style: 'transition: all 0.2s;',
       },
     }) as HTMLSelectElement;
+
+    // Add focus styling with theme colors
+    serverSelect.addEventListener('focus', () => {
+      serverSelect.style.borderColor = 'var(--theme-primary)';
+    });
+    serverSelect.addEventListener('blur', () => {
+      serverSelect.style.borderColor = '';
+    });
 
     // Populate server dropdown
     this.populateServerDropdown(serverSelect);
@@ -160,8 +179,25 @@ export class MarketBoard extends BaseComponent {
 
     const toggleBg = this.createElement('div', {
       className:
-        "w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600",
+        "w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600",
+      attributes: {
+        style: 'box-shadow: 0 0 0 0 transparent; transition: box-shadow 0.2s;',
+      },
     });
+
+    // Apply theme-aware styling via inline styles for toggle background
+    toggleInput.addEventListener('change', () => {
+      if (toggleInput.checked) {
+        toggleBg.style.backgroundColor = 'var(--theme-primary)';
+      } else {
+        toggleBg.style.backgroundColor = '';
+      }
+    });
+
+    // Set initial state
+    if (this.showPrices) {
+      toggleBg.style.backgroundColor = 'var(--theme-primary)';
+    }
     toggleWrapper.appendChild(toggleBg);
 
     toggleRow.appendChild(toggleWrapper);
@@ -203,11 +239,12 @@ export class MarketBoard extends BaseComponent {
 
       const checkbox = this.createElement('input', {
         className:
-          'h-3 w-3 text-blue-600 border-gray-300 dark:border-gray-600 rounded mb-price-checkbox',
+          'h-3 w-3 border-gray-300 dark:border-gray-600 rounded mb-price-checkbox focus:ring-2',
         attributes: {
           type: 'checkbox',
           id: `mb-price-${category.id}`,
           'data-category': category.key,
+          style: 'accent-color: var(--theme-primary);',
           ...(this.priceCategories[category.key] ? { checked: 'true' } : {}),
         },
       });
@@ -231,10 +268,21 @@ export class MarketBoard extends BaseComponent {
     const refreshBtn = this.createElement('button', {
       textContent: 'Refresh Prices',
       className:
-        'w-full px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition font-medium mt-3',
+        'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition font-medium mt-3',
       attributes: {
         id: 'mb-refresh-btn',
+        style: 'background-color: var(--theme-primary);',
       },
+    });
+
+    // Add hover effect
+    refreshBtn.addEventListener('mouseenter', () => {
+      if (!refreshBtn.disabled) {
+        refreshBtn.style.opacity = '0.9';
+      }
+    });
+    refreshBtn.addEventListener('mouseleave', () => {
+      refreshBtn.style.opacity = '1';
     });
     priceSettings.appendChild(refreshBtn);
 

@@ -38,6 +38,7 @@ export default defineConfig({
       '@shared': resolve(__dirname, './src/shared'),
       '@apps': resolve(__dirname, './src/apps'),
       '@data': resolve(__dirname, './src/data'),
+      '@assets': resolve(__dirname, './assets'),
     },
   },
 
