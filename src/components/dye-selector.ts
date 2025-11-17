@@ -549,56 +549,8 @@ export class DyeSelector extends BaseComponent {
           dyeCard.appendChild(dyeCardContent);
           dyeListContainer.appendChild(dyeCard);
         }
-
-        // Re-bind dye selection events
-        this.on(dyeListContainer, 'click', (event: Event) => {
-          const mouseEvent = event as MouseEvent;
-          let target = mouseEvent.target as HTMLElement | null;
-
-          // Traverse up the DOM tree to find a dye-select-btn
-          let traversalSteps = 0;
-          while (target && !target.classList.contains('dye-select-btn')) {
-            target = target.parentElement;
-            traversalSteps++;
-          }
-
-          if (!target || !target.classList.contains('dye-select-btn')) {
-            return;
-          }
-
-          const dyeIdAttr = target.getAttribute('data-dye-id');
-          const dyeId = parseInt(dyeIdAttr || '0', 10);
-          const dye = DyeService.getInstance().getDyeById(dyeId);
-
-          if (!dye) return;
-
-          if (this.options.allowMultiple) {
-            if (this.allowDuplicates) {
-              // Allow duplicates - just push if under limit
-              if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
-                this.selectedDyes.push(dye);
-                console.info(`🎨 DyeSelector: Selected ${dye.name} (allowing duplicates)`);
-              }
-            } else {
-              // Toggle selection (prevent duplicates)
-              const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
-              if (index >= 0) {
-                this.selectedDyes.splice(index, 1);
-                console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
-              } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
-                this.selectedDyes.push(dye);
-                console.info(`🎨 DyeSelector: Selected ${dye.name}`);
-              }
-            }
-          } else {
-            // Single selection
-            this.selectedDyes = [dye];
-            console.info(`🎨 DyeSelector: Selected ${dye.name} (single)`);
-          }
-
-          this.update();
-          this.emit('selection-changed', { selectedDyes: this.selectedDyes });
-        });
+        // NOTE: Event delegation for dye selection is set up in bindEvents()
+        // Do NOT re-bind here as it causes exponential event stacking
       }
 
       // Update category button states (visual highlight for active category)
