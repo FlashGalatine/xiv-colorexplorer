@@ -295,8 +295,10 @@ describe('DyeSelector', () => {
 
       await waitForComponent(50);
 
-      expectElement.toHaveClass(blueBtn, 'bg-blue-500');
-      expectElement.toHaveClass(blueBtn, 'text-white');
+      // Re-query button after component update
+      const updatedBlueBtn = container.querySelector('[data-category="Blue"]') as HTMLButtonElement;
+      expectElement.toHaveClass(updatedBlueBtn, 'bg-blue-500');
+      expectElement.toHaveClass(updatedBlueBtn, 'text-white');
     });
 
     it('should remove highlight from previously active category', async () => {
@@ -313,9 +315,13 @@ describe('DyeSelector', () => {
 
       await waitForComponent(50);
 
+      // Re-query buttons after component update
+      const updatedNeutralBtn = container.querySelector('[data-category="Neutral"]') as HTMLButtonElement;
+      const updatedRedBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
+
       // Neutral should no longer be highlighted
-      expectElement.toNotHaveClass(neutralBtn, 'bg-blue-500');
-      expectElement.toHaveClass(redBtn, 'bg-blue-500');
+      expectElement.toNotHaveClass(updatedNeutralBtn, 'bg-blue-500');
+      expectElement.toHaveClass(updatedRedBtn, 'bg-blue-500');
     });
   });
 
@@ -351,12 +357,15 @@ describe('DyeSelector', () => {
       component = new DyeSelector(container, options);
       component.init();
 
-      const dyeCards = container.querySelectorAll('.dye-select-btn') as NodeListOf<HTMLButtonElement>;
+      // Get all available dyes
+      const allDyes = DyeService.getInstance().getAllDyes();
+      const dyeIds = allDyes.slice(0, 3).map(d => d.id);
 
-      // Try to select 3 dyes
-      dyeCards[0]?.click();
-      dyeCards[1]?.click();
-      dyeCards[2]?.click();
+      // Try to select 3 different dyes by ID
+      dyeIds.forEach(id => {
+        const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
+        dyeCard?.click();
+      });
 
       const selectedDyes = component.getSelectedDyes();
       expect(selectedDyes.length).toBe(2); // Should stop at 2
@@ -365,27 +374,48 @@ describe('DyeSelector', () => {
     it('should toggle selection when clicking same dye twice (no duplicates)', () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const dyeCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      // Get first dye's ID
+      const firstCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      const dyeId = firstCard?.getAttribute('data-dye-id');
 
       // Click once
-      dyeCard?.click();
+      const dyeCard1 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      dyeCard1?.click();
       expect(component.getSelectedDyes().length).toBe(1);
 
-      // Click again
-      dyeCard?.click();
+      // Click again - re-query after component update
+      const dyeCard2 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      dyeCard2?.click();
       expect(component.getSelectedDyes().length).toBe(0);
     });
 
     it('should allow duplicates when allowDuplicates is true', () => {
-      const options: DyeSelectorOptions = { allowDuplicates: true };
+      const options: DyeSelectorOptions = { allowDuplicates: true, maxSelections: 4 };
       component = new DyeSelector(container, options);
       component.init();
 
-      const dyeCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      // Debug: Check if allowDuplicates is set
+      const compOptions = component['options'];
+      expect(compOptions.allowDuplicates).toBe(true);
 
-      // Click same dye twice
-      dyeCard?.click();
-      dyeCard?.click();
+      // Get first dye's ID
+      const firstCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      const dyeId = firstCard?.getAttribute('data-dye-id');
+
+      // Verify we found a card with ID
+      expect(dyeId).not.toBeNull();
+      expect(dyeId).not.toBeUndefined();
+
+      // Click same dye twice - re-query each time
+      const dyeCard1 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      expect(dyeCard1).not.toBeNull();
+      dyeCard1?.click();
+
+      expect(component.getSelectedDyes().length).toBe(1); // First click should add one
+
+      const dyeCard2 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      expect(dyeCard2).not.toBeNull();
+      dyeCard2?.click();
 
       const selectedDyes = component.getSelectedDyes();
       expect(selectedDyes.length).toBe(2);
@@ -439,10 +469,15 @@ describe('DyeSelector', () => {
     it('should clear all selections when clear button is clicked', () => {
       [component, container] = renderComponent(DyeSelector);
 
-      // Select some dyes
-      const dyeCards = container.querySelectorAll('.dye-select-btn') as NodeListOf<HTMLButtonElement>;
-      dyeCards[0]?.click();
-      dyeCards[1]?.click();
+      // Get dye IDs
+      const allDyes = DyeService.getInstance().getAllDyes();
+      const dyeIds = allDyes.slice(0, 2).map(d => d.id);
+
+      // Select two dyes by ID - re-query each time
+      dyeIds.forEach(id => {
+        const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
+        dyeCard?.click();
+      });
 
       expect(component.getSelectedDyes().length).toBe(2);
 
@@ -482,10 +517,15 @@ describe('DyeSelector', () => {
     it('should remove individual dyes from selection', async () => {
       [component, container] = renderComponent(DyeSelector);
 
-      // Select two dyes
-      const dyeCards = container.querySelectorAll('.dye-select-btn') as NodeListOf<HTMLButtonElement>;
-      dyeCards[0]?.click();
-      dyeCards[1]?.click();
+      // Get dye IDs
+      const allDyes = DyeService.getInstance().getAllDyes();
+      const dyeIds = allDyes.slice(0, 2).map(d => d.id);
+
+      // Select two dyes by ID - re-query each time
+      dyeIds.forEach(id => {
+        const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
+        dyeCard?.click();
+      });
 
       await waitForComponent(50);
 
@@ -719,10 +759,13 @@ describe('DyeSelector', () => {
     it('should handle rapid selection/deselection', () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const dyeCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      // Get first dye's ID
+      const firstCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      const dyeId = firstCard?.getAttribute('data-dye-id');
 
-      // Rapidly click same dye
+      // Rapidly click same dye - re-query each time
       for (let i = 0; i < 10; i++) {
+        const dyeCard = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
         dyeCard?.click();
       }
 
