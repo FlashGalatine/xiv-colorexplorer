@@ -76,6 +76,7 @@ export class DyeSelector extends BaseComponent {
       className:
         'px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors',
       attributes: {
+        id: 'dye-selector-clear-btn',
         'aria-label': 'Clear all selections',
       },
     });
@@ -274,13 +275,13 @@ export class DyeSelector extends BaseComponent {
    */
   bindEvents(): void {
     const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
-    // Find clear button by nth-of-type or by searching for the button after search input
-    const clearBtn = this.querySelector<HTMLButtonElement>('button:nth-of-type(2)');
+    // Find clear button by ID (fixed: was incorrectly using nth-of-type which selected category buttons instead)
+    const clearBtn = this.querySelector<HTMLButtonElement>('#dye-selector-clear-btn');
     const categoryButtons = this.querySelectorAll<HTMLButtonElement>('[data-category]');
     const dyeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
 
     console.info(
-      `🎨 DyeSelector bindEvents: Found ${categoryButtons.length} categories, ${dyeButtons.length} dyes`
+      `🎨 DyeSelector bindEvents: Found ${categoryButtons.length} categories, ${dyeButtons.length} dyes, clearBtn=${!!clearBtn}`
     );
 
     // Search functionality

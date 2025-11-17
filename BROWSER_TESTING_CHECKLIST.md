@@ -20,24 +20,30 @@
 ## Quick Test Checklist
 
 ### Global Tests (All Tools)
-- [ ] Portal loads, no console errors
-- [ ] All 5 tools link visible
-- [ ] Theme switcher works (all 10 themes)
-- [ ] Theme persists after refresh
+- [x] Portal loads, no console errors
+- [x] All 5 tools link visible
+- [x] Theme switcher works (all 10 themes)
+- [x] Theme persists after refresh
 
 ### Tool 1: Accessibility Checker
-- [ ] Dye selection works
-- [ ] **Duplicate dyes selectable** ✨
-- [ ] **Search preserves focus & text** ✨
-- [ ] **Category highlights change** ✨
+- [x] Dye selection works
+- [x] **Duplicate dyes selectable** ✨
+- [x] **Search preserves focus & text** ✨
+- [x] **Category highlights change** ✨
 - [ ] **Analysis results display** ✨
+  - [ ] So far, only Individual Dye Analysis works. However, it seems to have only given me tritanopia results and not the other color blindness types.
+
 - [ ] Pair comparisons work
+  - [ ] Not sure how to test this. Is there supposed to be a function to combine two dyes into one with this tool?
+
 
 ### Tool 2: Color Harmony Explorer
-- [ ] All 6 harmony types generate
+- [x] All 6 harmony types generate
 - [ ] Color wheel visualizes
-- [ ] Deviance scores display
-- [ ] Works in all themes
+  - [ ] BUG: **THERE IS NO COLOR WHEEL!**
+
+- [x] Deviance scores display
+- [x] Works in all themes
 
 ### Tool 3: Color Matcher
 - [ ] Drag-drop works
@@ -45,6 +51,10 @@
 - [ ] Image displays on canvas
 - [ ] Zoom controls work
 - [ ] Matching results accurate
+- [x] VISUAL BUG: The "Tip: Paste an image using Ctrl+V (Cmd+V on Mac)" message does NOT change colors when selecting other Themes.
+- [ ] BUG: Facewear Dyes are still being recommended in the "Similar Dyes" list.
+  - [ ] Intended: No Facewear Dyes should be in this list.
+
 
 ### Tool 4: Dye Comparison
 - [ ] 3 charts render (matrix, 2D, 1D)
