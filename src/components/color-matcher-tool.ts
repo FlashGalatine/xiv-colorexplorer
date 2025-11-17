@@ -737,4 +737,75 @@ export class ColorMatcherTool extends BaseComponent {
     }
     super.destroy();
   }
+
+  /**
+   * Show toast notification
+   */
+  private showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toast-container';
+      toastContainer.style.cssText =
+        'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
+      document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+
+    toast.style.cssText = `
+      background-color: ${bgColor};
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 300px;
+      word-wrap: break-word;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease-out;
+      pointer-events: auto;
+      cursor: pointer;
+    `;
+
+    toast.textContent = `${icon} ${message}`;
+
+    toastContainer.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+    }, 10);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        toast.remove();
+        if (toastContainer && toastContainer.children.length === 0) {
+          toastContainer.remove();
+        }
+      }, 300);
+    }, 3000);
+
+    // Allow manual dismiss on click
+    toast.addEventListener('click', () => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        toast.remove();
+        if (toastContainer && toastContainer.children.length === 0) {
+          toastContainer.remove();
+        }
+      }, 300);
+    });
+  }
 }
