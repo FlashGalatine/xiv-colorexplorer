@@ -233,6 +233,11 @@ export class DyeService {
         continue;
       }
 
+      // Exclude Facewear dyes from results
+      if (dye.category === 'Facewear') {
+        continue;
+      }
+
       try {
         const distance = ColorService.getColorDistance(hex, dye.hex);
 
@@ -390,7 +395,8 @@ export class DyeService {
       return closest;
     };
 
-    const results: Dye[] = [baseDye];
+    // Triadic harmony returns only the two companion colors, not the base color
+    const results: Dye[] = [];
     const second = findByHueRange(secondHue);
     if (second) results.push(second);
     const third = findByHueRange(thirdHue);

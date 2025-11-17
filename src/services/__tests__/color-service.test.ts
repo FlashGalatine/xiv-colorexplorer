@@ -129,8 +129,10 @@ describe('ColorService', () => {
 
     it('should calculate distance between red and blue', () => {
       const distance = ColorService.getColorDistance('#FF0000', '#0000FF');
-      expect(distance).toBeGreaterThan(0);
-      expect(distance).toBeLessThan(300);
+      // Red to Blue is ~360.6 (opposite corners of RGB cube)
+      expect(distance).toBeCloseTo(360.62, 0);
+      expect(distance).toBeGreaterThan(300);
+      expect(distance).toBeLessThan(450); // Max is ~441.67 (white to black)
     });
 
     it('should calculate distance between white and black', () => {

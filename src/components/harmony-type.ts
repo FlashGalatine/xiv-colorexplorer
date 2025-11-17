@@ -94,8 +94,7 @@ export class HarmonyType extends BaseComponent {
    */
   private renderHeader(): HTMLElement {
     const header = this.createElement('div', {
-      className:
-        'bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-600 dark:to-purple-600 p-4 text-white',
+      className: 'harmony-header bg-blue-700 dark:bg-blue-900 p-4 rounded-t-lg',
     });
 
     const titleDiv = this.createElement('div', {
@@ -109,7 +108,7 @@ export class HarmonyType extends BaseComponent {
 
     const name = this.createElement('h3', {
       textContent: this.harmonyInfo.name,
-      className: 'text-lg font-bold',
+      className: 'text-lg font-bold harmony-title',
     });
 
     titleDiv.appendChild(icon);
@@ -118,7 +117,7 @@ export class HarmonyType extends BaseComponent {
 
     const description = this.createElement('p', {
       textContent: this.harmonyInfo.description,
-      className: 'text-sm text-white font-medium',
+      className: 'text-sm harmony-description font-medium',
     });
 
     header.appendChild(description);
@@ -128,7 +127,7 @@ export class HarmonyType extends BaseComponent {
       const avgDeviance =
         this.matchedDyes.reduce((sum, { deviance }) => sum + deviance, 0) / this.matchedDyes.length;
       const devianceDiv = this.createElement('div', {
-        className: 'text-xs mt-2 text-blue-100',
+        className: 'text-xs mt-2 harmony-deviance-info',
         textContent: `Avg Deviance: ${avgDeviance.toFixed(1)}/10`,
       });
       header.appendChild(devianceDiv);

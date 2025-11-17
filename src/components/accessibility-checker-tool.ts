@@ -8,35 +8,47 @@
  */
 
 import { BaseComponent } from './base-component';
-import { OutfitSlotSelector } from './outfit-slot-selector';
-import { ColorblindnessDisplay } from './colorblindness-display';
-import type { OutfitSlot } from './outfit-slot-selector';
+import { DyeSelector } from './dye-selector';
+import type { Dye } from '@shared/types';
 import { ColorService } from '@services/index';
 
 /**
- * Accessibility Check Result
+ * Individual dye accessibility analysis
  */
-export interface AccessibilityResult {
-  slotId: string;
-  slotName: string;
-  primaryHex: string;
-  secondaryHex?: string;
+export interface DyeAccessibilityResult {
+  dyeId: number;
+  dyeName: string;
+  hex: string;
   contrastScore: number; // 0-100
+  wcagLevel: 'AAA' | 'AA' | 'Fail';
+  warnings: string[];
+}
+
+/**
+ * Dye pair distinguishability analysis
+ */
+export interface DyePairResult {
+  dye1Id: number;
+  dye1Name: string;
+  dye1Hex: string;
+  dye2Id: number;
+  dye2Name: string;
+  dye2Hex: string;
   distinguishability: number; // 0-100
   warnings: string[];
-  wcagLevel: 'AAA' | 'AA' | 'Fail';
 }
 
 /**
  * Accessibility Checker Tool Component
- * Simulate colorblindness and check color accessibility
+ * Simulate colorblindness and check color accessibility for up to 12 dyes
+ * Supports both individual dye analysis and optional pairwise comparisons
  */
 export class AccessibilityCheckerTool extends BaseComponent {
-  private slotSelector: OutfitSlotSelector | null = null;
-  private colorblindnessDisplays: Map<string, ColorblindnessDisplay> = new Map();
-  private selectedSlots: OutfitSlot[] = [];
-  private enableDualDyes: boolean = false;
-  private results: AccessibilityResult[] = [];
+  private dyeSelector: DyeSelector | null = null;
+  private selectedDyes: Dye[] = [];
+  private dyePairs: [Dye, Dye][] = [];
+  private dyeResults: DyeAccessibilityResult[] = [];
+  private pairResults: DyePairResult[] = [];
 
   /**
    * Render the tool component
@@ -58,7 +70,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     const subtitle = this.createElement('p', {
       textContent:
-        'Check how your outfit colors appear to people with color vision deficiency. Simulate deuteranopia, protanopia, tritanopia, and achromatopsia.',
+        'Select up to 12 dyes to check how they appear to people with color vision deficiency. Includes analysis of individual dyes and optional pair comparisons.',
       className: 'text-gray-600 dark:text-gray-300',
     });
 
@@ -66,22 +78,22 @@ export class AccessibilityCheckerTool extends BaseComponent {
     title.appendChild(subtitle);
     wrapper.appendChild(title);
 
-    // Slot selector section
+    // Dye selector section
     const selectorSection = this.createElement('div', {
       className:
         'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
     const selectorLabel = this.createElement('h3', {
-      textContent: 'Select Outfit Dyes',
+      textContent: 'Select Dyes (up to 12)',
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     selectorSection.appendChild(selectorLabel);
 
-    const slotSelectorContainer = this.createElement('div', {
-      id: 'slot-selector-container',
+    const dyeSelectorContainer = this.createElement('div', {
+      id: 'dye-selector-container',
     });
-    selectorSection.appendChild(slotSelectorContainer);
+    selectorSection.appendChild(dyeSelectorContainer);
 
     wrapper.appendChild(selectorSection);
 
@@ -100,13 +112,20 @@ export class AccessibilityCheckerTool extends BaseComponent {
    * Bind event listeners
    */
   bindEvents(): void {
-    const slotSelectorContainer = this.querySelector<HTMLElement>('#slot-selector-container');
+    const dyeSelectorContainer = this.querySelector<HTMLElement>('#dye-selector-container');
 
-    if (slotSelectorContainer && !this.slotSelector) {
-      this.slotSelector = new OutfitSlotSelector(slotSelectorContainer, this.enableDualDyes);
-      this.slotSelector.init();
+    if (dyeSelectorContainer && !this.dyeSelector) {
+      this.dyeSelector = new DyeSelector(dyeSelectorContainer, {
+        maxSelections: 12,
+        allowMultiple: true,
+        allowDuplicates: true,
+        showCategories: true,
+        showPrices: false,
+        excludeFacewear: true,
+      });
+      this.dyeSelector.init();
 
-      slotSelectorContainer.addEventListener('slot-changed', () => {
+      dyeSelectorContainer.addEventListener('selection-changed', () => {
         this.updateResults();
       });
     }
@@ -116,47 +135,83 @@ export class AccessibilityCheckerTool extends BaseComponent {
    * Update results display
    */
   private updateResults(): void {
-    if (!this.slotSelector) return;
+    if (!this.dyeSelector) return;
 
     const resultsContainer = this.querySelector<HTMLElement>('#results-container');
     if (!resultsContainer) return;
 
     resultsContainer.innerHTML = '';
 
-    this.selectedSlots = this.slotSelector.getSelectedSlots();
+    this.selectedDyes = this.dyeSelector.getSelectedDyes();
 
-    // Filter to only slots with primary dyes selected
-    const slotsWithDyes = this.selectedSlots.filter((slot) => slot.primary);
-
-    if (slotsWithDyes.length === 0) {
+    if (this.selectedDyes.length === 0) {
       const empty = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'Select dyes for outfit slots to see accessibility analysis',
+        textContent: 'Select dyes to see accessibility analysis',
       });
       resultsContainer.appendChild(empty);
       return;
     }
 
-    // Calculate results
-    this.results = slotsWithDyes.map((slot) => this.analyzeSlot(slot));
+    // Calculate individual dye results
+    this.dyeResults = this.selectedDyes.map((dye) => this.analyzeDye(dye));
 
-    // Render summary
-    const summary = this.renderSummary();
-    resultsContainer.appendChild(summary);
+    // Render individual dye analysis
+    const dyesSection = this.createElement('div', {
+      className: 'space-y-4',
+    });
 
-    // Render each slot's analysis
-    for (const result of this.results) {
-      const slotAnalysis = this.renderSlotAnalysis(result);
-      resultsContainer.appendChild(slotAnalysis);
+    const dyesLabel = this.createElement('h3', {
+      textContent: 'Individual Dye Analysis',
+      className: 'text-lg font-semibold text-gray-900 dark:text-white',
+    });
+    dyesSection.appendChild(dyesLabel);
+
+    const dyesGrid = this.createElement('div', {
+      className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4',
+    });
+
+    for (const result of this.dyeResults) {
+      const card = this.renderDyeCard(result);
+      dyesGrid.appendChild(card);
+    }
+
+    dyesSection.appendChild(dyesGrid);
+    resultsContainer.appendChild(dyesSection);
+
+    // Render pair comparison section if 2+ dyes selected
+    if (this.selectedDyes.length >= 2) {
+      const pairsSection = this.createElement('div', {
+        className: 'space-y-4 mt-8',
+      });
+
+      const pairsLabel = this.createElement('h3', {
+        textContent: 'Dye Pair Comparisons (Optional)',
+        className: 'text-lg font-semibold text-gray-900 dark:text-white',
+      });
+      pairsSection.appendChild(pairsLabel);
+
+      const pairsNote = this.createElement('p', {
+        textContent: 'Click pairs of dyes above to compare distinguishability between them.',
+        className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
+      });
+      pairsSection.appendChild(pairsNote);
+
+      const pairsContainer = this.createElement('div', {
+        id: 'pairs-container',
+        className: 'space-y-3',
+      });
+      pairsSection.appendChild(pairsContainer);
+
+      resultsContainer.appendChild(pairsSection);
     }
   }
 
   /**
-   * Analyze a single outfit slot
+   * Analyze a single dye for accessibility
    */
-  private analyzeSlot(slot: OutfitSlot): AccessibilityResult {
-    const primaryHex = slot.primary!.hex;
-    const secondaryHex = slot.secondary?.hex;
+  private analyzeDye(dye: Dye): DyeAccessibilityResult {
+    const primaryHex = dye.hex;
 
     // Background colors for contrast testing
     const lightBg = '#FFFFFF';
@@ -165,25 +220,13 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const contrastLight = ColorService.getContrastRatio(primaryHex, lightBg);
     const contrastDark = ColorService.getContrastRatio(primaryHex, darkBg);
 
-    // Use the better contrast ratio (min value used for edge case handling)
+    // Use the worse contrast ratio (min value) for safety
     const contrastScore = Math.round(Math.min(contrastLight, contrastDark) * 20);
 
-    // Check if primary and secondary are distinguishable
-    let distinguishability = 100;
-    const warnings: string[] = [];
-
-    if (secondaryHex) {
-      const slotDistance = ColorService.getColorDistance(primaryHex, secondaryHex);
-      // Normalize to 0-100 scale
-      distinguishability = Math.round((1 - slotDistance / 441.67) * 100);
-
-      if (distinguishability < 20) {
-        warnings.push('Primary and secondary dyes are very similar - may be hard to distinguish');
-      }
-    }
-
     // Check accessibility levels
-    const wcaaLevel = contrastScore >= 100 ? 'AAA' : contrastScore >= 70 ? 'AA' : 'Fail';
+    const wcagLevel = contrastScore >= 100 ? 'AAA' : contrastScore >= 70 ? 'AA' : 'Fail';
+
+    const warnings: string[] = [];
 
     // Check for colorblindness issues
     const deuterColor = ColorService.simulateColorblindnessHex(primaryHex, 'deuteranopia');
@@ -191,288 +234,312 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const tritanColor = ColorService.simulateColorblindnessHex(primaryHex, 'tritanopia');
 
     if (deuterColor === protanColor) {
-      warnings.push('Red-green colorblind users see identical colors');
+      warnings.push('Red-green colorblind users may see this as a different color');
     }
 
     if (ColorService.getColorDistance(primaryHex, tritanColor) < 30) {
-      warnings.push('Color may be hard to see for tritanopia (blue-yellow colorblindness)');
+      warnings.push('May be hard to see for tritanopia (blue-yellow colorblindness)');
     }
 
     return {
-      slotId: slot.id,
-      slotName: slot.name,
-      primaryHex,
-      secondaryHex,
-      contrastScore: Math.min(100, contrastScore),
-      distinguishability: distinguishability,
+      dyeId: dye.id,
+      dyeName: dye.name,
+      hex: primaryHex,
+      contrastScore,
+      wcagLevel,
       warnings,
-      wcagLevel: wcaaLevel,
     };
   }
 
   /**
-   * Render summary statistics
+   * Analyze distinguishability between two dyes
    */
-  private renderSummary(): HTMLElement {
-    const summary = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
-    });
+  private analyzePair(dye1: Dye, dye2: Dye): DyePairResult {
+    const distance = ColorService.getColorDistance(dye1.hex, dye2.hex);
+    // Normalize to 0-100 scale (max distance is 441.67)
+    const distinguishability = Math.round((distance / 441.67) * 100);
 
-    const title = this.createElement('h3', {
-      textContent: 'Accessibility Summary',
-      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
-    });
-    summary.appendChild(title);
+    const warnings: string[] = [];
 
-    // Overall score
-    const avgContrast = Math.round(
-      this.results.reduce((sum, r) => sum + r.contrastScore, 0) / this.results.length
-    );
-
-    const overallScore = this.createElement('div', {
-      className: 'grid grid-cols-3 gap-4',
-    });
-
-    const scoreCard = this.renderStatCard(
-      'Overall Contrast',
-      String(avgContrast),
-      this.getScoreColor(avgContrast)
-    );
-    overallScore.appendChild(scoreCard);
-
-    const slotsCard = this.renderStatCard(
-      'Slots Analyzed',
-      String(this.results.length),
-      'text-blue-600 dark:text-blue-400'
-    );
-    overallScore.appendChild(slotsCard);
-
-    const warningCount = this.results.reduce((sum, r) => sum + r.warnings.length, 0);
-    const warningColor =
-      warningCount === 0
-        ? 'text-green-600 dark:text-green-400'
-        : 'text-yellow-600 dark:text-yellow-400';
-    const warningsCard = this.renderStatCard('Warnings', String(warningCount), warningColor);
-    overallScore.appendChild(warningsCard);
-
-    summary.appendChild(overallScore);
-
-    // Warnings list
-    const allWarnings = this.results.flatMap((r) => r.warnings.map((w) => `${r.slotName}: ${w}`));
-
-    if (allWarnings.length > 0) {
-      const warningsSection = this.createElement('div', {
-        className:
-          'mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg',
-      });
-
-      const warningsTitle = this.createElement('div', {
-        textContent: '⚠️ Accessibility Warnings',
-        className: 'text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-2',
-      });
-      warningsSection.appendChild(warningsTitle);
-
-      const warningsList = this.createElement('ul', {
-        className: 'text-sm text-yellow-800 dark:text-yellow-200 space-y-1 list-disc list-inside',
-      });
-
-      for (const warning of allWarnings) {
-        const item = this.createElement('li', {
-          textContent: warning,
-          className: 'text-xs',
-        });
-        warningsList.appendChild(item);
-      }
-
-      warningsSection.appendChild(warningsList);
-      summary.appendChild(warningsSection);
+    if (distinguishability < 20) {
+      warnings.push('Very similar - may be hard to distinguish');
+    } else if (distinguishability < 40) {
+      warnings.push('Similar - some users may have difficulty distinguishing');
     }
 
-    return summary;
+    return {
+      dye1Id: dye1.id,
+      dye1Name: dye1.name,
+      dye1Hex: dye1.hex,
+      dye2Id: dye2.id,
+      dye2Name: dye2.name,
+      dye2Hex: dye2.hex,
+      distinguishability,
+      warnings,
+    };
   }
 
   /**
-   * Render stat card
+   * Render a dye analysis card
    */
-  private renderStatCard(label: string, value: string, colorClass: string): HTMLElement {
+  private renderDyeCard(result: DyeAccessibilityResult): HTMLElement {
     const card = this.createElement('div', {
-      className: 'bg-gray-50 dark:bg-gray-700 rounded p-3 text-center',
-    });
-
-    const labelDiv = this.createElement('div', {
-      textContent: label,
-      className: 'text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1',
-    });
-
-    const valueDiv = this.createElement('div', {
-      textContent: value,
-      className: `text-2xl font-bold ${colorClass}`,
-    });
-
-    card.appendChild(labelDiv);
-    card.appendChild(valueDiv);
-
-    return card;
-  }
-
-  /**
-   * Get color class for contrast score
-   */
-  private getScoreColor(score: number): string {
-    if (score >= 100) return 'text-green-600 dark:text-green-400';
-    if (score >= 70) return 'text-blue-600 dark:text-blue-400';
-    if (score >= 45) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
-  }
-
-  /**
-   * Render slot analysis section
-   */
-  private renderSlotAnalysis(result: AccessibilityResult): HTMLElement {
-    const section = this.createElement('div', {
       className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+        'bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4',
     });
 
-    // Header with slot icon
-    const header = this.createElement('div', {
-      className:
-        'flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700',
+    // Color swatch
+    const swatchRow = this.createElement('div', {
+      className: 'flex items-center gap-3 mb-3',
     });
 
-    const titleDiv = this.createElement('div', {
-      textContent: result.slotName,
-      className: 'text-lg font-semibold text-gray-900 dark:text-white',
-    });
-
-    const wcagBadge = this.createElement('div', {
-      textContent: `WCAG ${result.wcagLevel}`,
-      className: `px-3 py-1 rounded-full text-sm font-bold ${
-        result.wcagLevel === 'AAA'
-          ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
-          : result.wcagLevel === 'AA'
-            ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
-            : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
-      }`,
-    });
-
-    header.appendChild(titleDiv);
-    header.appendChild(wcagBadge);
-    section.appendChild(header);
-
-    // Metrics
-    const metrics = this.createElement('div', {
-      className: 'grid grid-cols-2 gap-3',
-    });
-
-    const contrastCard = this.renderMetricCard(
-      'Contrast Score',
-      result.contrastScore,
-      this.getScoreColor(result.contrastScore)
-    );
-    metrics.appendChild(contrastCard);
-
-    const distinguishCard = this.renderMetricCard(
-      'Distinguishability',
-      Math.round(result.distinguishability),
-      'text-blue-600 dark:text-blue-400'
-    );
-    metrics.appendChild(distinguishCard);
-
-    section.appendChild(metrics);
-
-    // Colorblindness display
-    const displayContainer = this.createElement('div', {
-      id: `colorblindness-${result.slotId}`,
-    });
-    section.appendChild(displayContainer);
-
-    return section;
-  }
-
-  /**
-   * Render metric card
-   */
-  private renderMetricCard(label: string, value: number, colorClass: string): HTMLElement {
-    const card = this.createElement('div', {
-      className: 'bg-gray-50 dark:bg-gray-700/50 rounded p-3',
-    });
-
-    const labelDiv = this.createElement('div', {
-      textContent: label,
-      className: 'text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-2',
-    });
-
-    const valueDiv = this.createElement('div', {
-      textContent: `${value}`,
-      className: `text-xl font-bold ${colorClass}`,
-    });
-
-    const barContainer = this.createElement('div', {
-      className: 'h-2 bg-gray-200 dark:bg-gray-600 rounded-full mt-2 overflow-hidden',
-    });
-
-    const barFill = this.createElement('div', {
-      className: 'h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500',
+    const swatch = this.createElement('div', {
+      className: 'w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
-        style: `width: ${Math.min(100, value)}%`,
+        style: `background-color: ${result.hex}`,
       },
     });
+    swatchRow.appendChild(swatch);
 
-    barContainer.appendChild(barFill);
+    const swatchText = this.createElement('div');
+    const swatchName = this.createElement('div', {
+      textContent: result.dyeName,
+      className: 'font-semibold text-gray-900 dark:text-white',
+    });
+    const swatchHex = this.createElement('div', {
+      textContent: result.hex,
+      className: 'text-xs text-gray-500 dark:text-gray-400 font-mono',
+    });
+    swatchText.appendChild(swatchName);
+    swatchText.appendChild(swatchHex);
+    swatchRow.appendChild(swatchText);
+    card.appendChild(swatchRow);
 
-    card.appendChild(labelDiv);
-    card.appendChild(valueDiv);
-    card.appendChild(barContainer);
+    // Contrast score
+    const scoreSection = this.createElement('div', {
+      className: 'space-y-2 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700',
+    });
+
+    const scoreLabel = this.createElement('div', {
+      textContent: 'Contrast Score',
+      className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
+    });
+    scoreSection.appendChild(scoreLabel);
+
+    const scoreBar = this.createElement('div', {
+      className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden',
+    });
+
+    const scoreFill = this.createElement('div', {
+      className: this.getScoreColor(result.contrastScore),
+      attributes: {
+        style: `width: ${result.contrastScore}%`,
+      },
+    });
+    scoreBar.appendChild(scoreFill);
+    scoreSection.appendChild(scoreBar);
+
+    const scoreText = this.createElement('div', {
+      className: 'flex justify-between text-xs',
+    });
+    const scoreValue = this.createElement('span', {
+      textContent: `${result.contrastScore}/${100}`,
+      className: 'font-semibold text-gray-900 dark:text-white',
+    });
+    const wcagBadge = this.createElement('span', {
+      textContent: `WCAG ${result.wcagLevel}`,
+      className: this.getWCAGBadgeColor(result.wcagLevel),
+    });
+    scoreText.appendChild(scoreValue);
+    scoreText.appendChild(wcagBadge);
+    scoreSection.appendChild(scoreText);
+    card.appendChild(scoreSection);
+
+    // Warnings
+    if (result.warnings.length > 0) {
+      const warningsSection = this.createElement('div', {
+        className: 'space-y-1',
+      });
+
+      const warningsLabel = this.createElement('div', {
+        textContent: '⚠️ Colorblindness Issues',
+        className: 'text-xs font-semibold text-orange-700 dark:text-orange-300',
+      });
+      warningsSection.appendChild(warningsLabel);
+
+      for (const warning of result.warnings) {
+        const warningText = this.createElement('div', {
+          textContent: warning,
+          className: 'text-xs text-gray-600 dark:text-gray-400',
+        });
+        warningsSection.appendChild(warningText);
+      }
+
+      card.appendChild(warningsSection);
+    }
 
     return card;
   }
 
   /**
-   * Initialize the tool
+   * Render a dye pair comparison card
    */
-  onMount(): void {
-    // Initialize displays after mount
-    setTimeout(() => {
-      this.updateResults();
+  private renderPairCard(result: DyePairResult): HTMLElement {
+    const card = this.createElement('div', {
+      className:
+        'bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4',
+    });
 
-      // Initialize colorblindness displays for each result
-      for (const result of this.results) {
-        const displayContainer = this.querySelector<HTMLElement>(
-          `#colorblindness-${result.slotId}`
-        );
-        if (displayContainer) {
-          const display = new ColorblindnessDisplay(displayContainer, result.primaryHex);
-          display.init();
-          this.colorblindnessDisplays.set(result.slotId, display);
-        }
+    // Dyes side by side
+    const pairRow = this.createElement('div', {
+      className: 'flex items-center justify-between gap-4 mb-3',
+    });
+
+    // Left dye
+    const leftDye = this.createElement('div', {
+      className: 'flex-1 flex items-center gap-2',
+    });
+    const leftSwatch = this.createElement('div', {
+      className: 'w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      attributes: {
+        style: `background-color: ${result.dye1Hex}`,
+      },
+    });
+    const leftName = this.createElement('div', {
+      textContent: result.dye1Name,
+      className: 'text-sm font-medium text-gray-900 dark:text-white truncate',
+    });
+    leftDye.appendChild(leftSwatch);
+    leftDye.appendChild(leftName);
+    pairRow.appendChild(leftDye);
+
+    // Arrow
+    const arrow = this.createElement('div', {
+      textContent: '↔',
+      className: 'text-gray-400 dark:text-gray-600 text-lg',
+    });
+    pairRow.appendChild(arrow);
+
+    // Right dye
+    const rightDye = this.createElement('div', {
+      className: 'flex-1 flex items-center gap-2 justify-end',
+    });
+    const rightName = this.createElement('div', {
+      textContent: result.dye2Name,
+      className: 'text-sm font-medium text-gray-900 dark:text-white truncate text-right',
+    });
+    const rightSwatch = this.createElement('div', {
+      className: 'w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      attributes: {
+        style: `background-color: ${result.dye2Hex}`,
+      },
+    });
+    rightDye.appendChild(rightName);
+    rightDye.appendChild(rightSwatch);
+    pairRow.appendChild(rightDye);
+    card.appendChild(pairRow);
+
+    // Distinguishability score
+    const scoreSection = this.createElement('div', {
+      className: 'space-y-2',
+    });
+
+    const scoreBar = this.createElement('div', {
+      className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden',
+    });
+
+    const scoreFill = this.createElement('div', {
+      className: this.getDistinguishabilityColor(result.distinguishability),
+      attributes: {
+        style: `width: ${result.distinguishability}%`,
+      },
+    });
+    scoreBar.appendChild(scoreFill);
+    scoreSection.appendChild(scoreBar);
+
+    const scoreText = this.createElement('div', {
+      className: 'flex justify-between text-xs',
+    });
+    const scoreValue = this.createElement('span', {
+      textContent: `${result.distinguishability}% distinguishable`,
+      className: 'font-semibold text-gray-900 dark:text-white',
+    });
+    scoreText.appendChild(scoreValue);
+    scoreSection.appendChild(scoreText);
+
+    // Warnings
+    if (result.warnings.length > 0) {
+      for (const warning of result.warnings) {
+        const warningText = this.createElement('div', {
+          textContent: `⚠️ ${warning}`,
+          className: 'text-xs text-orange-700 dark:text-orange-300 mt-2',
+        });
+        scoreSection.appendChild(warningText);
       }
-    }, 100);
+    }
+
+    card.appendChild(scoreSection);
+    return card;
   }
 
   /**
-   * Get component state
+   * Get color class for contrast score bar
    */
-  protected getState(): Record<string, unknown> {
-    return {
-      selectedSlotCount: this.selectedSlots.filter((s) => s.primary).length,
-      dualDyesEnabled: this.enableDualDyes,
-      resultsCount: this.results.length,
-    };
+  private getScoreColor(score: number): string {
+    if (score >= 100) return 'bg-green-500';
+    if (score >= 70) return 'bg-blue-500';
+    if (score >= 40) return 'bg-yellow-500';
+    return 'bg-red-500';
   }
 
   /**
-   * Cleanup child components
+   * Get badge color for WCAG level
    */
-  destroy(): void {
-    if (this.slotSelector) {
-      this.slotSelector.destroy();
+  private getWCAGBadgeColor(level: string): string {
+    switch (level) {
+      case 'AAA':
+        return 'px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded';
+      case 'AA':
+        return 'px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded';
+      default:
+        return 'px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded';
     }
-    for (const display of this.colorblindnessDisplays.values()) {
-      display.destroy();
+  }
+
+  /**
+   * Get color class for distinguishability score
+   */
+  private getDistinguishabilityColor(score: number): string {
+    if (score >= 80) return 'bg-green-500';
+    if (score >= 60) return 'bg-blue-500';
+    if (score >= 40) return 'bg-yellow-500';
+    return 'bg-red-500';
+  }
+
+  /**
+   * Create a pair from two dyes
+   */
+  createPair(dye1: Dye, dye2: Dye): void {
+    this.dyePairs.push([dye1, dye2]);
+    const pairResult = this.analyzePair(dye1, dye2);
+    this.pairResults.push(pairResult);
+
+    const pairsContainer = this.querySelector<HTMLElement>('#pairs-container');
+    if (pairsContainer) {
+      const card = this.renderPairCard(pairResult);
+      pairsContainer.appendChild(card);
     }
-    this.colorblindnessDisplays.clear();
-    super.destroy();
+  }
+
+  /**
+   * Clear all pairs
+   */
+  clearPairs(): void {
+    this.dyePairs = [];
+    this.pairResults = [];
+    const pairsContainer = this.querySelector<HTMLElement>('#pairs-container');
+    if (pairsContainer) {
+      pairsContainer.innerHTML = '';
+    }
   }
 }

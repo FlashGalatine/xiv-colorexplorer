@@ -17,6 +17,7 @@ import type { Dye } from '@shared/types';
 export interface DyeSelectorOptions {
   maxSelections?: number;
   allowMultiple?: boolean;
+  allowDuplicates?: boolean;
   showCategories?: boolean;
   showPrices?: boolean;
   excludeFacewear?: boolean;
@@ -29,19 +30,22 @@ export interface DyeSelectorOptions {
 export class DyeSelector extends BaseComponent {
   private selectedDyes: Dye[] = [];
   private filteredDyes: Dye[] = [];
-  private currentCategory: string | null = null;
+  private currentCategory: string | null = 'Neutral';
   private searchQuery: string = '';
   private options: DyeSelectorOptions;
+  private allowDuplicates: boolean = false;
 
   constructor(container: HTMLElement, options: DyeSelectorOptions = {}) {
     super(container);
     this.options = {
       maxSelections: options.maxSelections ?? 4,
       allowMultiple: options.allowMultiple ?? true,
+      allowDuplicates: options.allowDuplicates ?? false,
       showCategories: options.showCategories ?? true,
       showPrices: options.showPrices ?? false,
       excludeFacewear: options.excludeFacewear ?? true,
     };
+    this.allowDuplicates = this.options.allowDuplicates ?? false;
   }
 
   /**
@@ -88,12 +92,11 @@ export class DyeSelector extends BaseComponent {
 
       const allBtn = this.createElement('button', {
         textContent: 'All',
-        className: 'px-3 py-1 rounded-full text-sm font-medium transition-colors',
+        className: 'px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
         attributes: {
           'data-category': 'all',
         },
       });
-      allBtn.classList.add('bg-blue-500', 'text-white');
       categoryContainer.appendChild(allBtn);
 
       let categories = DyeService.getInstance().getCategories();
@@ -112,6 +115,13 @@ export class DyeSelector extends BaseComponent {
             'data-category': category,
           },
         });
+
+        // Highlight Neutral category by default
+        if (category === 'Neutral') {
+          categoryBtn.classList.add('bg-blue-500', 'text-white');
+          categoryBtn.classList.remove('border-gray-300', 'dark:border-gray-600', 'text-gray-700', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        }
+
         categoryContainer.appendChild(categoryBtn);
       }
 
@@ -207,8 +217,8 @@ export class DyeSelector extends BaseComponent {
         hasClass: dyeCard.classList.contains('dye-select-btn'),
         attributes: {
           'data-dye-id': dyeCard.getAttribute('data-dye-id'),
-          'type': dyeCard.getAttribute('type'),
-          'class': dyeCard.getAttribute('class'),
+          type: dyeCard.getAttribute('type'),
+          class: dyeCard.getAttribute('class'),
         },
         allAttributesCount: dyeCard.attributes.length,
       });
@@ -334,24 +344,32 @@ export class DyeSelector extends BaseComponent {
         let target = mouseEvent.target as HTMLElement | null;
 
         // DEBUG: Log initial click target
-        console.debug(`🎨 DyeSelector click: Initial target tag="${target?.tagName}" class="${target?.className.substring(0, 50)}"`);
+        console.debug(
+          `🎨 DyeSelector click: Initial target tag="${target?.tagName}" class="${target?.className.substring(0, 50)}"`
+        );
 
         // Traverse up the DOM tree to find a dye-select-btn
         let traversalSteps = 0;
         while (target && !target.classList.contains('dye-select-btn')) {
-          console.debug(`🎨 DyeSelector: Traversal step ${++traversalSteps}: tag="${target.tagName}" class="${target.className.substring(0, 50)}"`);
+          console.debug(
+            `🎨 DyeSelector: Traversal step ${++traversalSteps}: tag="${target.tagName}" class="${target.className.substring(0, 50)}"`
+          );
           target = target.parentElement;
         }
 
         if (!target || !target.classList.contains('dye-select-btn')) {
-          console.debug(`🎨 DyeSelector: No .dye-select-btn found after traversal, returning early`);
+          console.debug(
+            `🎨 DyeSelector: No .dye-select-btn found after traversal, returning early`
+          );
           return;
         }
 
         console.debug(`🎨 DyeSelector: Found .dye-select-btn after ${traversalSteps} steps`, {
           tag: target.tagName,
           class: target.className,
-          allAttributes: Array.from(target.attributes).map((attr) => `${attr.name}="${attr.value}"`),
+          allAttributes: Array.from(target.attributes).map(
+            (attr) => `${attr.name}="${attr.value}"`
+          ),
         });
 
         const dyeIdAttr = target.getAttribute('data-dye-id');
@@ -366,14 +384,22 @@ export class DyeSelector extends BaseComponent {
         if (!dye) return;
 
         if (this.options.allowMultiple) {
-          // Toggle selection
-          const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
-          if (index >= 0) {
-            this.selectedDyes.splice(index, 1);
-            console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
-          } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
-            this.selectedDyes.push(dye);
-            console.info(`🎨 DyeSelector: Selected ${dye.name}`);
+          if (this.allowDuplicates) {
+            // Allow duplicates - just push if under limit
+            if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+              this.selectedDyes.push(dye);
+              console.info(`🎨 DyeSelector: Selected ${dye.name} (allowing duplicates)`);
+            }
+          } else {
+            // Toggle selection (prevent duplicates)
+            const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
+            if (index >= 0) {
+              this.selectedDyes.splice(index, 1);
+              console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
+            } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+              this.selectedDyes.push(dye);
+              console.info(`🎨 DyeSelector: Selected ${dye.name}`);
+            }
           }
         } else {
           // Single selection
@@ -398,6 +424,227 @@ export class DyeSelector extends BaseComponent {
         this.update();
         this.emit('selection-changed', { selectedDyes: this.selectedDyes });
       });
+    }
+  }
+
+  /**
+   * Smart update that only re-renders the dye list without losing focus/input
+   */
+  override update(): void {
+    if (!this.isInitialized) {
+      console.warn('Component not initialized');
+      return;
+    }
+
+    try {
+      // Preserve search input state
+      const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
+      const searchValue = searchInput?.value ?? '';
+      const isSearchFocused = searchInput === document.activeElement;
+
+      // Update selected dyes display only
+      const selectedList = this.querySelector<HTMLElement>('#selected-dyes-list');
+      if (selectedList && this.options.allowMultiple) {
+        selectedList.innerHTML = '';
+
+        for (const dye of this.selectedDyes) {
+          const dyeTag = this.createElement('div', {
+            className:
+              'inline-flex items-center gap-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm',
+          });
+
+          const dyeColor = this.createElement('div', {
+            className: 'w-3 h-3 rounded-full border border-gray-400',
+            attributes: {
+              style: `background-color: ${dye.hex}`,
+            },
+          });
+
+          const dyeName = this.createElement('span', {
+            textContent: dye.name,
+            className: 'text-gray-900 dark:text-white',
+          });
+
+          const removeBtn = this.createElement('button', {
+            textContent: '✕',
+            className:
+              'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dye-remove-btn',
+            attributes: {
+              'data-dye-id': String(dye.id),
+              type: 'button',
+            },
+          });
+
+          dyeTag.appendChild(dyeColor);
+          dyeTag.appendChild(dyeName);
+          dyeTag.appendChild(removeBtn);
+          selectedList.appendChild(dyeTag);
+        }
+
+        // Re-bind remove button events
+        const removeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-remove-btn');
+        for (const removeBtn of removeButtons) {
+          this.on(removeBtn, 'click', (event) => {
+            event.preventDefault();
+            const dyeId = parseInt(removeBtn.getAttribute('data-dye-id') || '0', 10);
+            this.selectedDyes = this.selectedDyes.filter((d) => d.id !== dyeId);
+            this.update();
+            this.emit('selection-changed', { selectedDyes: this.selectedDyes });
+          });
+        }
+      }
+
+      // Update dye list grid
+      const dyeListContainer = this.querySelector<HTMLElement>('div.grid');
+      if (dyeListContainer) {
+        dyeListContainer.innerHTML = '';
+
+        this.filteredDyes = this.getFilteredDyes();
+
+        console.info(`🎨 DyeSelector update: Rendering ${this.filteredDyes.length} filtered dyes`);
+
+        for (const dye of this.filteredDyes) {
+          const dyeCard = this.createElement('button', {
+            className:
+              'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left',
+            attributes: {
+              'data-dye-id': String(dye.id),
+              type: 'button',
+            },
+          });
+
+          const dyeCardContent = this.createElement('div', {
+            className: 'space-y-1',
+          });
+
+          const colorDiv = this.createElement('div', {
+            className: 'w-full h-12 rounded border border-gray-300 dark:border-gray-600',
+            attributes: {
+              style: `background-color: ${dye.hex}`,
+            },
+          });
+
+          const nameDiv = this.createElement('div', {
+            textContent: dye.name,
+            className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
+          });
+
+          const hexDiv = this.createElement('div', {
+            textContent: dye.hex,
+            className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
+          });
+
+          const categoryDiv = this.createElement('div', {
+            textContent: dye.category,
+            className: 'text-xs text-gray-500 dark:text-gray-500',
+          });
+
+          dyeCardContent.appendChild(colorDiv);
+          dyeCardContent.appendChild(nameDiv);
+          dyeCardContent.appendChild(hexDiv);
+          if (this.options.showCategories) {
+            dyeCardContent.appendChild(categoryDiv);
+          }
+
+          dyeCard.appendChild(dyeCardContent);
+          dyeListContainer.appendChild(dyeCard);
+        }
+
+        // Re-bind dye selection events
+        this.on(dyeListContainer, 'click', (event: Event) => {
+          const mouseEvent = event as MouseEvent;
+          let target = mouseEvent.target as HTMLElement | null;
+
+          // Traverse up the DOM tree to find a dye-select-btn
+          let traversalSteps = 0;
+          while (target && !target.classList.contains('dye-select-btn')) {
+            target = target.parentElement;
+            traversalSteps++;
+          }
+
+          if (!target || !target.classList.contains('dye-select-btn')) {
+            return;
+          }
+
+          const dyeIdAttr = target.getAttribute('data-dye-id');
+          const dyeId = parseInt(dyeIdAttr || '0', 10);
+          const dye = DyeService.getInstance().getDyeById(dyeId);
+
+          if (!dye) return;
+
+          if (this.options.allowMultiple) {
+            if (this.allowDuplicates) {
+              // Allow duplicates - just push if under limit
+              if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+                this.selectedDyes.push(dye);
+                console.info(`🎨 DyeSelector: Selected ${dye.name} (allowing duplicates)`);
+              }
+            } else {
+              // Toggle selection (prevent duplicates)
+              const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
+              if (index >= 0) {
+                this.selectedDyes.splice(index, 1);
+                console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
+              } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+                this.selectedDyes.push(dye);
+                console.info(`🎨 DyeSelector: Selected ${dye.name}`);
+              }
+            }
+          } else {
+            // Single selection
+            this.selectedDyes = [dye];
+            console.info(`🎨 DyeSelector: Selected ${dye.name} (single)`);
+          }
+
+          this.update();
+          this.emit('selection-changed', { selectedDyes: this.selectedDyes });
+        });
+      }
+
+      // Update category button states (visual highlight for active category)
+      const categoryButtons = this.querySelectorAll<HTMLButtonElement>('[data-category]');
+      for (const btn of categoryButtons) {
+        const btnCategory = btn.getAttribute('data-category');
+        const isActive =
+          (btnCategory === 'all' && this.currentCategory === null) ||
+          (btnCategory !== 'all' && btnCategory === this.currentCategory);
+
+        if (isActive) {
+          btn.classList.remove(
+            'border',
+            'border-gray-300',
+            'dark:border-gray-600',
+            'text-gray-700',
+            'dark:text-gray-300',
+            'hover:bg-gray-100',
+            'dark:hover:bg-gray-700'
+          );
+          btn.classList.add('bg-blue-500', 'text-white');
+        } else {
+          btn.classList.remove('bg-blue-500', 'text-white');
+          btn.classList.add(
+            'border',
+            'border-gray-300',
+            'dark:border-gray-600',
+            'text-gray-700',
+            'dark:text-gray-300',
+            'hover:bg-gray-100',
+            'dark:hover:bg-gray-700'
+          );
+        }
+      }
+
+      // Restore search input value and focus
+      if (searchInput && searchValue !== '') {
+        searchInput.value = searchValue;
+      }
+      if (isSearchFocused && searchInput) {
+        searchInput.focus();
+      }
+
+      this.onUpdate?.();
+    } catch (error) {
+      console.error('Error updating DyeSelector:', error);
     }
   }
 

@@ -405,6 +405,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
         console.warn(`Failed to generate ${harmony.id} harmony:`, error);
       }
 
+      // Filter out Facewear dyes from results
+      matchedDyes = matchedDyes.filter((item) => item.dye.category !== 'Facewear');
+
+      // Sort by deviance (lower is better) and limit to top 6 results
+      matchedDyes = matchedDyes.sort((a, b) => a.deviance - b.deviance).slice(0, 6);
+
       // Create or update harmony display
       if (!this.harmonyDisplays.has(harmony.id)) {
         const harmonyDisplay = new HarmonyType(

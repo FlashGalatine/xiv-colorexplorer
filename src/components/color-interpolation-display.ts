@@ -126,7 +126,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     const p1 = this.createElement('p', {
       textContent:
-        'Distance measures how closely the matched dye\'s color compares to the theoretical color at that transition point.',
+        "Distance measures how closely the matched dye's color compares to the theoretical color at that transition point.",
       className: 'leading-relaxed',
     });
     explanation.appendChild(p1);
@@ -147,9 +147,21 @@ export class ColorInterpolationDisplay extends BaseComponent {
     container.appendChild(scaleLabel);
 
     const scaleItems = [
-      { range: '≤30', color: 'text-green-600 dark:text-green-400 font-semibold', label: 'Excellent match' },
-      { range: '31-60', color: 'text-blue-600 dark:text-blue-400 font-semibold', label: 'Good match' },
-      { range: '61-100', color: 'text-yellow-600 dark:text-yellow-400 font-semibold', label: 'Fair match' },
+      {
+        range: '≤30',
+        color: 'text-green-600 dark:text-green-400 font-semibold',
+        label: 'Excellent match',
+      },
+      {
+        range: '31-60',
+        color: 'text-blue-600 dark:text-blue-400 font-semibold',
+        label: 'Good match',
+      },
+      {
+        range: '61-100',
+        color: 'text-yellow-600 dark:text-yellow-400 font-semibold',
+        label: 'Fair match',
+      },
       { range: '>100', color: 'text-red-600 dark:text-red-400 font-semibold', label: 'Poor match' },
     ];
 
