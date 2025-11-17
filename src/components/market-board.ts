@@ -310,29 +310,56 @@ export class MarketBoard extends BaseComponent {
    * Populate server dropdown with data centers and worlds
    */
   private populateServerDropdown(selectElement: HTMLSelectElement): void {
-    // Add data center options
+    // Add data center options grouped by region
+    const regionGroups: Record<string, DataCenter[]> = {};
+
     for (const dc of this.dataCenters) {
-      const option = document.createElement('option');
-      option.value = dc.name;
-      option.textContent = `${dc.name} (${dc.region})`;
-      if (dc.name === this.selectedServer) {
-        option.selected = true;
+      if (!regionGroups[dc.region]) {
+        regionGroups[dc.region] = [];
       }
-      selectElement.appendChild(option);
+      regionGroups[dc.region].push(dc);
     }
 
-    // Optionally add individual world options (commented out for now - most users prefer data center)
-    // const separator = document.createElement('option');
-    // separator.disabled = true;
-    // separator.textContent = '──────────';
-    // selectElement.appendChild(separator);
-    //
-    // for (const world of this.worlds) {
-    //   const option = document.createElement('option');
-    //   option.value = String(world.id);
-    //   option.textContent = world.name;
-    //   selectElement.appendChild(option);
-    // }
+    // Add data centers
+    for (const region of Object.keys(regionGroups).sort()) {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = `${region} - Data Centers`;
+
+      for (const dc of regionGroups[region]) {
+        const option = document.createElement('option');
+        option.value = dc.name;
+        option.textContent = dc.name;
+        if (dc.name === this.selectedServer) {
+          option.selected = true;
+        }
+        optgroup.appendChild(option);
+      }
+
+      selectElement.appendChild(optgroup);
+    }
+
+    // Add individual worlds grouped by data center
+    for (const region of Object.keys(regionGroups).sort()) {
+      const regionOptgroup = document.createElement('optgroup');
+      regionOptgroup.label = `${region} - Worlds`;
+
+      for (const dc of regionGroups[region]) {
+        // Get worlds for this data center
+        const dcWorlds = this.worlds.filter((w) => dc.worlds.includes(w.id));
+
+        for (const world of dcWorlds.sort((a, b) => a.name.localeCompare(b.name))) {
+          const option = document.createElement('option');
+          option.value = world.name;
+          option.textContent = `${world.name} (${dc.name})`;
+          if (world.name === this.selectedServer) {
+            option.selected = true;
+          }
+          regionOptgroup.appendChild(option);
+        }
+      }
+
+      selectElement.appendChild(regionOptgroup);
+    }
   }
 
   /**
