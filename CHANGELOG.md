@@ -10,7 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2025-11-16
 
 ### 🎯 Overview
-Complete TypeScript/Vite refactor bringing modern architecture, type safety, and maintainability to XIV Dye Tools. All 5 tools ported to component-based architecture with comprehensive unit testing.
+Complete TypeScript/Vite refactor bringing modern architecture, type safety, and maintainability to XIV Dye Tools. All 5 tools ported to component-based architecture with comprehensive unit testing. Phase 12.6 (Testing & Bug Fixes) completed with all 5 critical bugs resolved:
+1. ✅ All 5 colorblindness types now display in Accessibility Checker
+2. ✅ Color wheel visualization added to Color Harmony Explorer
+3. ✅ Facewear dyes excluded from Color Matcher recommendations
+4. ✅ Theme-aware tip text in Color Matcher
+5. ✅ Save/load feature implemented in Dye Mixer
 
 ### ✨ New Features
 
@@ -37,7 +42,12 @@ Complete TypeScript/Vite refactor bringing modern architecture, type safety, and
 - **Theme Backgrounds** - Distinct backgrounds for light themes
 - **Harmony Card Headers** - Theme-aware header styling with proper contrast
 
-#### Phase 12.6 (Integration & Stability)
+#### Phase 12.6 (Testing & Bug Fixes - FINAL)
+- **All 5 Colorblindness Types** - Accessibility Checker now displays all vision types in visual grid
+- **Color Wheel Visualization** - Interactive color harmony wheel in Color Harmony Explorer
+- **Facewear Exclusion** - Facewear dyes properly excluded from Color Matcher recommendations
+- **Theme-Aware Styling** - Color Matcher tip text updates with selected theme
+- **Save/Load Gradients** - Dye Mixer now supports saving and loading color gradients
 - **Event Listener** - Fixed Accessibility Checker event handling
 - **Neutral Button Visual Bug** - Category button highlighting corrected
 - **Search Input Focus Loss** - Search box preserves value and focus
