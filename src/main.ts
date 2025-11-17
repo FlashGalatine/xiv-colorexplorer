@@ -15,15 +15,10 @@ import '@/styles/tailwind.css';
 import { initializeServices, getServicesStatus } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
 
-// Import components
+// Import components (non-tool components only - tools are lazy-loaded)
 import {
   AppLayout,
   BaseComponent,
-  HarmonyGeneratorTool,
-  DyeComparisonTool,
-  DyeMixerTool,
-  AccessibilityCheckerTool,
-  ColorMatcherTool,
   MobileBottomNav,
   type MobileToolDef,
   ToolsDropdown,
@@ -79,14 +74,14 @@ async function initializeApp(): Promise<void> {
       throw new Error('Tools dropdown container not found');
     }
 
-    // Define available tools
+    // Define available tools with lazy-loaded components
     interface ToolDefinition {
       id: string;
       name: string;
       shortName: string; // For mobile navigation display
       icon: string;
       description: string;
-      component: new (container: HTMLElement) => BaseComponent;
+      loadComponent: () => Promise<new (container: HTMLElement) => BaseComponent>;
     }
 
     const tools: ToolDefinition[] = [
@@ -96,7 +91,10 @@ async function initializeApp(): Promise<void> {
         shortName: 'Harmony',
         icon: '🎨',
         description: 'Generate harmonious color palettes',
-        component: HarmonyGeneratorTool,
+        loadComponent: async () => {
+          const { HarmonyGeneratorTool } = await import('@components/harmony-generator-tool');
+          return HarmonyGeneratorTool;
+        },
       },
       {
         id: 'matcher',
@@ -104,7 +102,10 @@ async function initializeApp(): Promise<void> {
         shortName: 'Matcher',
         icon: '🎯',
         description: 'Match colors from images',
-        component: ColorMatcherTool,
+        loadComponent: async () => {
+          const { ColorMatcherTool } = await import('@components/color-matcher-tool');
+          return ColorMatcherTool;
+        },
       },
       {
         id: 'accessibility',
@@ -112,7 +113,10 @@ async function initializeApp(): Promise<void> {
         shortName: 'Vision',
         icon: '👁️',
         description: 'Simulate colorblindness',
-        component: AccessibilityCheckerTool,
+        loadComponent: async () => {
+          const { AccessibilityCheckerTool } = await import('@components/accessibility-checker-tool');
+          return AccessibilityCheckerTool;
+        },
       },
       {
         id: 'comparison',
@@ -120,7 +124,10 @@ async function initializeApp(): Promise<void> {
         shortName: 'Compare',
         icon: '📊',
         description: 'Compare up to 4 dyes',
-        component: DyeComparisonTool,
+        loadComponent: async () => {
+          const { DyeComparisonTool } = await import('@components/dye-comparison-tool');
+          return DyeComparisonTool;
+        },
       },
       {
         id: 'mixer',
@@ -128,7 +135,10 @@ async function initializeApp(): Promise<void> {
         shortName: 'Mixer',
         icon: '🎭',
         description: 'Find intermediate dyes',
-        component: DyeMixerTool,
+        loadComponent: async () => {
+          const { DyeMixerTool } = await import('@components/dye-mixer-tool');
+          return DyeMixerTool;
+        },
       },
     ];
 
@@ -157,51 +167,66 @@ async function initializeApp(): Promise<void> {
 
     let currentTool: InstanceType<typeof BaseComponent> | null = null;
     let currentToolContainer: HTMLElement | null = null;
+    let isLoadingTool = false;
 
-    const loadTool = (toolId: string): void => {
-      // Clean up current tool
-      if (currentTool) {
-        currentTool.destroy();
-        currentTool = null;
-      }
-
-      // Clear container
-      if (currentToolContainer) {
-        currentToolContainer.innerHTML = '';
-      }
-
-      // Find tool definition
-      const toolDef = tools.find((t) => t.id === toolId);
-      if (!toolDef) {
-        console.error(`Tool not found: ${toolId}`);
+    const loadTool = async (toolId: string): Promise<void> => {
+      // Prevent concurrent loading
+      if (isLoadingTool) {
+        console.warn(`⚠️ Tool loading in progress, ignoring request for: ${toolId}`);
         return;
       }
 
-      // Create tool instance
-      currentToolContainer = document.createElement('div');
-      currentTool = new toolDef.component(currentToolContainer);
-      currentTool.init();
-      contentContainer!.appendChild(currentToolContainer);
+      try {
+        isLoadingTool = true;
 
-      // Update button styles
-      document.querySelectorAll('[data-tool-id]').forEach((btn) => {
-        const isSelected = btn.getAttribute('data-tool-id') === toolId;
-        // Remove all style classes
-        btn.classList.remove(
-          'bg-blue-600',
-          'text-white',
-          'bg-gray-200',
-          'dark:bg-gray-700',
-          'text-gray-900',
-          'dark:text-white',
-          'hover:bg-gray-300',
-          'dark:hover:bg-gray-600'
-        );
-        // Add appropriate classes for current state
-        if (isSelected) {
-          btn.classList.add('bg-blue-600', 'text-white');
-        } else {
-          btn.classList.add(
+        // Clean up current tool
+        if (currentTool) {
+          currentTool.destroy();
+          currentTool = null;
+        }
+
+        // Clear container and show loading spinner
+        if (currentToolContainer) {
+          currentToolContainer.remove();
+        }
+
+        // Find tool definition
+        const toolDef = tools.find((t) => t.id === toolId);
+        if (!toolDef) {
+          console.error(`Tool not found: ${toolId}`);
+          return;
+        }
+
+        // Create loading container
+        currentToolContainer = document.createElement('div');
+        currentToolContainer.innerHTML = `
+          <div class="flex items-center justify-center py-12">
+            <div class="text-center">
+              <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mb-4"></div>
+              <p class="text-gray-600 dark:text-gray-400">Loading ${toolDef.name}...</p>
+            </div>
+          </div>
+        `;
+        contentContainer!.appendChild(currentToolContainer);
+
+        // Dynamically import tool component
+        console.info(`📦 Loading tool: ${toolDef.name}...`);
+        const ComponentClass = await toolDef.loadComponent();
+
+        // Clear loading spinner
+        currentToolContainer.innerHTML = '';
+
+        // Create tool instance
+        currentTool = new ComponentClass(currentToolContainer);
+        currentTool.init();
+
+        // Update button styles
+        document.querySelectorAll('[data-tool-id]').forEach((btn) => {
+          const isSelected = btn.getAttribute('data-tool-id') === toolId;
+          // Remove all style classes
+          btn.classList.remove(
+            'bg-blue-600',
+            'text-white',
             'bg-gray-200',
             'dark:bg-gray-700',
             'text-gray-900',
@@ -209,15 +234,48 @@ async function initializeApp(): Promise<void> {
             'hover:bg-gray-300',
             'dark:hover:bg-gray-600'
           );
+          // Add appropriate classes for current state
+          if (isSelected) {
+            btn.classList.add('bg-blue-600', 'text-white');
+          } else {
+            btn.classList.add(
+              'bg-gray-200',
+              'dark:bg-gray-700',
+              'text-gray-900',
+              'dark:text-white',
+              'hover:bg-gray-300',
+              'dark:hover:bg-gray-600'
+            );
+          }
+        });
+
+        // Update mobile nav active state if it exists
+        if (mobileNav) {
+          mobileNav.setActiveToolId(toolId);
         }
-      });
 
-      // Update mobile nav active state if it exists
-      if (mobileNav) {
-        mobileNav.setActiveToolId(toolId);
+        console.info(`✅ Loaded tool: ${toolDef.name}`);
+      } catch (error) {
+        console.error(`❌ Failed to load tool:`, error);
+
+        // Show error message to user
+        if (currentToolContainer) {
+          currentToolContainer.innerHTML = `
+            <div class="flex items-center justify-center py-12">
+              <div class="text-center">
+                <div class="text-red-600 dark:text-red-400 text-4xl mb-4">⚠️</div>
+                <p class="text-red-600 dark:text-red-400 font-medium mb-2">Failed to load tool</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Please try again or refresh the page</p>
+                <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Reload Page
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      } finally {
+        isLoadingTool = false;
       }
-
-      console.info(`📌 Loaded tool: ${toolDef.name}`);
     };
 
     // Create tool buttons
