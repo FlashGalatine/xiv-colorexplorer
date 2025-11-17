@@ -584,7 +584,7 @@ export class DyeSelector extends BaseComponent {
 
     // Filter by search query
     if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase();
+      const query = this.searchQuery.trim().toLowerCase(); // Trim before filtering
       dyes = dyes.filter((d) => d.name.toLowerCase().includes(query));
     }
 

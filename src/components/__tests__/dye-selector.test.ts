@@ -240,11 +240,14 @@ describe('DyeSelector', () => {
   // ==========================================================================
 
   describe('Category Filtering', () => {
-    it('should filter dyes by category', () => {
+    it('should filter dyes by category', async () => {
       [component, container] = renderComponent(DyeSelector);
 
       const redBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
       redBtn?.click();
+
+      // Wait for component to finish updating
+      await waitForComponent(100);
 
       // Component calls update() synchronously after category click
       const dyeCards = container.querySelectorAll('.dye-select-btn');
@@ -782,9 +785,18 @@ describe('DyeSelector', () => {
       searchInput.value = '   Black   ';
       searchInput.dispatchEvent(new Event('input', { bubbles: true }));
 
-      await waitForComponent(50);
+      await waitForComponent(100);
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
+      const dyeNames = Array.from(dyeCards).map(card => card.querySelector('.text-sm.font-semibold')?.textContent);
+
+      // Debug: log what we found
+      if (dyeCards.length === 0) {
+        console.log('No dyes found with search "   Black   "');
+        console.log('Search input value:', searchInput.value);
+        console.log('Component searchQuery:', component['searchQuery']);
+      }
+
       expect(dyeCards.length).toBeGreaterThan(0);
     });
   });
