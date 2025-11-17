@@ -164,6 +164,11 @@ export class AccessibilityCheckerTool extends BaseComponent {
     // Calculate individual dye results
     this.dyeResults = this.selectedDyes.map((dye) => this.analyzeDye(dye));
 
+    // Render overall accessibility score
+    const overallScore = this.calculateOverallAccessibilityScore();
+    const overallSection = this.renderOverallAccessibilityScore(overallScore);
+    resultsContainer.appendChild(overallSection);
+
     // Render individual dye analysis
     const dyesSection = this.createElement('div', {
       className: 'space-y-4',
@@ -588,6 +593,112 @@ export class AccessibilityCheckerTool extends BaseComponent {
     if (score >= 60) return 'bg-blue-500';
     if (score >= 40) return 'bg-yellow-500';
     return 'bg-red-500';
+  }
+
+  /**
+   * Calculate overall accessibility score from selected dyes
+   * Averages contrast scores and returns 0-100 value
+   */
+  private calculateOverallAccessibilityScore(): number {
+    if (this.dyeResults.length === 0) return 100;
+
+    const totalScore = this.dyeResults.reduce((sum, result) => sum + result.contrastScore, 0);
+    return Math.round(totalScore / this.dyeResults.length);
+  }
+
+  /**
+   * Get color and label for overall accessibility score
+   */
+  private getAccessibilityScoreStyle(score: number): { color: string; label: string; bgClass: string } {
+    if (score >= 80) {
+      return {
+        color: 'text-green-700 dark:text-green-300',
+        label: 'Excellent',
+        bgClass: 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700',
+      };
+    }
+    if (score >= 50) {
+      return {
+        color: 'text-yellow-700 dark:text-yellow-300',
+        label: 'Fair',
+        bgClass: 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700',
+      };
+    }
+    return {
+      color: 'text-red-700 dark:text-red-300',
+      label: 'Poor',
+      bgClass: 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700',
+    };
+  }
+
+  /**
+   * Render overall accessibility score section
+   */
+  private renderOverallAccessibilityScore(score: number): HTMLElement {
+    const section = this.createElement('div', {
+      className: 'space-y-4 mb-8',
+    });
+
+    const { color, label, bgClass } = this.getAccessibilityScoreStyle(score);
+
+    const card = this.createElement('div', {
+      className: `rounded-lg border-2 p-6 ${bgClass}`,
+    });
+
+    const headerRow = this.createElement('div', {
+      className: 'flex items-center justify-between mb-4',
+    });
+
+    const titleSection = this.createElement('div');
+    const title = this.createElement('h3', {
+      textContent: 'Overall Accessibility Score',
+      className: 'text-xl font-bold text-gray-900 dark:text-white',
+    });
+    const description = this.createElement('p', {
+      textContent: `Average accessibility across ${this.dyeResults.length} selected dye${this.dyeResults.length === 1 ? '' : 's'}`,
+      className: 'text-sm text-gray-600 dark:text-gray-400 mt-1',
+    });
+    titleSection.appendChild(title);
+    titleSection.appendChild(description);
+    headerRow.appendChild(titleSection);
+
+    const scoreDisplay = this.createElement('div', {
+      className: 'text-right',
+    });
+    const scoreValue = this.createElement('div', {
+      textContent: `${score}`,
+      className: `text-5xl font-bold ${color}`,
+    });
+    const scoreMax = this.createElement('div', {
+      textContent: '/ 100',
+      className: 'text-lg text-gray-600 dark:text-gray-400 mt-1',
+    });
+    const statusLabel = this.createElement('div', {
+      textContent: label,
+      className: `text-sm font-semibold ${color} mt-2`,
+    });
+    scoreDisplay.appendChild(scoreValue);
+    scoreDisplay.appendChild(scoreMax);
+    scoreDisplay.appendChild(statusLabel);
+    headerRow.appendChild(scoreDisplay);
+
+    card.appendChild(headerRow);
+
+    // Progress bar
+    const barContainer = this.createElement('div', {
+      className: 'w-full bg-gray-300 dark:bg-gray-600 rounded-full h-3 overflow-hidden',
+    });
+    const barFill = this.createElement('div', {
+      className: this.getScoreColor(score),
+      attributes: {
+        style: `width: ${score}%`,
+      },
+    });
+    barContainer.appendChild(barFill);
+    card.appendChild(barContainer);
+
+    section.appendChild(card);
+    return section;
   }
 
   /**
