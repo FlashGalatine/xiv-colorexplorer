@@ -112,10 +112,9 @@ export class ThemeSwitcher extends BaseComponent {
     if (!button || !dropdown) return;
 
     // Toggle dropdown visibility
-    this.on(button, 'click', () => {
-      this.isDropdownOpen = !this.isDropdownOpen;
-      dropdown.classList.toggle('hidden', !this.isDropdownOpen);
-      button.setAttribute('aria-expanded', String(this.isDropdownOpen));
+    this.on(button, 'click', (event) => {
+      event.stopPropagation(); // Prevent immediate closing from document listener
+      this.toggleDropdown(button, dropdown);
     });
 
     // Handle theme selection
@@ -123,6 +122,7 @@ export class ThemeSwitcher extends BaseComponent {
     for (const themeBtn of themeButtons) {
       this.on(themeBtn, 'click', (event) => {
         event.preventDefault();
+        event.stopPropagation(); // Prevent bubbling to document listener
         const themeId = themeBtn.getAttribute('data-theme') as ThemeName;
 
         if (themeId) {
@@ -133,9 +133,7 @@ export class ThemeSwitcher extends BaseComponent {
           ThemeService.setTheme(themeId);
 
           // Close dropdown
-          this.isDropdownOpen = false;
-          dropdown.classList.add('hidden');
-          button.setAttribute('aria-expanded', 'false');
+          this.closeDropdown(button, dropdown);
 
           // Update visual state
           this.update();
@@ -150,11 +148,35 @@ export class ThemeSwitcher extends BaseComponent {
     this.on(document, 'click', (event) => {
       const target = event.target as HTMLElement;
       if (!this.element?.contains(target) && this.isDropdownOpen) {
-        this.isDropdownOpen = false;
-        dropdown.classList.add('hidden');
-        button.setAttribute('aria-expanded', 'false');
+        this.closeDropdown(button, dropdown);
       }
     });
+
+    // Close dropdown on ESC key
+    this.on(document, 'keydown', (event) => {
+      if (event.key === 'Escape' && this.isDropdownOpen) {
+        this.closeDropdown(button, dropdown);
+        button.focus(); // Return focus to button for accessibility
+      }
+    });
+  }
+
+  /**
+   * Toggle dropdown open/closed state
+   */
+  private toggleDropdown(button: HTMLButtonElement, dropdown: HTMLDivElement): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    dropdown.classList.toggle('hidden', !this.isDropdownOpen);
+    button.setAttribute('aria-expanded', String(this.isDropdownOpen));
+  }
+
+  /**
+   * Close the dropdown menu
+   */
+  private closeDropdown(button: HTMLButtonElement, dropdown: HTMLDivElement): void {
+    this.isDropdownOpen = false;
+    dropdown.classList.add('hidden');
+    button.setAttribute('aria-expanded', 'false');
   }
 
   /**
