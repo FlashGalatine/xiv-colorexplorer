@@ -187,13 +187,18 @@ export class ColorMatcherTool extends BaseComponent {
         const customEvent = event as CustomEvent;
         const { image } = customEvent.detail;
 
+        // Show success toast
+        this.showToast('✓ Image loaded successfully', 'success');
+
         // Show overlay for image interaction
         this.showImageOverlay(image);
       });
 
       imageUploadContainer.addEventListener('error', (event: Event) => {
         const customEvent = event as CustomEvent;
+        const message = customEvent.detail?.message || 'Failed to load image';
         console.error('Image upload error:', customEvent.detail);
+        this.showToast(message, 'error');
       });
     }
 
