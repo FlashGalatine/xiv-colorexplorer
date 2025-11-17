@@ -22,7 +22,6 @@ export class ColorWheelDisplay extends BaseComponent {
   private wheelSize: number = 200;
   private wheelCenter: number = 100;
   private wheelRadius: number = 80;
-  private themeUnsubscribe: (() => void) | null = null;
 
   constructor(
     container: HTMLElement,
@@ -163,19 +162,15 @@ export class ColorWheelDisplay extends BaseComponent {
    * Bind event listeners
    */
   bindEvents(): void {
-    // Subscribe to theme changes to redraw color wheel
-    this.themeUnsubscribe = ThemeService.subscribe(() => {
-      this.update();
-    });
+    // NOTE: Theme changes are handled automatically via CSS custom properties
+    // No need to call update() on theme change - SVG styling inherits from root element
+    // This prevents expensive full re-render cycles during theme switching
   }
 
   /**
    * Cleanup on destroy
    */
   destroy(): void {
-    if (this.themeUnsubscribe) {
-      this.themeUnsubscribe();
-    }
     super.destroy();
   }
 
