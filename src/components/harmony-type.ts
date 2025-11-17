@@ -165,7 +165,7 @@ export class HarmonyType extends BaseComponent {
 
     // Color swatch
     const swatch = this.createElement('div', {
-      className: 'w-10 h-10 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className: 'w-12 h-12 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${dye.hex}`,
         title: dye.hex,
