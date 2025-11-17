@@ -9,8 +9,35 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // Add any custom theme extensions here
-      // Example: custom colors, fonts, etc.
+      fontFamily: {
+        sans: [
+          'Inter var',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'sans-serif',
+        ],
+        heading: [
+          'Outfit',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'sans-serif',
+        ],
+        mono: [
+          'JetBrains Mono',
+          'Fira Code',
+          'Consolas',
+          'Monaco',
+          'Courier New',
+          'monospace',
+        ],
+      },
     },
   },
   plugins: [],
