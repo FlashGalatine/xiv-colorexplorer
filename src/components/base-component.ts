@@ -101,6 +101,8 @@ export abstract class BaseComponent implements ComponentLifecycle {
     }
 
     try {
+      // CRITICAL: Unbind all events before rebinding to prevent listener accumulation
+      this.unbindAllEvents();
       this.render();
       this.bindEvents();
       this.onUpdate?.();
