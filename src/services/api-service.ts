@@ -257,12 +257,23 @@ export class APIService {
     url: string,
     timeoutMs: number
   ): Promise<{
-    currentAveragePriceNQ?: number;
-    currentAveragePriceHQ?: number;
-    minPriceNQ?: number;
-    minPriceHQ?: number;
-    maxPriceNQ?: number;
-    maxPriceHQ?: number;
+    results?: Array<{
+      itemId: number;
+      nq?: {
+        minListing?: {
+          dc?: { price: number };
+          world?: { price: number };
+          region?: { price: number };
+        };
+      };
+      hq?: {
+        minListing?: {
+          dc?: { price: number };
+          world?: { price: number };
+          region?: { price: number };
+        };
+      };
+    }>;
   }> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -290,32 +301,78 @@ export class APIService {
    */
   private parseApiResponse(
     data: {
-      currentAveragePriceNQ?: number;
-      currentAveragePriceHQ?: number;
-      minPriceNQ?: number;
-      minPriceHQ?: number;
-      maxPriceNQ?: number;
-      maxPriceHQ?: number;
+      results?: Array<{
+        itemId: number;
+        nq?: {
+          minListing?: {
+            dc?: { price: number };
+            world?: { price: number };
+            region?: { price: number };
+          };
+        };
+        hq?: {
+          minListing?: {
+            dc?: { price: number };
+            world?: { price: number };
+            region?: { price: number };
+          };
+        };
+      }>;
     },
     itemID: number
   ): PriceData | null {
     try {
-      // Extract current market board data
-      if (!data.currentAveragePriceNQ && !data.currentAveragePriceHQ) {
+      // Parse aggregated endpoint response format
+      if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
         console.warn(`No price data available for item ${itemID}`);
         return null;
       }
 
-      // Use NQ (Normal Quality) price as primary, fall back to HQ
-      const currentAverage = data.currentAveragePriceNQ || data.currentAveragePriceHQ || 0;
-      const minPrice = data.minPriceNQ || data.minPriceHQ || 0;
-      const maxPrice = data.maxPriceNQ || data.maxPriceHQ || 0;
+      const result = data.results[0];
+      if (!result || result.itemId !== itemID) {
+        console.warn(`Item ID mismatch: expected ${itemID}, got ${result?.itemId}`);
+        return null;
+      }
+
+      // Try to get price from nq.minListing (prefer DC, then world, then region)
+      let price: number | null = null;
+
+      if (result.nq?.minListing) {
+        // Prefer data center price
+        if (result.nq.minListing.dc?.price) {
+          price = result.nq.minListing.dc.price;
+        }
+        // Fall back to world price
+        else if (result.nq.minListing.world?.price) {
+          price = result.nq.minListing.world.price;
+        }
+        // Fall back to region price
+        else if (result.nq.minListing.region?.price) {
+          price = result.nq.minListing.region.price;
+        }
+      }
+
+      // If no NQ price, try HQ
+      if (!price && result.hq?.minListing) {
+        if (result.hq.minListing.dc?.price) {
+          price = result.hq.minListing.dc.price;
+        } else if (result.hq.minListing.world?.price) {
+          price = result.hq.minListing.world.price;
+        } else if (result.hq.minListing.region?.price) {
+          price = result.hq.minListing.region.price;
+        }
+      }
+
+      if (!price) {
+        console.warn(`No price data available for item ${itemID}`);
+        return null;
+      }
 
       return {
         itemID,
-        currentAverage: Math.round(currentAverage),
-        currentMinPrice: Math.round(minPrice),
-        currentMaxPrice: Math.round(maxPrice),
+        currentAverage: Math.round(price),
+        currentMinPrice: Math.round(price), // Using same price for all fields
+        currentMaxPrice: Math.round(price),
         lastUpdate: Date.now(),
       };
     } catch (error) {
