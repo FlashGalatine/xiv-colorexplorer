@@ -66,6 +66,17 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
+    // Logo image
+    const logo = this.createElement('img', {
+      attributes: {
+        src: 'assets/icons/icon-192x192.png',
+        alt: 'XIV Dye Tools Logo',
+        title: 'XIV Dye Tools',
+      },
+      className: 'w-10 h-10 rounded',
+    });
+    titleDiv.appendChild(logo);
+
     const title = this.createElement('h1', {
       textContent: 'XIV Dye Tools',
       className: 'text-2xl font-bold text-gray-900 dark:text-white',
