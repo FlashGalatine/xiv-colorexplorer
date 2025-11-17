@@ -290,7 +290,10 @@ export class DyeComparisonTool extends BaseComponent {
         const price = this.priceData.get(dye.itemID);
         if (price) {
           const priceSpan = this.createElement('span', {
-            className: 'text-xs text-blue-700 dark:text-blue-200 font-mono',
+            className: 'text-xs font-mono',
+            attributes: {
+              style: 'color: var(--theme-primary);',
+            },
           });
           priceSpan.innerHTML = `(${APIService.formatPrice(price.currentAverage)})`;
           tag.appendChild(priceSpan);

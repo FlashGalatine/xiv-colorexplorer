@@ -225,12 +225,18 @@ export class HarmonyType extends BaseComponent {
       const price = this.priceData.get(dye.itemID);
       if (price) {
         const priceValue = this.createElement('div', {
-          className: 'text-xs text-yellow-600 dark:text-yellow-400 font-mono font-bold',
+          className: 'text-xs font-mono font-bold',
+          attributes: {
+            style: 'color: var(--theme-primary);',
+          },
         });
         priceValue.innerHTML = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
           textContent: 'market',
-          className: 'text-xs text-gray-500 dark:text-gray-400',
+          className: 'text-xs',
+          attributes: {
+            style: 'color: var(--theme-text-muted);',
+          },
         });
         priceDiv.appendChild(priceValue);
         priceDiv.appendChild(priceLabel);
