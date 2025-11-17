@@ -1,10 +1,10 @@
 # XIV Dye Tools v2.0.0
 
-**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 16, 2025
+**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 17, 2025 | **Phase**: 12 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.0.0 Release Notes**: This is a complete TypeScript/Vite refactor with modern architecture, 140+ unit tests, and type-safe code. All v1.6.x features work identically. See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+> **v2.0.0 Release Notes**: Complete TypeScript/Vite refactor with modern component-based architecture, 140 unit tests (100% passing), strict type safety, and optimized performance. **Phase 12 Complete** — All features working perfectly. See [CHANGELOG.md](CHANGELOG.md) for detailed release information. Market pricing support coming in a future release.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -411,10 +411,13 @@ All tools are production-ready stable versions with full feature support. The ap
 
 ## Technology Stack
 
-- Pure HTML/CSS/JavaScript (no framework dependencies)
-- [Tailwind CSS](https://tailwindcss.com/) via CDN for styling
-- [Universalis API](https://universalis.app/) for market board data
-- localStorage for user preferences
+- **TypeScript 5.x** - Strict mode with full type safety
+- **Vite 5.x** - Modern build system with instant HMR
+- **Tailwind CSS** - Utility-first CSS framework
+- **Vitest 1.x** - Unit testing framework (140 tests, 100% passing)
+- **Component Architecture** - Reusable UI components with lifecycle hooks
+- **Service Layer** - Centralized business logic (ColorService, DyeService, ThemeService, StorageService)
+- localStorage for user preferences and theme persistence
 
 ## Browser Compatibility
 
