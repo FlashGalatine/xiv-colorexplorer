@@ -40,33 +40,39 @@
 ### Tool 2: Color Harmony Explorer
 - [x] All 6 harmony types generate
 - [ ] Color wheel visualizes
-  - [ ] BUG: **THERE IS NO COLOR WHEEL!**
+  - [ ] BUG: **THERE IS NO COLOR WHEEL!** (See feedback/no-colorwheel.png)
 
 - [x] Deviance scores display
 - [x] Works in all themes
+- [ ] SUGGESTION: Can we add buttons to export the listed dyes as CSS and JSON, just like in the Dye Comparison tool?
 
 ### Tool 3: Color Matcher
-- [ ] Drag-drop works
-- [ ] Color picker works
-- [ ] Image displays on canvas
+- [x] Drag-drop works
+- [x] Color picker works
+- [x] Image displays on canvas
 - [ ] Zoom controls work
-- [ ] Matching results accurate
-- [x] VISUAL BUG: The "Tip: Paste an image using Ctrl+V (Cmd+V on Mac)" message does NOT change colors when selecting other Themes.
-- [ ] BUG: Facewear Dyes are still being recommended in the "Similar Dyes" list.
-  - [ ] Intended: No Facewear Dyes should be in this list.
+  - [ ] There are Zoom controls? I don't see any controls, nor do I know of any keyboard shortcuts that activates them.
 
+- [x] Matching results accurate
+- [ ] VISUAL BUG: The "Tip: Paste an image using Ctrl+V (Cmd+V on Mac)" message does NOT change colors when selecting other Themes.
+- [ ] BUG: Facewear Dyes are still being recommended in the "Similar Dyes" list.
+  - [ ] INTENDED: No Facewear Dyes should be in this list.
+
+- [ ] SUGGESTION: Can you increase the Maximum size from 10 MB to 20 MB? This would allow for some 4K images to be loaded.
 
 ### Tool 4: Dye Comparison
-- [ ] 3 charts render (matrix, 2D, 1D)
-- [ ] Export formats work (JSON, CSV)
-- [ ] Data accurate
-- [ ] Performance acceptable
+- [x] 3 charts render (matrix, 2D, 1D)
+- [x] Export formats work (JSON, CSV)
+- [x] Data accurate
+- [x] Performance acceptable
 
 ### Tool 5: Dye Mixer
-- [ ] Gradient interpolates
-- [ ] Deviance scores display
+- [x] Gradient interpolates
+- [x] Deviance scores display
 - [ ] Save/load works
-- [ ] Responsive layout
+  - [ ] **THERE'S NO SAVE/LOAD FEATURE!**
+
+- [x] Responsive layout
 
 ---
 

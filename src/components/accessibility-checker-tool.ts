@@ -22,6 +22,14 @@ export interface DyeAccessibilityResult {
   contrastScore: number; // 0-100
   wcagLevel: 'AAA' | 'AA' | 'Fail';
   warnings: string[];
+  // Colorblindness simulations for all 5 vision types
+  colorblindnessSimulations: {
+    normal: string;
+    deuteranopia: string;
+    protanopia: string;
+    tritanopia: string;
+    achromatopsia: string;
+  };
 }
 
 /**
@@ -228,17 +236,23 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     const warnings: string[] = [];
 
-    // Check for colorblindness issues
+    // Simulate colorblindness for all 5 vision types
     const deuterColor = ColorService.simulateColorblindnessHex(primaryHex, 'deuteranopia');
     const protanColor = ColorService.simulateColorblindnessHex(primaryHex, 'protanopia');
     const tritanColor = ColorService.simulateColorblindnessHex(primaryHex, 'tritanopia');
+    const achromColor = ColorService.simulateColorblindnessHex(primaryHex, 'achromatopsia');
 
+    // Generate warnings for distinguishability issues
     if (deuterColor === protanColor) {
       warnings.push('Red-green colorblind users may see this as a different color');
     }
 
     if (ColorService.getColorDistance(primaryHex, tritanColor) < 30) {
       warnings.push('May be hard to see for tritanopia (blue-yellow colorblindness)');
+    }
+
+    if (ColorService.getColorDistance(primaryHex, achromColor) < 30) {
+      warnings.push('May be hard to see for total colorblindness');
     }
 
     return {
@@ -248,6 +262,13 @@ export class AccessibilityCheckerTool extends BaseComponent {
       contrastScore,
       wcagLevel,
       warnings,
+      colorblindnessSimulations: {
+        normal: primaryHex,
+        deuteranopia: deuterColor,
+        protanopia: protanColor,
+        tritanopia: tritanColor,
+        achromatopsia: achromColor,
+      },
     };
   }
 
@@ -377,6 +398,56 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
       card.appendChild(warningsSection);
     }
+
+    // Colorblindness simulations
+    const colorblindSection = this.createElement('div', {
+      className: 'space-y-2 pt-3 border-t border-gray-200 dark:border-gray-700',
+    });
+
+    const colorblindLabel = this.createElement('div', {
+      textContent: '👁️ Vision Simulations',
+      className: 'text-xs font-semibold text-gray-700 dark:text-gray-300',
+    });
+    colorblindSection.appendChild(colorblindLabel);
+
+    // Grid of 5 vision type simulations
+    const simulationsGrid = this.createElement('div', {
+      className: 'grid grid-cols-5 gap-2',
+    });
+
+    // Vision types to display
+    const visionTypes: Array<{ key: keyof typeof result.colorblindnessSimulations; label: string }> = [
+      { key: 'normal', label: 'Normal' },
+      { key: 'deuteranopia', label: 'Deuteranopia' },
+      { key: 'protanopia', label: 'Protanopia' },
+      { key: 'tritanopia', label: 'Tritanopia' },
+      { key: 'achromatopsia', label: 'Achromatopsia' },
+    ];
+
+    for (const visionType of visionTypes) {
+      const simCard = this.createElement('div', {
+        className: 'flex flex-col items-center gap-1',
+      });
+
+      const colorSwatch = this.createElement('div', {
+        className: 'w-full h-8 rounded border border-gray-300 dark:border-gray-600',
+        attributes: {
+          style: `background-color: ${result.colorblindnessSimulations[visionType.key]}`,
+        },
+      });
+
+      const typeLabel = this.createElement('div', {
+        textContent: visionType.label,
+        className: 'text-xs text-gray-600 dark:text-gray-400 text-center',
+      });
+
+      simCard.appendChild(colorSwatch);
+      simCard.appendChild(typeLabel);
+      simulationsGrid.appendChild(simCard);
+    }
+
+    colorblindSection.appendChild(simulationsGrid);
+    card.appendChild(colorblindSection);
 
     return card;
   }
