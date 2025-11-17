@@ -10,8 +10,9 @@
 import { BaseComponent } from './base-component';
 import { ImageUploadDisplay } from './image-upload-display';
 import { ColorPickerDisplay } from './color-picker-display';
-import { ColorService, dyeService } from '@services/index';
-import type { Dye } from '@shared/types';
+import { MarketBoard } from './market-board';
+import { ColorService, dyeService, APIService } from '@services/index';
+import type { Dye, PriceData } from '@shared/types';
 
 /**
  * Color Matcher Tool Component
@@ -20,7 +21,10 @@ import type { Dye } from '@shared/types';
 export class ColorMatcherTool extends BaseComponent {
   private imageUpload: ImageUploadDisplay | null = null;
   private colorPicker: ColorPickerDisplay | null = null;
+  private marketBoard: MarketBoard | null = null;
   private matchedDyes: Dye[] = [];
+  private priceData: Map<number, PriceData> = new Map();
+  private showPrices: boolean = false;
   private sampleSize: number = 5;
   private zoomLevel: number = 100;
   private currentImage: HTMLImageElement | null = null;
@@ -159,6 +163,19 @@ export class ColorMatcherTool extends BaseComponent {
 
     wrapper.appendChild(settingsSection);
 
+    // Market Board section
+    const marketBoardSection = this.createElement('div', {
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+    });
+
+    const marketBoardContainer = this.createElement('div', {
+      id: 'market-board-container',
+    });
+    marketBoardSection.appendChild(marketBoardContainer);
+
+    wrapper.appendChild(marketBoardSection);
+
     // Results section
     const resultsContainer = this.createElement('div', {
       id: 'results-container',
@@ -173,10 +190,11 @@ export class ColorMatcherTool extends BaseComponent {
   /**
    * Bind event listeners
    */
-  bindEvents(): void {
+  async bindEvents(): Promise<void> {
     const imageUploadContainer = this.querySelector<HTMLElement>('#image-upload-container');
     const colorPickerContainer = this.querySelector<HTMLElement>('#color-picker-container');
     const sampleInput = this.querySelector<HTMLInputElement>('#sample-size-input');
+    const marketBoardContainer = this.querySelector<HTMLElement>('#market-board-container');
 
     // Initialize image upload
     if (imageUploadContainer && !this.imageUpload) {
@@ -223,6 +241,46 @@ export class ColorMatcherTool extends BaseComponent {
           valueDisplay.textContent = String(this.sampleSize);
         }
       });
+    }
+
+    // Initialize Market Board
+    if (marketBoardContainer && !this.marketBoard) {
+      this.marketBoard = new MarketBoard(marketBoardContainer);
+      await this.marketBoard.loadServerData();
+      this.marketBoard.init();
+
+      // Listen for Market Board events
+      marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
+        const customEvent = event as CustomEvent;
+        this.showPrices = customEvent.detail?.showPrices ?? false;
+        if (this.showPrices && this.matchedDyes.length > 0) {
+          this.fetchPricesForMatchedDyes();
+        } else {
+          this.priceData.clear();
+          this.refreshResults();
+        }
+      });
+
+      marketBoardContainer.addEventListener('server-changed', () => {
+        if (this.showPrices && this.matchedDyes.length > 0) {
+          this.fetchPricesForMatchedDyes();
+        }
+      });
+
+      marketBoardContainer.addEventListener('categories-changed', () => {
+        if (this.showPrices && this.matchedDyes.length > 0) {
+          this.fetchPricesForMatchedDyes();
+        }
+      });
+
+      marketBoardContainer.addEventListener('refresh-requested', () => {
+        if (this.showPrices && this.matchedDyes.length > 0) {
+          this.fetchPricesForMatchedDyes();
+        }
+      });
+
+      // Get initial showPrices state
+      this.showPrices = this.marketBoard.getShowPrices();
     }
   }
 
@@ -580,6 +638,96 @@ export class ColorMatcherTool extends BaseComponent {
   }
 
   /**
+   * Fetch prices for matched dyes
+   */
+  private async fetchPricesForMatchedDyes(): Promise<void> {
+    if (!this.marketBoard || !this.showPrices || this.matchedDyes.length === 0) return;
+
+    // Fetch prices using Market Board
+    this.priceData = await this.marketBoard.fetchPricesForDyes(this.matchedDyes);
+
+    // Refresh results display with prices
+    this.refreshResults();
+  }
+
+  /**
+   * Refresh the results display (re-render with current price data)
+   */
+  private refreshResults(): void {
+    const resultsContainer = this.querySelector<HTMLElement>('#results-container');
+    if (!resultsContainer || this.matchedDyes.length === 0) return;
+
+    // Find the results section
+    const resultsSection = resultsContainer.querySelector('[data-results-section]');
+    if (!resultsSection) return;
+
+    // Remove and re-create results section with updated price data
+    resultsSection.remove();
+
+    // Re-run matchColor with the first matched dye's original sampled color
+    // Since we don't store the sampled color, we'll just re-render the cards
+    const closestDye = this.matchedDyes[0];
+    const otherDyes = this.matchedDyes.slice(1);
+
+    // Results section
+    const section = this.createElement('div', {
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
+    });
+    section.setAttribute('data-results-section', 'true');
+
+    const title = this.createElement('h3', {
+      textContent: 'Matched Dyes',
+      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
+    });
+    section.appendChild(title);
+
+    // Best match
+    const bestMatchSection = this.createElement('div', {
+      className:
+        'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 space-y-2',
+    });
+
+    const bestMatchLabel = this.createElement('div', {
+      textContent: '🎯 Best Match',
+      className: 'text-sm font-bold text-blue-900 dark:text-blue-100 uppercase tracking-wide',
+    });
+    bestMatchSection.appendChild(bestMatchLabel);
+
+    const bestMatchCard = this.renderDyeCard(closestDye, closestDye.hex);
+    bestMatchSection.appendChild(bestMatchCard);
+
+    section.appendChild(bestMatchSection);
+
+    // Other matches
+    if (otherDyes.length > 0) {
+      const otherMatchesSection = this.createElement('div', {
+        className: 'space-y-2',
+      });
+
+      const otherLabel = this.createElement('div', {
+        textContent: `Similar Dyes (${otherDyes.length} matches)`,
+        className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
+      });
+      otherMatchesSection.appendChild(otherLabel);
+
+      const matchesList = this.createElement('div', {
+        className: 'space-y-2 max-h-80 overflow-y-auto',
+      });
+
+      for (const dye of otherDyes) {
+        const dyeCard = this.renderDyeCard(dye, dye.hex);
+        matchesList.appendChild(dyeCard);
+      }
+
+      otherMatchesSection.appendChild(matchesList);
+      section.appendChild(otherMatchesSection);
+    }
+
+    resultsContainer.appendChild(section);
+  }
+
+  /**
    * Match a color to dyes
    */
   private matchColor(hex: string): void {
@@ -663,6 +811,11 @@ export class ColorMatcherTool extends BaseComponent {
     resultsContainer.appendChild(section);
 
     this.matchedDyes = [closestDye, ...withinDistance];
+
+    // Fetch prices if enabled
+    if (this.showPrices && this.marketBoard) {
+      this.fetchPricesForMatchedDyes();
+    }
   }
 
   /**
@@ -727,6 +880,35 @@ export class ColorMatcherTool extends BaseComponent {
     });
     card.appendChild(category);
 
+    // Optional market price
+    if (this.showPrices) {
+      const priceDiv = this.createElement('div', {
+        className: 'text-right flex-shrink-0 ml-2 min-w-[80px]',
+      });
+
+      const price = this.priceData.get(dye.itemID);
+      if (price) {
+        const priceValue = this.createElement('div', {
+          textContent: APIService.formatPrice(price.currentAverage),
+          className: 'text-xs text-yellow-600 dark:text-yellow-400 font-mono font-bold',
+        });
+        const priceLabel = this.createElement('div', {
+          textContent: 'market',
+          className: 'text-xs text-gray-500 dark:text-gray-400',
+        });
+        priceDiv.appendChild(priceValue);
+        priceDiv.appendChild(priceLabel);
+      } else {
+        const noPriceLabel = this.createElement('div', {
+          textContent: 'N/A',
+          className: 'text-xs text-gray-400 dark:text-gray-600',
+        });
+        priceDiv.appendChild(noPriceLabel);
+      }
+
+      card.appendChild(priceDiv);
+    }
+
     return card;
   }
 
@@ -749,6 +931,9 @@ export class ColorMatcherTool extends BaseComponent {
     }
     if (this.colorPicker) {
       this.colorPicker.destroy();
+    }
+    if (this.marketBoard) {
+      this.marketBoard.destroy();
     }
     super.destroy();
   }
