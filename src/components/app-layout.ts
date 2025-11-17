@@ -170,6 +170,14 @@ export class AppLayout extends BaseComponent {
     });
     footerContent.appendChild(creator);
 
+    // FFXIV Copyright disclaimer
+    const disclaimer = this.createElement('div', {
+      className: 'text-center text-xs text-gray-500 dark:text-gray-500 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700',
+      innerHTML:
+        'FINAL FANTASY XIV © 2013-2025 SQUARE ENIX. XIV Dye Tools is a fan-made application and is not affiliated with or endorsed by Square Enix.',
+    });
+    footerContent.appendChild(disclaimer);
+
     footer.appendChild(footerContent);
 
     return footer;
