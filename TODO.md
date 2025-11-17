@@ -346,8 +346,8 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 
 ## 🟡 MEDIUM PRIORITY (Future Sessions)
 
-**Estimated Total Time**: ~15 hours
-**Goal**: Improve test coverage, optimize build, clean up repository
+**Estimated Total Time**: ~20.5-23.5 hours (added 3 feature enhancements)
+**Goal**: Improve test coverage, optimize build, clean up repository, enhance UX with new features
 
 ### 9. Add Component Test Coverage
 
@@ -667,6 +667,137 @@ async loadTool(toolName: string) {
 
 ---
 
+### 13. Redesign Harmony Explorer Color Wheel
+
+**Status**: ❌ Not Started
+**Estimated Time**: 4-6 hours
+**Priority**: MEDIUM (UX improvement, high user impact)
+
+**Issue**: Current color wheel is a filled circle with simple layout. Modern design and additional harmony theories would improve usability.
+
+**Inspiration**: [Adobe Color Wheel](https://color.adobe.com/create/color-wheel) provides excellent reference for donut-style wheel design with harmony indicators.
+
+**Changes Required**:
+
+**Phase 1: Redesign Color Wheel Visual** (~2 hours):
+- [ ] Change from filled circle to donut/ring style visualization
+- [ ] Add harmony theory indicators around the wheel (visual guides for complementary, analogous, etc.)
+- [ ] Improve color representation and saturation gradients
+- [ ] Add interactive hover states showing color details
+- [ ] Better mobile responsiveness for wheel interaction
+
+**Phase 2: Expand Harmony Theory Options** (~2-3 hours):
+
+Current theories (5):
+- Complementary ✓
+- Analogous ✓
+- Triadic (Triad) ✓
+- Split-Complementary ✓
+- Tetradic (Square) ✓
+
+Add/improve these theories:
+- [ ] **Monochromatic**: Single color with variations (tints, shades, tones)
+- [ ] **Compound (Analogous + Complementary)**: Mix of analogous + complementary pairs
+- [ ] **Shades**: Full range of shades for single color (dark variations)
+- [ ] Improve visual distinction between theories with better icons/labels
+
+**Phase 3: Testing & Polish** (~1-2 hours):
+- [ ] Test wheel interaction on all devices (desktop, tablet, mobile)
+- [ ] Verify harmony calculations match visual representations
+- [ ] Test with different base colors for visual accuracy
+- [ ] Ensure accessibility (color contrast, keyboard navigation)
+
+**File to Modify**:
+- `src/components/color-wheel-display.ts` (186 lines)
+- `src/components/harmony-type.ts` (85 lines)
+- `src/services/color-service.ts` (harmony calculation functions)
+
+**Acceptance Criteria**:
+- Color wheel displays as donut/ring style with visual harmony indicators
+- All 10 harmony theories selectable and visualized correctly
+- Responsive design works on 375px, 768px, 1024px viewports
+- Smooth interactions and animations
+- No console errors
+- User can easily identify and select different harmony types
+
+**Reference**: Adobe Color Wheel pattern, existing `color-wheel-display.ts` implementation
+
+---
+
+### 14. Increase Color Matcher Maximum File Size
+
+**Status**: ❌ Not Started
+**Estimated Time**: 30 minutes
+**Priority**: MEDIUM (feature improvement)
+
+**Issue**: Current maximum file size may be too small for 4K image uploads.
+
+**Change Required**:
+- [ ] Increase max file size from current limit to **20 MB**
+- [ ] Update file size validation in `color-matcher-tool.ts`
+- [ ] Update error message to reflect new limit
+- [ ] Test with actual 4K/high-resolution images
+- [ ] Verify performance with large files (no browser freeze)
+
+**File to Modify**:
+- `src/components/color-matcher-tool.ts` (look for file size validation)
+
+**Acceptance Criteria**:
+- Color Matcher accepts files up to 20 MB
+- Error message clearly indicates size limit
+- Large file uploads work without browser freezing
+- Image processing still completes in reasonable time (<5 seconds)
+
+---
+
+### 15. Modernize Font Styling
+
+**Status**: ❌ Not Started
+**Estimated Time**: 1-2 hours
+**Priority**: MEDIUM (design/polish)
+
+**Background**:
+- v1.6.x used **Cinzel** (titles) and **Lexend** (general text)
+- v2.0.0 has a more modern UI aesthetic
+- Current fonts may feel inconsistent with modern design
+
+**Proposed Changes**:
+- [ ] Research modern font options that complement current design
+- [ ] Consider keeping **Lexend** for general body text (works well with modern design)
+- [ ] Find modern serif or sans-serif for titles/headings
+- [ ] Suggestions to explore:
+  - **Serif options**: Crimson Text, Playfair Display, EB Garamond (more elegant)
+  - **Sans-serif options**: Inter, Poppins, JetBrains Mono (more contemporary)
+  - **Geometric options**: Montserrat, Space Mono (modern, clean)
+
+**Changes Required**:
+- [ ] Update `src/styles/globals.css` or `src/index.html` with new font imports
+- [ ] Apply new font-family values to heading elements (h1, h2, h3)
+- [ ] Keep Lexend for body text and descriptions
+- [ ] Test font rendering across browsers
+- [ ] Verify font loading performance (no CLS issues)
+
+**Testing Checklist**:
+- [ ] Fonts load correctly in Chrome, Firefox, Safari, Edge
+- [ ] No Cumulative Layout Shift (CLS) when fonts load
+- [ ] Titles remain readable at all zoom levels
+- [ ] Mobile devices display fonts correctly
+- [ ] Dark mode/light mode contrast is maintained
+
+**File to Modify**:
+- `src/index.html` (font imports)
+- `src/styles/globals.css` (font-family declarations)
+
+**Acceptance Criteria**:
+- New title font is modern and complements v2.0.0 aesthetic
+- All text remains readable and accessible
+- Font loading doesn't impact performance
+- No layout shifts or visual issues
+
+**Note**: This is a polish task—functionality unchanged, purely visual improvement.
+
+---
+
 ## 🟢 LOW PRIORITY (Backlog)
 
 **Estimated Total Time**: ~10 hours
@@ -874,16 +1005,19 @@ async loadTool(toolName: string) {
 
 ## 📊 Progress Summary
 
-**Total Estimated Time**: ~37.5 hours across all priorities
+**Total Estimated Time**: ~45.5-48.5 hours across all priorities
 
 | Priority | Tasks | Est. Time | Status |
 |----------|-------|-----------|--------|
-| 🔴 Critical | 5 tasks | ~2.5 hours | ❌ Not Started |
-| 🟠 High | 3 tasks | ~10 hours | ❌ Not Started |
-| 🟡 Medium | 4 tasks | ~15 hours | ❌ Not Started |
-| 🟢 Low | 4 tasks | ~10 hours | ❌ Not Started |
+| 🔴 Critical | 5 tasks | ~2.5 hours | ✅ COMPLETE |
+| 🟠 High | 3 tasks | ~10 hours | ⏳ Ready |
+| 🟡 Medium | 7 tasks | ~20.5-23.5 hours | ⏳ Ready (3 new feature enhancements added) |
+| 🟢 Low | 4 tasks | ~10 hours | ⏳ Backlog |
 
-**Next Session Focus**: Complete all Critical priority items (~2.5 hours)
+**Completed Sessions**:
+- Session 1 (Nov 17): Critical priority items (5 tasks, 2.5 hours) ✅
+
+**Next Session Focus**: Start with Market Board restoration (High priority, 6 hours) or Harmony Explorer redesign (Medium priority, 4-6 hours)
 
 ---
 
@@ -908,6 +1042,6 @@ async loadTool(toolName: string) {
 
 ---
 
-**Last Updated**: November 17, 2025
+**Last Updated**: November 17, 2025 (Feature enhancements added)
 **Maintained By**: Development Team
-**Next Review**: After completing Critical priority items
+**Next Review**: After completing High priority items (Market Board restoration)
