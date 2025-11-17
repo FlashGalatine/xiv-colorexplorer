@@ -479,15 +479,16 @@ export class APIService {
   // ============================================================================
 
   /**
-   * Format price for display
+   * Format price for display (FFXIV Gil format: 69,420G)
    */
   static formatPrice(price: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'JPY',
+    const formattedNumber = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+
+    // Return with small "G" suffix using <small> tag for half-height
+    return `${formattedNumber}<small>G</small>`;
   }
 
   /**

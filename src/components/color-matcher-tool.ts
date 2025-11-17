@@ -889,9 +889,9 @@ export class ColorMatcherTool extends BaseComponent {
       const price = this.priceData.get(dye.itemID);
       if (price) {
         const priceValue = this.createElement('div', {
-          textContent: APIService.formatPrice(price.currentAverage),
           className: 'text-xs text-yellow-600 dark:text-yellow-400 font-mono font-bold',
         });
+        priceValue.innerHTML = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
           textContent: 'market',
           className: 'text-xs text-gray-500 dark:text-gray-400',

@@ -310,55 +310,41 @@ export class MarketBoard extends BaseComponent {
    * Populate server dropdown with data centers and worlds
    */
   private populateServerDropdown(selectElement: HTMLSelectElement): void {
-    // Add data center options grouped by region
-    const regionGroups: Record<string, DataCenter[]> = {};
+    // Sort data centers alphabetically
+    const sortedDataCenters = [...this.dataCenters].sort((a, b) => a.name.localeCompare(b.name));
 
-    for (const dc of this.dataCenters) {
-      if (!regionGroups[dc.region]) {
-        regionGroups[dc.region] = [];
-      }
-      regionGroups[dc.region].push(dc);
-    }
-
-    // Add data centers
-    for (const region of Object.keys(regionGroups).sort()) {
+    // For each data center, add the DC as an option and its worlds as sub-options
+    for (const dc of sortedDataCenters) {
+      // Create optgroup for this data center
       const optgroup = document.createElement('optgroup');
-      optgroup.label = `${region} - Data Centers`;
+      optgroup.label = `${dc.name} (${dc.region})`;
 
-      for (const dc of regionGroups[region]) {
-        const option = document.createElement('option');
-        option.value = dc.name;
-        option.textContent = dc.name;
-        if (dc.name === this.selectedServer) {
-          option.selected = true;
+      // Add the data center itself as an option
+      const dcOption = document.createElement('option');
+      dcOption.value = dc.name;
+      dcOption.textContent = `${dc.name} - All Worlds`;
+      if (dc.name === this.selectedServer) {
+        dcOption.selected = true;
+      }
+      optgroup.appendChild(dcOption);
+
+      // Get worlds for this data center and sort alphabetically
+      const dcWorlds = this.worlds
+        .filter((w) => dc.worlds.includes(w.id))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      // Add each world as an option
+      for (const world of dcWorlds) {
+        const worldOption = document.createElement('option');
+        worldOption.value = world.name;
+        worldOption.textContent = `  ${world.name}`;
+        if (world.name === this.selectedServer) {
+          worldOption.selected = true;
         }
-        optgroup.appendChild(option);
+        optgroup.appendChild(worldOption);
       }
 
       selectElement.appendChild(optgroup);
-    }
-
-    // Add individual worlds grouped by data center
-    for (const region of Object.keys(regionGroups).sort()) {
-      const regionOptgroup = document.createElement('optgroup');
-      regionOptgroup.label = `${region} - Worlds`;
-
-      for (const dc of regionGroups[region]) {
-        // Get worlds for this data center
-        const dcWorlds = this.worlds.filter((w) => dc.worlds.includes(w.id));
-
-        for (const world of dcWorlds.sort((a, b) => a.name.localeCompare(b.name))) {
-          const option = document.createElement('option');
-          option.value = world.name;
-          option.textContent = `${world.name} (${dc.name})`;
-          if (world.name === this.selectedServer) {
-            option.selected = true;
-          }
-          regionOptgroup.appendChild(option);
-        }
-      }
-
-      selectElement.appendChild(regionOptgroup);
     }
   }
 

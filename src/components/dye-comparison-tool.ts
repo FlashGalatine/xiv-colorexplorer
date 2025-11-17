@@ -12,7 +12,7 @@ import { DyeSelector } from './dye-selector';
 import { ColorDistanceMatrix } from './color-distance-matrix';
 import { DyeComparisonChart } from './dye-comparison-chart';
 import { MarketBoard } from './market-board';
-import { ColorService } from '@services/index';
+import { ColorService, APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 
 /**
@@ -290,9 +290,9 @@ export class DyeComparisonTool extends BaseComponent {
         const price = this.priceData.get(dye.itemID);
         if (price) {
           const priceSpan = this.createElement('span', {
-            textContent: `(${(price.currentAverage / 1000).toFixed(1)}k)`,
             className: 'text-xs text-blue-700 dark:text-blue-200 font-mono',
           });
+          priceSpan.innerHTML = `(${APIService.formatPrice(price.currentAverage)})`;
           tag.appendChild(priceSpan);
         }
       }
