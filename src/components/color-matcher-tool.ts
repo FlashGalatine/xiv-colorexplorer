@@ -251,7 +251,8 @@ export class ColorMatcherTool extends BaseComponent {
     section.appendChild(sectionTitle);
 
     const hint = this.createElement('p', {
-      textContent: 'Click on the image to sample a color. Drag to sample a region. Use zoom controls to adjust view.',
+      textContent:
+        'Click on the image to sample a color. Drag to sample a region. Use zoom controls to adjust view.',
       className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
     });
     section.appendChild(hint);
@@ -302,7 +303,8 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Zoom level display
     const zoomDisplay = this.createElement('div', {
-      className: 'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white min-w-20 text-center',
       textContent: '100%',
       attributes: {
@@ -372,13 +374,27 @@ export class ColorMatcherTool extends BaseComponent {
     resultsContainer.appendChild(section);
 
     // Setup zoom controls
-    this.setupZoomControls(canvas, image, canvasContainer, fitBtn, widthBtn, zoomOutBtn, zoomInBtn, resetBtn, zoomDisplay);
+    this.setupZoomControls(
+      canvas,
+      image,
+      canvasContainer,
+      fitBtn,
+      widthBtn,
+      zoomOutBtn,
+      zoomInBtn,
+      resetBtn,
+      zoomDisplay
+    );
   }
 
   /**
    * Setup image click/drag interaction
    */
-  private setupImageInteraction(canvas: HTMLCanvasElement, image: HTMLImageElement, canvasContainer: HTMLElement): void {
+  private setupImageInteraction(
+    canvas: HTMLCanvasElement,
+    image: HTMLImageElement,
+    canvasContainer: HTMLElement
+  ): void {
     let isDragging = false;
     let startX = 0;
     let startY = 0;
@@ -545,7 +561,10 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Allow keyboard shortcuts
     document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (document.activeElement === document.body || document.activeElement?.contains(canvasContainer)) {
+      if (
+        document.activeElement === document.body ||
+        document.activeElement?.contains(canvasContainer)
+      ) {
         if (e.key === '+' || e.key === '=') {
           e.preventDefault();
           if (this.zoomLevel < MAX_ZOOM) {

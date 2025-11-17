@@ -277,7 +277,11 @@ export abstract class BaseComponent implements ComponentLifecycle {
 
     // Remove from stored listeners
     for (const [key, listener] of this.listeners.entries()) {
-      if (listener.target === target && listener.event === eventName && listener.handler === handler) {
+      if (
+        listener.target === target &&
+        listener.event === eventName &&
+        listener.handler === handler
+      ) {
         this.listeners.delete(key);
         break;
       }

@@ -87,9 +87,9 @@ export class HarmonyType extends BaseComponent {
 
       content.appendChild(wheelContainer);
 
-      // Dye list
+      // Dye list - increased height to accommodate 4 dyes comfortably without scrolling
       const dyeList = this.createElement('div', {
-        className: 'space-y-2 max-h-64 overflow-y-auto',
+        className: 'space-y-2 max-h-none overflow-y-visible',
       });
 
       for (const { dye, deviance } of this.matchedDyes) {

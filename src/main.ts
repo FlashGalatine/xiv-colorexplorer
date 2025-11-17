@@ -83,6 +83,7 @@ async function initializeApp(): Promise<void> {
     interface ToolDefinition {
       id: string;
       name: string;
+      shortName: string; // For mobile navigation display
       icon: string;
       description: string;
       component: new (container: HTMLElement) => BaseComponent;
@@ -92,6 +93,7 @@ async function initializeApp(): Promise<void> {
       {
         id: 'harmony',
         name: 'Color Harmony',
+        shortName: 'Harmony',
         icon: '🎨',
         description: 'Generate harmonious color palettes',
         component: HarmonyGeneratorTool,
@@ -99,6 +101,7 @@ async function initializeApp(): Promise<void> {
       {
         id: 'matcher',
         name: 'Color Matcher',
+        shortName: 'Matcher',
         icon: '🎯',
         description: 'Match colors from images',
         component: ColorMatcherTool,
@@ -106,6 +109,7 @@ async function initializeApp(): Promise<void> {
       {
         id: 'accessibility',
         name: 'Accessibility',
+        shortName: 'Vision',
         icon: '👁️',
         description: 'Simulate colorblindness',
         component: AccessibilityCheckerTool,
@@ -113,6 +117,7 @@ async function initializeApp(): Promise<void> {
       {
         id: 'comparison',
         name: 'Dye Comparison',
+        shortName: 'Compare',
         icon: '📊',
         description: 'Compare up to 4 dyes',
         component: DyeComparisonTool,
@@ -120,6 +125,7 @@ async function initializeApp(): Promise<void> {
       {
         id: 'mixer',
         name: 'Dye Mixer',
+        shortName: 'Mixer',
         icon: '🎭',
         description: 'Find intermediate dyes',
         component: DyeMixerTool,
@@ -238,7 +244,7 @@ async function initializeApp(): Promise<void> {
     const mobileNavContainer = document.createElement('div');
     const mobileNavTools: MobileToolDef[] = tools.map((t) => ({
       id: t.id,
-      name: t.name,
+      name: t.shortName, // Use shortName for mobile display (single word labels)
       icon: t.icon,
       description: t.description,
     }));

@@ -26,8 +26,9 @@ export class AppLayout extends BaseComponent {
       className: 'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors',
     });
 
-    // Header
+    // Header - sticky positioning for top navigation
     const header = this.renderHeader();
+    header.classList.add('sticky', 'top-0', 'z-30'); // Sticky positioning, stays at top, above content
     app.appendChild(header);
 
     // Main content area
@@ -109,15 +110,55 @@ export class AppLayout extends BaseComponent {
     });
 
     const footerContent = this.createElement('div', {
-      className: 'max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-600 dark:text-gray-400',
+      className: 'max-w-7xl mx-auto px-4 py-8',
     });
 
+    // Copyright info
     const copyright = this.createElement('div', {
+      className: 'text-center text-sm text-gray-600 dark:text-gray-400 mb-6',
       innerHTML:
         'XIV Dye Tools v2.0.0 • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS',
     });
-
     footerContent.appendChild(copyright);
+
+    // Social links
+    const socialLinks = this.createElement('div', {
+      className: 'flex justify-center gap-4 flex-wrap mb-4',
+    });
+
+    const socialMedia = [
+      { label: 'GitHub', url: 'https://github.com/FlashGalatine', icon: '🐙' },
+      { label: 'X/Twitter', url: 'https://x.com/AsheJunius', icon: '𝕏' },
+      { label: 'Twitch', url: 'https://www.twitch.tv/flashgalatine', icon: '📺' },
+      { label: 'BlueSky', url: 'https://bsky.app/profile/projectgalatine.com', icon: '🌐' },
+      { label: 'Discord', url: 'https://discord.gg/5VUSKTZCe5', icon: '💬' },
+      { label: 'Patreon', url: 'https://patreon.com/ProjectGalatine', icon: '❤️' },
+    ];
+
+    socialMedia.forEach((social) => {
+      const link = this.createElement('a', {
+        className:
+          'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm',
+        attributes: {
+          href: social.url,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          title: social.label,
+        },
+        innerHTML: `${social.icon} ${social.label}`,
+      });
+      socialLinks.appendChild(link);
+    });
+
+    footerContent.appendChild(socialLinks);
+
+    // Creator info
+    const creator = this.createElement('div', {
+      className: 'text-center text-xs text-gray-500 dark:text-gray-500',
+      innerHTML: 'Created by Flash Galatine (Balmung) for the FFXIV community ✨',
+    });
+    footerContent.appendChild(creator);
+
     footer.appendChild(footerContent);
 
     return footer;

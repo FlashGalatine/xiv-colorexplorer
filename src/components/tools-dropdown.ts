@@ -71,7 +71,7 @@ export class ToolsDropdown extends BaseComponent {
           'px-4 py-3 text-left text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3',
         attributes: {
           'data-tool-id': tool.id,
-          'title': tool.description,
+          title: tool.description,
         },
       });
 

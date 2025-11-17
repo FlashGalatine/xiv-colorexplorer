@@ -609,7 +609,11 @@ export class AccessibilityCheckerTool extends BaseComponent {
   /**
    * Get color and label for overall accessibility score
    */
-  private getAccessibilityScoreStyle(score: number): { color: string; label: string; bgClass: string } {
+  private getAccessibilityScoreStyle(score: number): {
+    color: string;
+    label: string;
+    bgClass: string;
+  } {
     if (score >= 80) {
       return {
         color: 'text-green-700 dark:text-green-300',

@@ -58,10 +58,10 @@ export class MobileBottomNav extends BaseComponent {
             : 'text-gray-600 dark:text-gray-400'),
         attributes: {
           'data-tool-id': tool.id,
-          'title': tool.description,
+          title: tool.description,
           'aria-label': tool.name,
           'aria-selected': tool.id === this.currentToolId ? 'true' : 'false',
-          'role': 'tab',
+          role: 'tab',
         },
       });
 
@@ -147,7 +147,12 @@ export class MobileBottomNav extends BaseComponent {
 
       // Add appropriate classes
       if (isSelected) {
-        btn.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+        btn.classList.add(
+          'text-blue-600',
+          'dark:text-blue-400',
+          'bg-blue-50',
+          'dark:bg-blue-900/20'
+        );
         btn.setAttribute('aria-selected', 'true');
       } else {
         btn.classList.add('text-gray-600', 'dark:text-gray-400');

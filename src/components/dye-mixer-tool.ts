@@ -555,7 +555,13 @@ export class DyeMixerTool extends BaseComponent {
     try {
       const savedGradients = JSON.parse(
         localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
-      ) as Array<{ name: string; dye1Id: number; dye2Id: number; stepCount: number; colorSpace: string }>;
+      ) as Array<{
+        name: string;
+        dye1Id: number;
+        dye2Id: number;
+        stepCount: number;
+        colorSpace: string;
+      }>;
 
       if (!savedGradients[index]) {
         this.showToast('Gradient not found', 'error');
