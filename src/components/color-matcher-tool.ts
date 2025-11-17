@@ -22,6 +22,8 @@ export class ColorMatcherTool extends BaseComponent {
   private colorPicker: ColorPickerDisplay | null = null;
   private matchedDyes: Dye[] = [];
   private sampleSize: number = 5;
+  private zoomLevel: number = 100;
+  private currentImage: HTMLImageElement | null = null;
 
   /**
    * Render the tool component
@@ -228,6 +230,10 @@ export class ColorMatcherTool extends BaseComponent {
 
     resultsContainer.innerHTML = '';
 
+    // Store current image for zoom interactions
+    this.currentImage = image;
+    this.zoomLevel = 100;
+
     const section = this.createElement('div', {
       className:
         'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
@@ -240,17 +246,110 @@ export class ColorMatcherTool extends BaseComponent {
     section.appendChild(sectionTitle);
 
     const hint = this.createElement('p', {
-      textContent: 'Click on the image to sample a color. Drag to sample a region.',
+      textContent: 'Click on the image to sample a color. Drag to sample a region. Use zoom controls to adjust view.',
       className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
     });
     section.appendChild(hint);
 
+    // Create zoom controls container
+    const zoomControls = this.createElement('div', {
+      className: 'flex flex-wrap gap-2 mb-4',
+    });
+
+    // Fit button
+    const fitBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+      textContent: '📐 Fit',
+      attributes: {
+        title: 'Fit image to container',
+        id: 'zoom-fit-btn',
+      },
+    });
+    zoomControls.appendChild(fitBtn);
+
+    // Width button
+    const widthBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+      textContent: '↔️ Width',
+      attributes: {
+        title: 'Zoom to width',
+        id: 'zoom-width-btn',
+      },
+    });
+    zoomControls.appendChild(widthBtn);
+
+    // Zoom out button
+    const zoomOutBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+      textContent: '−',
+      attributes: {
+        title: 'Zoom out (10%)',
+        id: 'zoom-out-btn',
+      },
+    });
+    zoomControls.appendChild(zoomOutBtn);
+
+    // Zoom level display
+    const zoomDisplay = this.createElement('div', {
+      className: 'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white min-w-20 text-center',
+      textContent: '100%',
+      attributes: {
+        id: 'zoom-level-display',
+      },
+    });
+    zoomControls.appendChild(zoomDisplay);
+
+    // Zoom in button
+    const zoomInBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+      textContent: '+',
+      attributes: {
+        title: 'Zoom in (10%)',
+        id: 'zoom-in-btn',
+      },
+    });
+    zoomControls.appendChild(zoomInBtn);
+
+    // Reset button
+    const resetBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
+      textContent: '↺ Reset',
+      attributes: {
+        title: 'Reset zoom to 100%',
+        id: 'zoom-reset-btn',
+      },
+    });
+    zoomControls.appendChild(resetBtn);
+
+    section.appendChild(zoomControls);
+
+    // Create canvas container for scrolling
+    const canvasContainer = this.createElement('div', {
+      className:
+        'w-full max-h-96 overflow-auto rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900',
+      attributes: {
+        id: 'canvas-container',
+      },
+    });
+
     // Create canvas for image display
     const canvas = this.createElement('canvas', {
-      className: 'w-full rounded-lg border border-gray-300 dark:border-gray-600 cursor-crosshair',
+      className: 'cursor-crosshair block',
       attributes: {
         width: String(image.width),
         height: String(image.height),
+        id: 'image-canvas',
       },
     });
 
@@ -259,18 +358,22 @@ export class ColorMatcherTool extends BaseComponent {
       ctx.drawImage(image, 0, 0);
     }
 
-    section.appendChild(canvas);
+    canvasContainer.appendChild(canvas);
+    section.appendChild(canvasContainer);
 
     // Image interaction
-    this.setupImageInteraction(canvas, image);
+    this.setupImageInteraction(canvas, image, canvasContainer);
 
     resultsContainer.appendChild(section);
+
+    // Setup zoom controls
+    this.setupZoomControls(canvas, image, canvasContainer, fitBtn, widthBtn, zoomOutBtn, zoomInBtn, resetBtn, zoomDisplay);
   }
 
   /**
    * Setup image click/drag interaction
    */
-  private setupImageInteraction(canvas: HTMLCanvasElement, image: HTMLImageElement): void {
+  private setupImageInteraction(canvas: HTMLCanvasElement, image: HTMLImageElement, canvasContainer: HTMLElement): void {
     let isDragging = false;
     let startX = 0;
     let startY = 0;
@@ -336,6 +439,121 @@ export class ColorMatcherTool extends BaseComponent {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(image, 0, 0);
+        }
+      }
+    });
+  }
+
+  /**
+   * Setup zoom controls for image
+   */
+  private setupZoomControls(
+    canvas: HTMLCanvasElement,
+    image: HTMLImageElement,
+    canvasContainer: HTMLElement,
+    fitBtn: HTMLElement,
+    widthBtn: HTMLElement,
+    zoomOutBtn: HTMLElement,
+    zoomInBtn: HTMLElement,
+    resetBtn: HTMLElement,
+    zoomDisplay: HTMLElement
+  ): void {
+    const MIN_ZOOM = 50;
+    const MAX_ZOOM = 400;
+
+    const updateZoom = (newZoom: number): void => {
+      this.zoomLevel = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+      const scale = this.zoomLevel / 100;
+
+      // Update canvas size
+      canvas.style.transform = `scale(${scale})`;
+      canvas.style.transformOrigin = 'top left';
+      canvas.style.cursor = this.zoomLevel > 100 ? 'move' : 'crosshair';
+
+      // Update display
+      zoomDisplay.textContent = `${this.zoomLevel}%`;
+
+      // Update button states
+      zoomOutBtn.setAttribute('disabled', this.zoomLevel <= MIN_ZOOM ? 'true' : 'false');
+      zoomInBtn.setAttribute('disabled', this.zoomLevel >= MAX_ZOOM ? 'true' : 'false');
+
+      // Update button styling based on disabled state
+      if (this.zoomLevel <= MIN_ZOOM) {
+        zoomOutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        zoomOutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      if (this.zoomLevel >= MAX_ZOOM) {
+        zoomInBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        zoomInBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    };
+
+    const fitToContainer = (): void => {
+      const containerWidth = canvasContainer.clientWidth - 16; // Account for padding
+      const containerHeight = canvasContainer.clientHeight - 16;
+      const imageWidth = image.width;
+      const imageHeight = image.height;
+
+      const zoomX = (containerWidth / imageWidth) * 100;
+      const zoomY = (containerHeight / imageHeight) * 100;
+      const newZoom = Math.min(zoomX, zoomY, 100); // Cap at 100% to avoid upscaling
+
+      updateZoom(newZoom);
+    };
+
+    const zoomToWidth = (): void => {
+      const containerWidth = canvasContainer.clientWidth - 16;
+      const imageWidth = image.width;
+      const newZoom = (containerWidth / imageWidth) * 100;
+
+      updateZoom(Math.min(newZoom, 400)); // Still respect max zoom
+    };
+
+    // Setup button listeners
+    this.on(fitBtn, 'click', fitToContainer);
+    this.on(widthBtn, 'click', zoomToWidth);
+    this.on(zoomOutBtn, 'click', () => {
+      if (this.zoomLevel > MIN_ZOOM) {
+        updateZoom(this.zoomLevel - 10);
+      }
+    });
+    this.on(zoomInBtn, 'click', () => {
+      if (this.zoomLevel < MAX_ZOOM) {
+        updateZoom(this.zoomLevel + 10);
+      }
+    });
+    this.on(resetBtn, 'click', () => {
+      updateZoom(100);
+    });
+
+    // Allow mouse wheel zoom
+    this.on(canvasContainer, 'wheel', (e: Event) => {
+      const wheelEvent = e as WheelEvent;
+      wheelEvent.preventDefault();
+
+      const delta = wheelEvent.deltaY > 0 ? -10 : 10;
+      updateZoom(this.zoomLevel + delta);
+    });
+
+    // Allow keyboard shortcuts
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (document.activeElement === document.body || document.activeElement?.contains(canvasContainer)) {
+        if (e.key === '+' || e.key === '=') {
+          e.preventDefault();
+          if (this.zoomLevel < MAX_ZOOM) {
+            updateZoom(this.zoomLevel + 10);
+          }
+        } else if (e.key === '-') {
+          e.preventDefault();
+          if (this.zoomLevel > MIN_ZOOM) {
+            updateZoom(this.zoomLevel - 10);
+          }
+        } else if (e.key === '0') {
+          e.preventDefault();
+          updateZoom(100);
         }
       }
     });
