@@ -212,6 +212,88 @@ export class DyeMixerTool extends BaseComponent {
     });
     wrapper.appendChild(displayContainer);
 
+    // Quick Actions section
+    const actionsSection = this.createElement('div', {
+      className:
+        'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
+    });
+
+    const actionsTitle = this.createElement('h3', {
+      textContent: 'Quick Actions',
+      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
+    });
+    actionsSection.appendChild(actionsTitle);
+
+    const actionsContainer = this.createElement('div', {
+      className: 'flex flex-col sm:flex-row gap-2',
+    });
+
+    const saveBtn = this.createElement('button', {
+      id: 'save-gradient-btn',
+      textContent: '💾 Save Gradient',
+      className:
+        'px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
+    });
+
+    const shareBtn = this.createElement('button', {
+      id: 'copy-url-btn',
+      textContent: '🔗 Copy Share URL',
+      className:
+        'px-4 py-3 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
+      attributes: {
+        style: 'background-color: var(--theme-primary);',
+      },
+    });
+
+    actionsContainer.appendChild(saveBtn);
+    actionsContainer.appendChild(shareBtn);
+    actionsSection.appendChild(actionsContainer);
+    wrapper.appendChild(actionsSection);
+
+    // Saved Gradients section
+    const savedSection = this.createElement('div', {
+      className:
+        'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
+    });
+
+    const savedHeader = this.createElement('div', {
+      className: 'flex items-center justify-between mb-4',
+    });
+
+    const savedTitle = this.createElement('h3', {
+      textContent: 'Saved Gradients',
+      className: 'text-lg font-semibold text-gray-900 dark:text-white',
+    });
+
+    const toggleBtn = this.createElement('button', {
+      id: 'toggle-saved-gradients',
+      textContent: '▼',
+      className:
+        'px-3 py-2 rounded min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400',
+    });
+
+    savedHeader.appendChild(savedTitle);
+    savedHeader.appendChild(toggleBtn);
+    savedSection.appendChild(savedHeader);
+
+    const savedContainer = this.createElement('div', {
+      id: 'saved-gradients-container',
+      className: 'space-y-2',
+      attributes: {
+        style: 'max-height: 300px; overflow-y: auto; transition: max-height 0.3s ease-in-out;',
+      },
+    });
+    savedSection.appendChild(savedContainer);
+
+    const noSavedText = this.createElement('p', {
+      id: 'no-saved-gradients-text',
+      textContent: 'No saved gradients yet. Click "Save Gradient" to create one!',
+      className: 'text-sm text-gray-500 dark:text-gray-400',
+    });
+    savedSection.appendChild(noSavedText);
+
+    wrapper.appendChild(savedSection);
+
     this.container.innerHTML = '';
     this.element = wrapper;
     this.container.appendChild(this.element);
@@ -273,6 +355,26 @@ export class DyeMixerTool extends BaseComponent {
         this.updateInterpolation();
       });
     }
+
+    // Save/Load button event listeners
+    const saveBtn = this.querySelector<HTMLButtonElement>('#save-gradient-btn');
+    const shareBtn = this.querySelector<HTMLButtonElement>('#copy-url-btn');
+    const toggleBtn = this.querySelector<HTMLButtonElement>('#toggle-saved-gradients');
+
+    if (saveBtn) {
+      this.on(saveBtn, 'click', () => this.saveGradient());
+    }
+
+    if (shareBtn) {
+      this.on(shareBtn, 'click', () => this.copyShareUrl());
+    }
+
+    if (toggleBtn) {
+      this.on(toggleBtn, 'click', () => this.toggleSavedGradientsPanel());
+    }
+
+    // Load saved gradients on init
+    this.displaySavedGradients();
   }
 
   /**
@@ -409,5 +511,221 @@ export class DyeMixerTool extends BaseComponent {
       this.interpolationDisplay.destroy();
     }
     super.destroy();
+  }
+
+  /**
+   * Save current gradient to localStorage
+   */
+  private saveGradient(): void {
+    if (this.selectedDyes.length < 2) {
+      console.info('Need 2 dyes to save gradient');
+      return;
+    }
+
+    const gradientName = prompt('Name your gradient (e.g., "Sunset Fade"):');
+    if (!gradientName) return;
+
+    const gradient = {
+      name: gradientName,
+      dye1Id: this.selectedDyes[0].id,
+      dye1Name: this.selectedDyes[0].name,
+      dye2Id: this.selectedDyes[1].id,
+      dye2Name: this.selectedDyes[1].name,
+      stepCount: this.stepCount,
+      colorSpace: this.colorSpace,
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      const savedGradients = JSON.parse(
+        localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
+      ) as typeof gradient[];
+      savedGradients.push(gradient);
+      localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
+      console.info(`✓ Gradient "${gradientName}" saved!`);
+      this.displaySavedGradients();
+    } catch (error) {
+      console.error('Error saving gradient:', error);
+    }
+  }
+
+  /**
+   * Load a saved gradient
+   */
+  private loadSavedGradient(index: number): void {
+    try {
+      const savedGradients = JSON.parse(
+        localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
+      ) as Array<{ dye1Id: number; dye2Id: number; stepCount: number; colorSpace: string }>;
+
+      if (!savedGradients[index]) return;
+
+      const gradient = savedGradients[index];
+
+      // Find dyes by ID
+      const dye1 = dyeService.getDyeById(gradient.dye1Id);
+      const dye2 = dyeService.getDyeById(gradient.dye2Id);
+
+      if (!dye1 || !dye2) {
+        console.warn('One or more dyes from saved gradient not found');
+        return;
+      }
+
+      // Set selected dyes
+      this.selectedDyes = [dye1, dye2];
+      this.stepCount = gradient.stepCount || 10;
+      this.colorSpace = (gradient.colorSpace as 'rgb' | 'hsv') || 'hsv';
+
+      // Update UI
+      if (this.dyeSelector) {
+        this.dyeSelector.setSelectedDyes([dye1, dye2]);
+      }
+
+      // Update controls
+      const stepInput = this.querySelector<HTMLInputElement>('input[type="range"]');
+      if (stepInput) {
+        stepInput.value = String(this.stepCount);
+      }
+
+      const colorSpaceInput = this.querySelector<HTMLInputElement>(
+        `#color-space-${this.colorSpace}`
+      );
+      if (colorSpaceInput) {
+        colorSpaceInput.checked = true;
+      }
+
+      this.updateInterpolation();
+    } catch (error) {
+      console.error('Error loading gradient:', error);
+    }
+  }
+
+  /**
+   * Delete a saved gradient
+   */
+  private deleteSavedGradient(index: number): void {
+    try {
+      const savedGradients = JSON.parse(
+        localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
+      ) as unknown[];
+      savedGradients.splice(index, 1);
+      localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
+      this.displaySavedGradients();
+    } catch (error) {
+      console.error('Error deleting gradient:', error);
+    }
+  }
+
+  /**
+   * Display saved gradients
+   */
+  private displaySavedGradients(): void {
+    const container = this.querySelector<HTMLElement>('#saved-gradients-container');
+    const noText = this.querySelector<HTMLElement>('#no-saved-gradients-text');
+
+    if (!container || !noText) return;
+
+    try {
+      const savedGradients = JSON.parse(
+        localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
+      ) as Array<{ name: string; dye1Name: string; dye2Name: string; timestamp: string }>;
+
+      container.innerHTML = '';
+
+      if (savedGradients.length === 0) {
+        noText.style.display = 'block';
+        return;
+      }
+
+      noText.style.display = 'none';
+
+      for (let i = 0; i < savedGradients.length; i++) {
+        const gradient = savedGradients[i];
+        const item = this.createElement('div', {
+          className:
+            'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600',
+        });
+
+        const info = this.createElement('div');
+        const name = this.createElement('div', {
+          textContent: gradient.name,
+          className: 'font-semibold text-sm text-gray-900 dark:text-white',
+        });
+        const dyes = this.createElement('div', {
+          textContent: `${gradient.dye1Name} → ${gradient.dye2Name}`,
+          className: 'text-xs text-gray-600 dark:text-gray-400',
+        });
+        info.appendChild(name);
+        info.appendChild(dyes);
+        item.appendChild(info);
+
+        const actions = this.createElement('div', {
+          className: 'flex gap-2',
+        });
+
+        const loadBtn = this.createElement('button', {
+          textContent: '📂 Load',
+          className:
+            'px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded transition',
+        });
+        loadBtn.addEventListener('click', () => this.loadSavedGradient(i));
+
+        const deleteBtn = this.createElement('button', {
+          textContent: '🗑️ Delete',
+          className:
+            'px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition',
+        });
+        deleteBtn.addEventListener('click', () => this.deleteSavedGradient(i));
+
+        actions.appendChild(loadBtn);
+        actions.appendChild(deleteBtn);
+        item.appendChild(actions);
+        container.appendChild(item);
+      }
+    } catch (error) {
+      console.error('Error displaying saved gradients:', error);
+    }
+  }
+
+  /**
+   * Toggle saved gradients panel visibility
+   */
+  private toggleSavedGradientsPanel(): void {
+    const container = this.querySelector<HTMLElement>('#saved-gradients-container');
+    const toggleBtn = this.querySelector<HTMLElement>('#toggle-saved-gradients');
+
+    if (!container || !toggleBtn) return;
+
+    const isHidden = container.style.maxHeight === '0px';
+    if (isHidden) {
+      container.style.maxHeight = '300px';
+      toggleBtn.textContent = '▲';
+    } else {
+      container.style.maxHeight = '0px';
+      toggleBtn.textContent = '▼';
+    }
+  }
+
+  /**
+   * Copy shareable URL to clipboard
+   */
+  private copyShareUrl(): void {
+    if (this.selectedDyes.length < 2) {
+      console.info('Need 2 dyes to share');
+      return;
+    }
+
+    const params = new URLSearchParams({
+      dye1: String(this.selectedDyes[0].id),
+      dye2: String(this.selectedDyes[1].id),
+      steps: String(this.stepCount),
+      colorSpace: this.colorSpace,
+    });
+
+    const url = `${window.location.origin}${window.location.pathname}?tool=dye-mixer&${params.toString()}`;
+
+    navigator.clipboard.writeText(url).then(() => {
+      console.info('✓ Share URL copied to clipboard!');
+    });
   }
 }
