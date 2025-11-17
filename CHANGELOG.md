@@ -9,7 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2025-11-16
 
-### 🎯 Overview
+### 📍 Phase 12.8: Critical Bug Fixes (Latest Session)
+
+**Status**: ✅ 5/9 Issues Fixed (56% complete) | Session: 2-3 hours
+**Branch**: phase-12.7/release (5 new commits)
+**Test Results**: ✅ 140/140 passing | ✅ 0 TypeScript errors
+
+#### CRITICAL Issues Fixed (4/4):
+1. **Issue #1**: Tools dropdown navigation (desktop) - New `ToolsDropdown` component in header
+2. **Issue #2**: Mobile bottom navigation - New `MobileBottomNav` component (fixed bottom)
+3. **Issue #3**: Image zoom controls (Color Matcher) - Full zoom system (50-400%, wheel, keyboard)
+4. **Issue #4**: Copy Share URL button with toasts - Functional sharing + reusable notification system
+
+#### MAJOR Issues Fixed (1/5):
+5. **Issue #5**: Theme background colors - Fixed missing `.bg-gray-900` override, all 10 themes now work
+
+#### Remaining Work:
+- Issue #6: Theme dropdown outside click handling
+- Issue #7: Make charts theme-aware
+- Issue #8: Use actual dye colors for chart dots
+- Issue #9: localStorage persistence (gradients)
+- Issues #11-15: Minor polish & toast notifications
+
+---
+
+### 🎯 Overview (Phase 12.6 - Previous)
 Complete TypeScript/Vite refactor bringing modern architecture, type safety, and maintainability to XIV Dye Tools. All 5 tools ported to component-based architecture with comprehensive unit testing. Phase 12.6 (Testing & Bug Fixes) completed with all 5 critical bugs resolved:
 1. ✅ All 5 colorblindness types now display in Accessibility Checker
 2. ✅ Color wheel visualization added to Color Harmony Explorer
