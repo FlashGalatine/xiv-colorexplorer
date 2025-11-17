@@ -205,6 +205,23 @@ export interface PriceData {
 }
 
 /**
+ * FFXIV Data Center information
+ */
+export interface DataCenter {
+  name: string;
+  region: string;
+  worlds: number[];
+}
+
+/**
+ * FFXIV World (server) information
+ */
+export interface World {
+  id: number;
+  name: string;
+}
+
+/**
  * API response status
  */
 export interface APIResponse<T> {

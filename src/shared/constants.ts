@@ -26,6 +26,45 @@ export const FFXIV_DYES_COUNT = 125;
 export const FFXIV_DATA_CENTER_COUNT = 6;
 export const FFXIV_SERVERS_PER_DATA_CENTER = 8;
 
+/**
+ * Market Board price category definitions
+ * Defines which dye acquisitions belong to which category
+ * Used for filtering which dyes should have prices fetched
+ */
+export const PRICE_CATEGORIES = {
+  baseDyes: {
+    name: 'Base Dyes',
+    acquisitions: ['Dye Vendor'],
+    default: false,
+  },
+  craftDyes: {
+    name: 'Craft Dyes',
+    acquisitions: ['Crafting', 'Treasure Chest'],
+    default: true,
+  },
+  alliedSocietyDyes: {
+    name: 'Allied Society Dyes',
+    acquisitions: [
+      "Amalj'aa Vendor",
+      'Ixali Vendor',
+      'Sahagin Vendor',
+      'Kobold Vendor',
+      'Sylphic Vendor',
+    ],
+    default: false,
+  },
+  cosmicDyes: {
+    name: 'Cosmic Dyes',
+    acquisitions: ['Cosmic Exploration', 'Cosmic Fortunes'],
+    default: true,
+  },
+  specialDyes: {
+    name: 'Special Dyes',
+    category: 'Special',
+    default: true,
+  },
+} as const;
+
 // ============================================================================
 // Theme Configuration
 // ============================================================================
