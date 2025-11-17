@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { ThemeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**
@@ -25,6 +26,7 @@ export class DyeComparisonChart extends BaseComponent {
   private canvas: HTMLCanvasElement | null = null;
   private chartWidth: number = 600;
   private chartHeight: number = 400;
+  private themeUnsubscribe: (() => void) | null = null;
 
   constructor(container: HTMLElement, chartType: ChartType = 'hue-saturation', dyes: Dye[] = []) {
     super(container);
@@ -107,17 +109,14 @@ export class DyeComparisonChart extends BaseComponent {
     const ctx = this.canvas.getContext('2d');
     if (!ctx) return;
 
-    // Get computed style for dark mode detection
-    const bgColor = window.getComputedStyle(
-      this.canvas.parentElement || document.body
-    ).backgroundColor;
-    const isDarkMode = bgColor.includes('rgb') && parseInt(bgColor.split(',')[0]) < 128;
+    // Get theme colors from ThemeService
+    const theme = ThemeService.getCurrentThemeObject();
+    const textColor = theme.palette.text;
+    const gridColor = theme.palette.textMuted;
+    const bgColor = theme.palette.background;
 
-    const textColor = isDarkMode ? '#FFFFFF' : '#000000';
-    const gridColor = isDarkMode ? '#404040' : '#E0E0E0';
-
-    // Clear canvas
-    ctx.fillStyle = isDarkMode ? '#1F2937' : '#FFFFFF';
+    // Clear canvas with theme background
+    ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, this.chartWidth, this.chartHeight);
 
     if (this.chartType === 'hue-saturation') {
@@ -200,20 +199,19 @@ export class DyeComparisonChart extends BaseComponent {
     ctx.fillText('Saturation (%)', 0, 0);
     ctx.restore();
 
-    // Plot dyes
-    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00'];
-    for (let i = 0; i < this.dyes.length && i < colors.length; i++) {
+    // Plot dyes using actual dye colors
+    for (let i = 0; i < this.dyes.length; i++) {
       const dye = this.dyes[i];
       const x = padding + (dye.hsv.h / 360) * width;
       const y = this.chartHeight - padding - (dye.hsv.s / 100) * height;
 
-      // Draw point
-      ctx.fillStyle = colors[i];
+      // Draw point with actual dye color
+      ctx.fillStyle = dye.hex;
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Draw border
+      // Draw border using theme text color
       ctx.strokeStyle = textColor;
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -299,20 +297,19 @@ export class DyeComparisonChart extends BaseComponent {
     ctx.fillText('Brightness (%)', 0, 0);
     ctx.restore();
 
-    // Plot dyes
-    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00'];
-    for (let i = 0; i < this.dyes.length && i < colors.length; i++) {
+    // Plot dyes using actual dye colors
+    for (let i = 0; i < this.dyes.length; i++) {
       const dye = this.dyes[i];
       const x = padding + (dye.hsv.h / 360) * width;
       const y = this.chartHeight - padding - (dye.hsv.v / 100) * height;
 
-      // Draw point
-      ctx.fillStyle = colors[i];
+      // Draw point with actual dye color
+      ctx.fillStyle = dye.hex;
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Draw border
+      // Draw border using theme text color
       ctx.strokeStyle = textColor;
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -357,6 +354,21 @@ export class DyeComparisonChart extends BaseComponent {
     if (this.canvas && this.canvas.parentElement) {
       resizeObserver.observe(this.canvas.parentElement);
     }
+
+    // Subscribe to theme changes to redraw chart
+    this.themeUnsubscribe = ThemeService.subscribe(() => {
+      this.drawChart();
+    });
+  }
+
+  /**
+   * Cleanup on destroy
+   */
+  destroy(): void {
+    if (this.themeUnsubscribe) {
+      this.themeUnsubscribe();
+    }
+    super.destroy();
   }
 
   /**

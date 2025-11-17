@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
+import { ColorService, ThemeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**
@@ -22,6 +22,7 @@ export class ColorWheelDisplay extends BaseComponent {
   private wheelSize: number = 200;
   private wheelCenter: number = 100;
   private wheelRadius: number = 80;
+  private themeUnsubscribe: (() => void) | null = null;
 
   constructor(
     container: HTMLElement,
@@ -46,6 +47,11 @@ export class ColorWheelDisplay extends BaseComponent {
     const wrapper = this.createElement('div', {
       className: 'flex justify-center',
     });
+
+    // Get theme for connection line color
+    const theme = ThemeService.getCurrentThemeObject();
+    const lineColor = theme.isDark ? 'rgba(100, 100, 100, 0.8)' : 'rgba(100, 100, 100, 0.6)';
+    const dotStrokeColor = theme.isDark ? '#333333' : '#FFFFFF';
 
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -99,7 +105,7 @@ export class ColorWheelDisplay extends BaseComponent {
       line.setAttribute('y1', String(y1));
       line.setAttribute('x2', String(x2));
       line.setAttribute('y2', String(y2));
-      line.setAttribute('stroke', 'rgba(100, 100, 100, 0.6)');
+      line.setAttribute('stroke', lineColor);
       line.setAttribute('stroke-width', '1');
       line.setAttribute('stroke-dasharray', '3,3');
       svg.appendChild(line);
@@ -120,7 +126,7 @@ export class ColorWheelDisplay extends BaseComponent {
       circle.setAttribute('cy', String(y));
       circle.setAttribute('r', '8');
       circle.setAttribute('fill', dye.hex);
-      circle.setAttribute('stroke', 'white');
+      circle.setAttribute('stroke', dotStrokeColor);
       circle.setAttribute('stroke-width', '2');
       circle.classList.add('cursor-pointer');
 
@@ -143,7 +149,7 @@ export class ColorWheelDisplay extends BaseComponent {
     baseCircle.setAttribute('cy', String(baseY));
     baseCircle.setAttribute('r', '10');
     baseCircle.setAttribute('fill', this.baseColor);
-    baseCircle.setAttribute('stroke', 'white');
+    baseCircle.setAttribute('stroke', dotStrokeColor);
     baseCircle.setAttribute('stroke-width', '2');
     svg.appendChild(baseCircle);
 
@@ -155,10 +161,22 @@ export class ColorWheelDisplay extends BaseComponent {
 
   /**
    * Bind event listeners
-   * Color wheel is a static visualization with no interactive elements
    */
   bindEvents(): void {
-    // No event binding needed for color wheel display
+    // Subscribe to theme changes to redraw color wheel
+    this.themeUnsubscribe = ThemeService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  /**
+   * Cleanup on destroy
+   */
+  destroy(): void {
+    if (this.themeUnsubscribe) {
+      this.themeUnsubscribe();
+    }
+    super.destroy();
   }
 
   /**
