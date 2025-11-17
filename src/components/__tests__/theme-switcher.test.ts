@@ -1,0 +1,445 @@
+/**
+ * XIV Dye Tools - ThemeSwitcher Component Tests
+ *
+ * Tests for theme selection, dropdown interaction, and persistence
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ThemeSwitcher } from '../theme-switcher';
+import { ThemeService } from '@services/theme-service';
+import { StorageService, appStorage } from '@services/storage-service';
+import { STORAGE_KEYS } from '@shared/constants';
+import type { ThemeName } from '@shared/types';
+import {
+  createTestContainer,
+  cleanupTestContainer,
+  renderComponent,
+  cleanupComponent,
+  expectElement,
+  waitForComponent,
+} from './test-utils';
+
+describe('ThemeSwitcher', () => {
+  let container: HTMLElement;
+  let component: ThemeSwitcher;
+
+  beforeEach(() => {
+    // Clear storage and reset theme before each test
+    if (StorageService.isAvailable()) {
+      StorageService.clear();
+    }
+    ThemeService.resetToDefault();
+  });
+
+  afterEach(() => {
+    if (component && container) {
+      cleanupComponent(component, container);
+    }
+
+    // Clean up after tests
+    if (StorageService.isAvailable()) {
+      StorageService.clear();
+    }
+  });
+
+  // ==========================================================================
+  // Rendering Tests
+  // ==========================================================================
+
+  describe('Rendering', () => {
+    it('should render theme switcher button', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn');
+      expect(button).not.toBeNull();
+      expect(button?.textContent).toContain('Theme');
+    });
+
+    it('should render dropdown menu (initially hidden)', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const dropdown = container.querySelector('#theme-dropdown');
+      expect(dropdown).not.toBeNull();
+      expectElement.toHaveClass(dropdown as HTMLElement, 'hidden');
+    });
+
+    it('should render all 10 theme options', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const themeButtons = container.querySelectorAll('[data-theme]');
+      expect(themeButtons.length).toBe(10);
+    });
+
+    it('should highlight current theme', () => {
+      // Set theme and create component in correct order
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Now set theme and update component
+      ThemeService.setTheme('hydaelyn-dark');
+      component.update();
+
+      const activeButton = container.querySelector('[data-theme="hydaelyn-dark"]');
+      expect(activeButton).not.toBeNull();
+      expectElement.toHaveClass(activeButton as HTMLElement, 'font-semibold');
+    });
+
+    it('should format theme names for display', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('[data-theme="standard-light"]');
+      expect(button?.textContent).toContain('Standard Light');
+    });
+
+    it('should include color swatches for each theme', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const themeButtons = container.querySelectorAll('[data-theme]');
+      themeButtons.forEach((btn) => {
+        const swatch = btn.querySelector('div');
+        expect(swatch).not.toBeNull();
+        expect(swatch?.getAttribute('style')).toContain('background-color');
+      });
+    });
+  });
+
+  // ==========================================================================
+  // Accessibility Tests
+  // ==========================================================================
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA attributes', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn');
+      expect(button?.getAttribute('aria-label')).toBe('Toggle theme switcher');
+      expect(button?.getAttribute('aria-haspopup')).toBe('true');
+      expect(button?.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('should update aria-expanded when dropdown opens', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      button.click();
+
+      expect(button.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('should update aria-expanded when dropdown closes', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+
+      // Open then close
+      button.click();
+      button.click();
+
+      expect(button.getAttribute('aria-expanded')).toBe('false');
+    });
+  });
+
+  // ==========================================================================
+  // Dropdown Interaction Tests
+  // ==========================================================================
+
+  describe('Dropdown Interaction', () => {
+    it('should toggle dropdown on button click', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Initially hidden
+      expectElement.toHaveClass(dropdown, 'hidden');
+
+      // Click to open
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Click to close
+      button.click();
+      expectElement.toHaveClass(dropdown, 'hidden');
+    });
+
+    it('should close dropdown on ESC key', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Press ESC key
+      const escEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+      document.dispatchEvent(escEvent);
+
+      await waitForComponent(10);
+      expectElement.toHaveClass(dropdown, 'hidden');
+    });
+  });
+
+  // ==========================================================================
+  // Theme Selection Tests
+  // ==========================================================================
+
+  describe('Theme Selection', () => {
+    it('should change theme when theme button is clicked', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const initialTheme = ThemeService.getCurrentTheme();
+
+      // Click on a different theme
+      const themeButton = container.querySelector('[data-theme="hydaelyn-dark"]') as HTMLButtonElement;
+      themeButton.click();
+
+      const newTheme = ThemeService.getCurrentTheme();
+      expect(newTheme).toBe('hydaelyn-dark');
+      expect(newTheme).not.toBe(initialTheme);
+    });
+
+    it('should close dropdown after theme selection', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Select a theme
+      const themeButton = container.querySelector('[data-theme="parchment-light"]') as HTMLButtonElement;
+      themeButton.click();
+
+      await waitForComponent(10);
+
+      // Dropdown should be closed
+      expectElement.toHaveClass(dropdown, 'hidden');
+    });
+
+    it('should emit theme-changed event on selection', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const eventHandler = vi.fn();
+      container.addEventListener('theme-changed', eventHandler);
+
+      const themeButton = container.querySelector('[data-theme="classic-dark"]') as HTMLButtonElement;
+      themeButton.click();
+
+      expect(eventHandler).toHaveBeenCalledTimes(1);
+      expect(eventHandler.mock.calls[0][0].detail.theme).toBe('classic-dark');
+    });
+
+    it('should persist theme to storage', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const themeButton = container.querySelector('[data-theme="sugar-riot-light"]') as HTMLButtonElement;
+      themeButton.click();
+
+      // Verify theme was saved via appStorage (namespaced storage)
+      if (StorageService.isAvailable()) {
+        const savedTheme = appStorage.getItem<ThemeName>(STORAGE_KEYS.THEME);
+        expect(savedTheme).toBe('sugar-riot-light');
+      }
+    });
+
+    it('should update component state after theme selection', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const themeButton = container.querySelector('[data-theme="parchment-dark"]') as HTMLButtonElement;
+      themeButton.click();
+
+      const state = component['getState']();
+      expect(state.currentTheme).toBe('parchment-dark');
+    });
+
+    it('should highlight newly selected theme after update', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Select a theme
+      const themeButton = container.querySelector('[data-theme="hydaelyn-light"]') as HTMLButtonElement;
+      themeButton.click();
+
+      await waitForComponent(50); // Wait for component update
+
+      // Verify new theme is highlighted
+      const highlightedButton = container.querySelector('[data-theme="hydaelyn-light"]');
+      expectElement.toHaveClass(highlightedButton as HTMLElement, 'font-semibold');
+    });
+  });
+
+  // ==========================================================================
+  // Theme Service Integration Tests
+  // ==========================================================================
+
+  describe('Theme Service Integration', () => {
+    it('should initialize with current theme from service', () => {
+      ThemeService.setTheme('classic-light');
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const state = component['getState']();
+      expect(state.currentTheme).toBe('classic-light');
+    });
+
+    it('should update when theme changes externally', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Simulate external theme change
+      ThemeService.setTheme('sugar-riot-dark');
+
+      await waitForComponent(100); // Wait for subscription callback + re-render
+
+      const state = component['getState']();
+      expect(state.currentTheme).toBe('sugar-riot-dark');
+    });
+
+    it('should subscribe to theme changes on mount', () => {
+      const subscribeSpy = vi.spyOn(ThemeService, 'subscribe');
+
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      expect(subscribeSpy).toHaveBeenCalled();
+      subscribeSpy.mockRestore();
+    });
+
+    it('should apply theme to DOM via ThemeService', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const themeButton = container.querySelector('[data-theme="hydaelyn-dark"]') as HTMLButtonElement;
+      themeButton.click();
+
+      // Verify ThemeService applied the theme to document.documentElement (the <html> element)
+      expect(document.documentElement.classList.contains('theme-hydaelyn-dark')).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // State Management Tests
+  // ==========================================================================
+
+  describe('State Management', () => {
+    it('should get component state', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const state = component['getState']();
+
+      expect(state).toHaveProperty('currentTheme');
+      expect(state).toHaveProperty('isDropdownOpen');
+      expect(typeof state.currentTheme).toBe('string');
+      expect(typeof state.isDropdownOpen).toBe('boolean');
+    });
+
+    it('should set component state', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      component['setState']({
+        currentTheme: 'parchment-light' as ThemeName,
+        isDropdownOpen: true,
+      });
+
+      const state = component['getState']();
+      expect(state.currentTheme).toBe('parchment-light');
+      expect(state.isDropdownOpen).toBe(true);
+    });
+
+    it('should track dropdown open state', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+
+      // Initially closed
+      let state = component['getState']();
+      expect(state.isDropdownOpen).toBe(false);
+
+      // Open dropdown
+      button.click();
+      state = component['getState']();
+      expect(state.isDropdownOpen).toBe(true);
+
+      // Close dropdown
+      button.click();
+      state = component['getState']();
+      expect(state.isDropdownOpen).toBe(false);
+    });
+  });
+
+  // ==========================================================================
+  // Lifecycle Tests
+  // ==========================================================================
+
+  describe('Lifecycle', () => {
+    it('should clean up event listeners on destroy', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const listenerCount = component['listeners'].size;
+      expect(listenerCount).toBeGreaterThan(0);
+
+      component.destroy();
+
+      expect(component['listeners'].size).toBe(0);
+    });
+
+    it('should re-render correctly on update', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Change theme externally to trigger update
+      ThemeService.setTheme('classic-dark');
+
+      await waitForComponent(100);
+
+      // Verify component re-rendered with new theme
+      const highlightedButton = container.querySelector('[data-theme="classic-dark"]');
+      expectElement.toHaveClass(highlightedButton as HTMLElement, 'font-semibold');
+    });
+
+    it('should maintain functionality after update', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Trigger update
+      component.update();
+
+      await waitForComponent(50);
+
+      // Test that dropdown still works
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+    });
+  });
+
+  // ==========================================================================
+  // Edge Cases
+  // ==========================================================================
+
+  describe('Edge Cases', () => {
+    it('should handle rapid theme changes', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Rapidly select multiple themes
+      const themes = ['hydaelyn-light', 'parchment-dark', 'sugar-riot-light', 'classic-dark'];
+
+      for (const themeName of themes) {
+        const themeButton = container.querySelector(`[data-theme="${themeName}"]`) as HTMLButtonElement;
+        themeButton.click();
+      }
+
+      await waitForComponent(100);
+
+      // Final theme should be applied
+      expect(ThemeService.getCurrentTheme()).toBe('classic-dark');
+    });
+
+    it('should handle empty dropdown state', () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const state = component['getState']();
+
+      // Dropdown should be closed by default
+      expect(state.isDropdownOpen).toBe(false);
+    });
+  });
+});
