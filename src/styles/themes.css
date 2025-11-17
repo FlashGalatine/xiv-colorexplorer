@@ -113,6 +113,8 @@ a:hover {
 /* =====================================================
    AGGRESSIVE BACKGROUND OVERRIDES FOR TAILWIND
    Using !important to override Tailwind utility specificity
+   Note: darkMode is disabled in Tailwind config, so dark: variants don't exist
+   All colors are managed through CSS custom properties
    ===================================================== */
 
 /* White backgrounds → card background */
@@ -125,8 +127,10 @@ a:hover {
 /* Gray backgrounds → secondary background */
 .bg-gray-50,
 .bg-gray-100,
+.bg-gray-900,
 .dark\:bg-gray-700,
-.dark\:bg-gray-700\/50 {
+.dark\:bg-gray-700\/50,
+.dark\:bg-gray-900 {
   background-color: var(--theme-background-secondary) !important;
   color: var(--theme-text) !important;
 }
@@ -134,8 +138,8 @@ a:hover {
 /* Borders */
 .border,
 .border-gray-200,
-.dark\:border-gray-700,
 .border-gray-100,
+.dark\:border-gray-700,
 .dark\:border-gray-600 {
   border-color: var(--theme-border) !important;
 }
@@ -151,7 +155,8 @@ a:hover {
 
 /* Text colors - regular */
 .text-gray-900,
-.dark\:text-white {
+.dark\:text-white,
+.text-white {
   color: var(--theme-text) !important;
 }
 
