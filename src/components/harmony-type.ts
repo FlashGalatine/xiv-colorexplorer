@@ -9,7 +9,8 @@
 
 import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
-import type { Dye } from '@shared/types';
+import { APIService } from '@services/api-service';
+import type { Dye, PriceData } from '@shared/types';
 
 /**
  * Harmony type information
@@ -30,6 +31,7 @@ export class HarmonyType extends BaseComponent {
   private baseColor: string;
   private matchedDyes: Array<{ dye: Dye; deviance: number }> = [];
   private showPrices: boolean = false;
+  private priceData: Map<number, PriceData> = new Map();
 
   constructor(
     container: HTMLElement,
@@ -214,12 +216,32 @@ export class HarmonyType extends BaseComponent {
     devianceDiv.appendChild(devianceLabel);
     item.appendChild(devianceDiv);
 
-    // Optional price
-    if (this.showPrices && dye.cost) {
+    // Optional market price
+    if (this.showPrices) {
       const priceDiv = this.createElement('div', {
-        textContent: `${dye.cost} Gil`,
-        className: 'text-xs text-yellow-600 dark:text-yellow-400 font-mono flex-shrink-0 ml-2',
+        className: 'text-right flex-shrink-0 ml-2 min-w-[80px]',
       });
+
+      const price = this.priceData.get(dye.itemID);
+      if (price) {
+        const priceValue = this.createElement('div', {
+          textContent: APIService.formatPrice(price.currentAverage),
+          className: 'text-xs text-yellow-600 dark:text-yellow-400 font-mono font-bold',
+        });
+        const priceLabel = this.createElement('div', {
+          textContent: 'market',
+          className: 'text-xs text-gray-500 dark:text-gray-400',
+        });
+        priceDiv.appendChild(priceValue);
+        priceDiv.appendChild(priceLabel);
+      } else {
+        const noPriceLabel = this.createElement('div', {
+          textContent: 'N/A',
+          className: 'text-xs text-gray-400 dark:text-gray-600',
+        });
+        priceDiv.appendChild(noPriceLabel);
+      }
+
       item.appendChild(priceDiv);
     }
 
@@ -270,6 +292,29 @@ export class HarmonyType extends BaseComponent {
   updateBaseColor(baseColor: string): void {
     this.baseColor = baseColor;
     this.update();
+  }
+
+  /**
+   * Set price data for matched dyes
+   */
+  setPriceData(priceData: Map<number, PriceData>): void {
+    this.priceData = priceData;
+    this.update();
+  }
+
+  /**
+   * Update show prices setting
+   */
+  updateShowPrices(showPrices: boolean): void {
+    this.showPrices = showPrices;
+    this.update();
+  }
+
+  /**
+   * Get matched dyes
+   */
+  getDyes(): Dye[] {
+    return this.matchedDyes.map(({ dye }) => dye);
   }
 
   /**
