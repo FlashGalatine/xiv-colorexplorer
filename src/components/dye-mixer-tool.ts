@@ -516,7 +516,7 @@ export class DyeMixerTool extends BaseComponent {
    */
   private saveGradient(): void {
     if (this.selectedDyes.length < 2) {
-      console.info('Need 2 dyes to save gradient');
+      this.showToast('Please select 2 dyes to save gradient', 'error');
       return;
     }
 
@@ -540,10 +540,11 @@ export class DyeMixerTool extends BaseComponent {
       ) as (typeof gradient)[];
       savedGradients.push(gradient);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      console.info(`✓ Gradient "${gradientName}" saved!`);
+      this.showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
       this.displaySavedGradients();
     } catch (error) {
       console.error('Error saving gradient:', error);
+      this.showToast('Failed to save gradient', 'error');
     }
   }
 
@@ -554,9 +555,12 @@ export class DyeMixerTool extends BaseComponent {
     try {
       const savedGradients = JSON.parse(
         localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
-      ) as Array<{ dye1Id: number; dye2Id: number; stepCount: number; colorSpace: string }>;
+      ) as Array<{ name: string; dye1Id: number; dye2Id: number; stepCount: number; colorSpace: string }>;
 
-      if (!savedGradients[index]) return;
+      if (!savedGradients[index]) {
+        this.showToast('Gradient not found', 'error');
+        return;
+      }
 
       const gradient = savedGradients[index];
 
@@ -565,7 +569,7 @@ export class DyeMixerTool extends BaseComponent {
       const dye2 = dyeService.getDyeById(gradient.dye2Id);
 
       if (!dye1 || !dye2) {
-        console.warn('One or more dyes from saved gradient not found');
+        this.showToast('One or more dyes not found in database', 'error');
         return;
       }
 
@@ -593,8 +597,10 @@ export class DyeMixerTool extends BaseComponent {
       }
 
       this.updateInterpolation();
+      this.showToast(`✓ Loaded gradient "${gradient.name}"`, 'success');
     } catch (error) {
       console.error('Error loading gradient:', error);
+      this.showToast('Failed to load gradient', 'error');
     }
   }
 
@@ -605,12 +611,21 @@ export class DyeMixerTool extends BaseComponent {
     try {
       const savedGradients = JSON.parse(
         localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
-      ) as unknown[];
+      ) as Array<{ name: string }>;
+
+      if (!savedGradients[index]) {
+        this.showToast('Gradient not found', 'error');
+        return;
+      }
+
+      const gradientName = savedGradients[index].name;
       savedGradients.splice(index, 1);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
+      this.showToast(`✓ Gradient "${gradientName}" deleted`, 'success');
       this.displaySavedGradients();
     } catch (error) {
       console.error('Error deleting gradient:', error);
+      this.showToast('Failed to delete gradient', 'error');
     }
   }
 
