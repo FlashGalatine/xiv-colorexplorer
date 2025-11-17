@@ -263,6 +263,11 @@ export class DyeService {
 
     for (const dye of this.dyes) {
       try {
+        // Exclude Facewear dyes from recommendations
+        if (dye.category === 'Facewear') {
+          continue;
+        }
+
         const distance = ColorService.getColorDistance(hex, dye.hex);
 
         if (distance <= maxDistance) {
