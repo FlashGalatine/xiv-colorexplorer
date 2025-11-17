@@ -48,7 +48,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
   protected element: HTMLElement | null = null;
   protected listeners: Map<
     string,
-    { target: HTMLElement | Document | Window; handler: EventListener }
+    { target: HTMLElement | Document | Window; event: string; handler: EventListener }
   > = new Map();
   protected isInitialized: boolean = false;
   protected isDestroyed: boolean = false;
@@ -251,16 +251,17 @@ export abstract class BaseComponent implements ComponentLifecycle {
     handler: EventHandler<HTMLElementEventMap[K]>
   ): void {
     const boundHandler = handler.bind(this) as EventListener;
+    const eventName = event as string;
 
     if (target instanceof HTMLElement) {
-      target.addEventListener(event as string, boundHandler);
+      target.addEventListener(eventName, boundHandler);
     } else if (target instanceof Document || target instanceof Window) {
-      target.addEventListener(event as string, boundHandler);
+      target.addEventListener(eventName, boundHandler);
     }
 
-    // Store listener for cleanup
-    const key = `${event}_${Math.random()}`;
-    this.listeners.set(key, { target, handler: boundHandler });
+    // Store listener for cleanup with event name
+    const key = `${eventName}_${Math.random()}`;
+    this.listeners.set(key, { target, event: eventName, handler: boundHandler });
   }
 
   /**
@@ -271,11 +272,12 @@ export abstract class BaseComponent implements ComponentLifecycle {
     event: K,
     handler: EventListener
   ): void {
-    target.removeEventListener(event as string, handler);
+    const eventName = event as string;
+    target.removeEventListener(eventName, handler);
 
     // Remove from stored listeners
     for (const [key, listener] of this.listeners.entries()) {
-      if (listener.target === target && listener.handler === handler) {
+      if (listener.target === target && listener.event === eventName && listener.handler === handler) {
         this.listeners.delete(key);
         break;
       }
@@ -286,15 +288,11 @@ export abstract class BaseComponent implements ComponentLifecycle {
    * Remove all event listeners
    */
   private unbindAllEvents(): void {
-    for (const { target, handler } of this.listeners.values()) {
-      for (const event in target) {
-        if (event.startsWith('on')) {
-          try {
-            target.removeEventListener(event.slice(2), handler);
-          } catch {
-            // Ignore errors during cleanup
-          }
-        }
+    for (const { target, event, handler } of this.listeners.values()) {
+      try {
+        target.removeEventListener(event, handler);
+      } catch {
+        // Ignore errors during cleanup
       }
     }
     this.listeners.clear();
@@ -318,9 +316,11 @@ export abstract class BaseComponent implements ComponentLifecycle {
       }
     };
 
-    (this.element || this.container).addEventListener(eventName, boundHandler);
+    const target = this.element || this.container;
+    target.addEventListener(eventName, boundHandler);
     this.listeners.set(`custom_${eventName}`, {
-      target: this.element || this.container,
+      target,
+      event: eventName,
       handler: boundHandler,
     });
   }
