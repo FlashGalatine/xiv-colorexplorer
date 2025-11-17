@@ -28,59 +28,68 @@ This checklist covers comprehensive browser testing across all 4 tools and 5 cri
 ### Category A: Core Features (All Tools)
 
 #### A1: Theme System (All 10 Themes)
-- [ ] Standard Light
-  - [ ] All colors render correctly
-  - [ ] Text contrast is readable
-  - [ ] Components display properly
-- [ ] Standard Dark
-  - [ ] Dark background renders
-  - [ ] Text is visible on dark background
-  - [ ] Theme persists on refresh
-- [ ] Hydaelyn Light
-  - [ ] Sky blue theme colors correct
-  - [ ] No layout issues
-  - [ ] Theme switcher shows correct variant
-- [ ] Hydaelyn Dark
-  - [ ] Dark variant renders properly
-  - [ ] Color scheme consistent
-  - [ ] localStorage saves theme
-- [ ] Classic FF Light
-  - [ ] Deep blue colors correct
-  - [ ] Retro FF aesthetic maintained
-  - [ ] Contrast acceptable
-- [ ] Classic FF Dark
-  - [ ] Dark retro FF style works
-  - [ ] Readable text
-  - [ ] All elements styled
-- [ ] Parchment Light
-  - [ ] Warm beige colors appear
-  - [ ] Text legible
-  - [ ] Theme switches smoothly
-- [ ] Parchment Dark
-  - [ ] Dark warm colors work
-  - [ ] No color bleeding
-  - [ ] Contrast acceptable
-- [ ] Sugar Riot Light
-  - [ ] Vibrant pink colors display
-  - [ ] No eye strain
-  - [ ] All elements styled
-- [ ] Sugar Riot Dark
-  - [ ] Dark pink variant renders
-  - [ ] Readable on dark background
-  - [ ] Theme persists
+- [x] Standard Light
+  - [x] All colors render correctly
+  - [x] Text contrast is readable
+  - [x] Components display properly
+- [x] Standard Dark
+  - [x] Dark background renders
+  - [x] Text is visible on dark background
+  - [x] Theme persists on refresh
+- [x] Hydaelyn Light
+  - [x] Sky blue theme colors correct
+    - [ ] PARTIALLY: Background remains as #FFFFFF. Should be #F0F9FF
+  - [x] No layout issues
+  - [x] Theme switcher shows correct variant
+- [x] Hydaelyn Dark
+  - [x] Dark variant renders properly
+  - [x] Color scheme consistent
+  - [x] localStorage saves theme
+- [x] Classic FF Light
+  - [x] Deep blue colors correct
+    - [ ] PARTIALLY: Background remains as #FFFFFF. Should be #EFF6FF
+  - [x] Retro FF aesthetic maintained
+  - [x] Contrast acceptable
+- [x] Classic FF Dark
+  - [x] Dark retro FF style works
+  - [x] Readable text
+  - [x] All elements styled
+- [x] Parchment Light
+  - [x] Warm beige colors appear
+  - [x] Text legible
+  - [x] Theme switches smoothly
+- [x] Parchment Dark
+  - [x] Dark warm colors work
+  - [x] No color bleeding
+  - [x] Contrast acceptable
+- [x] Sugar Riot Light
+  - [x] Vibrant pink colors display
+  - [x] No eye strain
+  - [x] All elements styled
+- [x] Sugar Riot Dark
+  - [x] Dark pink variant renders
+  - [x] Readable on dark background
+  - [x] Theme persists
+- [x] OTHER OBSERVATIONS:
+  - [ ] After further investigating, it seems the body backgrounds are using the "--theme-card-background" color instead of the "--theme-background" color. 
+
 
 #### A2: Theme Switcher Component
-- [ ] Theme dropdown opens on click
-- [ ] All 10 themes visible in menu
-- [ ] Theme selection updates page instantly
-- [ ] Selected theme persists on page refresh
-- [ ] Dropdown closes after selection
+- [x] Theme dropdown opens on click
+- [x] All 10 themes visible in menu
+- [x] Theme selection updates page instantly
+- [x] Selected theme persists on page refresh
+- [x] Dropdown closes after selection
 - [ ] Dropdown closes when clicking outside
-- [ ] Theme button positioned correctly (top-right)
-- [ ] Mobile: Theme button visible on small screens
+  - [ ] BUG: This does not happen! The dropdown persists when clicking outside.
+
+- [x] Theme button positioned correctly (top-right)
+- [x] Mobile: Theme button visible on small screens
 
 #### A3: Navigation (Desktop)
 - [ ] Tools dropdown visible on desktop
+  - [ ] **THERE IS NO TOOLS DROP DOWN IN V2.0.0!**
+
 - [ ] All 5 tools listed in dropdown
   - [ ] Color Accessibility Checker
   - [ ] Color Harmony Explorer
@@ -92,6 +101,8 @@ This checklist covers comprehensive browser testing across all 4 tools and 5 cri
 
 #### A4: Navigation (Mobile)
 - [ ] Bottom navigation visible on mobile
+  - [ ] **THERE IS NO BOTTOM NAV ON MOBILE IN V2.0.0**
+
 - [ ] All 5 tools accessible from bottom nav
 - [ ] Bottom nav doesn't obscure main content
 - [ ] Navigation bar stays fixed at bottom while scrolling
@@ -121,133 +132,144 @@ This checklist covers comprehensive browser testing across all 4 tools and 5 cri
 ### Category B: Color Accessibility Checker
 
 #### B1: Vision Type Display
-- [ ] **Normal Vision** - Original color displays correctly
-- [ ] **Deuteranopia** - Green-blind simulation shows distinct colors
-- [ ] **Protanopia** - Red-blind simulation shows distinct colors
-- [ ] **Tritanopia** - Blue-yellow blind simulation shows distinct colors
-- [ ] **Achromatopsia** - Complete color blindness shows grayscale
-- [ ] All 5 vision types display in visual grid (5 columns)
-- [ ] Color swatches render with correct colors
-- [ ] Vision type labels visible under swatches
+- [x] **Normal Vision** - Original color displays correctly
+- [x] **Deuteranopia** - Green-blind simulation shows distinct colors
+- [x] **Protanopia** - Red-blind simulation shows distinct colors
+- [x] **Tritanopia** - Blue-yellow blind simulation shows distinct colors
+- [x] **Achromatopsia** - Complete color blindness shows grayscale
+- [x] All 5 vision types display in visual grid (5 columns)
+- [x] Color swatches render with correct colors
+- [x] Vision type labels visible under swatches
 
 #### B2: Accessibility Score
-- [ ] Score displays 0-100 range
+- [x] Score displays 0-100 range
+  - [ ] There are scores for individual dyes, but there is no collective Accessibility Score that takes account for all of the dyes.
+
 - [ ] Score updates when selecting different dyes
 - [ ] Score reflects all selected dyes
 - [ ] Score calculation is consistent
 
 #### B3: Outfit Slot Selection
-- [ ] All 6 outfit slots selectable
-  - [ ] Head
-  - [ ] Body
-  - [ ] Hands
-  - [ ] Legs
-  - [ ] Feet
-  - [ ] Weapon
+- [ ] ~~All 6 outfit slots selectable~~
+  - [ ] ~~Head~~
+  - [ ] ~~Body~~
+  - [ ] ~~Hands~~
+  - [ ] ~~Legs~~
+  - [ ] ~~Feet~~
+  - [ ] ~~Weapon~~
+  - [ ] This has been changed generically to just 12 maximum dyes regardless of slots.
 - [ ] Selecting multiple slots works
 - [ ] Dual dye selection available
 - [ ] Dual dye toggle persists in localStorage
 
 #### B4: Dye Selection
-- [ ] Search works (type to filter)
-- [ ] Category filter works
-- [ ] Category filter doesn't clear selected dyes
-- [ ] Same dye can be selected multiple times
-- [ ] Selected counter displays correctly
-- [ ] Clear button removes all selections
+- [x] Search works (type to filter)
+- [x] Category filter works
+- [x] Category filter doesn't clear selected dyes
+- [x] Same dye can be selected multiple times
+- [x] Selected counter displays correctly
+- [x] Clear button removes all selections
 
 #### B5: Browser Console
-- [ ] No red errors in console
-- [ ] No warnings related to functionality
-- [ ] ColorService initialized correctly
-- [ ] DyeService loaded 136 dyes
+- [x] No red errors in console
+- [x] No warnings related to functionality
+- [x] ColorService initialized correctly
+- [x] DyeService loaded 136 dyes
 
 ---
 
 ### Category C: Color Harmony Explorer
 
 #### C1: Harmony Type Cards
-- [ ] All 6 harmony types display
-  - [ ] Complementary (180°)
-  - [ ] Analogous (±30°)
-  - [ ] Triadic (120°)
-  - [ ] Split-Complementary
-  - [ ] Tetradic (90°)
-  - [ ] Square (90°)
-- [ ] Each card has proper styling
-- [ ] Card headers are readable
+- [x] All 6 harmony types display
+  - [x] Complementary (180°)
+  - [x] Analogous (±30°)
+  - [x] Triadic (120°)
+  - [x] Split-Complementary
+  - [x] Tetradic (90°)
+  - [x] Square (90°)
+- [x] Each card has proper styling
+- [x] Card headers are readable
 
 #### C2: Color Wheel Visualization ⭐ (NEW - Phase 12.6)
-- [ ] Color wheel renders in each harmony card
-- [ ] 60-segment rainbow wheel displays
-- [ ] Base color dot visible (inner circle, larger)
-- [ ] Harmony color dots visible (outer ring)
-- [ ] Connection lines draw from base to harmony colors
-- [ ] Dashed lines are visible
-- [ ] Tooltips show dye names on hover
-- [ ] Color wheel scales correctly (160px in harmony cards)
-- [ ] SVG renders without console errors
+- [x] Color wheel renders in each harmony card
+- [x] 60-segment rainbow wheel displays
+- [x] Base color dot visible (inner circle, larger)
+- [x] Harmony color dots visible (outer ring)
+- [x] Connection lines draw from base to harmony colors
+- [x] Dashed lines are visible
+- [x] Tooltips show dye names on hover
+- [x] Color wheel scales correctly (160px in harmony cards)
+- [x] SVG renders without console errors
 
 #### C3: Dye Suggestions
-- [ ] Dyes suggest for each harmony type
-- [ ] Deviance scores display (0-10 range)
-- [ ] Lower deviance = greener indicator
-- [ ] Higher deviance = redder indicator
+- [x] Dyes suggest for each harmony type
+- [x] Deviance scores display (0-10 range)
+- [x] Lower deviance = greener indicator
+- [x] Higher deviance = redder indicator
 - [ ] Dye cards show color swatch
-- [ ] Dye names displayed correctly
-- [ ] Category shown (Red, Blue, etc.)
+  - [ ] SUGGESTION: They show up as horizontal lines, but I really think they should be small squares for improved visual clarity.
+
+- [x] Dye names displayed correctly
+- [x] Category shown (Red, Blue, etc.)
 
 #### C4: Color Matching
-- [ ] Color picker opens on click
-- [ ] Hex input accepted (#RRGGBB)
-- [ ] Color updates harmony suggestions
-- [ ] Color wheel updates with new base color
+- [x] Color picker opens on click
+- [x] Hex input accepted (#RRGGBB)
+- [x] Color updates harmony suggestions
+- [x] Color wheel updates with new base color
 
 #### C5: localStorage
-- [ ] Selected color persists on refresh
-- [ ] Harmony selections persist
-- [ ] Base color restored on page reload
+- [x] Selected color persists on refresh
+- [x] Harmony selections persist
+- [x] Base color restored on page reload
 
 ---
 
 ### Category D: Color Matcher
 
 #### D1: Image Upload Methods
-- [ ] **Drag & Drop**
-  - [ ] Drag file to drop zone
-  - [ ] Drop zone highlights on drag
-  - [ ] Image loads after drop
-  - [ ] Error shown for non-image files
-- [ ] **File Input**
-  - [ ] Click drop zone opens file picker
-  - [ ] Select image from file system
-  - [ ] Image loads after selection
-- [ ] **Clipboard Paste** ⭐ (Phase 12.6 - Theme-Aware)
-  - [ ] Ctrl+V (Cmd+V on Mac) pastes from clipboard
-  - [ ] Pasted image displays
+- [x] **Drag & Drop**
+  - [x] Drag file to drop zone
+  - [x] Drop zone highlights on drag
+  - [x] Image loads after drop
+  - [x] Error shown for non-image files
+    - [ ] There is no visual error message but a warning populates in the Console log about it.
+- [x] **File Input**
+  - [x] Click drop zone opens file picker
+  - [x] Select image from file system
+  - [x] Image loads after selection
+- [x] **Clipboard Paste** ⭐ (Phase 12.6 - Theme-Aware)
+  - [x] Ctrl+V (Cmd+V on Mac) pastes from clipboard
+  - [x] Pasted image displays
   - [ ] Toast notification shows on success
-- [ ] **Color Picker**
-  - [ ] Hex input field visible
-  - [ ] Enter valid hex color (#RRGGBB)
-  - [ ] Color updates matcher
-  - [ ] Invalid hex shows error
+    - [ ] There is no notification that an image has been pasted.
+- [x] **Color Picker**
+  - [x] OBSERVATION: The color picker UI looks customized in Chrome, while using this option in Firefox loads the Windows color picker. While I would like to use Chrome's style color picker in Firefox, I don't know if that is possible with Firefox.
+  - [x] Hex input field visible
+  - [x] Enter valid hex color (#RRGGBB)
+  - [x] Color updates matcher
+  - [x] Invalid hex shows error
 
 #### D2: Tip Text Theme Styling ⭐ (NEW - Phase 12.6 Fix)
-- [ ] Tip text visible in current theme
-- [ ] Tip text colors change when switching themes
-- [ ] Standard Light: Tip colors correct
-- [ ] Standard Dark: Tip colors contrast properly
-- [ ] All 10 themes: Tip text readable
-- [ ] Text uses CSS variables (not hardcoded colors)
+- [x] Tip text visible in current theme
+- [x] Tip text colors change when switching themes
+- [x] Standard Light: Tip colors correct
+- [x] Standard Dark: Tip colors contrast properly
+- [x] All 10 themes: Tip text readable
+- [x] Text uses CSS variables (not hardcoded colors)
 
 #### D3: Image Eyedropper
-- [ ] Eyedropper button visible
-- [ ] Click eyedropper activates tool
-- [ ] Click on image samples pixel color
-- [ ] Color updates dye matcher
-- [ ] Multiple samples work
+- [x] Eyedropper button visible
+  - [ ] This is visible on Chrome but not on Firefox. This might be a Firefox-specific limitation.
+
+- [x] Click eyedropper activates tool
+- [x] Click on image samples pixel color
+- [x] Color updates dye matcher
+- [x] Multiple samples work
 
 #### D4: Zoom Controls
+- [ ] PROBLEM: **NONE OF THESE BUTTONS EXIST IN V2.0.0!**
 - [ ] Fit button - fits image to container
 - [ ] Width button - zoom to width
 - [ ] + button - zoom in
@@ -255,119 +277,137 @@ This checklist covers comprehensive browser testing across all 4 tools and 5 cri
 - [ ] Reset button - returns to original zoom
 
 #### D5: Dye Matching Results
-- [ ] Closest dye displays at top
-- [ ] Similar dyes list below
-- [ ] Dye colors accurate
-- [ ] No Facewear dyes in results ⭐ (Phase 12.6 Fix)
-- [ ] Dye names correct
-- [ ] Category shown
+- [x] Closest dye displays at top
+- [x] Similar dyes list below
+- [x] Dye colors accurate
+- [x] No Facewear dyes in results ⭐ (Phase 12.6 Fix)
+- [x] Dye names correct
+- [x] Category shown
 
 #### D6: Error Handling
 - [ ] File size limit (10MB) enforced
   - [ ] Files > 10MB rejected
   - [ ] Error message shown
-- [ ] File type validation
-  - [ ] Non-images rejected
+  - [x] SUGGESTION: Increase this to 20MB to allow input for 4K messages
+- [x] File type validation
+  - [x] Non-images rejected
   - [ ] Error message shown
-- [ ] Missing image handled
-- [ ] Invalid hex color rejected
+    - [ ] No visual Error Message but an error populates in the browser's console.
+- [x] Missing image handled
+- [x] Invalid hex color rejected
 
 #### D7: localStorage
 - [ ] Last selected image data persists
 - [ ] Color picker value persists
+  - [ ] **NONE OF THESE TWO VALUES PERSIST**
+
 
 ---
 
 ### Category E: Dye Comparison
 
 #### E1: Chart Rendering
-- [ ] All 3 charts render (Distance Matrix, Hue-Sat, Brightness)
-- [ ] Charts display with correct dimensions
-- [ ] No rendering errors in console
-- [ ] Charts update when selecting dyes
+- [x] All 3 charts render (Distance Matrix, Hue-Sat, Brightness)
+- [x] Charts display with correct dimensions
+- [x] No rendering errors in console
+- [x] Charts update when selecting dyes
 
 #### E2: Distance Matrix
-- [ ] Displays as color-coded table
-- [ ] Green = low distance (similar)
-- [ ] Yellow = medium distance
-- [ ] Red = high distance (different)
-- [ ] All dye pairs shown
-- [ ] Distances are symmetric
+- [x] Displays as color-coded table
+- [x] Green = low distance (similar)
+- [x] Yellow = medium distance
+- [x] Red = high distance (different)
+- [x] All dye pairs shown
+- [x] Distances are symmetric
 
 #### E3: Hue-Saturation Chart
-- [ ] 2D scatter plot visible
-- [ ] All dyes plotted
-- [ ] Dye colors accurate
+- [x] 2D scatter plot visible
+- [x] All dyes plotted
+- [x] Dye colors accurate
 - [ ] Legend shows dye names
-- [ ] Chart shows all 4 quadrants
+  - [ ] Dye names are NOT shown on the chart!
+
+- [x] Chart shows all 4 quadrants
 - [ ] Responsive to theme colors
+  - [ ] Both Hue-Sat and Brightness charts remain white regardless of chosen theme.
+
 
 #### E4: Brightness Chart
 - [ ] 1D bar chart visible
-- [ ] All dyes shown
-- [ ] Heights represent brightness
-- [ ] Colors match dyes
-- [ ] Values labeled
+  - [ ] It's actually a 2D scatter chart that plots Hue vs Brightness.
+
+- [x] All dyes shown
+- [x] Heights represent brightness
+- [x] Colors match dyes
+- [x] Values labeled
 
 #### E5: Dye Selection
-- [ ] Up to 4 dyes selectable
-- [ ] Charts update dynamically
-- [ ] Remove dye updates charts
-- [ ] Charts handle 1-4 dyes correctly
+- [x] Up to 4 dyes selectable
+- [x] Charts update dynamically
+- [x] Remove dye updates charts
+- [x] Charts handle 1-4 dyes correctly
+  - [ ] SORT OF: The chart represents each color as Red (1), Green (2), Blue (3), Yellow (4). In V1.6.x, the dots were the same color as the dye they represented.
+
 
 #### E6: Export Functionality
-- [ ] Export as JSON works
-  - [ ] Valid JSON downloaded
-  - [ ] Includes dye data
-- [ ] Export as CSS works
-  - [ ] Valid CSS generated
-  - [ ] Variables named correctly
-- [ ] Copy Hex button copies all hex values
+- [x] Export as JSON works
+  - [x] Valid JSON downloaded
+  - [x] Includes dye data
+- [x] Export as CSS works
+  - [x] Valid CSS generated
+  - [x] Variables named correctly
+- [x] Copy Hex button copies all hex values
 
 #### E7: Performance
-- [ ] Charts render quickly (< 1s)
-- [ ] No lag when updating dyes
-- [ ] Memory usage reasonable
-- [ ] No console errors during rendering
+- [x] Charts render quickly (< 1s)
+- [x] No lag when updating dyes
+- [x] Memory usage reasonable
+- [x] No console errors during rendering
 
 ---
 
 ### Category F: Dye Mixer ⭐ (NEW - Phase 12.6: Save/Load)
 
 #### F1: Gradient Generation
-- [ ] Dye 1 selector works
-- [ ] Dye 2 selector works
+- [x] Dye 1 selector works
+- [x] Dye 2 selector works
 - [ ] Step count input works (3-50)
-- [ ] Color space selection works (RGB/HSV)
+  - [ ] It goes from 2 to 20.
+
+- [x] Color space selection works (RGB/HSV)
 - [ ] Generate button creates gradient
-- [ ] Gradient displays correctly
+  - [x] There is no Generate button, but the gradient generates automatically after selecting 2 dyes.
+
+- [x] Gradient displays correctly
 
 #### F2: Save Gradient Feature ⭐ (NEW)
-- [ ] "💾 Save Gradient" button visible
-- [ ] Click button prompts for gradient name
-- [ ] Gradient saves to localStorage
+- [x] "💾 Save Gradient" button visible
+- [x] Click button prompts for gradient name
+- [x] Gradient saves to localStorage
 - [ ] Toast confirms save
-- [ ] Saved gradients list updates
+- [x] Saved gradients list updates
 
 #### F3: Load Saved Gradients ⭐ (NEW)
-- [ ] "Saved Gradients" panel visible
-- [ ] Panel can be toggled open/closed
-- [ ] Saved gradients listed with names
-- [ ] Load button restores gradient
-  - [ ] Dye selection restored
-  - [ ] Step count restored
-  - [ ] Color space restored
-  - [ ] Gradient re-generates
+- [x] "Saved Gradients" panel visible
+- [x] Panel can be toggled open/closed
+- [x] Saved gradients listed with names
+- [x] Load button restores gradient
+  - [x] Dye selection restored
+  - [x] Step count restored
+  - [x] Color space restored
+  - [x] Gradient re-generates
 
 #### F4: Delete Saved Gradients ⭐ (NEW)
-- [ ] Delete button removes gradient
-- [ ] Confirmation dialog appears
-- [ ] Gradient removed from list
-- [ ] localStorage updated
+- [x] Delete button removes gradient
+- [x] Confirmation dialog appears
+- [x] Gradient removed from list
+- [x] localStorage updated
 
 #### F5: Copy Share URL ⭐ (NEW)
-- [ ] "🔗 Copy Share URL" button visible
+- [x] "🔗 Copy Share URL" button visible
 - [ ] Click button copies URL
+  - [ ] **THIS BUTTON DOES NOTHING!**
+
 - [ ] Toast confirms copy
 - [ ] URL encodes all settings
 - [ ] URL can be shared
@@ -383,11 +423,11 @@ This checklist covers comprehensive browser testing across all 4 tools and 5 cri
 ## 🎯 Test Execution
 
 ### Pre-Test Checklist
-- [ ] Development server running: `npm run dev`
-- [ ] Production build tested: `npm run build` → `npm run preview`
-- [ ] All dependencies installed: `npm install`
-- [ ] Browser dev tools open (F12) for console checking
-- [ ] localhost:5173 accessible
+- [x] Development server running: `npm run dev`
+- [x] Production build tested: `npm run build` → `npm run preview`
+- [x] All dependencies installed: `npm install`
+- [x] Browser dev tools open (F12) for console checking
+- [x] localhost:5173 accessible
 
 ### Testing Process
 

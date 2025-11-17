@@ -89,8 +89,8 @@ export class ColorWheelDisplay extends BaseComponent {
       const baseAngle = (baseHue - 90) * (Math.PI / 180);
       const harmonyAngle = (harmonyHue - 90) * (Math.PI / 180);
 
-      const x1 = this.wheelCenter + (this.wheelRadius * 0.4) * Math.cos(baseAngle);
-      const y1 = this.wheelCenter + (this.wheelRadius * 0.4) * Math.sin(baseAngle);
+      const x1 = this.wheelCenter + this.wheelRadius * 0.4 * Math.cos(baseAngle);
+      const y1 = this.wheelCenter + this.wheelRadius * 0.4 * Math.sin(baseAngle);
       const x2 = this.wheelCenter + this.wheelRadius * Math.cos(harmonyAngle);
       const y2 = this.wheelCenter + this.wheelRadius * Math.sin(harmonyAngle);
 

@@ -416,7 +416,10 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     // Vision types to display
-    const visionTypes: Array<{ key: keyof typeof result.colorblindnessSimulations; label: string }> = [
+    const visionTypes: Array<{
+      key: keyof typeof result.colorblindnessSimulations;
+      label: string;
+    }> = [
       { key: 'normal', label: 'Normal' },
       { key: 'deuteranopia', label: 'Deuteranopia' },
       { key: 'protanopia', label: 'Protanopia' },

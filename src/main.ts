@@ -24,6 +24,8 @@ import {
   DyeMixerTool,
   AccessibilityCheckerTool,
   ColorMatcherTool,
+  MobileBottomNav,
+  type MobileToolDef,
 } from '@components/index';
 
 /**
@@ -112,15 +114,16 @@ async function initializeApp(): Promise<void> {
       },
     ];
 
-    // Create tool navigation
+    // Create tool navigation (desktop only)
     const navContainer = document.createElement('div');
-    navContainer.className = 'border-b border-gray-200 dark:border-gray-700 mb-6';
+    navContainer.className = 'hidden md:block border-b border-gray-200 dark:border-gray-700 mb-6';
 
     const toolButtonsContainer = document.createElement('div');
     toolButtonsContainer.className = 'flex flex-wrap gap-2 pb-4';
 
     let currentTool: InstanceType<typeof BaseComponent> | null = null;
     let currentToolContainer: HTMLElement | null = null;
+    let mobileNav: MobileBottomNav | null = null;
 
     const loadTool = (toolId: string): void => {
       // Clean up current tool
@@ -176,6 +179,11 @@ async function initializeApp(): Promise<void> {
         }
       });
 
+      // Update mobile nav active state if it exists
+      if (mobileNav) {
+        mobileNav.setActiveToolId(toolId);
+      }
+
       console.info(`📌 Loaded tool: ${toolDef.name}`);
     };
 
@@ -198,6 +206,37 @@ async function initializeApp(): Promise<void> {
 
     navContainer.appendChild(toolButtonsContainer);
     contentContainer.appendChild(navContainer);
+
+    // Create mobile bottom navigation
+    const mobileNavContainer = document.createElement('div');
+    const mobileNavTools: MobileToolDef[] = tools.map((t) => ({
+      id: t.id,
+      name: t.name,
+      icon: t.icon,
+      description: t.description,
+    }));
+    mobileNav = new MobileBottomNav(mobileNavContainer, mobileNavTools);
+    mobileNav.init();
+    contentContainer.appendChild(mobileNavContainer);
+
+    // Listen for mobile nav tool selection
+    mobileNavContainer.addEventListener('tool-selected', (e: Event) => {
+      const customEvent = e as CustomEvent<{ toolId: string }>;
+      void loadTool(customEvent.detail.toolId);
+    });
+
+    // Add bottom padding to content on mobile to account for fixed bottom nav
+    const updateContentPadding = (): void => {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        contentContainer!.style.paddingBottom = '4rem'; // h-16 = 4rem
+      } else {
+        contentContainer!.style.paddingBottom = '0';
+      }
+    };
+
+    updateContentPadding();
+    window.addEventListener('resize', updateContentPadding);
 
     // Load the default tool (harmony)
     void loadTool('harmony');

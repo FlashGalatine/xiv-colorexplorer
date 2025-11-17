@@ -214,8 +214,7 @@ export class DyeMixerTool extends BaseComponent {
 
     // Quick Actions section
     const actionsSection = this.createElement('div', {
-      className:
-        'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
+      className: 'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
     });
 
     const actionsTitle = this.createElement('h3', {
@@ -252,8 +251,7 @@ export class DyeMixerTool extends BaseComponent {
 
     // Saved Gradients section
     const savedSection = this.createElement('div', {
-      className:
-        'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
+      className: 'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
     });
 
     const savedHeader = this.createElement('div', {
@@ -539,7 +537,7 @@ export class DyeMixerTool extends BaseComponent {
     try {
       const savedGradients = JSON.parse(
         localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
-      ) as typeof gradient[];
+      ) as (typeof gradient)[];
       savedGradients.push(gradient);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
       console.info(`✓ Gradient "${gradientName}" saved!`);
@@ -672,8 +670,7 @@ export class DyeMixerTool extends BaseComponent {
 
         const deleteBtn = this.createElement('button', {
           textContent: '🗑️ Delete',
-          className:
-            'px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition',
+          className: 'px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition',
         });
         deleteBtn.addEventListener('click', () => this.deleteSavedGradient(i));
 

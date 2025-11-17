@@ -93,7 +93,8 @@ export class DyeSelector extends BaseComponent {
 
       const allBtn = this.createElement('button', {
         textContent: 'All',
-        className: 'px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
+        className:
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
         attributes: {
           'data-category': 'all',
         },
@@ -120,7 +121,14 @@ export class DyeSelector extends BaseComponent {
         // Highlight Neutral category by default
         if (category === 'Neutral') {
           categoryBtn.classList.add('bg-blue-500', 'text-white');
-          categoryBtn.classList.remove('border-gray-300', 'dark:border-gray-600', 'text-gray-700', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+          categoryBtn.classList.remove(
+            'border-gray-300',
+            'dark:border-gray-600',
+            'text-gray-700',
+            'dark:text-gray-300',
+            'hover:bg-gray-100',
+            'dark:hover:bg-gray-700'
+          );
         }
 
         categoryContainer.appendChild(categoryBtn);

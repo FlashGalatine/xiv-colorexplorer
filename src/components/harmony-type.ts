@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { ColorWheelDisplay } from './color-wheel-display';
 import type { Dye } from '@shared/types';
 
 /**
@@ -69,6 +70,23 @@ export class HarmonyType extends BaseComponent {
       });
       content.appendChild(emptyState);
     } else {
+      // Color wheel visualization
+      const wheelContainer = this.createElement('div', {
+        className: 'flex justify-center py-3 border-b border-gray-200 dark:border-gray-700',
+      });
+
+      const matchedDyesOnly = this.matchedDyes.map(({ dye }) => dye);
+      const colorWheel = new ColorWheelDisplay(
+        wheelContainer,
+        this.baseColor,
+        matchedDyesOnly,
+        this.harmonyInfo.id,
+        160
+      );
+      colorWheel.init();
+
+      content.appendChild(wheelContainer);
+
       // Dye list
       const dyeList = this.createElement('div', {
         className: 'space-y-2 max-h-64 overflow-y-auto',
