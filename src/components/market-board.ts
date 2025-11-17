@@ -64,21 +64,21 @@ export class MarketBoard extends BaseComponent {
    */
   async loadServerData(): Promise<void> {
     try {
-      // Fetch JSON files from assets directory
+      // Fetch JSON files from public directory (served from root by Vite)
       const [dcResponse, worldsResponse] = await Promise.all([
-        fetch('../assets/json/data-centers.json'),
-        fetch('../assets/json/worlds.json'),
+        fetch('/json/data-centers.json'),
+        fetch('/json/worlds.json'),
       ]);
 
       if (!dcResponse.ok || !worldsResponse.ok) {
-        throw new Error('Failed to load server data');
+        throw new Error(`Failed to load server data: ${dcResponse.status}, ${worldsResponse.status}`);
       }
 
       this.dataCenters = await dcResponse.json();
       this.worlds = await worldsResponse.json();
 
-      console.log('Loaded data centers:', this.dataCenters.length);
-      console.log('Loaded worlds:', this.worlds.length);
+      console.log('✓ Loaded data centers:', this.dataCenters.length);
+      console.log('✓ Loaded worlds:', this.worlds.length);
 
       // Re-populate server dropdown after data loads
       const serverSelect = this.querySelector<HTMLSelectElement>('#mb-server-select');
