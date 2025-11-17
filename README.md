@@ -1,6 +1,10 @@
-# XIV Dye Tools
+# XIV Dye Tools v2.0.0
+
+**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 16, 2025
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
+
+> **v2.0.0 Release Notes**: This is a complete TypeScript/Vite refactor with modern architecture, 140+ unit tests, and type-safe code. All v1.6.x features work identically. See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -11,7 +15,7 @@ A comprehensive web-based toolset for Final Fantasy XIV players to explore dye c
 
 ## Features
 
-### 🎨 Dye Mixer (v1.6.1)
+### 🎨 Dye Mixer (v2.0.0)
 Find smooth color transitions between any two FFXIV dyes using HSV color space interpolation. Perfect for decorators and interior designers discovering bridge colors for housing projects.
 
 **Core Features:**
@@ -45,7 +49,7 @@ Find smooth color transitions between any two FFXIV dyes using HSV color space i
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **XSS Protection** - HTML escaping for safety in dynamic content
 
-### ♿ Color Accessibility Checker (v1.6.1)
+### ♿ Color Accessibility Checker (v2.0.0)
 Simulate how FFXIV dyes appear to players with colorblindness and ensure your glamour is accessible to everyone:
 
 > **⚠ BETA Notice:** This tool uses scientific colorblindness simulation algorithms (Brettel 1997), but has not been validated with actual colorblind players. We recommend testing with real users for critical designs. Feedback from users with colorblindness experience is greatly appreciated!
@@ -74,7 +78,7 @@ Simulate how FFXIV dyes appear to players with colorblindness and ensure your gl
 - **One-Click Replacement** - Replace problematic dyes with suggestions and watch the issue count update automatically
 - **Hue-Saturation Matching** - Finds similar dyes based on color space to preserve intended color scheme
 
-### 🎨 Color Harmony Explorer (v1.6.1)
+### 🎨 Color Harmony Explorer (v2.0.0)
 Generate color harmonies based on FFXIV's dye palette using established color theory principles:
 - **Complementary** - Colors opposite on the color wheel
 - **Analogous** - Colors adjacent on the color wheel
@@ -91,7 +95,7 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v1.6.1)
+### 🔍 Color Matcher (v2.0.0)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
 **New in v1.3.0:**
@@ -147,7 +151,7 @@ Upload an image or pick a color to find the closest matching FFXIV dye with an i
 - **Exclude Metallic Dyes** - Optional checkbox to remove metallic finishes from results
 - **Exclude Pure White & Jet Black** - Optional checkbox (default: OFF) for extreme colors
 
-### ⚖️ Dye Comparison (v1.6.1)
+### ⚖️ Dye Comparison (v2.0.0)
 Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Core Comparison Features:**
@@ -298,11 +302,11 @@ That's it! No installation or build process needed.
 1. **Clone the repository** (see instructions above in "Cloning the Repository" section)
 2. **Open the tools**: Open `index.html` in your browser to access the XIV Dye Tools portal
 3. **Access all tools** from the portal:
-   - Color Accessibility Checker (v1.6.1)
-   - Color Harmony Explorer (v1.6.1)
-   - Color Matcher (v1.6.1)
-   - Dye Comparison (v1.6.1)
-   - Dye Mixer (v1.6.1)
+   - Color Accessibility Checker (v2.0.0)
+   - Color Harmony Explorer (v2.0.0)
+   - Color Matcher (v2.0.0)
+   - Dye Comparison (v2.0.0)
+   - Dye Mixer (v2.0.0)
 4. **Develop new features**:
    - Edit `*_experimental.html` files for testing new features
    - Thoroughly test in all browsers, themes, and responsive sizes
