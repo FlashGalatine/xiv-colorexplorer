@@ -92,11 +92,17 @@ export class ImageUploadDisplay extends BaseComponent {
     });
     wrapper.appendChild(info);
 
-    // Keyboard shortcut hint
+    // Keyboard shortcut hint (theme-aware)
     const shortcut = this.createElement('div', {
       textContent: '💡 Tip: Paste an image using Ctrl+V (Cmd+V on Mac)',
-      className:
-        'p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
+      className: 'p-2 rounded text-xs border',
+      attributes: {
+        style: `
+          background-color: color-mix(in srgb, var(--theme-primary) 10%, var(--theme-background));
+          color: var(--theme-primary);
+          border-color: color-mix(in srgb, var(--theme-primary) 30%, var(--theme-border));
+        `,
+      },
     });
     wrapper.appendChild(shortcut);
 
