@@ -35,3 +35,4 @@ export { ColorPickerDisplay } from './color-picker-display';
 export { ColorMatcherTool } from './color-matcher-tool';
 export { ColorWheelDisplay } from './color-wheel-display';
 export { MobileBottomNav, type MobileToolDef } from './mobile-bottom-nav';
+export { ToolsDropdown, type ToolDef } from './tools-dropdown';

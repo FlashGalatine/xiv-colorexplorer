@@ -26,12 +26,18 @@ import {
   ColorMatcherTool,
   MobileBottomNav,
   type MobileToolDef,
+  ToolsDropdown,
+  type ToolDef,
 } from '@components/index';
 
 /**
  * Initialize the application
  */
 async function initializeApp(): Promise<void> {
+  // Declare variables that will be used in the app
+  let mobileNav: MobileBottomNav | null = null;
+  let toolsDropdownInstance: ToolsDropdown | null = null;
+
   try {
     // Log startup info
     console.info('🚀 XIV Dye Tools v2.0.0');
@@ -65,6 +71,12 @@ async function initializeApp(): Promise<void> {
     const contentContainer = appLayout.getContentContainer();
     if (!contentContainer) {
       throw new Error('Content container not found');
+    }
+
+    // Initialize tools dropdown in header (desktop navigation)
+    const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
+    if (!toolsDropdownContainer) {
+      throw new Error('Tools dropdown container not found');
     }
 
     // Define available tools
@@ -114,6 +126,22 @@ async function initializeApp(): Promise<void> {
       },
     ];
 
+    // Create tools dropdown for header (desktop only)
+    const toolsDropdownDefs: ToolDef[] = tools.map((t) => ({
+      id: t.id,
+      name: t.name,
+      icon: t.icon,
+      description: t.description,
+    }));
+    toolsDropdownInstance = new ToolsDropdown(toolsDropdownContainer, toolsDropdownDefs);
+    toolsDropdownInstance.init();
+
+    // Listen for tools dropdown selection
+    toolsDropdownContainer.addEventListener('tool-selected', (e: Event) => {
+      const customEvent = e as CustomEvent<{ toolId: string }>;
+      void loadTool(customEvent.detail.toolId);
+    });
+
     // Create tool navigation (desktop only)
     const navContainer = document.createElement('div');
     navContainer.className = 'hidden md:block border-b border-gray-200 dark:border-gray-700 mb-6';
@@ -123,7 +151,6 @@ async function initializeApp(): Promise<void> {
 
     let currentTool: InstanceType<typeof BaseComponent> | null = null;
     let currentToolContainer: HTMLElement | null = null;
-    let mobileNav: MobileBottomNav | null = null;
 
     const loadTool = (toolId: string): void => {
       // Clean up current tool

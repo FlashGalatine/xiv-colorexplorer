@@ -78,15 +78,20 @@ export class AppLayout extends BaseComponent {
     titleDiv.appendChild(title);
     titleDiv.appendChild(version);
 
-    // Right side: Theme switcher
+    // Right side: Tools dropdown + Theme switcher
     const rightContainer = this.createElement('div', {
       className: 'flex items-center gap-4',
+    });
+
+    const toolsDropdownContainer = this.createElement('div', {
+      id: 'tools-dropdown-container',
     });
 
     const themeSwitcherContainer = this.createElement('div', {
       id: 'theme-switcher-container',
     });
 
+    rightContainer.appendChild(toolsDropdownContainer);
     rightContainer.appendChild(themeSwitcherContainer);
     nav.appendChild(titleDiv);
     nav.appendChild(rightContainer);
