@@ -136,6 +136,7 @@ export class DyeSelector extends BaseComponent {
       });
 
       const selectedLabel = this.createElement('div', {
+        id: 'selected-dyes-label',
         textContent: `Selected: ${this.selectedDyes.length}/${this.options.maxSelections}`,
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2',
       });
@@ -445,6 +446,12 @@ export class DyeSelector extends BaseComponent {
       // Update selected dyes display only
       const selectedList = this.querySelector<HTMLElement>('#selected-dyes-list');
       if (selectedList && this.options.allowMultiple) {
+        // Update the counter label
+        const selectedLabel = this.querySelector<HTMLElement>('#selected-dyes-label');
+        if (selectedLabel) {
+          selectedLabel.textContent = `Selected: ${this.selectedDyes.length}/${this.options.maxSelections}`;
+        }
+
         selectedList.innerHTML = '';
 
         for (const dye of this.selectedDyes) {
