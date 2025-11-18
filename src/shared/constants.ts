@@ -172,6 +172,7 @@ export const STORAGE_KEYS = {
   PRICE_CACHE: `${STORAGE_PREFIX}_price_cache`,
   SAVED_PALETTES: `${STORAGE_PREFIX}_saved_palettes`,
   HARMONY_FILTERS: `${STORAGE_PREFIX}_harmony_filters`,
+  HARMONY_SUGGESTIONS_MODE: `${STORAGE_PREFIX}_harmony_suggestions_mode`,
 } as const;
 
 // ============================================================================

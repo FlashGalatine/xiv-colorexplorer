@@ -26,6 +26,11 @@ interface DyeFilterConfig {
 }
 
 /**
+ * Suggestions mode type
+ */
+type SuggestionsMode = 'simple' | 'expanded';
+
+/**
  * Harmony types with their descriptions
  */
 const HARMONY_TYPES: HarmonyTypeInfo[] = [
@@ -106,6 +111,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private filtersExpanded: boolean = false;
   private filterToggleButton: HTMLElement | null = null;
   private filterCheckboxesContainer: HTMLElement | null = null;
+  private suggestionsMode: SuggestionsMode = 'simple';
+  private suggestionsModeRadios: Map<SuggestionsMode, HTMLInputElement> = new Map();
 
   /**
    * Render the tool component
@@ -378,6 +385,88 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
     section.appendChild(divider);
 
+    // Suggestions Mode section
+    const suggestionsSection = this.createElement('div', {
+      className: 'space-y-3',
+    });
+
+    const suggestionsLabel = this.createElement('label', {
+      textContent: 'Suggestion Mode',
+      className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
+    });
+    suggestionsSection.appendChild(suggestionsLabel);
+
+    // Radio buttons for suggestions mode
+    const suggestionsContainer = this.createElement('div', {
+      className: 'space-y-2',
+    });
+
+    const modes: Array<{ value: SuggestionsMode; label: string; description: string }> = [
+      {
+        value: 'simple',
+        label: 'Simple Suggestions',
+        description: 'Strict harmony with precise dye matching',
+      },
+      {
+        value: 'expanded',
+        label: 'Expanded Suggestions',
+        description: 'Simple mode + additional similar dyes per harmony color',
+      },
+    ];
+
+    for (const mode of modes) {
+      const radioDiv = this.createElement('div', {
+        className: 'flex items-start gap-3',
+      });
+
+      const radio = this.createElement('input', {
+        attributes: {
+          type: 'radio',
+          name: 'suggestions-mode',
+          value: mode.value,
+          id: `mode-${mode.value}`,
+        },
+        className:
+          'mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer',
+      });
+
+      const labelElement = this.createElement('label', {
+        attributes: {
+          for: `mode-${mode.value}`,
+        },
+        className: 'cursor-pointer flex-1',
+      });
+
+      const labelText = this.createElement('div', {
+        textContent: mode.label,
+        className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
+      });
+
+      const descText = this.createElement('div', {
+        textContent: mode.description,
+        className: 'text-xs text-gray-500 dark:text-gray-400',
+      });
+
+      labelElement.appendChild(labelText);
+      labelElement.appendChild(descText);
+
+      radioDiv.appendChild(radio);
+      radioDiv.appendChild(labelElement);
+      suggestionsContainer.appendChild(radioDiv);
+
+      // Store radio reference
+      this.suggestionsModeRadios.set(mode.value, radio);
+    }
+
+    suggestionsSection.appendChild(suggestionsContainer);
+    section.appendChild(suggestionsSection);
+
+    // Divider 2
+    const divider2 = this.createElement('div', {
+      className: 'border-t border-gray-200 dark:border-gray-700',
+    });
+    section.appendChild(divider2);
+
     // Market Board container
     const marketBoardContainer = this.createElement('div', {
       id: 'market-board-container',
@@ -511,6 +600,15 @@ export class HarmonyGeneratorTool extends BaseComponent {
         this.generateHarmonies();
       });
     }
+
+    // Initialize suggestions mode radio buttons and load saved state
+    this.loadSuggestionsMode();
+    for (const [_mode, radio] of this.suggestionsModeRadios) {
+      this.on(radio, 'change', () => {
+        this.updateSuggestionsMode();
+        this.generateHarmonies();
+      });
+    }
   }
 
   /**
@@ -594,6 +692,36 @@ export class HarmonyGeneratorTool extends BaseComponent {
   }
 
   /**
+   * Load suggestions mode from localStorage
+   */
+  private loadSuggestionsMode(): void {
+    const saved = appStorage.getItem<SuggestionsMode>(
+      STORAGE_KEYS.HARMONY_SUGGESTIONS_MODE,
+      'simple'
+    ) as SuggestionsMode;
+    this.suggestionsMode = saved || 'simple';
+
+    // Update radio button to reflect saved state
+    const radio = this.suggestionsModeRadios.get(this.suggestionsMode);
+    if (radio) {
+      radio.checked = true;
+    }
+  }
+
+  /**
+   * Update suggestions mode from radio buttons and save to localStorage
+   */
+  private updateSuggestionsMode(): void {
+    for (const [mode, radio] of this.suggestionsModeRadios) {
+      if (radio.checked) {
+        this.suggestionsMode = mode;
+        break;
+      }
+    }
+    appStorage.setItem(STORAGE_KEYS.HARMONY_SUGGESTIONS_MODE, this.suggestionsMode);
+  }
+
+  /**
    * Apply dye filters to matched dyes
    */
   private applyDyeFilters(
@@ -641,6 +769,93 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Update all displays with new price data
     this.updateAllDisplays();
+  }
+
+  /**
+   * Get the dye limit count for a harmony type in Simple mode
+   */
+  private getSimpleModeLimit(harmonyId: string): number {
+    switch (harmonyId) {
+      case 'complementary':
+        return 2; // base + 1 complementary
+      case 'analogous':
+        return 3; // base + 2 analogous
+      case 'triadic':
+        return 3; // base + 2 triadic
+      case 'split-complementary':
+        return 3; // base + 2 split-complementary
+      case 'tetradic':
+        return 4; // base + 3 others
+      case 'square':
+        return 4; // base + 3 others
+      case 'monochromatic':
+        return 3; // base + 2 monochromatic
+      case 'compound':
+        return 4; // base + 3 compound
+      case 'shades':
+        return 3; // base + 2 shades
+      default:
+        return 6; // fallback
+    }
+  }
+
+  /**
+   * Apply suggestions mode logic to dyes
+   */
+  private applySuggestionsMode(
+    harmonyId: string,
+    matchedDyes: Array<{ dye: Dye; deviance: number }>
+  ): Array<{ dye: Dye; deviance: number }> {
+    // Sort by deviance (lower is better)
+    matchedDyes = matchedDyes.sort((a, b) => a.deviance - b.deviance);
+
+    if (this.suggestionsMode === 'simple') {
+      // Simple mode: limit to exact counts per harmony type
+      const limit = this.getSimpleModeLimit(harmonyId);
+      return matchedDyes.slice(0, limit);
+    } else {
+      // Expanded mode: start with Simple limits, then add similar dyes
+      const simpleLimit = this.getSimpleModeLimit(harmonyId);
+      const simpleDyes = matchedDyes.slice(0, simpleLimit);
+
+      // For each dye (except base), find one additional similar dye
+      const allDyes = DyeService.getInstance().getAllDyes();
+      const usedDyeIds = new Set(simpleDyes.map((d) => d.dye.itemID));
+      const expandedDyes = [...simpleDyes];
+
+      // For each harmony dye (skip base at index 0), add an additional similar dye
+      for (let i = 1; i < simpleDyes.length; i++) {
+        const harmonyDye = simpleDyes[i].dye;
+        const targetColor = harmonyDye.hex;
+
+        // Find the closest dye to this harmony dye (that we haven't used)
+        let closestDye: Dye | null = null;
+        let closestDistance = Infinity;
+
+        for (const dye of allDyes) {
+          if (usedDyeIds.has(dye.itemID) || dye.category === 'Facewear') {
+            continue;
+          }
+
+          const distance = ColorService.getColorDistance(targetColor, dye.hex);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestDye = dye;
+          }
+        }
+
+        // Add the similar dye if found
+        if (closestDye) {
+          usedDyeIds.add(closestDye.itemID);
+          expandedDyes.push({
+            dye: closestDye,
+            deviance: ColorService.getColorDistance(harmonyDye.hex, closestDye.hex) / 44.17,
+          });
+        }
+      }
+
+      return expandedDyes;
+    }
   }
 
   /**
@@ -763,8 +978,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
       // Apply user-selected dye filters
       matchedDyes = this.applyDyeFilters(matchedDyes);
 
-      // Sort by deviance (lower is better) and limit to top 6 results
-      matchedDyes = matchedDyes.sort((a, b) => a.deviance - b.deviance).slice(0, 6);
+      // Apply suggestions mode (Simple or Expanded)
+      matchedDyes = this.applySuggestionsMode(harmony.id, matchedDyes);
 
       // Create or update harmony display
       if (!this.harmonyDisplays.has(harmony.id)) {
