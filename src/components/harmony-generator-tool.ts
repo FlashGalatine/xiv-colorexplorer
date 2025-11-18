@@ -452,8 +452,38 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
           case 'square': {
             // Implement square: four colors at 90° intervals
-            const triadic = dyeService.findTriadicDyes(this.baseColor);
-            matchedDyes = triadic.map((dye) => ({
+            const square = dyeService.findSquareDyes(this.baseColor);
+            matchedDyes = square.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'monochromatic': {
+            // Implement monochromatic: same hue, varying saturation/brightness
+            const monochromatic = dyeService.findMonochromaticDyes(this.baseColor);
+            matchedDyes = monochromatic.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'compound': {
+            // Implement compound: analogous + complementary (±30°, +180°)
+            const compound = dyeService.findCompoundDyes(this.baseColor);
+            matchedDyes = compound.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'shades': {
+            // Implement shades: similar tones (±15°)
+            const shades = dyeService.findShadesDyes(this.baseColor);
+            matchedDyes = shades.map((dye) => ({
               dye,
               deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
             }));

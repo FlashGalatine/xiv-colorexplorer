@@ -410,6 +410,107 @@ export class DyeService {
     return results;
   }
 
+  /**
+   * Find square color scheme (colors 90° apart on color wheel)
+   */
+  findSquareDyes(hex: string): Dye[] {
+    this.ensureLoaded();
+
+    const baseDye = this.findClosestDye(hex);
+    if (!baseDye) return [];
+
+    const baseHue = baseDye.hsv.h;
+    const secondHue = (baseHue + 90) % 360;
+    const thirdHue = (baseHue + 180) % 360;
+    const fourthHue = (baseHue + 270) % 360;
+
+    const findByHueRange = (hue: number, tolerance: number = 30): Dye | null => {
+      let closest: Dye | null = null;
+      let minDiff = Infinity;
+
+      for (const dye of this.dyes) {
+        const diff = Math.min(Math.abs(dye.hsv.h - hue), 360 - Math.abs(dye.hsv.h - hue));
+
+        if (diff <= tolerance && diff < minDiff) {
+          minDiff = diff;
+          closest = dye;
+        }
+      }
+
+      return closest;
+    };
+
+    // Square harmony returns the three companion colors at 90°, 180°, 270°
+    const results: Dye[] = [];
+    const second = findByHueRange(secondHue);
+    if (second) results.push(second);
+    const third = findByHueRange(thirdHue);
+    if (third) results.push(third);
+    const fourth = findByHueRange(fourthHue);
+    if (fourth) results.push(fourth);
+
+    return results;
+  }
+
+  /**
+   * Find monochromatic dyes (same hue, varying saturation/brightness)
+   */
+  findMonochromaticDyes(hex: string, limit: number = 6): Dye[] {
+    this.ensureLoaded();
+
+    const baseDye = this.findClosestDye(hex);
+    if (!baseDye) return [];
+
+    const baseHue = baseDye.hsv.h;
+    const results: Array<{ dye: Dye; satValDiff: number }> = [];
+
+    // Find dyes with similar hue but different saturation/value
+    for (const dye of this.dyes) {
+      const hueDiff = Math.min(Math.abs(dye.hsv.h - baseHue), 360 - Math.abs(dye.hsv.h - baseHue));
+
+      // Hue must be very close (within ±15°)
+      if (hueDiff <= 15 && dye.id !== baseDye.id) {
+        // Calculate difference in saturation and value
+        const satDiff = Math.abs(dye.hsv.s - baseDye.hsv.s);
+        const valDiff = Math.abs(dye.hsv.v - baseDye.hsv.v);
+        const satValDiff = satDiff + valDiff;
+
+        results.push({ dye, satValDiff });
+      }
+    }
+
+    // Sort by saturation/value difference (prefer more variety)
+    results.sort((a, b) => b.satValDiff - a.satValDiff);
+
+    return results.slice(0, limit).map((item) => item.dye);
+  }
+
+  /**
+   * Find compound harmony (analogous + complementary)
+   */
+  findCompoundDyes(hex: string): Dye[] {
+    this.ensureLoaded();
+
+    const analogous = this.findAnalogousDyes(hex, 30);
+    const complementary = this.findComplementaryPair(hex);
+
+    const results: Dye[] = [...analogous];
+    if (complementary) {
+      results.push(complementary);
+    }
+
+    return results;
+  }
+
+  /**
+   * Find shades (similar tones, ±15°)
+   */
+  findShadesDyes(hex: string): Dye[] {
+    this.ensureLoaded();
+
+    return this.findAnalogousDyes(hex, 15);
+  }
+
   // ============================================================================
   // Helper Methods
   // ============================================================================

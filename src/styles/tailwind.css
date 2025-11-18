@@ -5,9 +5,9 @@
  * This file is generated/populated during the build process
  */
 
+/* Import global styles (must precede @tailwind directives) */
+@import './globals.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import global styles */
-@import './globals.css';
