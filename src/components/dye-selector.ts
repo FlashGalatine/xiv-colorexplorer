@@ -202,8 +202,6 @@ export class DyeSelector extends BaseComponent {
 
     this.filteredDyes = this.getFilteredDyes();
 
-    console.info(`🎨 DyeSelector render: Creating ${this.filteredDyes.length} dye buttons`);
-
     for (const dye of this.filteredDyes) {
       const dyeCard = this.createElement('button', {
         className:
@@ -275,11 +273,6 @@ export class DyeSelector extends BaseComponent {
     // Find clear button by ID (fixed: was incorrectly using nth-of-type which selected category buttons instead)
     const clearBtn = this.querySelector<HTMLButtonElement>('#dye-selector-clear-btn');
     const categoryButtons = this.querySelectorAll<HTMLButtonElement>('[data-category]');
-    const dyeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
-
-    console.info(
-      `🎨 DyeSelector bindEvents: Found ${categoryButtons.length} categories, ${dyeButtons.length} dyes, clearBtn=${!!clearBtn}`
-    );
 
     // Search functionality
     if (searchInput) {
@@ -352,13 +345,8 @@ export class DyeSelector extends BaseComponent {
         }
 
         const dyeIdAttr = target.getAttribute('data-dye-id');
-        console.info(`🎨 DyeSelector: Button clicked, data-dye-id attribute: "${dyeIdAttr}"`);
         const dyeId = parseInt(dyeIdAttr || '0', 10);
         const dye = DyeService.getInstance().getDyeById(dyeId);
-
-        console.info(
-          `🎨 DyeSelector: Clicked dye ID ${dyeId}, found dye: ${dye?.name || 'NOT FOUND'}`
-        );
 
         if (!dye) return;
 
@@ -367,30 +355,24 @@ export class DyeSelector extends BaseComponent {
             // Allow duplicates - just push if under limit
             if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
               this.selectedDyes.push(dye);
-              console.info(`🎨 DyeSelector: Selected ${dye.name} (allowing duplicates)`);
             }
           } else {
             // Toggle selection (prevent duplicates)
             const index = this.selectedDyes.findIndex((d) => d.id === dyeId);
             if (index >= 0) {
               this.selectedDyes.splice(index, 1);
-              console.info(`🎨 DyeSelector: Deselected ${dye.name}`);
             } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
               this.selectedDyes.push(dye);
-              console.info(`🎨 DyeSelector: Selected ${dye.name}`);
             }
           }
         } else {
           // Single selection
           this.selectedDyes = [dye];
-          console.info(`🎨 DyeSelector: Selected ${dye.name} (single)`);
         }
 
         this.update();
         this.emit('selection-changed', { selectedDyes: this.selectedDyes });
       });
-
-      console.info(`🎨 DyeSelector: Event delegation attached to dye list container`);
     }
 
     // Remove selected dye buttons
@@ -485,8 +467,6 @@ export class DyeSelector extends BaseComponent {
         dyeListContainer.innerHTML = '';
 
         this.filteredDyes = this.getFilteredDyes();
-
-        console.info(`🎨 DyeSelector update: Rendering ${this.filteredDyes.length} filtered dyes`);
 
         for (const dye of this.filteredDyes) {
           const dyeCard = this.createElement('button', {
@@ -604,7 +584,7 @@ export class DyeSelector extends BaseComponent {
 
     // Filter by search query
     if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase();
+      const query = this.searchQuery.trim().toLowerCase(); // Trim before filtering
       dyes = dyes.filter((d) => d.name.toLowerCase().includes(query));
     }
 

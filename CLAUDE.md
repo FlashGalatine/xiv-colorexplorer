@@ -216,268 +216,224 @@ npm run preview   # ✓ Preview runs without errors
 3. Responsive: Test at 375px, 768px, 1024px viewport sizes
 4. DevTools Console: Should show 0 errors, 0 warnings
 
-### Phase 9.5: Mobile Navigation Strategy (Current)
+### Responsive Design & Mobile Navigation (v2.0.0)
 
-**Important Update (2025-11-16)**: Mobile navigation has been optimized with synchronized breakpoints and responsive design.
-
-**Navigation Strategy Overview**:
+**Navigation Strategy**:
 - **Mobile Devices (≤768px)**: Bottom navigation bar visible, Tools dropdown hidden
 - **Tablet/Desktop (>768px)**: Tools dropdown visible in header, bottom nav hidden
-- **Perfect Breakpoint Alignment**: Both systems use 768px breakpoint for zero navigation redundancy
+- **Breakpoint**: 768px synchronized across all components
 
-**Key Improvements**:
+**Key Implementation Details**:
 
-1. **Breakpoint Synchronization**
-   - Tools dropdown hides at `max-width: 768px` using `display: none !important;`
-   - Bottom nav shows for all screens ≤768px
-   - Prevents overlapping navigation controls
-   - Users see exactly one navigation system at any viewport size
+1. **Component-Based Navigation**
+   - `<mobile-bottom-nav>` - Mobile navigation component (Lit)
+   - `<tools-dropdown>` - Desktop navigation component (Lit)
+   - `<theme-switcher>` - Theme selection UI (Lit)
+   - All use CSS custom properties for theme-aware styling
 
-2. **CSS Specificity Handling**
-   - Global CSS rules (shared-styles.css) can override media queries
-   - Solution: Add `!important` flag to force responsive behavior
-   - Example: `.nav-dropdown { display: none !important; }` at 768px breakpoint
+2. **Responsive Breakpoint Management**
+   - Tailwind breakpoints: `sm:`, `md:`, `lg:` classes control visibility
+   - Components render conditionally based on viewport width
+   - No duplicate navigation controls at any screen size
 
-3. **Fixed Positioning Strategy**
-   - Theme button and Tools dropdown both use `position: fixed` on all screen sizes
-   - Keep fixed on mobile instead of switching to static positioning
-   - Maintains top-right corner placement across all devices
-   - Adjust only spacing values (padding, gap) for mobile: 0.5rem instead of 1rem
+3. **Theme Integration**
+   - All navigation components respect `var(--theme-*)` variables
+   - Theme changes apply immediately without page refresh
+   - ThemeService manages theme state across all components
 
-4. **UX Improvements**
-   - Theme menu auto-closes after selection (no need to tap outside)
-   - Implemented via JavaScript event delegation in `initEventDelegation()`
-   - Improves mobile interaction pattern
-
-**Testing Checklist for Mobile Navigation**:
-- [ ] Mobile portrait (375px): Tools hidden, bottom nav visible
-- [ ] Mobile landscape (812px): Tools visible, bottom nav hidden
-- [ ] Tablet (768px): Tools hidden, bottom nav visible (edge case)
-- [ ] iPad Air (820px): Tools visible, bottom nav hidden
-- [ ] Theme button positioned at top-right on all sizes
-- [ ] Theme menu closes after selection on all devices
-- [ ] No console errors related to navigation
+**Testing Checklist for Responsive Design**:
+- [ ] Mobile portrait (375px): Bottom nav visible, tools dropdown hidden
+- [ ] Mobile landscape (812px): Tools dropdown visible, bottom nav hidden
+- [ ] Tablet (768px edge case): Navigation switches appropriately
+- [ ] Desktop (1024px+): Full navigation header visible
+- [ ] Theme switcher accessible at all breakpoints
+- [ ] No layout shift when resizing viewport
 
 **When Modifying Navigation Components**:
-1. Changes to `components/nav.html` affect all stable tools
-2. Always apply identical changes to `components/nav-experimental.html`
-3. Test at multiple breakpoints: 375px, 640px, 768px, 820px, 1024px
-4. Verify breakpoint alignment with bottom nav implementation
-5. Check that position: fixed works correctly with z-index layering
+1. Changes to navigation components in `src/components/` affect all tools
+2. Test at multiple breakpoints: 375px, 640px, 768px, 820px, 1024px
+3. Verify theme variable usage (no hardcoded colors)
+4. Run `npm run build` to ensure TypeScript compiles
+5. Test in `npm run preview` before committing
 
-### Syncing Experimental to Stable (Windows Commands)
+### Git Development Workflow (v2.0.0)
 
-```bash
-# Copy all 4 experimental → stable (Windows PowerShell)
-Copy-Item "coloraccessibility_experimental.html" "coloraccessibility_stable.html"
-Copy-Item "colorexplorer_experimental.html" "colorexplorer_stable.html"
-Copy-Item "colormatcher_experimental.html" "colormatcher_stable.html"
-Copy-Item "dyecomparison_experimental.html" "dyecomparison_stable.html"
+**Current Branch Strategy**:
+- `main` branch = v2.0.0 production (TypeScript/Vite architecture)
+- Feature branches off `main` for new features and bug fixes
+- Pull requests merge back to `main` after review
 
-# Or using Windows Command Prompt (cmd.exe)
-copy coloraccessibility_experimental.html coloraccessibility_stable.html
-copy colorexplorer_experimental.html colorexplorer_stable.html
-copy colormatcher_experimental.html colormatcher_stable.html
-copy dyecomparison_experimental.html dyecomparison_stable.html
-
-# Verify copies were successful
-dir *_stable.html
-```
-
-### Phase 12 Development Workflow (v2.0.0 - TypeScript + Vite)
-
-**Git Strategy for Phase 12**:
-- `main` branch = stable v1.6.x (production-ready)
-- `experimental` branch = Phase 12 development (TypeScript/Vite refactor)
-- Feature branches off `experimental` for each sub-phase (12.1, 12.2, etc.)
-
-**When Phase 12 Starts**:
+**Creating a Feature Branch**:
 
 ```bash
-# Clone or pull the experimental branch
-git clone -b experimental https://github.com/FlashGalatine/xivdyetools.git
-git checkout experimental
+# Start from main
+git checkout main
+git pull origin main
 
-# Create feature branch for current phase (e.g., Phase 12.1)
-git checkout -b phase-12.1/build-system
+# Create feature branch (use descriptive name)
+git checkout -b feature/add-new-harmony-type
+# or
+git checkout -b fix/market-board-caching
 
-# Work on Phase 12.1 tasks...
+# Work on changes...
 # Commit regularly with clear messages
-git commit -m "Phase 12.1: Setup Vite configuration with TypeScript support"
+git commit -m "Add monochromatic harmony type to color wheel"
 
 # Push to remote
-git push -u origin phase-12.1/build-system
+git push -u origin feature/add-new-harmony-type
 
-# When ready, create PR: phase-12.1/build-system → experimental
-# After review and testing, merge to experimental
-```
-
-**Branch Strategy**:
-```
-main (v1.6.x stable)
-└── experimental (Phase 12 development)
-    ├── phase-12.1/build-system
-    ├── phase-12.2/services
-    ├── phase-12.3/components
-    ├── phase-12.4/tools
-    ├── phase-12.5/integration
-    ├── phase-12.6/testing
-    └── phase-12.7/release
+# When ready, create PR: feature/add-new-harmony-type → main
 ```
 
-**Commit Message Pattern for Phase 12**:
+**Commit Message Pattern**:
 ```
-Phase 12.X: Brief description
+Brief description (50 chars or less)
 
 - Detailed change 1
 - Detailed change 2
 - Detailed change 3
 
-Checklist: See PHASE_12_CHECKLIST.md
+Fixes #123 (if applicable)
 ```
 
-**Switching Branches**:
+**Testing Before Committing**:
 ```bash
-# Work on v1.6.x bugs (if needed)
-git checkout main
-
-# Work on Phase 12 development
-git checkout experimental
-
-# Work on specific Phase 12 sub-task
-git checkout phase-12.2/services
+npm run lint      # Check code style
+npm run test      # Run unit tests (140 tests)
+npm run build     # Verify production build succeeds
+npm run preview   # Test production build locally
 ```
-
-**Important Notes**:
-- ✅ Always keep `main` branch stable (v1.6.x)
-- ✅ All Phase 12 work happens on `experimental` branch
-- ✅ Feature branches should be short-lived (1-2 weeks max)
-- ✅ Merge feature branch to `experimental` when complete
-- ✅ Final Phase 12: merge `experimental` → `main` as v2.0.0 release
 
 ### Searching the Codebase
 
 **Find all uses of a utility function**:
 ```bash
-# Search for "getColorDistance" in all tool files
-grep -r "getColorDistance" *.html
+# Search for "getColorDistance" in TypeScript files
+grep -r "getColorDistance" src/
 
-# Count occurrences
-grep -c "getColorDistance" colorexplorer_experimental.html
+# Count occurrences in specific service
+grep -c "getColorDistance" src/services/color-service.ts
 ```
 
 **Find hardcoded color references**:
 ```bash
-# Search for hex color pattern
-grep -E "#[0-9A-Fa-f]{6}" coloraccessibility_experimental.html | head -20
+# Search for hex color patterns in TypeScript
+grep -E "#[0-9A-Fa-f]{6}" src/components/*.ts | head -20
 
-# Find all theme-related code
-grep -r "body\..*-light\|body\..*-dark" assets/css/
+# Find theme variable usage
+grep -r "var(--theme-" src/
 ```
 
 **Find localStorage key usage**:
 ```bash
 # See all localStorage interactions
-grep -n "localStorage\|safeGetStorage\|safeSetStorage" colormatcher_experimental.html
+grep -rn "localStorage\|appStorage\|getItem\|setItem" src/services/
+```
+
+**Find component usage**:
+```bash
+# Find all uses of a specific component
+grep -r "MarketBoard" src/components/
+
+# Find event listeners
+grep -r "addEventListener" src/components/
 ```
 
 ## Common Gotchas & Warnings
 
-### 1. Monolithic File Sizes (1,500-1,900 lines)
+### 1. Service Layer Dependencies
 
-**⚠️ Problem**:
-- Each tool is a single massive HTML file
-- Hard to search and review in git diffs
-- Difficult for new contributors to understand
-
-**How to Work Around It**:
-- Use browser Find (Ctrl+F / Cmd+F) to locate specific functions
-- Search for section headers: `<!-- SECTION: SHARED UTILITIES -->` or `<!-- EVENT LISTENERS -->`
-- When editing, note the line numbers for reference
-- Use git blame to find when large blocks were added
-
-**Example Search Pattern**:
-- `getColorDistance` - color utility functions (shared)
-- `drawHueSaturationChart` - visualization code (tool-specific)
-- `addEventListener` - event binding section
-
-### 2. Code Duplication Across Tools
-
-**⚠️ Problem**:
-- Same utility functions repeated in each of the 4 tools (~200 lines each)
-- Many shared functions moved to `shared-components.js`, but some still duplicated
-- Total duplication: ~1,600+ lines across all tools
+**⚠️ Important**:
+- v2.0.0 uses a service layer pattern
+- Services are singletons shared across all components
+- Changing a service affects all tools that use it
 
 **How to Handle**:
-- Always check `shared-components.js` first before adding utilities
-- If adding new utility, add to shared file AND all 4 tools (or refactor to remove duplication)
-- Comment duplicated code with: `// Duplicated in: tool1, tool2, tool3 (TODO: centralize)`
+- Test changes in ALL tools that use the service
+- Check `src/services/__tests__/` for existing tests
+- Add tests when modifying service behavior
+- Services to watch: `DyeService`, `ColorService`, `APIService`, `ThemeService`, `StorageService`
 
-**Example - Color Conversion**:
-```javascript
-// SHARED: in assets/js/shared-components.js
-function hexToRgb(hex) { ... }
+**Example - Modifying ColorService**:
+```typescript
+// If you modify getColorDistance() in ColorService...
+// Test these tools: Color Matcher, Dye Comparison, Color Harmony Explorer
+```
 
-// STILL DUPLICATED in some older sections but should use shared version
-// When refactoring, remove local copy and use: hexToRgb() from shared
+### 2. Theme System CSS Variables
+
+**⚠️ Important**:
+- All colors use CSS custom properties: `var(--theme-primary)`, `var(--theme-text)`, etc.
+- **Never use hardcoded colors** (e.g., `#3B82F6`, `blue-600`)
+- Theme changes apply globally across all components
+
+**Available Theme Variables**:
+- `--theme-primary` - Primary accent color
+- `--theme-background` - Main background
+- `--theme-text` - Primary text color
+- `--theme-border` - Border colors
+- `--theme-background-secondary` - Secondary background
+- `--theme-card-background` - Card background
+- `--theme-text-muted` - Muted/secondary text
+
+**How to Use**:
+```typescript
+// ✅ CORRECT - Use CSS variable
+style: 'color: var(--theme-primary);'
+
+// ❌ WRONG - Hardcoded color
+className: 'text-blue-600'
 ```
 
 ### 3. Version Number Synchronization
 
-**⚠️ Problem**:
-- All 4 tools must stay on same major.minor version (e.g., v1.5.0)
-- If you bump one tool, **you must bump all 4**
-- Version appears in multiple locations: file headers, version comments, README
+**⚠️ Important**:
+- Version appears in multiple files: `package.json`, `README.md`, `CHANGELOG.md`, `FAQ.md`, `CLAUDE.md`
+- Use consistent versioning (v2.0.0, v2.1.0, etc.)
 
-**When Bumping Version** (e.g., v1.4.2 → v1.5.0):
+**When Bumping Version** (e.g., v2.0.0 → v2.1.0):
 
-1. **Search all experimental files**:
+1. **Update package.json**:
    ```bash
-   grep -n "1.4.2" coloraccessibility_experimental.html colorexplorer_experimental.html colormatcher_experimental.html dyecomparison_experimental.html
+   npm version minor  # Or: npm version patch, npm version major
    ```
 
-2. **Update all 4 tool files** (experimental):
-   ```
-   Line 1: <!-- Color Accessibility Checker v1.4.2 → v1.5.0 -->
-   Line ~50: <span>v1.4.2</span> → <span>v1.5.0</span>
-   ```
-
-3. **Update index.html** (portal page):
+2. **Update documentation files**:
    ```bash
-   grep -n "1.4.2\|1.5.0" index.html
+   grep -rn "v2\.0\.0" README.md CHANGELOG.md FAQ.md CLAUDE.md
+   # Replace all occurrences with v2.1.0
    ```
 
-4. **Update CHANGELOG.md**:
+3. **Update CHANGELOG.md**:
    ```markdown
-   ## v1.5.0 - November 13, 2025
+   ## v2.1.0 - Date
    - New features
    - Bug fixes
    - Improvements
    ```
 
-5. **Sync experimental → stable** (copy all files)
-
-6. **Commit with version message**:
+4. **Commit with version message**:
    ```bash
    git add .
-   git commit -m "Release: v1.5.0 - [description]"
+   git commit -m "Release: v2.1.0 - [description]"
+   git tag v2.1.0
    ```
 
-### 4. Component Loading Requires HTTP Server
+### 4. Development Server Required
 
-**⚠️ Problem**:
-- Tools load nav/footer via `fetch('components/nav.html')`
-- `fetch()` doesn't work with `file://` protocol (browser security)
-- Opening HTML files directly in browser: Components won't load, console error
+**⚠️ Important**:
+- Vite dev server required for development
+- Opening `dist/index.html` directly won't work properly
+- Module imports require HTTP server
 
 **Solution**:
-- Always use `http://localhost:8000` (or similar)
-- Never use `file:///C:/Users/.../index.html`
-- See "Running Local Preview" section above
+- Always use `npm run dev` for development
+- Use `npm run preview` to test production build
+- Never use `file:///` protocol
 
 **Error Message You'll See**:
 ```
-Uncaught (in promise) TypeError: Failed to fetch
+Access to script at 'file:///.../main.ts' has been blocked by CORS policy
 ```
 
 ## Detailed Testing Workflow
@@ -533,11 +489,11 @@ Uncaught (in promise) TypeError: Failed to fetch
 - [ ] Check that layouts stack properly
 - [ ] Check that buttons are still clickable on mobile
 
-## Phase 4.1: Theme System (COMPLETE)
+## Theme System (v2.0.0)
 
-### What Changed
+### Overview
 
-Replaced legacy dark mode toggles with a unified 10-theme system. All 4 tools + index.html now support:
+XIV Dye Tools includes a unified 10-theme system providing visual customization across all tools.
 
 **10 Theme Variants**:
 - Standard (Light / Dark) - Default gray/indigo
@@ -548,54 +504,82 @@ Replaced legacy dark mode toggles with a unified 10-theme system. All 4 tools + 
 
 ### How The Theme System Works
 
-**CSS Custom Properties** (`shared-styles.css`):
-- 10 complete color sets defined: `body.standard-light`, `body.standard-dark`, etc.
-- Variables: `--theme-primary`, `--theme-bg`, `--theme-text`, `--theme-border`, `--theme-bg-secondary`, `--theme-card-bg`, `--theme-text-muted`
-- All hardcoded colors replaced with variables
+**CSS Custom Properties** (`src/styles/themes.css`):
+- 10 complete color sets defined with CSS variables
+- Applied via `body` class: `standard-light`, `standard-dark`, etc.
+- Core variables:
+  - `--theme-primary` - Primary accent color
+  - `--theme-background` - Main background
+  - `--theme-text` - Primary text color
+  - `--theme-border` - Border colors
+  - `--theme-background-secondary` - Secondary background
+  - `--theme-card-background` - Card background
+  - `--theme-text-muted` - Muted/secondary text
 
-**JavaScript Theme Management** (`shared-components.js`):
-```javascript
-// Load saved theme on page load
-initTheme();
+**TypeScript Theme Management** (`src/services/theme-service.ts`):
+```typescript
+import { ThemeService } from './services/theme-service';
 
-// Set theme and save to localStorage
-setTheme('hydaelyn-dark');
+// ThemeService is a singleton - automatically initialized
+// Get current theme
+const currentTheme = ThemeService.getCurrentTheme();
 
-// Toggle theme switcher dropdown
-toggleThemeSwitcher(button);
+// Set theme (saves to localStorage automatically)
+ThemeService.setTheme('hydaelyn-dark');
+
+// Listen for theme changes
+ThemeService.onThemeChange((themeName) => {
+  console.log(`Theme changed to: ${themeName}`);
+});
 ```
 
-**localStorage Key**: `xivdyetools_theme` (stores theme name across page refreshes)
+**localStorage Key**: `xivdyetools_theme` (stores theme name, persists across sessions)
 
-**UI Component** (`components/nav.html`):
-- Theme switcher dropdown in header
-- 10 theme options with color swatches
-- Used in all 4 tools and index.html
+**UI Component** (`src/components/theme-switcher.ts`):
+- Lit web component: `<theme-switcher>`
+- 10 theme options with visual swatches
+- Dropdown menu in app header
+- Used across all tools via `<app-layout>`
 
 ### Adding a New Theme
 
-1. **Add CSS variables to `assets/css/shared-styles.css`**:
+1. **Add CSS variables to `src/styles/themes.css`**:
    ```css
    body.myname-light {
        --theme-primary: #3b82f6;
-       --theme-bg: #ffffff;
+       --theme-background: #ffffff;
        --theme-text: #000000;
-       /* ... etc ... */
+       --theme-border: #e5e7eb;
+       --theme-background-secondary: #f9fafb;
+       --theme-card-background: #ffffff;
+       --theme-text-muted: #6b7280;
    }
    ```
 
-2. **Add button to `components/nav.html`** theme switcher menu
+2. **Update ThemeService** (`src/services/theme-service.ts`):
+   - Add theme name to `AVAILABLE_THEMES` array
 
-3. **Test** in all 4 tools and portal
+3. **Update ThemeSwitcher component** (`src/components/theme-switcher.ts`):
+   - Add theme option to dropdown menu
 
-## The Four Tools: Architecture & Test Coverage
+4. **Test** in all tools:
+   ```bash
+   npm run dev
+   # Test theme selection in browser
+   # Verify persistence after refresh
+   ```
 
-### 1. Color Accessibility Checker (~1,603 lines)
+## The Five Tools: Architecture & Features
+
+### 1. Color Accessibility Checker
+
+**Component**: `src/components/accessibility-checker-tool.ts`
 
 **Algorithm**: Brettel 1997 colorblindness transformation matrices
 - Simulates: Deuteranopia, Protanopia, Tritanopia, Achromatopsia
 - Supports: 6 outfit slots (Head, Body, Hands, Legs, Feet, Weapon) with optional dual dyes
 - Output: Accessibility score (0-100), distinguishability warnings, dye suggestions
+- Uses: `ColorService` for transformations, `DyeService` for dye database
 
 **Test Scenarios**:
 - Verify each vision type produces different color outputs
@@ -603,9 +587,9 @@ toggleThemeSwitcher(button);
 - Confirm dual dye feature persists in localStorage
 - Test contrast ratio calculations
 
-**Recent Bug Fix** (Phase 1): Jet Black matching logic corrected (exact matches now take priority over near-exact)
+### 2. Color Harmony Explorer
 
-### 2. Color Harmony Explorer (~1,909 lines)
+**Component**: `src/components/harmony-explorer-tool.ts`
 
 **Features**: 6 harmony types with color wheel visualization
 - Complementary: 180° opposite
@@ -618,19 +602,22 @@ toggleThemeSwitcher(button);
 **Algorithm**: HSV color space manipulations with deviance scoring (0-10)
 - Deviance measures how closely matched dyes align with theoretical positions
 - Lower deviance = better theory alignment
+- Uses: `ColorService` for harmony calculations, `APIService` for market prices
 
-**Optional Integration**: Universalis API for real-time market prices (session-level cached, debounced)
+**Optional Integration**: Universalis API for real-time market prices (session-level cached)
 
 **Test Scenarios**:
 - Verify each harmony type produces correct angle spacing
 - Check deviance calculations are in 0-10 range
 - Confirm API integration optional (works without network)
-- Test CSV/JSON/SCSS export functionality
+- Test export functionality
 
-### 3. Color Matcher (~1,704 lines)
+### 3. Color Matcher
+
+**Component**: `src/components/color-matcher-tool.ts`
 
 **Input Methods**:
-- Drag & drop image files
+- Drag & drop image files (up to 20MB)
 - Clipboard paste (Ctrl+V / Cmd+V)
 - Direct color picker hex input
 - Eyedropper tool (click image to sample color)
@@ -639,6 +626,7 @@ toggleThemeSwitcher(button);
 - Sample size: 1×1 to 64×64 pixels (configurable averaging)
 - Auto zoom: Portrait images zoom to width, landscape zoom to fit
 - Returns closest matching dye using RGB distance
+- Uses: `ColorService` for distance calculations, `DyeService` for matching
 
 **Test Scenarios**:
 - Test all input methods (drag-drop, paste, picker, eyedropper)
@@ -646,18 +634,19 @@ toggleThemeSwitcher(button);
 - Check zoom controls (Fit, Width, ±, Reset)
 - Confirm error handling for missing/invalid images
 
-**Recent Bug Fix** (Phase 1): Jet Black matching fixed (exclusion filter now acts as "don't auto-suggest" while preserving exact matches)
+### 4. Dye Comparison
 
-### 4. Dye Comparison (~1,432 lines)
+**Component**: `src/components/dye-comparison-tool.ts`
 
 **Visualizations**:
 - Color distance matrix (table with green/yellow/red indicators)
-- Hue-Saturation 2D chart (1000×750 canvas)
-- Brightness 1D chart (1000×750 canvas)
+- Hue-Saturation 2D chart (canvas-based)
+- Brightness 1D chart (canvas-based)
 
 **Features**: Compare up to 4 dyes, export as JSON/CSS, copy hex codes, market prices
 
-**Canvas Rendering Optimization**: Resolution reduction (RESOLUTION_REDUCTION=2) to handle 750,000+ pixel iterations efficiently
+**Canvas Rendering**: Optimized for performance with efficient pixel iteration
+- Uses: `ColorService` for distance calculations, `APIService` for prices
 
 **Test Scenarios**:
 - Verify all three chart types render correctly
@@ -665,49 +654,138 @@ toggleThemeSwitcher(button);
 - Check export formats (JSON, CSS) are valid
 - Confirm Universalis API integration
 
-**Recent Bug Fix** (Phase 1): Hue-Saturation chart now displays all four quadrants (fixed quarter-rendering issue)
+### 5. Dye Mixer
 
-## Shared Components System
+**Component**: `src/components/dye-mixer-tool.ts`
 
-### Loaded via Dynamic Fetch
+**Features**: Find intermediate dyes for smooth color transitions
+- Input: Two dye colors (start and end)
+- Output: Ranked list of dyes by proximity to midpoint
+- Algorithm: RGB space interpolation with distance scoring
+- Uses: `ColorService` for color interpolation, `DyeService` for matching
 
-Each tool loads components via JavaScript:
-```html
-<div id="nav-container" class="component-loading"></div>
-<script>
-  fetch('components/nav.html').then(r => r.text()).then(html => {
-    document.getElementById('nav-container').innerHTML = html;
-  });
-</script>
+**Test Scenarios**:
+- Verify midpoint calculation accuracy
+- Check ranking algorithm (closest dyes first)
+- Confirm smooth visual transitions
+- Test edge cases (same start/end dye, extreme colors)
+
+## Service Layer Architecture
+
+### Overview
+
+v2.0.0 uses a service-oriented architecture with TypeScript singletons for shared functionality.
+
+**Core Services**:
+- `DyeService` - Dye database management and filtering
+- `ColorService` - Color algorithms (conversion, distance, harmony, accessibility)
+- `APIService` - Universalis API integration with caching
+- `ThemeService` - Theme management and persistence
+- `StorageService` - localStorage wrapper with error handling
+
+**Benefits**:
+- Single source of truth for each domain
+- Type-safe interfaces
+- Centralized error handling
+- Easy testing with unit tests
+- No code duplication across tools
+
+### DyeService (`src/services/dye-service.ts`)
+
+**Purpose**: Manage FFXIV dye database
+
+```typescript
+import { DyeService } from './services/dye-service';
+
+// Get all dyes
+const allDyes = DyeService.getAllDyes();
+
+// Filter by category
+const redDyes = DyeService.getDyesByCategory('Red');
+
+// Find specific dye
+const jetBlack = DyeService.getDyeById(1);
+
+// Search by name
+const searchResults = DyeService.searchDyes('metallic');
 ```
 
-### Shared Utilities (`assets/js/shared-components.js`)
+### ColorService (`src/services/color-service.ts`)
 
-**Color Conversion** (standardized across all tools):
-```javascript
-hexToRgb(hex)           // "#FF0000" → { r: 255, g: 0, b: 0 }
-rgbToHex(r, g, b)       // (255, 0, 0) → "#FF0000"
-rgbToHsv(r, g, b)       // (255, 0, 0) → { h: 0, s: 100, v: 100 }
-hsvToRgb(h, s, v)       // (0, 100, 100) → { r: 255, g: 0, b: 0 }
+**Purpose**: Color calculations and transformations
+
+```typescript
+import { ColorService } from './services/color-service';
+
+// Color conversion
+const rgb = ColorService.hexToRgb('#FF0000');
+const hex = ColorService.rgbToHex(255, 0, 0);
+const hsv = ColorService.rgbToHsv(255, 0, 0);
+
+// Color distance (0-441 range)
+const distance = ColorService.getColorDistance('#FF0000', '#00FF00');
+
+// Colorblind simulation (Brettel 1997)
+const simulated = ColorService.simulateColorblindness('#FF0000', 'deuteranopia');
+
+// Color harmony
+const harmony = ColorService.calculateHarmony('#FF0000', 'complementary');
 ```
 
-**Color Distance** (in RGB space):
-```javascript
-getColorDistance(hex1, hex2)  // Range: 0 (identical) to ~441 (white vs black)
+### APIService (`src/services/api-service.ts`)
+
+**Purpose**: Universalis API integration
+
+```typescript
+import { APIService } from './services/api-service';
+
+// Fetch market price (with caching)
+const price = await APIService.fetchPrice('Crystal', 1, 'primary');
+
+// Format price for display
+const formatted = APIService.formatPrice(69420); // "69,420<small>G</small>"
+
+// Clear cache
+APIService.clearCache();
 ```
 
-**Storage** (defensive with try-catch):
-```javascript
-safeGetStorage(key, defaultValue)   // Safe localStorage read
-safeSetStorage(key, value)          // Safe localStorage write
+### ThemeService (`src/services/theme-service.ts`)
+
+**Purpose**: Theme management
+
+```typescript
+import { ThemeService } from './services/theme-service';
+
+// Get current theme
+const theme = ThemeService.getCurrentTheme(); // "standard-light"
+
+// Set theme (saves to localStorage)
+ThemeService.setTheme('hydaelyn-dark');
+
+// Listen for changes
+ThemeService.onThemeChange((themeName) => {
+  console.log(`Theme changed to: ${themeName}`);
+});
 ```
 
-**Theme Management**:
-```javascript
-initTheme()                 // Load saved theme on page load
-setTheme(themeName)        // Apply theme + save to localStorage
-toggleThemeSwitcher()      // Toggle dropdown menu
-getThemeColor(varName)     // Get computed CSS variable value
+### StorageService (`src/services/storage-service.ts`)
+
+**Purpose**: Safe localStorage access
+
+```typescript
+import { StorageService } from './services/storage-service';
+
+// Read with default fallback
+const value = StorageService.getItem('myKey', 'defaultValue');
+
+// Write (with error handling)
+StorageService.setItem('myKey', 'myValue');
+
+// Remove item
+StorageService.removeItem('myKey');
+
+// Clear all
+StorageService.clear();
 ```
 
 ## Data Structures
@@ -749,38 +827,59 @@ Each dye object:
 
 ## Development Workflow
 
-### Common Tasks
+### Common Tasks (v2.0.0)
 
-**Adding a feature to all 4 tools**:
-1. Edit `colormatcher_experimental.html`
-2. Test thoroughly in browser (all themes, responsive, no console errors)
-3. Copy entire content to `colormatcher_stable.html`
-4. Repeat for other 3 tools
-5. Commit with: "Feature: Description (all tools)"
+**Adding a new feature to a tool**:
+1. Identify the relevant component file (e.g., `src/components/color-matcher-tool.ts`)
+2. Add feature implementation using TypeScript
+3. If needed, update service layer (e.g., `src/services/color-service.ts`)
+4. Run tests: `npm run test`
+5. Test in dev server: `npm run dev`
+6. Commit with: "Feature: Description (ComponentName)"
 
-**Updating a shared utility function**:
-1. Identify all 4 tools that use it (search via grep)
-2. Update in `shared-components.js` first
-3. Update local copies in all 4 tool files if they have backup versions
-4. Test in each tool with different inputs
-5. Commit with: "Update: Function name improvements"
+**Updating a shared service**:
+1. Edit service file (e.g., `src/services/color-service.ts`)
+2. Update or add unit tests in `src/services/__tests__/`
+3. Run tests: `npm run test`
+4. Identify which tools use the service (grep or TypeScript imports)
+5. Test all affected tools in dev server
+6. Run full build: `npm run build && npm run preview`
+7. Commit with: "Service: Description (ServiceName)"
 
-**Syncing experimental to stable**:
-1. Bash command: `cp *_experimental.html` to `*_stable.html` (for all 4)
-2. Verify files were copied correctly
-3. Commit with: "Experimental Sync: Update all experimental builds to v1.4.2"
+**Adding a new component**:
+1. Create component file in `src/components/` (e.g., `my-component.ts`)
+2. Extend `BaseComponent` or use Lit decorators
+3. Add component to `src/components/index.ts` exports
+4. Import and use in tool or app-layout
+5. Add styles to `src/styles/components.css` if needed
+6. Test responsiveness at 375px, 768px, 1024px
+7. Commit with: "Component: Description (ComponentName)"
 
 **Adding localStorage support for a new feature**:
-```javascript
-// Reading:
-const value = safeGetStorage('myapp_myfeature', 'default');
+```typescript
+import { StorageService } from './services/storage-service';
 
-// Writing (in feature handler):
-safeSetStorage('myapp_myfeature', newValue);
+// Reading (with default fallback)
+const value = StorageService.getItem('xivdyetools_myfeature', 'default');
 
-// During page load:
-// Call any init functions that restore state from localStorage
+// Writing (in event handler)
+StorageService.setItem('xivdyetools_myfeature', newValue);
+
+// During component initialization
+connectedCallback() {
+  super.connectedCallback();
+  const saved = StorageService.getItem('xivdyetools_myfeature', 'default');
+  this.restoreState(saved);
+}
 ```
+
+**Adding a new theme**:
+1. Add CSS variables to `src/styles/themes.css`
+2. Update `AVAILABLE_THEMES` in `src/services/theme-service.ts`
+3. Add theme option to `src/components/theme-switcher.ts`
+4. Test theme in all tools
+5. Verify persistence after page refresh
+6. Commit with: "Theme: Add [ThemeName] theme"
 
 ### Git Commit Patterns
 
@@ -808,155 +907,200 @@ Result: Theme switcher identical across portal and all 4 tools.
 
 ## Version Management
 
-**Current Version**: v1.4.2
-**Released**: November 13, 2025
-**Status**: Production (all experimental synced)
+**Current Version**: v2.0.0
+**Released**: November 17, 2025
+**Status**: Production (TypeScript/Vite architecture)
 
 ### Version History
 
 | Version | Release Date | Changes |
 |---------|--------------|---------|
-| v1.4.2 | Nov 13, 2025 | Phase 4.1: 10-theme system, v1.4.2 for all tools |
-| v1.4.0 | Nov 2025 | Phase 3.4: Standardized dropdown patterns |
-| v1.3.0 | Oct 2025 | Color Matcher clipboard paste support |
-| v1.2.3 | Oct 2025 | Color Explorer & Comparison stable |
-| v1.0.1 | Oct 2025 | Initial Accessibility Checker beta |
+| v2.0.0 | Nov 17, 2025 | Complete TypeScript/Vite refactor, service layer, Lit components |
+| v1.4.2 | Nov 13, 2025 | (v1.6.x) 10-theme system, legacy HTML architecture |
+| v1.4.0 | Nov 2025 | (v1.6.x) Standardized dropdown patterns |
+| v1.3.0 | Oct 2025 | (v1.6.x) Color Matcher clipboard paste support |
+| v1.2.3 | Oct 2025 | (v1.6.x) Color Explorer & Comparison stable |
+| v1.0.1 | Oct 2025 | (v1.6.x) Initial Accessibility Checker beta |
 
-### Version Bumping
+### Version Bumping (v2.0.0)
 
-When bumping version from `v1.4.2` to `v1.5.0`:
-1. Update version in all 4 `*_stable.html` files (search for "1.4.2")
-2. Update version in `index.html` (4 tool cards)
-3. Update `CHANGELOG.md` with release notes
-4. Create commit: "Release: v1.5.0 - [description]"
+When bumping version from `v2.0.0` to `v2.1.0`:
 
-**Note**: All 4 tools must stay synchronized on major.minor versions since they're released together.
+1. **Update package.json**:
+   ```bash
+   npm version minor  # Or: npm version patch, npm version major
+   # This automatically updates package.json and creates a git tag
+   ```
+
+2. **Update documentation files**:
+   ```bash
+   # Search for version references
+   grep -rn "v2\.0\.0" README.md CHANGELOG.md FAQ.md CLAUDE.md
+
+   # Replace with v2.1.0
+   # Can use find-and-replace in editor
+   ```
+
+3. **Update CHANGELOG.md**:
+   ```markdown
+   ## v2.1.0 - November XX, 2025
+
+   ### Added
+   - New feature descriptions
+
+   ### Changed
+   - Improvements and updates
+
+   ### Fixed
+   - Bug fixes
+   ```
+
+4. **Commit and tag**:
+   ```bash
+   git add .
+   git commit -m "Release: v2.1.0 - [description]"
+   git tag v2.1.0
+   git push origin main --tags
+   ```
+
+**Note**: v2.0.0 uses single-codebase architecture. All tools share the same version number.
 
 ## External APIs & Data Sources
 
 ### Universalis API
 
-**Endpoint**: `https://universalis.app/api/v2/aggregated/{dataCenter}/{itemID}/{worldID}`
+**Endpoint**: `https://universalis.app/api/v2/aggregated/{dataCenter}/{itemID}/{scope}`
 
-**Used by**: Color Harmony, Color Matcher, Dye Comparison (optional)
+**Used by**: Color Harmony Explorer, Color Matcher, Dye Comparison (optional)
 
-**Implementation Pattern**:
-```javascript
-function safeFetchJSON(url, fallbackData = []) {
-  return fetch(url)
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const contentType = response.headers.get('content-type');
-      if (!contentType?.includes('application/json')) throw new Error('Invalid content type');
-      return response.json();
-    })
-    .catch(error => {
-      console.error(`Failed to load ${url}:`, error);
-      return fallbackData;
-    });
+**Implementation** (`src/services/api-service.ts`):
+```typescript
+import { APIService } from './services/api-service';
+
+// Fetch price for a dye (with automatic caching)
+const priceData = await APIService.fetchPrice('Crystal', 1, 'primary');
+
+// Response structure
+interface PriceData {
+  itemID: number;
+  currentAverage: number;  // Rounded price
+  currentMinPrice: number;
+  currentMaxPrice: number;
+  lastUpdate: number;      // Timestamp
 }
+
+// Format price for display
+const formatted = APIService.formatPrice(priceData.currentAverage);
+// Returns: "69,420<small>G</small>"
 ```
 
-**Key Points**:
-- Optional feature (show prices toggle)
+**Key Features**:
 - Session-level caching to minimize API calls
-- Debounce repeated requests
-- Toast notifications for errors
-- Graceful fallback if API unavailable
+- Automatic cache invalidation (stale data detection)
+- Error handling with graceful fallback
+- Toast notifications for user feedback
+- Optional feature (works without API)
+- Uses aggregated endpoint for Data Center-wide pricing
 
-## Error Handling Standards (Phase 11)
+## Error Handling Standards (v2.0.0)
 
-All fetch() calls must follow standardized error handling patterns to ensure robust, user-friendly behavior.
+All network calls and data operations follow standardized error handling patterns for robust, user-friendly behavior.
 
-### Pattern 1: JSON API Calls (Universalis API, Market Data)
+### Pattern 1: API Service Calls (Universalis API)
 
-**Standard Pattern** (use `safeFetchJSON()` from shared-components.js):
-```javascript
-const prices = await safeFetchJSON(
-    'https://universalis.app/api/v2/aggregated/Crystal/1/primary',
-    []  // fallback data
-);
-```
+**Standard Pattern** (use `APIService`):
+```typescript
+import { APIService } from './services/api-service';
 
-**Manual Pattern** (if `safeFetchJSON()` unavailable):
-```javascript
 try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    return data;
+  const priceData = await APIService.fetchPrice('Crystal', 1, 'primary');
+  // Use priceData...
 } catch (error) {
-    console.error(`Failed to fetch from ${url}:`, error);
-    showToast('Error loading data. Using cached values.', 'error');
-    return fallbackData;
+  console.error('Failed to fetch price:', error);
+  // APIService handles toast notifications automatically
+  // Proceed without price data
 }
 ```
 
-### Pattern 2: HTML Component Loading (nav, footer, mobile nav)
-
-**Correct Pattern** (with error handling):
-```javascript
-fetch('components/nav.html')
-    .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.text();
-    })
-    .then(html => {
-        document.getElementById('nav-container').innerHTML = html;
-    })
-    .catch(error => {
-        console.error('Failed to load nav component:', error);
-        // Component is optional - app still works without it
-        // No showToast needed - navigation available through other means
-    });
-```
-
-**❌ AVOID** (no error handling):
-```javascript
-// BAD - no catch block, silent failures
-fetch('components/nav.html')
-    .then(r => r.text())
-    .then(html => { document.getElementById('nav-container').innerHTML = html; });
-```
-
-### Pattern 3: Async/Await with Try-Catch (Server Data)
-
-**Standard Pattern** (Data Centers, Worlds):
-```javascript
-async function loadServerData() {
-    try {
-        const [dcResponse, worldsResponse] = await Promise.all([
-            fetch('/assets/json/data-centers.json'),
-            fetch('/assets/json/worlds.json')
-        ]);
-
-        if (!dcResponse.ok || !worldsResponse.ok) {
-            throw new Error('Failed to load server data');
-        }
-
-        const dataCenters = await dcResponse.json();
-        const worlds = await worldsResponse.json();
-
-        // Process data...
-        updateUI(dataCenters, worlds);
-    } catch (error) {
-        console.error('Error loading server data:', error);
-        showToast('Error loading server list. Please refresh.', 'error');
-        // Fallback to empty state or previous values
+**Internal Implementation** (within services):
+```typescript
+async fetchData<T>(url: string): Promise<T | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to fetch from ${url}:`, error);
+    this.emit('error', { message: 'Error loading data' });
+    return null;
+  }
+}
+```
+
+### Pattern 2: Static Asset Loading (JSON Data)
+
+**Standard Pattern** (Data Centers, Worlds, Dyes):
+```typescript
+async loadStaticData() {
+  try {
+    const [dcResponse, worldsResponse] = await Promise.all([
+      fetch('/json/data-centers.json'),
+      fetch('/json/worlds.json')
+    ]);
+
+    if (!dcResponse.ok || !worldsResponse.ok) {
+      throw new Error('Failed to load static data');
+    }
+
+    const dataCenters = await dcResponse.json();
+    const worlds = await worldsResponse.json();
+
+    return { dataCenters, worlds };
+  } catch (error) {
+    console.error('Error loading static data:', error);
+    this.emit('error', { message: 'Error loading data. Please refresh.' });
+    return null;
+  }
+}
+```
+
+### Pattern 3: localStorage Operations
+
+**Standard Pattern** (use `StorageService`):
+```typescript
+import { StorageService } from './services/storage-service';
+
+// No try-catch needed - StorageService handles errors internally
+const value = StorageService.getItem('myKey', 'defaultValue');
+StorageService.setItem('myKey', newValue);
+```
+
+**Internal Implementation** (within StorageService):
+```typescript
+static getItem<T>(key: string, defaultValue: T): T {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.error(`Error reading ${key}:`, error);
+    return defaultValue;
+  }
 }
 ```
 
 ### Error Handling Checklist
 
-When adding fetch() calls:
-- [ ] Has `.catch()` or `try-catch` block
+When adding data operations:
+- [ ] Uses service layer (APIService, StorageService, etc.)
+- [ ] Has `try-catch` block if not using service
 - [ ] Error logged to console with descriptive message
-- [ ] User shown toast notification if data loading is critical
-- [ ] Fallback data provided if endpoint fails
+- [ ] User shown feedback via toast/error state if critical
+- [ ] Fallback data or graceful degradation provided
 - [ ] HTTP status checked (`!response.ok`)
-- [ ] Content-Type validated if applicable
 - [ ] No silent failures (every error path is handled)
+- [ ] TypeScript types defined for data structures
 
 ### FFXIV Data Sources
 
@@ -964,36 +1108,66 @@ When adding fetch() calls:
 - **Data Centers & Worlds**: From Universalis API documentation
 - **Color Values**: RGB/HSV calculated from hex, HSV verified against in-game appearance
 
-## Known Limitations & Optimization Opportunities
+## Optimization Opportunities (v2.0.0)
 
-### Code Duplication (High Priority)
+v2.0.0 solved previous architectural limitations (code duplication, monolithic files). Current optimization opportunities:
 
-**Problem**: Same utility functions repeated in all 4 tools
-- `hexToRgb()`, `rgbToHex()`, `getColorDistance()` in each file
-- ~200 duplicate lines per tool × 4 = ~800 lines of redundant code
+### Code Splitting & Lazy Loading (Medium Priority)
 
-**Solution Path** (Future Phase):
-1. Move all utilities to `shared-components.js` completely
-2. Remove local copies from tool files
-3. Ensure all tools import from single source
+**Opportunity**: Reduce initial bundle size by lazy-loading tool components
 
-### Monolithic File Sizes (Medium Priority)
+**Current State**:
+- All tool components loaded upfront (~200KB total bundle)
+- Single main.ts entry point imports all components
 
-**Problem**: 1,400-1,900 lines per tool file
-- Hard to review in PRs
-- Difficult for new contributors to understand
-- Makes debugging harder
+**Solution Path**:
+1. Implement dynamic imports for tool components
+2. Load tool component only when route changes
+3. Show loading spinner during component fetch
+4. Expected bundle reduction: ~150KB initial load
 
-**Solution Path** (Future Phase):
-1. Extract UI components (dropdowns, toggles, modals) to separate library
-2. Organize tool files with clear section markers
-3. Consider simple concatenation build step
+**Implementation**:
+```typescript
+// Instead of: import { ColorMatcherTool } from './components/color-matcher-tool';
+// Use: const { ColorMatcherTool } = await import('./components/color-matcher-tool');
+```
+
+### Color Wheel Visualization (Medium Priority)
+
+**Opportunity**: Improve Harmony Explorer color wheel design
+
+**Current State**:
+- Basic SVG-based color wheel
+- Limited interactivity
+- Fixed size, no zoom
+
+**Solution Path**:
+1. Redesign with canvas-based rendering
+2. Add interactive hue selection (click to select base color)
+3. Implement zoom/pan functionality
+4. Improve visual hierarchy (harmony colors more prominent)
+
+### Test Coverage Expansion (High Priority)
+
+**Opportunity**: Add component-level tests
+
+**Current State**:
+- Service layer: 140 tests, 100% pass rate ✅
+- Components: No automated tests ❌
+
+**Solution Path**:
+1. Add Lit component testing framework (Web Test Runner)
+2. Test component rendering and interactions
+3. Test localStorage persistence
+4. Test responsive behavior
+5. Target: 80%+ component coverage
 
 ### Performance Optimizations (Low Priority)
 
-- **Canvas rendering** (Dye Comparison): Already optimized with resolution reduction
-- **Image processing** (Color Matcher): Could batch ImageData operations
-- **Color calculations**: Already using efficient RGB space, not perceptual color spaces
+- **Canvas rendering** (Dye Comparison): Already optimized
+- **Image processing** (Color Matcher): Could use Web Workers for large images (>5MB)
+- **Color calculations**: Already using efficient RGB space
+- **API caching**: Already implemented with session-level cache
 
 ## Browser Compatibility
 
@@ -1005,16 +1179,24 @@ Works in all modern browsers supporting ES6+:
 
 **Requires**: ES6 (arrow functions, template literals, const/let, fetch API, Canvas 2D)
 
-## Important Files Reference
+## Important Files Reference (v2.0.0)
 
 | File | Purpose | Maintainability |
 |------|---------|-----------------|
-| `shared-styles.css` | Theme definitions | Update when adding themes |
-| `shared-components.js` | Shared utilities | Update for cross-tool utilities |
-| `components/nav.html` | Theme switcher | Update theme options here |
-| `colors_xiv.json` | Dye database | Update when FFXIV adds dyes |
+| `src/services/theme-service.ts` | Theme management | Update when adding themes |
+| `src/styles/themes.css` | Theme CSS variables | Define new theme colors here |
+| `src/components/theme-switcher.ts` | Theme UI component | Add theme options to dropdown |
+| `src/services/dye-service.ts` | Dye database service | Update when FFXIV adds dyes |
+| `public/json/colors_xiv.json` | FFXIV dyes data | Raw dye database (JSON) |
+| `src/services/color-service.ts` | Color algorithms | Core color calculations |
+| `src/services/api-service.ts` | Universalis integration | Market Board API calls |
+| `src/components/app-layout.ts` | Main app shell | Overall app structure |
+| `package.json` | Dependencies & scripts | npm configuration |
+| `vite.config.ts` | Build configuration | Vite settings |
+| `tailwind.config.js` | Tailwind CSS config | Styling framework |
 | `CHANGELOG.md` | Version history | Update with each release |
 | `README.md` | User documentation | Update for user-facing changes |
+| `CLAUDE.md` | Development guide | This file - update for architecture changes |
 
 ## Troubleshooting
 
@@ -1024,17 +1206,19 @@ Works in all modern browsers supporting ES6+:
 **Solution**:
 1. Check if cookies/storage are enabled in browser
 2. Check browser console for `QuotaExceededError`
-3. Verify `safeSetStorage()` is being called
+3. Verify `StorageService.setItem()` is being called
 4. Clear browser cache and try again
+5. Check DevTools → Application → localStorage for `xivdyetools_theme` key
 
 ### Theme Not Applying
 
 **Problem**: Selected theme doesn't appear
 **Solution**:
-1. Check `body` element has correct class (inspect element)
-2. Verify CSS variables defined in `shared-styles.css`
+1. Check `body` element has correct class (inspect element: should be `standard-light`, etc.)
+2. Verify CSS variables defined in `src/styles/themes.css`
 3. Check browser console for CSS errors
-4. Reload `shared-components.js` (clear cache)
+4. Hard refresh (Ctrl+Shift+R / Cmd+Shift+R) to clear cache
+5. Verify `ThemeService.setTheme()` was called successfully
 
 ### API Integration Not Working
 

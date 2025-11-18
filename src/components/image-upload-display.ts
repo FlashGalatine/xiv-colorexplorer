@@ -87,7 +87,7 @@ export class ImageUploadDisplay extends BaseComponent {
 
     // Info text
     const info = this.createElement('p', {
-      textContent: 'Supported formats: PNG, JPG, WebP, GIF. Maximum size: 10MB',
+      textContent: 'Supported formats: PNG, JPG, WebP, GIF. Maximum size: 20MB',
       className: 'text-xs text-gray-500 dark:text-gray-400 text-center',
     });
     wrapper.appendChild(info);
@@ -214,9 +214,9 @@ export class ImageUploadDisplay extends BaseComponent {
       return;
     }
 
-    // Validate file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      this.emit('error', { message: 'Image must be smaller than 10MB' });
+    // Validate file size (20MB max)
+    if (file.size > 20 * 1024 * 1024) {
+      this.emit('error', { message: 'Image must be smaller than 20MB' });
       return;
     }
 

@@ -10,8 +10,9 @@
 import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
+import { MarketBoard } from './market-board';
 import { ColorService, DyeService } from '@services/index';
-import type { Dye } from '@shared/types';
+import type { Dye, PriceData } from '@shared/types';
 
 /**
  * Harmony types with their descriptions
@@ -53,6 +54,24 @@ const HARMONY_TYPES: HarmonyTypeInfo[] = [
     description: 'Four colors evenly spaced (90° each)',
     icon: '⬜',
   },
+  {
+    id: 'monochromatic',
+    name: 'Monochromatic',
+    description: 'Single hue with varying saturation/brightness',
+    icon: '🔵',
+  },
+  {
+    id: 'compound',
+    name: 'Compound',
+    description: 'Analogous + Complementary (±30°, +180°)',
+    icon: '🔀',
+  },
+  {
+    id: 'shades',
+    name: 'Shades',
+    description: 'Similar tones closely grouped (±15°)',
+    icon: '🌑',
+  },
 ];
 
 /**
@@ -62,8 +81,10 @@ const HARMONY_TYPES: HarmonyTypeInfo[] = [
 export class HarmonyGeneratorTool extends BaseComponent {
   private baseColor: string = '#FF0000';
   private dyeSelector: DyeSelector | null = null;
+  private marketBoard: MarketBoard | null = null;
   private harmonyDisplays: Map<string, HarmonyType> = new Map();
   private showPrices: boolean = false;
+  private priceData: Map<number, PriceData> = new Map();
   private harmonyContainers: Map<string, HTMLElement> = new Map();
 
   /**
@@ -215,36 +236,18 @@ export class HarmonyGeneratorTool extends BaseComponent {
    */
   private renderOptionsSection(): HTMLElement {
     const section = this.createElement('div', {
-      className: 'flex flex-wrap gap-4 items-center',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
     });
 
-    const label = this.createElement('label', {
-      className: 'flex items-center gap-2 cursor-pointer',
+    // Market Board container
+    const marketBoardContainer = this.createElement('div', {
+      id: 'market-board-container',
     });
-
-    const checkboxAttrs: Record<string, string> = {
-      type: 'checkbox',
-    };
-    if (this.showPrices) {
-      checkboxAttrs.checked = 'checked';
-    }
-
-    const checkbox = this.createElement('input', {
-      attributes: checkboxAttrs,
-      className: 'w-4 h-4 border-gray-300 rounded focus:ring-blue-500',
-    });
-
-    const labelText = this.createElement('span', {
-      textContent: 'Show market prices (if available)',
-      className: 'text-sm text-gray-700 dark:text-gray-300',
-    });
-
-    label.appendChild(checkbox);
-    label.appendChild(labelText);
-    section.appendChild(label);
+    section.appendChild(marketBoardContainer);
 
     // Store for event binding
-    (this as unknown as Record<string, HTMLElement>)._pricesCheckbox = checkbox;
+    (this as unknown as Record<string, HTMLElement>)._marketBoardContainer = marketBoardContainer;
 
     return section;
   }
@@ -252,7 +255,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
   /**
    * Bind event listeners
    */
-  bindEvents(): void {
+  async bindEvents(): Promise<void> {
     const hexInput = (this as unknown as Record<string, HTMLElement>)._hexInput as HTMLInputElement;
     const colorPicker = (this as unknown as Record<string, HTMLElement>)
       ._colorPicker as HTMLInputElement;
@@ -260,8 +263,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
       ._generateBtn as HTMLButtonElement;
     const dyeSelectorContainer = (this as unknown as Record<string, HTMLElement>)
       ._dyeSelectorContainer as HTMLElement;
-    const pricesCheckbox = (this as unknown as Record<string, HTMLElement>)
-      ._pricesCheckbox as HTMLInputElement;
+    const marketBoardContainer = (this as unknown as Record<string, HTMLElement>)
+      ._marketBoardContainer as HTMLElement;
 
     if (hexInput && colorPicker) {
       // Sync hex input and color picker
@@ -285,12 +288,44 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
     }
 
-    // Prices checkbox
-    if (pricesCheckbox) {
-      this.on(pricesCheckbox, 'change', () => {
-        this.showPrices = pricesCheckbox.checked;
-        this.updateAllDisplays();
+    // Initialize Market Board
+    if (marketBoardContainer && !this.marketBoard) {
+      this.marketBoard = new MarketBoard(marketBoardContainer);
+      await this.marketBoard.loadServerData();
+      this.marketBoard.init();
+
+      // Listen for Market Board events
+      marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
+        const customEvent = event as CustomEvent;
+        this.showPrices = customEvent.detail?.showPrices ?? false;
+        if (this.showPrices) {
+          this.fetchPricesForCurrentDyes();
+        } else {
+          this.priceData.clear();
+          this.updateAllDisplays();
+        }
       });
+
+      marketBoardContainer.addEventListener('server-changed', () => {
+        if (this.showPrices) {
+          this.fetchPricesForCurrentDyes();
+        }
+      });
+
+      marketBoardContainer.addEventListener('categories-changed', () => {
+        if (this.showPrices) {
+          this.fetchPricesForCurrentDyes();
+        }
+      });
+
+      marketBoardContainer.addEventListener('refresh-requested', () => {
+        if (this.showPrices) {
+          this.fetchPricesForCurrentDyes();
+        }
+      });
+
+      // Get initial showPrices state from Market Board
+      this.showPrices = this.marketBoard.getShowPrices();
     }
 
     // Initialize dye selector
@@ -319,6 +354,30 @@ export class HarmonyGeneratorTool extends BaseComponent {
         }
       });
     }
+  }
+
+  /**
+   * Fetch prices for all currently displayed dyes
+   */
+  private async fetchPricesForCurrentDyes(): Promise<void> {
+    if (!this.marketBoard || !this.showPrices) return;
+
+    // Collect all unique dyes from all harmony displays
+    const dyesToFetch: Dye[] = [];
+    for (const display of this.harmonyDisplays.values()) {
+      const dyes = display.getDyes();
+      for (const dye of dyes) {
+        if (!dyesToFetch.find((d) => d.itemID === dye.itemID)) {
+          dyesToFetch.push(dye);
+        }
+      }
+    }
+
+    // Fetch prices using Market Board
+    this.priceData = await this.marketBoard.fetchPricesForDyes(dyesToFetch);
+
+    // Update all displays with new price data
+    this.updateAllDisplays();
   }
 
   /**
@@ -393,8 +452,38 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
           case 'square': {
             // Implement square: four colors at 90° intervals
-            const triadic = dyeService.findTriadicDyes(this.baseColor);
-            matchedDyes = triadic.map((dye) => ({
+            const square = dyeService.findSquareDyes(this.baseColor);
+            matchedDyes = square.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'monochromatic': {
+            // Implement monochromatic: same hue, varying saturation/brightness
+            const monochromatic = dyeService.findMonochromaticDyes(this.baseColor);
+            matchedDyes = monochromatic.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'compound': {
+            // Implement compound: analogous + complementary (±30°, +180°)
+            const compound = dyeService.findCompoundDyes(this.baseColor);
+            matchedDyes = compound.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
+            break;
+          }
+
+          case 'shades': {
+            // Implement shades: similar tones (±15°)
+            const shades = dyeService.findShadesDyes(this.baseColor);
+            matchedDyes = shades.map((dye) => ({
               dye,
               deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
             }));
@@ -431,13 +520,20 @@ export class HarmonyGeneratorTool extends BaseComponent {
         }
       }
     }
+
+    // Fetch prices if enabled
+    if (this.showPrices && this.marketBoard) {
+      this.fetchPricesForCurrentDyes();
+    }
   }
 
   /**
-   * Update all harmony displays
+   * Update all harmony displays with current price data
    */
   private updateAllDisplays(): void {
     for (const display of this.harmonyDisplays.values()) {
+      display.setPriceData(this.priceData);
+      display.updateShowPrices(this.showPrices);
       display.update();
     }
   }
@@ -469,6 +565,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
   destroy(): void {
     if (this.dyeSelector) {
       this.dyeSelector.destroy();
+    }
+    if (this.marketBoard) {
+      this.marketBoard.destroy();
     }
     for (const display of this.harmonyDisplays.values()) {
       display.destroy();
