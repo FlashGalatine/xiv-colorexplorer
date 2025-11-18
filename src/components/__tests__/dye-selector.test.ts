@@ -397,27 +397,18 @@ describe('DyeSelector', () => {
       component = new DyeSelector(container, options);
       component.init();
 
-      // Debug: Check if allowDuplicates is set
-      const compOptions = component['options'];
-      expect(compOptions.allowDuplicates).toBe(true);
-
       // Get first dye's ID
       const firstCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
       const dyeId = firstCard?.getAttribute('data-dye-id');
 
-      // Verify we found a card with ID
-      expect(dyeId).not.toBeNull();
-      expect(dyeId).not.toBeUndefined();
-
-      // Click same dye twice - re-query each time
-      const dyeCard1 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
-      expect(dyeCard1).not.toBeNull();
+      // Click same dye twice - use specific selector for dye buttons, not remove buttons
+      const dyeCard1 = container.querySelector(`.dye-select-btn[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
       dyeCard1?.click();
 
       expect(component.getSelectedDyes().length).toBe(1); // First click should add one
 
-      const dyeCard2 = container.querySelector(`[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
-      expect(dyeCard2).not.toBeNull();
+      // Re-query specifically for the dye grid button (not the remove button in selected list)
+      const dyeCard2 = container.querySelector(`.dye-select-btn[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
       dyeCard2?.click();
 
       const selectedDyes = component.getSelectedDyes();
@@ -789,13 +780,6 @@ describe('DyeSelector', () => {
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
       const dyeNames = Array.from(dyeCards).map(card => card.querySelector('.text-sm.font-semibold')?.textContent);
-
-      // Debug: log what we found
-      if (dyeCards.length === 0) {
-        console.log('No dyes found with search "   Black   "');
-        console.log('Search input value:', searchInput.value);
-        console.log('Component searchQuery:', component['searchQuery']);
-      }
 
       expect(dyeCards.length).toBeGreaterThan(0);
     });
