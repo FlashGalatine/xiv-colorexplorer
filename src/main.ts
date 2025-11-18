@@ -114,7 +114,9 @@ async function initializeApp(): Promise<void> {
         icon: '👁️',
         description: 'Simulate colorblindness',
         loadComponent: async () => {
-          const { AccessibilityCheckerTool } = await import('@components/accessibility-checker-tool');
+          const { AccessibilityCheckerTool } = await import(
+            '@components/accessibility-checker-tool'
+          );
           return AccessibilityCheckerTool;
         },
       },

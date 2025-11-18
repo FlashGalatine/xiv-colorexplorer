@@ -71,7 +71,9 @@ export class MarketBoard extends BaseComponent {
       ]);
 
       if (!dcResponse.ok || !worldsResponse.ok) {
-        throw new Error(`Failed to load server data: ${dcResponse.status}, ${worldsResponse.status}`);
+        throw new Error(
+          `Failed to load server data: ${dcResponse.status}, ${worldsResponse.status}`
+        );
       }
 
       this.dataCenters = await dcResponse.json();
@@ -480,7 +482,9 @@ export class MarketBoard extends BaseComponent {
     // Check Allied Society Dyes
     if (
       this.priceCategories.alliedSocietyDyes &&
-      (PRICE_CATEGORIES.alliedSocietyDyes.acquisitions as readonly string[]).includes(dye.acquisition)
+      (PRICE_CATEGORIES.alliedSocietyDyes.acquisitions as readonly string[]).includes(
+        dye.acquisition
+      )
     ) {
       return true;
     }

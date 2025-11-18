@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- DEVELOPMENT CSP: Uncomment for localhost testing (allows inline scripts) -->
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' localhost:*; script-src 'self' 'unsafe-inline' localhost:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com localhost:*; font-src 'self'; img-src 'self' data: blob: localhost:*; connect-src 'self' https://universalis.app localhost:*; base-uri 'self'; form-action 'none';"> -->
-    <!-- PRODUCTION CSP: Used for deployed version (strict, blocks inline scripts) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://universalis.app; base-uri 'self'; form-action 'none';">
+    <!-- PRODUCTION CSP: Strict Content Security Policy (no inline scripts/styles) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://universalis.app; base-uri 'self'; form-action 'none';">
     <title>XIV Dye Tools - FFXIV Dye Color Matcher, Harmony Generator & Accessibility Checker</title>
     <meta name="description" content="XIV Dye Tools: Free FFXIV dye tools for color matching, harmony generation, accessibility checking, dye comparison, and mixing. Perfect for glamour design and housing decoration.">
     <meta name="keywords" content="FFXIV, dyes, color matcher, color harmony, accessibility checker, dye comparison, dye mixer, glamour, housing decoration, fashion, Final Fantasy XIV">
@@ -42,38 +42,8 @@
     <link rel="stylesheet" href="assets/css/shared-styles.css">
     <!-- Theme System Styles -->
     <link rel="stylesheet" href="src/styles/themes.css">
-    <style>
-        /* Account for fixed navigation in top-right */
-        body {
-            padding-top: 0;
-        }
-
-        .tool-card {
-            transition: all 0.3s ease;
-        }
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Theme-aware styles for tool cards */
-        body.dark-mode .tool-card,
-        body.hydaelyn-dark .tool-card,
-        body.classic-ff-dark .tool-card,
-        body.parchment-dark .tool-card,
-        body.sugar-riot-dark .tool-card {
-            background-color: var(--theme-card-bg);
-            border-color: var(--theme-border);
-        }
-
-        body.dark-mode .tool-card:hover,
-        body.hydaelyn-dark .tool-card:hover,
-        body.classic-ff-dark .tool-card:hover,
-        body.parchment-dark .tool-card:hover,
-        body.sugar-riot-dark .tool-card:hover {
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-    </style>
+    <!-- Global Styles (moved from inline <style> to comply with strict CSP) -->
+    <link rel="stylesheet" href="src/styles/globals.css">
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
 
@@ -239,31 +209,8 @@
     <!-- Shared Components Script (includes theme system and automatic initialization) -->
     <script src="assets/js/shared-components.js"></script>
 
-    <!-- Service Worker Registration for PWA Support -->
-    <script>
-        // Register service worker for offline support
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((registration) => {
-                        console.log('XIV Dye Tools: Service Worker registered successfully', registration);
-
-                        // Check for updates periodically
-                        setInterval(() => {
-                            registration.update();
-                        }, 60000); // Check every minute
-                    })
-                    .catch((error) => {
-                        console.log('XIV Dye Tools: Service Worker registration failed', error);
-                    });
-            });
-
-            // Listen for controller change (new SW installed)
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                console.log('XIV Dye Tools: Service Worker controller changed - update available');
-            });
-        }
-    </script>
+    <!-- Service Worker Registration for PWA Support (moved to external file to comply with strict CSP) -->
+    <script src="public/js/sw-register.js"></script>
 
 </body>
 </html>

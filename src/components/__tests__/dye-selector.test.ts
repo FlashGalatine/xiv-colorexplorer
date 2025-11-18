@@ -165,8 +165,8 @@ describe('DyeSelector', () => {
       await waitForComponent(50);
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
-      const dyeNames = Array.from(dyeCards).map((card) =>
-        card.querySelector('.text-sm.font-semibold')?.textContent
+      const dyeNames = Array.from(dyeCards).map(
+        (card) => card.querySelector('.text-sm.font-semibold')?.textContent
       );
 
       // All visible dyes should contain "Black" in the name
@@ -251,8 +251,8 @@ describe('DyeSelector', () => {
 
       // Component calls update() synchronously after category click
       const dyeCards = container.querySelectorAll('.dye-select-btn');
-      const categories = Array.from(dyeCards).map((card) =>
-        card.querySelector('.text-xs.text-gray-500')?.textContent
+      const categories = Array.from(dyeCards).map(
+        (card) => card.querySelector('.text-xs.text-gray-500')?.textContent
       );
 
       // All visible dyes should be in Reds category
@@ -263,7 +263,7 @@ describe('DyeSelector', () => {
       } else {
         // If no Reds dyes found, verify we have at least some dyes before the filter
         const allDyes = DyeService.getInstance().getAllDyes();
-        const redDyes = allDyes.filter(d => d.category === 'Reds');
+        const redDyes = allDyes.filter((d) => d.category === 'Reds');
         expect(redDyes.length).toBeGreaterThan(0);
       }
     });
@@ -299,7 +299,9 @@ describe('DyeSelector', () => {
       await waitForComponent(50);
 
       // Re-query button after component update
-      const updatedBluesBtn = container.querySelector('[data-category="Blues"]') as HTMLButtonElement;
+      const updatedBluesBtn = container.querySelector(
+        '[data-category="Blues"]'
+      ) as HTMLButtonElement;
       expectElement.toHaveClass(updatedBluesBtn, 'bg-blue-500');
       expectElement.toHaveClass(updatedBluesBtn, 'text-white');
     });
@@ -319,7 +321,9 @@ describe('DyeSelector', () => {
       await waitForComponent(50);
 
       // Re-query buttons after component update
-      const updatedNeutralBtn = container.querySelector('[data-category="Neutral"]') as HTMLButtonElement;
+      const updatedNeutralBtn = container.querySelector(
+        '[data-category="Neutral"]'
+      ) as HTMLButtonElement;
       const updatedRedsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
 
       // Neutral should no longer be highlighted
@@ -362,10 +366,10 @@ describe('DyeSelector', () => {
 
       // Get all available dyes
       const allDyes = DyeService.getInstance().getAllDyes();
-      const dyeIds = allDyes.slice(0, 3).map(d => d.id);
+      const dyeIds = allDyes.slice(0, 3).map((d) => d.id);
 
       // Try to select 3 different dyes by ID
-      dyeIds.forEach(id => {
+      dyeIds.forEach((id) => {
         const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
         dyeCard?.click();
       });
@@ -402,13 +406,17 @@ describe('DyeSelector', () => {
       const dyeId = firstCard?.getAttribute('data-dye-id');
 
       // Click same dye twice - use specific selector for dye buttons, not remove buttons
-      const dyeCard1 = container.querySelector(`.dye-select-btn[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      const dyeCard1 = container.querySelector(
+        `.dye-select-btn[data-dye-id="${dyeId}"]`
+      ) as HTMLButtonElement;
       dyeCard1?.click();
 
       expect(component.getSelectedDyes().length).toBe(1); // First click should add one
 
       // Re-query specifically for the dye grid button (not the remove button in selected list)
-      const dyeCard2 = container.querySelector(`.dye-select-btn[data-dye-id="${dyeId}"]`) as HTMLButtonElement;
+      const dyeCard2 = container.querySelector(
+        `.dye-select-btn[data-dye-id="${dyeId}"]`
+      ) as HTMLButtonElement;
       dyeCard2?.click();
 
       const selectedDyes = component.getSelectedDyes();
@@ -420,7 +428,9 @@ describe('DyeSelector', () => {
       component = new DyeSelector(container, options);
       component.init();
 
-      const dyeCards = container.querySelectorAll('.dye-select-btn') as NodeListOf<HTMLButtonElement>;
+      const dyeCards = container.querySelectorAll(
+        '.dye-select-btn'
+      ) as NodeListOf<HTMLButtonElement>;
 
       // Click two different dyes
       dyeCards[0]?.click();
@@ -465,10 +475,10 @@ describe('DyeSelector', () => {
 
       // Get dye IDs
       const allDyes = DyeService.getInstance().getAllDyes();
-      const dyeIds = allDyes.slice(0, 2).map(d => d.id);
+      const dyeIds = allDyes.slice(0, 2).map((d) => d.id);
 
       // Select two dyes by ID - re-query each time
-      dyeIds.forEach(id => {
+      dyeIds.forEach((id) => {
         const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
         dyeCard?.click();
       });
@@ -513,10 +523,10 @@ describe('DyeSelector', () => {
 
       // Get dye IDs
       const allDyes = DyeService.getInstance().getAllDyes();
-      const dyeIds = allDyes.slice(0, 2).map(d => d.id);
+      const dyeIds = allDyes.slice(0, 2).map((d) => d.id);
 
       // Select two dyes by ID - re-query each time
-      dyeIds.forEach(id => {
+      dyeIds.forEach((id) => {
         const dyeCard = container.querySelector(`[data-dye-id="${id}"]`) as HTMLButtonElement;
         dyeCard?.click();
       });
@@ -578,8 +588,8 @@ describe('DyeSelector', () => {
       await waitForComponent(50);
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
-      const dyeNames = Array.from(dyeCards).map((card) =>
-        card.querySelector('.text-sm.font-semibold')?.textContent
+      const dyeNames = Array.from(dyeCards).map(
+        (card) => card.querySelector('.text-sm.font-semibold')?.textContent
       );
 
       // All visible dyes should be Reds AND contain "Rose"
@@ -587,8 +597,8 @@ describe('DyeSelector', () => {
         expect(name?.toLowerCase()).toContain('rose');
       });
 
-      const categories = Array.from(dyeCards).map((card) =>
-        card.querySelector('.text-xs.text-gray-500')?.textContent
+      const categories = Array.from(dyeCards).map(
+        (card) => card.querySelector('.text-xs.text-gray-500')?.textContent
       );
 
       categories.forEach((cat) => {
@@ -723,7 +733,9 @@ describe('DyeSelector', () => {
     it('should have keyboard-accessible buttons', () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const dyeCards = container.querySelectorAll('.dye-select-btn') as NodeListOf<HTMLButtonElement>;
+      const dyeCards = container.querySelectorAll(
+        '.dye-select-btn'
+      ) as NodeListOf<HTMLButtonElement>;
 
       dyeCards.forEach((card) => {
         expect(card.tagName).toBe('BUTTON');
@@ -779,7 +791,9 @@ describe('DyeSelector', () => {
       await waitForComponent(100);
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
-      const dyeNames = Array.from(dyeCards).map(card => card.querySelector('.text-sm.font-semibold')?.textContent);
+      const dyeNames = Array.from(dyeCards).map(
+        (card) => card.querySelector('.text-sm.font-semibold')?.textContent
+      );
 
       expect(dyeCards.length).toBeGreaterThan(0);
     });

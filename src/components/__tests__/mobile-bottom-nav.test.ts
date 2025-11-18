@@ -526,7 +526,9 @@ describe('MobileBottomNav', () => {
 
       const toolBtn = container.querySelector('[data-tool-id="special"]') as HTMLElement;
       expect(toolBtn).not.toBeNull();
-      expect(toolBtn.getAttribute('title')).toBe("Tool's description with <special> chars & symbols!");
+      expect(toolBtn.getAttribute('title')).toBe(
+        "Tool's description with <special> chars & symbols!"
+      );
     });
 
     it('should handle rapid tool selection', () => {

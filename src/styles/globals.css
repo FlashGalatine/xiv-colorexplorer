@@ -53,3 +53,31 @@ pre,
 body {
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
+
+/* Tool card styling for index.html */
+.tool-card {
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Theme-aware styles for tool cards */
+body.dark-mode .tool-card,
+body.hydaelyn-dark .tool-card,
+body.classic-ff-dark .tool-card,
+body.parchment-dark .tool-card,
+body.sugar-riot-dark .tool-card {
+  background-color: var(--theme-card-bg);
+  border-color: var(--theme-border);
+}
+
+body.dark-mode .tool-card:hover,
+body.hydaelyn-dark .tool-card:hover,
+body.classic-ff-dark .tool-card:hover,
+body.parchment-dark .tool-card:hover,
+body.sugar-riot-dark .tool-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}

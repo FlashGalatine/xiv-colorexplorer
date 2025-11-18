@@ -291,12 +291,7 @@ export class ColorWheelDisplay extends BaseComponent {
       case 'monochromatic':
         return [baseHue];
       case 'compound':
-        return [
-          baseHue,
-          (baseHue + 30) % 360,
-          (baseHue - 30 + 360) % 360,
-          (baseHue + 180) % 360,
-        ];
+        return [baseHue, (baseHue + 30) % 360, (baseHue - 30 + 360) % 360, (baseHue + 180) % 360];
       case 'shades':
         return [baseHue, (baseHue + 15) % 360, (baseHue - 15 + 360) % 360];
       default:

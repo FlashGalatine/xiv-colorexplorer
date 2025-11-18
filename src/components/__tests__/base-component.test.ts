@@ -525,9 +525,7 @@ describe('BaseComponent', () => {
 
       component.debug();
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('TestComponent Debug Info')
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('TestComponent Debug Info'));
       consoleSpy.mockRestore();
     });
   });

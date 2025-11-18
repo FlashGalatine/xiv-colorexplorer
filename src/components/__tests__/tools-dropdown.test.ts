@@ -280,9 +280,7 @@ describe('ToolsDropdown', () => {
 
       mockTools.forEach((tool) => {
         button.click(); // Open dropdown
-        const toolBtn = container.querySelector(
-          `[data-tool-id="${tool.id}"]`
-        ) as HTMLButtonElement;
+        const toolBtn = container.querySelector(`[data-tool-id="${tool.id}"]`) as HTMLButtonElement;
         toolBtn.click();
       });
 
@@ -575,9 +573,7 @@ describe('ToolsDropdown', () => {
       // Click same tool 3 times
       for (let i = 0; i < 3; i++) {
         button.click();
-        const harmonyBtn = container.querySelector(
-          '[data-tool-id="harmony"]'
-        ) as HTMLButtonElement;
+        const harmonyBtn = container.querySelector('[data-tool-id="harmony"]') as HTMLButtonElement;
         harmonyBtn.click();
       }
 

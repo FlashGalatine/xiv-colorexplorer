@@ -191,7 +191,9 @@ describe('ThemeSwitcher', () => {
       const initialTheme = ThemeService.getCurrentTheme();
 
       // Click on a different theme
-      const themeButton = container.querySelector('[data-theme="hydaelyn-dark"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="hydaelyn-dark"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       const newTheme = ThemeService.getCurrentTheme();
@@ -210,7 +212,9 @@ describe('ThemeSwitcher', () => {
       expectElement.toNotHaveClass(dropdown, 'hidden');
 
       // Select a theme
-      const themeButton = container.querySelector('[data-theme="parchment-light"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="parchment-light"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       await waitForComponent(10);
@@ -225,7 +229,9 @@ describe('ThemeSwitcher', () => {
       const eventHandler = vi.fn();
       container.addEventListener('theme-changed', eventHandler);
 
-      const themeButton = container.querySelector('[data-theme="classic-dark"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="classic-dark"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       expect(eventHandler).toHaveBeenCalledTimes(1);
@@ -235,7 +241,9 @@ describe('ThemeSwitcher', () => {
     it('should persist theme to storage', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
-      const themeButton = container.querySelector('[data-theme="sugar-riot-light"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="sugar-riot-light"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       // Verify theme was saved via appStorage (namespaced storage)
@@ -248,7 +256,9 @@ describe('ThemeSwitcher', () => {
     it('should update component state after theme selection', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
-      const themeButton = container.querySelector('[data-theme="parchment-dark"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="parchment-dark"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       const state = component['getState']();
@@ -259,7 +269,9 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Select a theme
-      const themeButton = container.querySelector('[data-theme="hydaelyn-light"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="hydaelyn-light"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       await waitForComponent(50); // Wait for component update
@@ -307,7 +319,9 @@ describe('ThemeSwitcher', () => {
     it('should apply theme to DOM via ThemeService', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
-      const themeButton = container.querySelector('[data-theme="hydaelyn-dark"]') as HTMLButtonElement;
+      const themeButton = container.querySelector(
+        '[data-theme="hydaelyn-dark"]'
+      ) as HTMLButtonElement;
       themeButton.click();
 
       // Verify ThemeService applied the theme to document.documentElement (the <html> element)
@@ -423,7 +437,9 @@ describe('ThemeSwitcher', () => {
       const themes = ['hydaelyn-light', 'parchment-dark', 'sugar-riot-light', 'classic-dark'];
 
       for (const themeName of themes) {
-        const themeButton = container.querySelector(`[data-theme="${themeName}"]`) as HTMLButtonElement;
+        const themeButton = container.querySelector(
+          `[data-theme="${themeName}"]`
+        ) as HTMLButtonElement;
         themeButton.click();
       }
 
