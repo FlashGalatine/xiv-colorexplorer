@@ -15,8 +15,12 @@ This folder contains detailed developer documentation for the XIV Dye Tools proj
 
 ### User Documentation
 - **[README.md](../README.md)** - User-facing features and how to use the tools
-- **[FAQ.md](../FAQ.md)** - Frequently asked questions
-- **[CHANGELOG.md](../CHANGELOG.md)** - Version history and release notes
+- **[FAQ.md](./FAQ.md)** - Frequently asked questions
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
+
+### Additional Resources
+- **[CSP_DEPLOYMENT.md](./CSP_DEPLOYMENT.md)** - Content Security Policy deployment guide
+- **[historical/](./historical/)** - Historical documentation from previous phases
 
 ## 🚀 Getting Started
 
@@ -38,6 +42,8 @@ This folder contains detailed developer documentation for the XIV Dye Tools proj
 | README.md | User features and usage | End users |
 | FAQ.md | User questions & answers | End users |
 | CHANGELOG.md | Version history & releases | Everyone |
+| CSP_DEPLOYMENT.md | Content Security Policy guide | DevOps/Security |
+| historical/ | Historical phase documentation | Reference/Archive |
 
 ## 🔑 Key Concepts
 
@@ -78,8 +84,8 @@ npm run preview    # Preview production build
 | My theme change isn't persisting | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - localStorage section |
 | What are the npm commands? | [CLAUDE.md](../CLAUDE.md) - Common npm Commands |
 | How do I add a new feature? | [ARCHITECTURE.md](./ARCHITECTURE.md) - Common Tasks |
-| What version are we on? | [CHANGELOG.md](../CHANGELOG.md) |
-| How do users use the tools? | [README.md](../README.md) |
+| What version are we on? | [CHANGELOG.md](./CHANGELOG.md) |
+| How do users use the tools? | [README.md](../README.md) or [FAQ.md](./FAQ.md) |
 
 ## 🔗 External Resources
 
