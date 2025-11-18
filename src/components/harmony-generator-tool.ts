@@ -54,6 +54,24 @@ const HARMONY_TYPES: HarmonyTypeInfo[] = [
     description: 'Four colors evenly spaced (90° each)',
     icon: '⬜',
   },
+  {
+    id: 'monochromatic',
+    name: 'Monochromatic',
+    description: 'Single hue with varying saturation/brightness',
+    icon: '🔵',
+  },
+  {
+    id: 'compound',
+    name: 'Compound',
+    description: 'Analogous + Complementary (±30°, +180°)',
+    icon: '🔀',
+  },
+  {
+    id: 'shades',
+    name: 'Shades',
+    description: 'Similar tones closely grouped (±15°)',
+    icon: '🌑',
+  },
 ];
 
 /**

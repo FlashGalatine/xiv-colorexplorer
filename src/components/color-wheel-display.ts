@@ -288,6 +288,17 @@ export class ColorWheelDisplay extends BaseComponent {
         return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
       case 'square':
         return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
+      case 'monochromatic':
+        return [baseHue];
+      case 'compound':
+        return [
+          baseHue,
+          (baseHue + 30) % 360,
+          (baseHue - 30 + 360) % 360,
+          (baseHue + 180) % 360,
+        ];
+      case 'shades':
+        return [baseHue, (baseHue + 15) % 360, (baseHue - 15 + 360) % 360];
       default:
         return [baseHue];
     }
@@ -304,6 +315,9 @@ export class ColorWheelDisplay extends BaseComponent {
       'split-complementary': 'SPLIT',
       tetradic: 'TETRA',
       square: 'SQUARE',
+      monochromatic: 'MONO',
+      compound: 'COMPND',
+      shades: 'SHADES',
     };
     return shortNames[harmonyType] || harmonyType.toUpperCase().slice(0, 6);
   }
