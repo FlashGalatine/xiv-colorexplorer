@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎨 Theme Redesign & Advanced Filtering (Latest Session)
 
-**Status**: In Progress | Session: Current
-**Focus**: Current Issues v2.0.0 Implementation
+**Status**: ✅ COMPLETE | Session: Current
+**Focus**: All Current Issues v2.0.0 Implementation - 4 Issues Resolved
 
 #### Issue 1: Standard Theme Color Redesign ✅
 - Changed Standard Light theme primary from indigo (#4F46E5) to red (#DC2626), then refined to #AB1C1C
@@ -37,6 +37,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded state persists in localStorage key: `xivdyetools_harmony_filters_expanded`
 - Improves UI/UX on Harmony Explorer tool
 - No bundle size increase (toggle logic is minimal JavaScript)
+
+#### Issue 3: Simple/Expanded Suggestions Modes ✅
+- **Simple Suggestions**: Strict harmony with exact dye counts per harmony type
+  - Complementary: 2 dyes (base + 1)
+  - Analogous: 3 dyes (base + 2)
+  - Triadic: 3 dyes (base + 2)
+  - Split-Complementary, Tetradic, Square, Monochromatic, Compound, Shades configured with specific limits
+- **Expanded Suggestions**: Simple mode + additional similar dyes per harmony dye
+  - Adds 1 companion dye for each harmony dye using color distance (like Dye Mixer)
+  - Facewear dyes excluded from additional companions
+  - Example: Tetradic shows 4 base + 3 additional = 7 total
+- UI: Radio buttons in Harmony Explorer options section
+- Preference persisted in localStorage key: `xivdyetools_harmony_suggestions_mode`
+- Bundle size increase: +2.83 KB (27.43 KB gzipped for harmony tool)
+- Foundation enables users to choose between precision (Simple) and exploration (Expanded)
 
 #### Issue 4: Advanced Dye Filters ✅
 - Filter UI implemented in Harmony Explorer (3 checkbox filters)
