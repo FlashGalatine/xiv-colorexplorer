@@ -47,6 +47,8 @@ reddit_mod_approval_draft.txt
 
 # Discord Bot (maintained in separate repository)
 discordbot/
+feedback/
+nul
 
 # Node modules (if any dependencies are added in future)
 node_modules/
