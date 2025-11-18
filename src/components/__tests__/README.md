@@ -13,13 +13,15 @@ This directory contains tests for all UI components in the XIV Dye Tools applica
 
 ### Test Coverage
 
-#### Current Coverage (as of 2025-11-17)
+#### Current Coverage (as of 2025-11-18)
 
 | Module | Tests | Status |
 |--------|-------|--------|
 | BaseComponent | 39 | ✅ Passing |
 | ThemeSwitcher | 29 | ✅ Passing |
-| **Total** | **68** | **✅ All Passing** |
+| DyeSelector | 44 | ✅ Passing |
+| ToolsDropdown | 33 | ✅ Passing |
+| **Total** | **145** | **✅ All Passing** |
 
 Target: 80%+ coverage for all components
 
@@ -429,8 +431,8 @@ expect(document.documentElement.classList.contains('theme-hydaelyn-dark')).toBe(
 
 The following components still need test coverage:
 
-- [ ] DyeSelector
-- [ ] ToolsDropdown
+- [x] DyeSelector (44 tests)
+- [x] ToolsDropdown (33 tests)
 - [ ] MobileBottomNav
 - [ ] AppLayout
 - [ ] HarmonyGeneratorTool
@@ -441,7 +443,7 @@ The following components still need test coverage:
 
 ### Priority
 
-1. **UI Components** (DyeSelector, ToolsDropdown, MobileBottomNav) - Moderate complexity
+1. **UI Components** (MobileBottomNav, AppLayout) - Moderate complexity
 2. **Tool Components** (HarmonyGeneratorTool, etc.) - High complexity
 
 ## Resources
