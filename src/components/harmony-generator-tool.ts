@@ -12,7 +12,18 @@ import { DyeSelector } from './dye-selector';
 import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { ColorService, DyeService } from '@services/index';
+import { appStorage } from '@services/storage-service';
+import { STORAGE_KEYS, EXPENSIVE_DYE_IDS } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
+
+/**
+ * Dye filter configuration
+ */
+interface DyeFilterConfig {
+  excludeMetallic: boolean;
+  excludePastel: boolean;
+  excludeExpensive: boolean;
+}
 
 /**
  * Harmony types with their descriptions
@@ -86,6 +97,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private showPrices: boolean = false;
   private priceData: Map<number, PriceData> = new Map();
   private harmonyContainers: Map<string, HTMLElement> = new Map();
+  private dyeFilters: DyeFilterConfig = {
+    excludeMetallic: false,
+    excludePastel: false,
+    excludeExpensive: false,
+  };
+  private filterCheckboxes: Map<string, HTMLInputElement> = new Map();
 
   /**
    * Render the tool component
@@ -237,8 +254,94 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private renderOptionsSection(): HTMLElement {
     const section = this.createElement('div', {
       className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
+
+    // Dye Filters section
+    const filtersSection = this.createElement('div', {
+      className: 'space-y-3',
+    });
+
+    const filtersLabel = this.createElement('label', {
+      textContent: 'Advanced Dye Filters',
+      className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
+    });
+    filtersSection.appendChild(filtersLabel);
+
+    // Filter checkboxes
+    const filterOptions = [
+      {
+        key: 'excludeMetallic',
+        label: 'Exclude Metallic Dyes',
+        description: 'Hide dyes with "Metallic" in the name',
+      },
+      {
+        key: 'excludePastel',
+        label: 'Exclude Pastel Dyes',
+        description: 'Hide dyes with "Pastel" in the name',
+      },
+      {
+        key: 'excludeExpensive',
+        label: 'Exclude Expensive Dyes',
+        description: 'Hide Jet Black & Pure White',
+      },
+    ];
+
+    const checkboxesContainer = this.createElement('div', {
+      className: 'space-y-2',
+    });
+
+    for (const option of filterOptions) {
+      const checkboxDiv = this.createElement('div', {
+        className: 'flex items-start gap-3',
+      });
+
+      const checkbox = this.createElement('input', {
+        attributes: {
+          type: 'checkbox',
+          id: `filter-${option.key}`,
+        },
+        className:
+          'mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer',
+      });
+
+      const labelElement = this.createElement('label', {
+        attributes: {
+          for: `filter-${option.key}`,
+        },
+        className: 'cursor-pointer flex-1',
+      });
+
+      const labelText = this.createElement('div', {
+        textContent: option.label,
+        className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
+      });
+
+      const descText = this.createElement('div', {
+        textContent: option.description,
+        className: 'text-xs text-gray-500 dark:text-gray-400',
+      });
+
+      labelElement.appendChild(labelText);
+      labelElement.appendChild(descText);
+
+      checkboxDiv.appendChild(checkbox);
+      checkboxDiv.appendChild(labelElement);
+      checkboxesContainer.appendChild(checkboxDiv);
+
+      // Store checkbox reference
+      this.filterCheckboxes.set(option.key, checkbox);
+      (this as unknown as Record<string, HTMLInputElement>)[`_${option.key}Checkbox`] = checkbox;
+    }
+
+    filtersSection.appendChild(checkboxesContainer);
+    section.appendChild(filtersSection);
+
+    // Divider
+    const divider = this.createElement('div', {
+      className: 'border-t border-gray-200 dark:border-gray-700',
+    });
+    section.appendChild(divider);
 
     // Market Board container
     const marketBoardContainer = this.createElement('div', {
@@ -354,6 +457,68 @@ export class HarmonyGeneratorTool extends BaseComponent {
         }
       });
     }
+
+    // Initialize filter checkboxes and load saved state
+    this.loadFilterState();
+    for (const [_key, checkbox] of this.filterCheckboxes) {
+      this.on(checkbox, 'change', () => {
+        this.updateFilterState();
+        this.generateHarmonies();
+      });
+    }
+  }
+
+  /**
+   * Load filter state from localStorage
+   */
+  private loadFilterState(): void {
+    const saved = appStorage.getItem<DyeFilterConfig>(
+      STORAGE_KEYS.HARMONY_FILTERS,
+      this.dyeFilters
+    ) ?? this.dyeFilters;
+    this.dyeFilters = saved;
+
+    // Update checkboxes to reflect saved state
+    for (const [filterKey, checkbox] of this.filterCheckboxes) {
+      const filterValue = this.dyeFilters[filterKey as keyof DyeFilterConfig] ?? false;
+      checkbox.checked = filterValue;
+    }
+  }
+
+  /**
+   * Update filter state from checkboxes and save to localStorage
+   */
+  private updateFilterState(): void {
+    for (const [filterKey, checkbox] of this.filterCheckboxes) {
+      this.dyeFilters[filterKey as keyof DyeFilterConfig] = checkbox.checked;
+    }
+    appStorage.setItem(STORAGE_KEYS.HARMONY_FILTERS, this.dyeFilters);
+  }
+
+  /**
+   * Apply dye filters to matched dyes
+   */
+  private applyDyeFilters(
+    dyes: Array<{ dye: Dye; deviance: number }>
+  ): Array<{ dye: Dye; deviance: number }> {
+    return dyes.filter((item) => {
+      // Exclude Metallic dyes
+      if (this.dyeFilters.excludeMetallic && item.dye.name.includes('Metallic')) {
+        return false;
+      }
+
+      // Exclude Pastel dyes
+      if (this.dyeFilters.excludePastel && item.dye.name.includes('Pastel')) {
+        return false;
+      }
+
+      // Exclude Jet Black and Pure White
+      if (this.dyeFilters.excludeExpensive && EXPENSIVE_DYE_IDS.includes(item.dye.itemID)) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   /**
@@ -496,6 +661,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
       // Filter out Facewear dyes from results
       matchedDyes = matchedDyes.filter((item) => item.dye.category !== 'Facewear');
+
+      // Apply user-selected dye filters
+      matchedDyes = this.applyDyeFilters(matchedDyes);
 
       // Sort by deviance (lower is better) and limit to top 6 results
       matchedDyes = matchedDyes.sort((a, b) => a.deviance - b.deviance).slice(0, 6);

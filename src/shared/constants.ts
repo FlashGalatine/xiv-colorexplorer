@@ -167,6 +167,7 @@ export const STORAGE_KEYS = {
   LAST_TOOL: `${STORAGE_PREFIX}_last_tool`,
   PRICE_CACHE: `${STORAGE_PREFIX}_price_cache`,
   SAVED_PALETTES: `${STORAGE_PREFIX}_saved_palettes`,
+  HARMONY_FILTERS: `${STORAGE_PREFIX}_harmony_filters`,
 } as const;
 
 // ============================================================================
@@ -252,6 +253,11 @@ export const MAX_DYES_COMPARISON = 4;
  * Maximum dyes selectable in accessibility checker
  */
 export const MAX_DYES_ACCESSIBILITY = 6; // 6 outfit slots
+
+/**
+ * Expensive dye IDs for filtering
+ */
+export const EXPENSIVE_DYE_IDS = [13114, 13115]; // Pure White, Jet Black
 
 // ============================================================================
 // Keyboard Shortcuts
