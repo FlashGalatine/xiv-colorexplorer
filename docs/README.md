@@ -87,6 +87,16 @@ npm run preview    # Preview production build
 | What version are we on? | [CHANGELOG.md](./CHANGELOG.md) |
 | How do users use the tools? | [README.md](../README.md) or [FAQ.md](./FAQ.md) |
 
+## 🐛 Found an Issue?
+
+**Report bugs and suggest features**:
+- **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools/issues)** - Technical issues and feature requests
+- **[Discord](https://discord.gg/5VUSKTZCe5)** - Community discussion and support
+
+See **[CURRENT_ISSUES.md](./CURRENT_ISSUES.md)** for known issues and workarounds.
+
+---
+
 ## 🔗 External Resources
 
 - **[FFXIV Dye Database](https://ffxiv.gamerescape.com/)** - Dye data source

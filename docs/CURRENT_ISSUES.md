@@ -1,5 +1,13 @@
 # Current Issues and Suggestions with the XIV Dye Tools
 
+> **Found a bug or have a suggestion?**
+>
+> Please report issues on **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools/issues)** or discuss on **[Discord](https://discord.gg/5VUSKTZCe5)**.
+>
+> Community feedback helps us improve the tools for everyone! ✨
+
+---
+
 ## General Feedback
 
 * SUGGESTION: The sticky header should use the "--theme-primary" as the background color, making the header pop out almost like a mini-hero banner.
