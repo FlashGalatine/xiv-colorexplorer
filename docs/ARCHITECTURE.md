@@ -109,6 +109,20 @@ These are preserved for historical reference and comparison but are **not active
 
 ---
 
+## Theme & Layout Tokens
+
+v2.0.0 relies on three primary surfaces:
+
+| Token | Usage |
+|-------|-------|
+| `--theme-background` | Page chrome (`app-shell`, body) |
+| `--theme-card-background` | Cards/tool panels (`bg-white`, `dark:bg-gray-800`) |
+| `--theme-card-hover` | Hover/focus states (remapped from Tailwind grays) |
+
+`ThemeService` keeps these in sync whenever you change themes. `app-layout` exposes `.app-shell`, `.app-header`, and `.app-footer` helpers so header/footer styling automatically picks up the active theme. See `docs/STYLE_GUIDE.md` for the full guidelines (sticky header behavior, responsive flex patterns, etc.).
+
+---
+
 ## Development Workflow (v2.0.0)
 
 ### Testing Checklist Before Committing
@@ -420,6 +434,8 @@ connectedCallback() {
 
 - **[SERVICES.md](./SERVICES.md)** - Service layer architecture and API details
 - **[TOOLS.md](./TOOLS.md)** - Individual tool descriptions and algorithms
+- **[STYLE_GUIDE.md](./STYLE_GUIDE.md)** - Theme tokens, surface usage, responsive notes
+- **[PRIVACY.md](./PRIVACY.md)** - Data-handling guarantees for image + color tools
 - **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
 - **[README.md](../docs/README.md)** - Documentation index
 - **[CLAUDE.md](../CLAUDE.md)** - Quick reference guide

@@ -12,6 +12,8 @@ This folder contains detailed developer documentation for the XIV Dye Tools proj
 - **[SERVICES.md](./SERVICES.md)** - Service layer architecture and API integration
 - **[TOOLS.md](./TOOLS.md)** - Detailed descriptions of all five tools
 - **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
+- **[STYLE_GUIDE.md](./STYLE_GUIDE.md)** - Theme tokens, hover states, responsive layout patterns
+- **[PRIVACY.md](./PRIVACY.md)** - Image handling and on-device guarantees
 
 ### User Documentation
 - **[README.md](../README.md)** - User-facing features and how to use the tools
@@ -39,6 +41,8 @@ This folder contains detailed developer documentation for the XIV Dye Tools proj
 | SERVICES.md | Service layer deep dive, API details | Backend/service developers |
 | TOOLS.md | Individual tool features & algorithms | Tool-specific developers |
 | TROUBLESHOOTING.md | Common problems & solutions | All developers |
+| STYLE_GUIDE.md | Theme tokens, sticky header, responsive notes | Front-end developers |
+| PRIVACY.md | Source-of-truth for data handling | Everyone |
 | README.md | User features and usage | End users |
 | FAQ.md | User questions & answers | End users |
 | CHANGELOG.md | Version history & releases | Everyone |

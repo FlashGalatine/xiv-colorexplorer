@@ -23,7 +23,7 @@ export class AppLayout extends BaseComponent {
    */
   render(): void {
     const app = this.createElement('div', {
-      className: 'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors',
+      className: 'app-shell flex flex-col min-h-screen transition-colors',
     });
 
     // Header - sticky positioning for top navigation
@@ -53,8 +53,7 @@ export class AppLayout extends BaseComponent {
    */
   private renderHeader(): HTMLElement {
     const header = this.createElement('header', {
-      className:
-        'bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm',
+      className: 'app-header shadow-lg',
     });
 
     const nav = this.createElement('nav', {
@@ -79,12 +78,15 @@ export class AppLayout extends BaseComponent {
 
     const title = this.createElement('h1', {
       textContent: 'XIV Dye Tools',
-      className: 'text-2xl font-bold text-gray-900 dark:text-white',
+      className: 'text-2xl font-bold text-white',
     });
 
     const version = this.createElement('span', {
       textContent: 'v2.0.0',
-      className: 'text-sm text-gray-500 dark:text-gray-400 font-mono',
+      className: 'text-sm text-white/80 font-mono',
+      attributes: {
+        'data-app-version': 'v2.0.0',
+      },
     });
 
     titleDiv.appendChild(title);
@@ -117,7 +119,7 @@ export class AppLayout extends BaseComponent {
    */
   private renderFooter(): HTMLElement {
     const footer = this.createElement('footer', {
-      className: 'bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12',
+      className: 'app-footer mt-12',
     });
 
     const footerContent = this.createElement('div', {

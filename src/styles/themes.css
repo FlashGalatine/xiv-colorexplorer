@@ -18,6 +18,7 @@
   --theme-border: #e5e7eb;
   --theme-background-secondary: #f9fafb;
   --theme-card-background: #ffffff;
+  --theme-card-hover: #f3f4f6;
   --theme-text-muted: #6b7280;
 }
 
@@ -90,6 +91,36 @@ body {
   background-color: var(--theme-background) !important;
   color: var(--theme-text) !important;
   border-color: var(--theme-border) !important;
+}
+
+.app-shell {
+  background-color: var(--theme-background) !important;
+  color: var(--theme-text) !important;
+}
+
+.app-header {
+  background-color: var(--theme-primary) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.app-header .text-gray-900,
+.app-header .text-gray-500,
+.app-header .text-gray-400 {
+  color: #ffffff !important;
+}
+
+.app-header .bg-white,
+.app-header .dark\:bg-gray-800 {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+.app-footer {
+  background-color: var(--theme-card-background) !important;
+  color: var(--theme-text) !important;
+  border-top: 1px solid var(--theme-border) !important;
 }
 
 /* Apply to text elements */
@@ -170,6 +201,16 @@ a:hover {
 .text-blue-600,
 .text-blue-500 {
   color: var(--theme-primary) !important;
+}
+
+.hover\:bg-gray-100:hover,
+.hover\:bg-gray-200:hover,
+.hover\:bg-gray-300:hover,
+.dark\:hover\:bg-gray-700:hover,
+.dark\:hover\:bg-gray-600:hover,
+.dark\:hover\:bg-gray-700\/50:hover {
+  background-color: var(--theme-card-hover) !important;
+  color: var(--theme-text) !important;
 }
 
 /* Deviance color indicators - ensure always visible */

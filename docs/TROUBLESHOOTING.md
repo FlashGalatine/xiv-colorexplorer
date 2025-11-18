@@ -155,6 +155,28 @@ Access to script at 'file:///.../main.ts' has been blocked by CORS policy
 
 ---
 
+### 5. 375 px Button Overflow
+
+**Symptoms**: Buttons such as “Generate” or “Clear” bleed past their container on iPhone SE/Pixel 5 widths (~375 px).
+
+**Cause**: Horizontal button rows (`flex gap-2`) with fixed-width buttons (`px-6`) that never wrap.
+
+**Fix Pattern**:
+
+```typescript
+className: 'flex flex-col sm:flex-row gap-2'
+// ...
+className: 'w-full sm:w-auto px-6 py-2 ...'
+```
+
+- Use `flex-col` on mobile, switch to `flex-row` at `sm`.
+- Add `w-full sm:w-auto` to buttons so they stretch on narrow screens.
+- `dye-selector` and `harmony-generator-tool` already follow this pattern—copy it for new components.
+
+**Testing**: Resize devtools to 375 px or use responsive mode to confirm buttons stack correctly.
+
+---
+
 ## Problem: localStorage Not Persisting
 
 **Symptoms**: Theme selection doesn't persist after page refresh

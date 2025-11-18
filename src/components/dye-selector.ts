@@ -58,7 +58,7 @@ export class DyeSelector extends BaseComponent {
 
     // Search input
     const searchContainer = this.createElement('div', {
-      className: 'flex gap-2',
+      className: 'flex flex-col sm:flex-row gap-2',
     });
 
     const searchInput = this.createElement('input', {
@@ -74,7 +74,7 @@ export class DyeSelector extends BaseComponent {
     const clearBtn = this.createElement('button', {
       textContent: 'Clear',
       className:
-        'px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors',
+        'px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto',
       attributes: {
         id: 'dye-selector-clear-btn',
         'aria-label': 'Clear all selections',

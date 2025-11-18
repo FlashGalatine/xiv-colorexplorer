@@ -74,6 +74,8 @@ npm run preview      # ✓ Preview without errors
 
 **⚠️ Version numbers sync** - Update: package.json, README.md, CHANGELOG.md, docs/, CLAUDE.md
 
+**⚠️ Color Matcher zoom** - Mouse wheel zoom now requires holding `Shift`; testers should note this when verifying scroll + pan interactions.
+
 For details, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
 ---
@@ -124,6 +126,12 @@ connectedCallback() {
 4. Test in: npm run dev
 5. Commit: "Theme: Add [ThemeName]"
 ```
+
+## Theme Tokens & Layout
+
+- Three primary surfaces: `--theme-background` (page chrome), `--theme-card-background` (cards/panels), `--theme-card-hover` (hover/focus).
+- `app-layout` exposes `.app-shell`, `.app-header`, `.app-footer` so you never reapply `bg-white` / `dark:bg-gray-900` manually.
+- See `docs/STYLE_GUIDE.md` for details on sticky header styling, hover remapping, and 375 px flex patterns.
 
 ---
 
@@ -207,6 +215,8 @@ If you modify a service, test all tools that use it.
 
 **TypeScript**: Strict mode enabled
 
+**Privacy**: Image + color tools are 100% client-side. See `docs/PRIVACY.md` if you add new capture/upload features.
+
 ---
 
 ## Related Documentation
@@ -215,6 +225,8 @@ If you modify a service, test all tools that use it.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design & workflows
 - **[docs/SERVICES.md](docs/SERVICES.md)** - Service layer & APIs
 - **[docs/TOOLS.md](docs/TOOLS.md)** - Tool algorithms & features
+- **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** - Theme tokens, hover rules, responsive patterns
+- **[docs/PRIVACY.md](docs/PRIVACY.md)** - Data-handling guarantees
 - **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Problems & solutions
 
 ---

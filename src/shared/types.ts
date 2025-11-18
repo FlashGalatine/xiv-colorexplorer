@@ -132,6 +132,7 @@ export interface ThemePalette {
   border: string;
   backgroundSecondary: string;
   cardBackground: string;
+  cardHover: string;
   textMuted: string;
 }
 

@@ -18,22 +18,24 @@ import { appStorage } from './storage-service';
 
 const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
   'standard-light': {
-    primary: '#AB1C1C',
+    primary: '#781A1A',
     background: '#FFFFFF',
     text: '#1F2937',
     border: '#E5E7EB',
     backgroundSecondary: '#F3F4F6',
     cardBackground: '#FFFFFF',
+    cardHover: '#F3F4F6',
     textMuted: '#6B7280',
   },
   'standard-dark': {
-    primary: '#F87171',
-    background: '#111827',
+    primary: '#C99156',
+    background: '#120A0A',
     text: '#F3F4F6',
-    border: '#374151',
-    backgroundSecondary: '#1F2937',
-    cardBackground: '#111827',
-    textMuted: '#9CA3AF',
+    border: '#4A2C17',
+    backgroundSecondary: '#1F1010',
+    cardBackground: '#321919',
+    cardHover: '#412121',
+    textMuted: '#D6B898',
   },
   'hydaelyn-light': {
     primary: '#0EA5E9',
@@ -42,6 +44,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#E0F2FE',
     backgroundSecondary: '#E0F2FE',
     cardBackground: '#FFFFFF',
+    cardHover: '#E0F2FE',
     textMuted: '#0C4A6E',
   },
   'hydaelyn-dark': {
@@ -51,6 +54,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#164E63',
     backgroundSecondary: '#164E63',
     cardBackground: '#0C2D47',
+    cardHover: '#164E63',
     textMuted: '#7DD3FC',
   },
   'classic-light': {
@@ -60,6 +64,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#DBEAFE',
     backgroundSecondary: '#DBEAFE',
     cardBackground: '#FFFFFF',
+    cardHover: '#DBEAFE',
     textMuted: '#1E40AF',
   },
   'classic-dark': {
@@ -69,6 +74,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#1E40AF',
     backgroundSecondary: '#1E40AF',
     cardBackground: '#1E3A8A',
+    cardHover: '#1E40AF',
     textMuted: '#93C5FD',
   },
   'parchment-light': {
@@ -78,6 +84,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#FCD34D',
     backgroundSecondary: '#FEF9E7',
     cardBackground: '#FEF3C7',
+    cardHover: '#FEF9E7',
     textMuted: '#92400E',
   },
   'parchment-dark': {
@@ -87,6 +94,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#D97706',
     backgroundSecondary: '#92400E',
     cardBackground: '#78350F',
+    cardHover: '#92400E',
     textMuted: '#FCD34D',
   },
   'sugar-riot-light': {
@@ -96,6 +104,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#FBCFE8',
     backgroundSecondary: '#FDF2F8',
     cardBackground: '#FFFFFF',
+    cardHover: '#FDF2F8',
     textMuted: '#9F1239',
   },
   'sugar-riot-dark': {
@@ -105,6 +114,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#EC4899',
     backgroundSecondary: '#831843',
     cardBackground: '#500724',
+    cardHover: '#831843',
     textMuted: '#F9A8D4',
   },
   'grayscale-light': {
@@ -114,6 +124,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#D1D5DB',
     backgroundSecondary: '#F3F4F6',
     cardBackground: '#FFFFFF',
+    cardHover: '#F3F4F6',
     textMuted: '#6B7280',
   },
   'grayscale-dark': {
@@ -123,6 +134,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     border: '#374151',
     backgroundSecondary: '#1F2937',
     cardBackground: '#111827',
+    cardHover: '#1F2937',
     textMuted: '#9CA3AF',
   },
 };
@@ -245,6 +257,7 @@ export class ThemeService {
     style.setProperty('--theme-border', palette.border);
     style.setProperty('--theme-background-secondary', palette.backgroundSecondary);
     style.setProperty('--theme-card-background', palette.cardBackground);
+    style.setProperty('--theme-card-hover', palette.cardHover);
     style.setProperty('--theme-text-muted', palette.textMuted);
   }
 
