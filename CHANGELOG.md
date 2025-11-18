@@ -7,9 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2025-11-18
+
+### 🎨 Theme Redesign & Advanced Filtering (Latest Session)
+
+**Status**: In Progress | Session: Current
+**Focus**: Current Issues v2.0.0 Implementation
+
+#### Issue 1: Standard Theme Color Redesign ✅
+- Changed Standard Light theme primary from indigo (#4F46E5) to red (#DC2626)
+- Changed Standard Dark theme primary from indigo (#818CF8) to red (#F87171)
+- Visual differentiation achieved from Hydaelyn (sky blue) and Classic FF (deep blue) themes
+- Accessibility verified: Both colors meet WCAG AA contrast standards (5.4:1 and 10.1:1)
+- All 5 tools tested with new theme colors at multiple breakpoints
+
+#### Issue 4: Advanced Dye Filters ✅
+- Filter UI implemented in Harmony Explorer (3 checkbox filters)
+- Exclude Metallic: Hide dyes with "Metallic" in the name
+- Exclude Pastel: Hide dyes with "Pastel" in the name
+- Exclude Expensive: Hide Jet Black (#13115) & Pure White (#13114)
+- Filter settings persisted to localStorage with automatic restoration
+- Filters applied after Facewear exclusion in harmony calculation
+- Bundle size increase: Minimal (22.94 KB gzipped for harmony tool, up from 20.60 KB)
+- Tests verified with TypeScript strict mode, production build successful
+
+---
+
 ## [2.0.0] - 2025-11-16
 
-### 📍 Phase 12.8: Critical Bug Fixes (Latest Session)
+### 📍 Phase 12.8: Critical Bug Fixes (Previous Session)
 
 **Status**: ✅ 5/9 Issues Fixed (56% complete) | Session: 2-3 hours
 **Branch**: phase-12.7/release (5 new commits)
