@@ -21,7 +21,8 @@ This directory contains tests for all UI components in the XIV Dye Tools applica
 | ThemeSwitcher | 29 | ✅ Passing |
 | DyeSelector | 44 | ✅ Passing |
 | ToolsDropdown | 33 | ✅ Passing |
-| **Total** | **145** | **✅ All Passing** |
+| MobileBottomNav | 39 | ✅ Passing |
+| **Total** | **184** | **✅ All Passing** |
 
 Target: 80%+ coverage for all components
 
@@ -433,7 +434,7 @@ The following components still need test coverage:
 
 - [x] DyeSelector (44 tests)
 - [x] ToolsDropdown (33 tests)
-- [ ] MobileBottomNav
+- [x] MobileBottomNav (39 tests)
 - [ ] AppLayout
 - [ ] HarmonyGeneratorTool
 - [ ] ColorMatcherTool
@@ -443,7 +444,7 @@ The following components still need test coverage:
 
 ### Priority
 
-1. **UI Components** (MobileBottomNav, AppLayout) - Moderate complexity
+1. **UI Components** (AppLayout) - Moderate complexity
 2. **Tool Components** (HarmonyGeneratorTool, etc.) - High complexity
 
 ## Resources
