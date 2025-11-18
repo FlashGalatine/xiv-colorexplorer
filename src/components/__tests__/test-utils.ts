@@ -9,6 +9,7 @@
 import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import type { BaseComponent } from '../base-component';
+import { vi } from 'vitest';
 
 /**
  * Create a container element for testing components
@@ -223,3 +224,72 @@ export const expectElement = {
     }
   },
 };
+
+/**
+ * Mock ResizeObserver in test environment
+ */
+export function setupResizeObserverMock(): void {
+  class ResizeObserverMock {
+    private callback: ResizeObserverCallback;
+
+    constructor(callback: ResizeObserverCallback) {
+      this.callback = callback;
+    }
+
+    observe(): void {
+      // Immediately invoke once to simulate measurement
+      this.callback([], this as unknown as ResizeObserver);
+    }
+
+    unobserve(): void {
+      // noop
+    }
+
+    disconnect(): void {
+      // noop
+    }
+  }
+
+  vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+}
+
+/**
+ * Mock canvas context utilities required by chart components
+ */
+export function setupCanvasMocks(): void {
+  const mockContext = {
+    fillRect: vi.fn(),
+    clearRect: vi.fn(),
+    getImageData: vi.fn(() => ({ data: new Uint8ClampedArray() })),
+    putImageData: vi.fn(),
+    createImageData: vi.fn(),
+    setTransform: vi.fn(),
+    drawImage: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    arc: vi.fn(),
+    fillText: vi.fn(),
+    measureText: vi.fn(() => ({ width: 0 })),
+    save: vi.fn(),
+    restore: vi.fn(),
+    translate: vi.fn(),
+    scale: vi.fn(),
+  } as unknown as CanvasRenderingContext2D;
+
+  vi.spyOn(window.HTMLCanvasElement.prototype, 'getContext').mockReturnValue(mockContext);
+  vi.spyOn(window.HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/png;base64,mock');
+}
+
+/**
+ * Mock global fetch
+ */
+export function setupFetchMock(data: unknown = {}): ReturnType<typeof vi.fn> {
+  const fetchMock = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => data,
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
+}

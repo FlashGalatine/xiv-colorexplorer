@@ -363,16 +363,15 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
   - ToolsDropdown: 33 tests ✅
   - MobileBottomNav: 39 tests ✅
   - AppLayout: 46 tests ✅
-- **Tool Components**: 0% coverage ⏳ (pending)
-- **Total Tests**: 370 passing (140 service + 230 component tests)
+- **Tool Components**: In progress (Color Matcher, Dye Mixer, Color Wheel Display now have baseline suites)
+- **Total Tests**: 514 passing (service/UI + 144 tool-focused tests)
 
 **Remaining Untested Components** (Tool Components):
 - `src/components/accessibility-checker-tool.ts` (508 lines) ⏳
-- `src/components/color-matcher-tool.ts` (656 lines) ⏳
-- `src/components/color-wheel-display.ts` (186 lines) ⏳
 - `src/components/dye-comparison-chart.ts` (507 lines) ⏳
-- `src/components/dye-mixer-tool.ts` (639 lines) ⏳
-- `src/components/harmony-type.ts` (85 lines) ⏳
+- `src/components/dye-mixer-tool.ts` (639 lines) – additional edge cases pending
+- `src/components/color-matcher-tool.ts` (656 lines) – expand coverage for image upload flows
+++ `src/components/color-wheel-display.ts` now covered by geometry tests (✅ baseline)
 
 **Completed Test Coverage** (UI Components):
 - ✅ `src/components/base-component.ts` (39 tests)
@@ -463,8 +462,8 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 **Progress Update** (Nov 18, 2025):
 - ✅ **Phase 1-3 COMPLETE**: All UI components tested (230 tests)
 - ✅ **Phase 4 SUBSTANTIALLY COMPLETE**: 3 major tool components tested (118 tests)
-- 📊 **Current Stats**: 501 total tests, 100% passing, ~8 second runtime
-- 📝 **Coverage Improvement**: From 370 → 501 tests (+131 new tool component tests)
+- 📊 **Current Stats**: 514 total tests, 100% passing, ~8 second runtime
+- 📝 **Coverage Improvement**: From 370 → 514 tests (+144 new tool component tests)
 - 🎯 **Focus**: Tested critical tools (Harmony, Accessibility, Comparison)
 
 **Test Statistics**:
