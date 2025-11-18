@@ -158,8 +158,10 @@ XIV Dye Tools provides five specialized tools for Final Fantasy XIV players to e
 - **Configurable Sampling**: 1×1 to 64×64 pixel averaging
 - **Auto Zoom**: Fit images to canvas intelligently
 - **Zoom Controls**: Fit, Width, +/-, Reset
+- **Shift + Scroll Zoom**: Mouse wheel zoom now requires holding `Shift` so normal scrolling is unaffected on long pages.
 - **Real-time Matching**: Updates immediately as you sample
 - **Theme-Aware UI**: Tip text color matches selected theme
+- **On-Device Privacy**: Images never leave the browser—see `docs/PRIVACY.md` for the full policy.
 
 ### Algorithm
 

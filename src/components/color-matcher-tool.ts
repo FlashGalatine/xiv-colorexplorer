@@ -310,10 +310,17 @@ export class ColorMatcherTool extends BaseComponent {
 
     const hint = this.createElement('p', {
       textContent:
-        'Click on the image to sample a color. Drag to sample a region. Use zoom controls to adjust view.',
-      className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
+        'Click on the image to sample a color. Drag to sample a region. Use the zoom controls or hold Shift + scroll to adjust view.',
+      className: 'text-sm text-gray-600 dark:text-gray-400',
     });
     section.appendChild(hint);
+
+    const privacyNotice = this.createElement('p', {
+      innerHTML:
+        '🔒 <strong>Privacy:</strong> Images never leave your browser. All processing happens locally (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).',
+      className: 'text-xs text-gray-500 dark:text-gray-400 mb-4',
+    });
+    section.appendChild(privacyNotice);
 
     // Create zoom controls container
     const zoomControls = this.createElement('div', {
@@ -533,7 +540,7 @@ export class ColorMatcherTool extends BaseComponent {
     resetBtn: HTMLElement,
     zoomDisplay: HTMLElement
   ): void {
-    const MIN_ZOOM = 50;
+    const MIN_ZOOM = 10;
     const MAX_ZOOM = 400;
 
     const updateZoom = (newZoom: number): void => {
@@ -607,8 +614,11 @@ export class ColorMatcherTool extends BaseComponent {
     // Allow mouse wheel zoom
     this.on(canvasContainer, 'wheel', (e: Event) => {
       const wheelEvent = e as WheelEvent;
-      wheelEvent.preventDefault();
+      if (!wheelEvent.shiftKey) {
+        return;
+      }
 
+      wheelEvent.preventDefault();
       const delta = wheelEvent.deltaY > 0 ? -10 : 10;
       updateZoom(this.zoomLevel + delta);
     });
