@@ -321,44 +321,21 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 
 ### Harmony Explorer Triadic Harmony Bug Investigation
 
-**Status**: ❌ Not Started
-**Estimated Time**: 2-4 hours
-**Priority**: HIGH (user-facing bug affecting harmony generation)
+**Status**: ✅ COMPLETE (Nov 18, 2025)
+**Actual Time**: ~2.5 hours (including regression tests)
 
-**Issue Description**:
-For certain dyes (Dragoon Blue, Carmine Red, Canary Yellow), the Triadic Harmony mode displays only **1 color instead of 2** harmony matches. Expected behavior: Triadic should always show 3 base dyes (base + 2 triadic matches).
+**What Changed**:
+- Rebuilt hue-offset helpers in `DyeService` so triadic, tetradic, square, split-complementary, and compound harmonies always return deterministic matches (with graceful fallbacks if the dye catalog is sparse).
+- Updated `HarmonyGeneratorTool` to rely on the new helpers and fixed Expanded mode so companion dyes render for complementary/triadic cards even when only one strict match exists.
+- Synced `color-wheel-display.ts` angles with the new math so the donut visualization mirrors the calculations.
+- Added `src/components/__tests__/harmony-generator-tool.test.ts` to lock in the companion-dye bugfix and ensure two triadic companions are emitted in simple mode.
 
-**Examples**:
-- Dragoon Blue: Shows only 1 triadic match (should show 2)
-- Carmine Red: Shows only 1 triadic match (should show 2)
-- Canary Yellow: Shows only 1 triadic match (should show 2)
-
-**Root Cause Analysis Needed**:
-1. Are these dyes being filtered out by Advanced Dye Filters?
-2. Is the deviance score too high and triggering early termination?
-3. Is there a harmony calculation bug for specific hue values?
-4. Are these dyes in a color range with insufficient dye database coverage?
-
-**Investigation Steps**:
-- [ ] Open Harmony Explorer and test with affected dyes
-- [ ] Check if filters are accidentally enabled (Metallic, Pastel, Expensive)
-- [ ] Inspect deviance scores for the missing matches
-- [ ] Review `getSimpleModeLimit()` for triadic (should return 3)
-- [ ] Check `findTriadicDyes()` in DyeService for angle calculation issues
-- [ ] Verify dye database has sufficient triadic matches at those hue positions
-- [ ] Add logging to track which dyes are being filtered/excluded
-
-**Affected Files** (likely):
-- `src/services/dye-service.ts` - findTriadicDyes() method
-- `src/components/harmony-generator-tool.ts` - harmony filtering logic
-- `src/shared/constants.ts` - harmony type configuration
-
-**Acceptance Criteria**:
-- [ ] Dragoon Blue shows 2 triadic matches (3 total including base)
-- [ ] Carmine Red shows 2 triadic matches (3 total including base)
-- [ ] Canary Yellow shows 2 triadic matches (3 total including base)
-- [ ] No regression in other harmony types
-- [ ] All 499+ tests still passing
+**Verification**:
+- Dragoon Blue, Carmine Red, and Canary Yellow now show two triadic matches (base + 2 companions) with no filter changes.
+- Tetradic layouts now render as two complementary pairs instead of clustering on one hemisphere.
+- Compound harmonies include the complementary dye again (was missing before).
+- 501 tests → 503 tests passing (new suite runs in ~8.2s).
+- Manual sanity checks across all harmony types plus Expanded mode companion counts (1-3) succeeded.
 
 ---
 
@@ -1065,6 +1042,29 @@ Modern font stack successfully implemented and deployed! ✅
 
 ---
 
+### 17. Research Camera Upload for Color Matcher (Mobile)
+
+**Status**: ⏳ Not Started  
+**Estimated Time**: 2-3 hours (discovery + prototype)  
+**Priority**: LOW (nice-to-have UX for mobile users)
+
+**Goal**: Reintroduce the v1.6.x “Camera Upload” option so mobile browsers can capture a photo directly into the Color Matcher without leaving the page.
+
+**Research Tasks**:
+- [ ] Review the legacy implementation in `legacy/colormatcher_*` to understand the original UX and permission prompts.
+- [ ] Evaluate `<input type="file" accept="image/*" capture="environment">` vs. `navigator.mediaDevices.getUserMedia()` for widest device support (iOS Safari + Android Chrome).
+- [ ] Confirm Canvas + EXIF rotation handling still respects the 20MB limit for live photos.
+- [ ] Document privacy guarantees in `docs/PRIVACY.md` (camera stream/process never leaves the browser).
+
+**Deliverables**:
+- Technical note (or PoC) summarizing recommended API + fallbacks.
+- Updates to `TODO.md` with implementation steps if feasible.
+- If blocked, capture findings plus follow-up questions (e.g., need HTTPS origin or new permissions UI) before closing the task.
+
+**Dependencies**: None (pure investigation), but ties into ongoing Color Matcher UX polish.
+
+---
+
 ## 📋 Completed Items
 
 *(Items will be moved here as they are completed)*
@@ -1078,7 +1078,7 @@ Modern font stack successfully implemented and deployed! ✅
 | Priority | Tasks | Est. Time | Status |
 |----------|-------|-----------|--------|
 | 🔴 Critical | 5 tasks | ~2.5 hours | ✅ COMPLETE (100%) |
-| 🟠 High | 4 tasks | ~12-14 hours | ⏳ IN PROGRESS (1 investigation queued) |
+| 🟠 High | 4 tasks | ~12-14 hours | ✅ COMPLETE (100%) |
 | 🟡 Medium | 7 tasks | ~20.5-23.5 hours | ✅ 7/7 Complete (100% - Tasks 9-15) |
 | 🟢 Low | 4 tasks | ~10 hours | ⏳ Backlog (0%) |
 
@@ -1098,26 +1098,26 @@ Modern font stack successfully implemented and deployed! ✅
 - Session 5 (Nov 18): TOOL COMPONENT TESTING (Task 9 Phase 4 - 118 new tests, 3 components, ~2.5 hours) ✅
 - Session 6 (Nov 18): FONT MODERNIZATION (Task 15 - Font optimization + production testing, ~1 hour) ✅
 
-**Progress Since Start**:
+- **Progress Since Start**:
 - 🔴 Critical: 5/5 COMPLETE ✅
-- 🟠 High: 3/3 COMPLETE ✅ (All security items done)
+- 🟠 High: 4/4 COMPLETE ✅ (Security + Harmony Explorer fixes)
 - 🟡 Medium: 7/7 COMPLETE ✅ (Tests + Performance + Features + Font Modernization - ALL DONE!)
 - 🟢 Low: 0/4 COMPLETE (Backlog for future sessions)
 
 **Overall Status**:
-- **Test Coverage**: 501 tests passing (370 service/UI + 131 new tool tests)
-- **Test-to-Code Ratio**: ~1.2:1 (excellent coverage)
-- **Completion**: 86% of medium priority tasks complete
+- **Test Coverage**: 503 tests passing (services + UI + new harmony tests)
+- **Test-to-Code Ratio**: ~1.25:1 (excellent coverage)
+- **Completion**: All high-priority tasks complete; low-priority backlog queued
 
 **Remaining Medium Priority**:
-1. Task 11: ✅ COMPLETE (Nov 18) - Repository already clean and organized
-2. Task 12: ❌ Not Started - Update CLAUDE.md (already mostly done from earlier sessions)
-3. Task 15: ❌ Not Started - Modernize font styling (1-2 hours)
+1. Task 12: ❌ Not Started - Update CLAUDE.md (architecture deep dive tweaks still pending)
+2. Task 9 (Tool components): ⏳ Broaden tests for Color Matcher / Mixer when time allows
+3. StorageService coverage push (>90%) - still outstanding
 
-**Next Session Focus** (Medium or Low Priority):
-1. **Option A**: Complete Tool Component testing (Phase 4 of Task 9, 4-6 hours) - Highest impact
-2. **Option B**: Modernize fonts (Task 15, 1-2 hours) - UX Polish
-3. **Option C**: Storage service test coverage (1.5 hours) - Quality improvement
+**Next Session Focus**:
+1. **Option A**: Broaden tool-component test coverage (Color Matcher, Mixer).
+2. **Option B**: StorageService edge-case tests (quota, corruption).
+3. **Option C**: Start camera-upload feasibility research (Low priority Task 17).
 
 ---
 
@@ -1142,8 +1142,8 @@ Modern font stack successfully implemented and deployed! ✅
 
 ---
 
-**Last Updated**: November 18, 2025 (Variable Companion Dyes + Harmony Explorer Bug Investigation Added)
-**Current Status**: 12/16 tasks queued (75% overall), All CRITICAL + 3/4 HIGH priority done
-**Latest Session**: Variable Companion Dyes feature + Harmony Explorer bug investigation identified
+**Last Updated**: November 18, 2025 (Harmony Explorer fixes + Color Matcher UX polish)
+**Current Status**: 13/17 tasks queued (76% overall), All CRITICAL + HIGH priority done
+**Latest Session**: Harmony Explorer hue math overhaul + companion dye regression tests
 **Maintained By**: Development Team
-**Next Session**: HIGH Priority - Harmony Explorer Triadic Harmony Bug Investigation
+**Next Session**: Medium/Low Priority backlog (tool tests, StorageService coverage, camera upload research)

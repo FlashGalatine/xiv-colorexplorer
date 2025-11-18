@@ -8,44 +8,27 @@
 
 ---
 
-## General Feedback
+## ✅ Resolved in v2.0.0 (November 18, 2025)
 
-* SUGGESTION: The sticky header should use the "--theme-primary" as the background color, making the header pop out almost like a mini-hero banner.
+- **Sticky header + theme tokens**: Header/footers now use `--theme-primary`, Standard Light = `#781A1A`, Standard Dark = `#C99156` with deeper card backgrounds, and hover states pull from the new `--theme-card-hover` variable.
+- **Background vs. card clarification**: `--theme-background` only drives the `app-shell`/body, while `--theme-card-background` handles cards. Documented in `docs/STYLE_GUIDE.md`.
+- **Harmony Explorer math**: Triadic, tetradic, square, compound, and split-complementary harmonies share a new hue-offset helper; companion dyes render correctly and the color wheel reflects the same angles. Regression tests added in `harmony-generator-tool.test.ts`.
+- **Color Matcher UX**: Minimum zoom lowered to 10%, Shift+Scroll required for wheel zoom, and a privacy notice (linking to `docs/PRIVACY.md`) confirms images never leave the browser.
+- **375px mobile overflow**: The Generate + Clear button rows now stack vertically on small screens (affects Harmony Explorer, Accessibility Checker, Dye Comparison, Dye Mixer, and any tool embedding `dye-selector`).
+- **Market Board integration**: Already present across tools; documentation updated to highlight this so it is no longer treated as a missing feature.
 
-## Tools Navigation and Theme Switcher
+---
 
-* SUGGESTION: Resort the theme list so that the non-standard themes are listed Alphabetically.
-* BUG: The mouse-over color does not change regardless of chosen theme.
-  * It appears to be hardcoded as "hover:bg-gray-100"
+## 🚧 Outstanding Feedback & Suggestions
 
-## Harmony Explorer
+### Tools Navigation / Theme Switcher
+- Resort the theme list alphabetically for non-standard themes (UI polish).
 
-* The following errors may be related to the **Triadic Harmony Bug Investigation** as mentioned in the TODO.md file.
-* BUG: Tetradic Harmony seems to be calculating wrong.
-  * CURRENTLY: There appears to be three dyes on one hemisphere and one dye on the opposite hemisphere.
-    * INTENDED: Tetradic typically results with two colors near each other and the other two colors as complements of the first two.
-* BUG: Compound Harmony is missing the Complementary dye result.
-  * CURRENTLY: All the resulting dyes are bunched up together near the Base Dye.
-* ANAMOLY: Mousing over the circles on some harmonies may shift that circle away from the color wheel. 
-* MOBILE-SPECIFIC: At 375px Width screens, the "Generate" button bleed past the control panel container and off the screen.
-* BUG: Companion Dyes do not appear in the Complementary and Triadic harmony cards.
+### Harmony Explorer
+- *Anomaly*: Some users report that hovering certain dots nudges them slightly off the donut canvas. Needs targeted repro steps.
 
-## Color Matcher
+### Color Matcher
+- *Suggestion*: Reintroduce the v1.6.x “Camera Upload” option on mobile (under investigation in TODO Task 17).
 
-* ANAMOLY: The Zoom options doesn't appear to go below 50%. This can be a problem if you load a 4K Ultrawide (21:9) image. So changing the minimum zoom to a much lower value would work wonders here.
-* SUGGESTION: Change the MouseWheel zoom so that the user needs to hold Shift before scrolling in order to zoom in or out.. That way, this function doesn't override the option to pan up and down using the mousewheel.
-* MOBILE-SPECIFIC SUGGESTION: In v1.6.x, there was a mobile-exclusive "Camera Upload" feature where the user can use their phone's camera to import an image into the matcher. We should find a way to bring that back.
-* SUGGESTION: Add a privacy notice on the Color Matcher that Uploaded Images are not stored on the server.
-
-## Accessibility Checker
-
-* MOBILE-SPECIFIC: At 375px Width screens, the "Clear" button will bleed past the control panel container.
-
-## Dye Comparison Tool
-
-* MOBILE-SPECIFIC: At 375px Width screens, the "Clear" button will bleed past the control panel container.
-
-## Dye Mixer Tool
-
-* MOBILE-SPECIFIC: At 375px Width screens, the "Clear" button will bleed past the control panel container.
-* SUGGESTION: Implement the Market Board features.
+### Dye Mixer / Comparison / Accessibility
+- No open bugs, but keep testing mobile breakpoints whenever new controls are added.

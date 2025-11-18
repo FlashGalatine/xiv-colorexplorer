@@ -375,81 +375,22 @@ export class DyeService {
    * Find triadic color scheme (colors 120° apart on color wheel)
    */
   findTriadicDyes(hex: string): Dye[] {
-    this.ensureLoaded();
-
-    const baseDye = this.findClosestDye(hex);
-    if (!baseDye) return [];
-
-    const baseHue = baseDye.hsv.h;
-    const secondHue = (baseHue + 120) % 360;
-    const thirdHue = (baseHue + 240) % 360;
-
-    const findByHueRange = (hue: number, tolerance: number = 30): Dye | null => {
-      let closest: Dye | null = null;
-      let minDiff = Infinity;
-
-      for (const dye of this.dyes) {
-        const diff = Math.min(Math.abs(dye.hsv.h - hue), 360 - Math.abs(dye.hsv.h - hue));
-
-        if (diff <= tolerance && diff < minDiff) {
-          minDiff = diff;
-          closest = dye;
-        }
-      }
-
-      return closest;
-    };
-
-    // Triadic harmony returns only the two companion colors, not the base color
-    const results: Dye[] = [];
-    const second = findByHueRange(secondHue);
-    if (second) results.push(second);
-    const third = findByHueRange(thirdHue);
-    if (third) results.push(third);
-
-    return results;
+    return this.findHarmonyDyesByOffsets(hex, [120, 240]);
   }
 
   /**
    * Find square color scheme (colors 90° apart on color wheel)
    */
   findSquareDyes(hex: string): Dye[] {
-    this.ensureLoaded();
+    return this.findHarmonyDyesByOffsets(hex, [90, 180, 270]);
+  }
 
-    const baseDye = this.findClosestDye(hex);
-    if (!baseDye) return [];
-
-    const baseHue = baseDye.hsv.h;
-    const secondHue = (baseHue + 90) % 360;
-    const thirdHue = (baseHue + 180) % 360;
-    const fourthHue = (baseHue + 270) % 360;
-
-    const findByHueRange = (hue: number, tolerance: number = 30): Dye | null => {
-      let closest: Dye | null = null;
-      let minDiff = Infinity;
-
-      for (const dye of this.dyes) {
-        const diff = Math.min(Math.abs(dye.hsv.h - hue), 360 - Math.abs(dye.hsv.h - hue));
-
-        if (diff <= tolerance && diff < minDiff) {
-          minDiff = diff;
-          closest = dye;
-        }
-      }
-
-      return closest;
-    };
-
-    // Square harmony returns the three companion colors at 90°, 180°, 270°
-    const results: Dye[] = [];
-    const second = findByHueRange(secondHue);
-    if (second) results.push(second);
-    const third = findByHueRange(thirdHue);
-    if (third) results.push(third);
-    const fourth = findByHueRange(fourthHue);
-    if (fourth) results.push(fourth);
-
-    return results;
+  /**
+   * Find tetradic color scheme (two complementary pairs)
+   */
+  findTetradicDyes(hex: string): Dye[] {
+    // Two adjacent hues + their complements (e.g., base+60 and base+240)
+    return this.findHarmonyDyesByOffsets(hex, [60, 180, 240]);
   }
 
   /**
@@ -489,17 +430,15 @@ export class DyeService {
    * Find compound harmony (analogous + complementary)
    */
   findCompoundDyes(hex: string): Dye[] {
-    this.ensureLoaded();
+    // ±30° from base + complement
+    return this.findHarmonyDyesByOffsets(hex, [30, -30, 180], { tolerance: 35 });
+  }
 
-    const analogous = this.findAnalogousDyes(hex, 30);
-    const complementary = this.findComplementaryPair(hex);
-
-    const results: Dye[] = [...analogous];
-    if (complementary) {
-      results.push(complementary);
-    }
-
-    return results;
+  /**
+   * Find split-complementary harmony (±30° from the complementary hue)
+   */
+  findSplitComplementaryDyes(hex: string): Dye[] {
+    return this.findHarmonyDyesByOffsets(hex, [150, 210]);
   }
 
   /**
@@ -522,6 +461,68 @@ export class DyeService {
     if (!this.isLoaded) {
       throw new AppError(ErrorCode.DATABASE_LOAD_FAILED, 'Dye database is not loaded', 'critical');
     }
+  }
+
+  /**
+   * Generic helper for hue-based harmonies
+   */
+  private findHarmonyDyesByOffsets(
+    hex: string,
+    offsets: number[],
+    options: { tolerance?: number } = {}
+  ): Dye[] {
+    this.ensureLoaded();
+
+    const baseDye = this.findClosestDye(hex);
+    if (!baseDye) return [];
+
+    const usedDyeIds = new Set<number>([baseDye.id]);
+    const results: Dye[] = [];
+    const baseHue = baseDye.hsv.h;
+    const tolerance = options.tolerance ?? 45;
+
+    for (const offset of offsets) {
+      const targetHue = (baseHue + offset + 360) % 360;
+      const match = this.findClosestDyeByHue(targetHue, usedDyeIds, tolerance);
+      if (match) {
+        results.push(match);
+        usedDyeIds.add(match.id);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Find closest dye by hue difference with graceful fallback
+   */
+  private findClosestDyeByHue(
+    targetHue: number,
+    usedIds: Set<number>,
+    tolerance: number
+  ): Dye | null {
+    let withinTolerance: { dye: Dye; diff: number } | null = null;
+    let bestOverall: { dye: Dye; diff: number } | null = null;
+
+    for (const dye of this.dyes) {
+      if (usedIds.has(dye.id) || dye.category === 'Facewear') {
+        continue;
+      }
+
+      const diff = Math.min(Math.abs(dye.hsv.h - targetHue), 360 - Math.abs(dye.hsv.h - targetHue));
+
+      if (!bestOverall || diff < bestOverall.diff) {
+        bestOverall = { dye, diff };
+      }
+
+      if (diff <= tolerance) {
+        if (!withinTolerance || diff < withinTolerance.diff) {
+          withinTolerance = { dye, diff };
+        }
+      }
+    }
+
+    return withinTolerance?.dye ?? bestOverall?.dye ?? null;
   }
 
   /**

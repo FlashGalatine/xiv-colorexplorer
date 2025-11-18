@@ -285,7 +285,7 @@ export class ColorWheelDisplay extends BaseComponent {
       case 'split-complementary':
         return [baseHue, (baseHue + 150) % 360, (baseHue + 210) % 360];
       case 'tetradic':
-        return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
+        return [baseHue, (baseHue + 60) % 360, (baseHue + 180) % 360, (baseHue + 240) % 360];
       case 'square':
         return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
       case 'monochromatic':

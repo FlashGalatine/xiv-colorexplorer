@@ -200,7 +200,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Hex input
     const hexInputDiv = this.createElement('div', {
-      className: 'flex gap-2',
+      className: 'flex flex-col sm:flex-row gap-2',
     });
 
     const hexInput = this.createElement('input', {
@@ -225,7 +225,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const generateBtn = this.createElement('button', {
       textContent: 'Generate',
       className:
-        'px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-semibold',
+        'px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-semibold w-full sm:w-auto',
     });
 
     hexInputDiv.appendChild(hexInput);
@@ -899,7 +899,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
       const expandedDyes = [...simpleDyes];
 
       // For each harmony dye (skip base at index 0), add companion dyes
-      for (let i = 1; i < simpleDyes.length; i++) {
+    for (let i = 0; i < simpleDyes.length; i++) {
         const harmonyDye = simpleDyes[i].dye;
         const targetColor = harmonyDye.hex;
 
@@ -982,30 +982,20 @@ export class HarmonyGeneratorTool extends BaseComponent {
           }
 
           case 'split-complementary': {
-            // Implement split-complementary: base + two colors ±30° from complement
-            const complement = dyeService.findComplementaryPair(this.baseColor);
-            const analogous = dyeService.findAnalogousDyes(this.baseColor, 30);
-            matchedDyes = [
-              ...(complement ? [{ dye: complement, deviance: 0 }] : []),
-              ...analogous.map((dye) => ({
-                dye,
-                deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
-              })),
-            ];
+            const dyes = dyeService.findSplitComplementaryDyes(this.baseColor);
+            matchedDyes = dyes.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
             break;
           }
 
           case 'tetradic': {
-            // Implement tetradic: two pairs of complementary colors
-            const complement = dyeService.findComplementaryPair(this.baseColor);
-            const analogous = dyeService.findAnalogousDyes(this.baseColor, 30);
-            matchedDyes = [
-              ...(complement ? [{ dye: complement, deviance: 0 }] : []),
-              ...analogous.slice(0, 2).map((dye) => ({
-                dye,
-                deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
-              })),
-            ];
+            const dyes = dyeService.findTetradicDyes(this.baseColor);
+            matchedDyes = dyes.map((dye) => ({
+              dye,
+              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+            }));
             break;
           }
 
