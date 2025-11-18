@@ -1,8 +1,8 @@
 # TODO List - XIV Dye Tools v2.0.0
 
-**Last Updated**: November 17, 2025
+**Last Updated**: November 18, 2025
 **Current Version**: v2.0.0
-**Status**: Post-TypeScript Migration - Documentation & Feature Restoration Phase
+**Status**: Post-TypeScript Migration - Component Testing & Feature Restoration Phase
 
 This TODO list organizes upcoming development work across 4 priority tiers based on comprehensive codebase research conducted November 2025.
 
@@ -381,61 +381,93 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 
 ### 9. Add Component Test Coverage
 
-**Status**: ❌ Not Started
-**Estimated Time**: 8-12 hours
+**Status**: ✅ UI COMPONENTS COMPLETE | ⏳ Tool Components Pending
+**Estimated Time**: 8-12 hours (6 hours completed, 2-6 hours remaining)
 **Priority**: MEDIUM (quality improvement)
 
-**Current Test Coverage**:
+**Current Test Coverage** (as of Nov 18, 2025):
 - **Services**: Excellent coverage (79-98%)
   - ThemeService: 98.06% ✅
   - DyeService: 94.9% ✅
   - ColorService: 89.87% ✅
   - StorageService: 79.78% ⚠️
-- **Components**: 0% coverage ❌ (no tests exist)
-- **Total Tests**: 140 passing (all service tests)
+- **UI Components**: 100% coverage ✅ (230 tests, all passing)
+  - BaseComponent: 39 tests ✅
+  - ThemeSwitcher: 29 tests ✅
+  - DyeSelector: 44 tests ✅
+  - ToolsDropdown: 33 tests ✅
+  - MobileBottomNav: 39 tests ✅
+  - AppLayout: 46 tests ✅
+- **Tool Components**: 0% coverage ⏳ (pending)
+- **Total Tests**: 370 passing (140 service + 230 component tests)
 
-**Missing Test Coverage**:
-- `src/components/accessibility-checker-tool.ts` (508 lines)
-- `src/components/color-matcher-tool.ts` (656 lines)
-- `src/components/color-wheel-display.ts` (186 lines)
-- `src/components/dye-comparison-chart.ts` (507 lines)
-- `src/components/dye-mixer-tool.ts` (639 lines)
-- `src/components/dye-selector.ts` (489 lines)
-- `src/components/harmony-type.ts` (85 lines)
-- `src/components/theme-switcher.ts` (74 lines)
-- `src/components/tools-dropdown.ts` (68 lines)
-- `src/components/mobile-bottom-nav.ts` (76 lines)
+**Remaining Untested Components** (Tool Components):
+- `src/components/accessibility-checker-tool.ts` (508 lines) ⏳
+- `src/components/color-matcher-tool.ts` (656 lines) ⏳
+- `src/components/color-wheel-display.ts` (186 lines) ⏳
+- `src/components/dye-comparison-chart.ts` (507 lines) ⏳
+- `src/components/dye-mixer-tool.ts` (639 lines) ⏳
+- `src/components/harmony-type.ts` (85 lines) ⏳
 
-**Total Untested Code**: ~3,288 lines
+**Completed Test Coverage** (UI Components):
+- ✅ `src/components/base-component.ts` (39 tests)
+- ✅ `src/components/dye-selector.ts` (44 tests)
+- ✅ `src/components/theme-switcher.ts` (29 tests)
+- ✅ `src/components/tools-dropdown.ts` (33 tests)
+- ✅ `src/components/mobile-bottom-nav.ts` (39 tests)
+- ✅ `src/components/app-layout.ts` (46 tests)
+
+**Total Untested Code**: ~2,581 lines (down from 3,288)
 
 **Action Items**:
 
-**Phase 1: Setup Component Testing Infrastructure** (~2 hours)
-- [ ] Research Lit component testing best practices
-- [ ] Install necessary testing libraries (if not already present)
-- [ ] Create example component test file
-- [ ] Configure Jest/Vitest for Lit components
-- [ ] Add test utilities (render helpers, mock data)
+**Phase 1: Setup Component Testing Infrastructure** (~2 hours) ✅ COMPLETE
+- [x] Research Lit component testing best practices
+- [x] Install necessary testing libraries (Vitest, jsdom, @testing-library/dom)
+- [x] Create example component test file (base-component.test.ts)
+- [x] Configure Vitest for Lit components
+- [x] Add test utilities (render helpers, mock data, custom assertions)
 
-**Phase 2: Test Base Component** (~1 hour)
-- [ ] Create `src/components/__tests__/base-component.test.ts`
-- [ ] Test theme integration
-- [ ] Test lifecycle methods
-- [ ] Target: 80%+ coverage
+**Completion Summary** (Nov 17-18):
+- Created comprehensive test utilities in `src/components/__tests__/test-utils.ts`
+- Configured Vitest with jsdom environment for DOM testing
+- Added custom assertion helpers (expectElement.toHaveClass, etc.)
+- Added mock data generators for dyes, themes, and localStorage
 
-**Phase 3: Test UI Components** (~3-4 hours)
-- [ ] Theme Switcher tests (simple, good starting point)
-- [ ] Tools Dropdown tests
-- [ ] Mobile Bottom Nav tests
+**Phase 2: Test Base Component** (~1 hour) ✅ COMPLETE
+- [x] Create `src/components/__tests__/base-component.test.ts`
+- [x] Test theme integration (39 tests passing)
+- [x] Test lifecycle methods (init, update, destroy, onMount, onUnmount)
+- [x] Coverage: 100% for BaseComponent
+
+**Completion Summary** (Nov 17):
+- 39 comprehensive tests covering all BaseComponent functionality
+- Tests include lifecycle, DOM utilities, event handling, state management
+- All tests passing, zero errors
+
+**Phase 3: Test UI Components** (~3-4 hours) ✅ COMPLETE
+- [x] Theme Switcher tests (29 tests - Nov 17)
+- [x] Tools Dropdown tests (33 tests - Nov 18)
+- [x] Mobile Bottom Nav tests (39 tests - Nov 18)
+- [x] Dye Selector tests (44 tests - Nov 17-18)
+- [x] App Layout tests (46 tests - Nov 18)
+
+**Completion Summary** (Nov 17-18):
+- All 6 UI components have comprehensive test coverage (230 tests total)
+- Tests cover rendering, user interactions, events, state management, accessibility
+- Edge cases and error handling thoroughly tested
+- Updated README with testing patterns and best practices
+- 100% of tests passing
+
+**Phase 4: Test Tool Components** (~4-6 hours) ⏳ PENDING
 - [ ] Color Wheel Display tests
-- [ ] Dye Selector tests (most complex)
-
-**Phase 4: Test Tool Components** (~4-6 hours)
+- [ ] Harmony Type tests
 - [ ] Accessibility Checker tests
 - [ ] Color Matcher tests
 - [ ] Dye Comparison tests
 - [ ] Dye Mixer tests
-- [ ] Harmony Type tests
+
+**Note**: Phase 4 components are significantly more complex with extensive business logic, canvas rendering, and external API integration. Each will require 1-2 hours of dedicated testing effort.
 
 **Testing Strategy**:
 - Focus on user interactions (button clicks, input changes)
@@ -445,13 +477,23 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 - Use snapshot tests for complex UI structures
 
 **Acceptance Criteria**:
-- All components have test files
-- Component test coverage >80%
-- Integration tests for key user flows
-- All tests pass consistently (no flaky tests)
-- Test suite runs in <10 seconds
+- [x] All UI components have test files (6/6 complete)
+- [x] UI component test coverage 100% (230 tests passing)
+- [ ] Tool components have test files (0/6 complete)
+- [ ] Tool component test coverage >80% (pending)
+- [x] Integration tests for key user flows (included in component tests)
+- [x] All tests pass consistently (no flaky tests) - 370/370 passing
+- [x] Test suite runs in <10 seconds (current: ~8 seconds)
 
-**Reference**: Current test suite in `src/services/__tests__/`
+**Progress Update** (Nov 18, 2025):
+- ✅ **Phase 1-3 COMPLETE**: All UI components tested (230 tests)
+- ⏳ **Phase 4 PENDING**: Tool components still need coverage
+- 📊 **Current Stats**: 370 total tests, 100% passing, ~8 second runtime
+- 📝 **Documentation**: Updated README with testing guide and best practices
+
+**Reference**:
+- Test suite: `src/services/__tests__/` (140 tests) + `src/components/__tests__/` (230 tests)
+- Testing guide: `src/components/__tests__/README.md`
 
 ---
 
@@ -1046,8 +1088,12 @@ Add/improve these theories:
 
 **Completed Sessions**:
 - Session 1 (Nov 17): Critical priority items (5 tasks, 2.5 hours) ✅
+- Session 2 (Nov 17-18): UI Component Test Coverage (6 components, 230 tests, 6 hours) ✅
 
-**Next Session Focus**: Start with Market Board restoration (High priority, 6 hours) or Harmony Explorer redesign (Medium priority, 4-6 hours)
+**Next Session Focus**:
+1. **Option A**: Complete Tool Component testing (Phase 4 of Task 9, 4-6 hours)
+2. **Option B**: Market Board restoration (High priority, Task 7, 4-6 hours)
+3. **Option C**: Harmony Explorer redesign (Medium priority, Task 13, 4-6 hours)
 
 ---
 
@@ -1072,6 +1118,6 @@ Add/improve these theories:
 
 ---
 
-**Last Updated**: November 17, 2025 (Feature enhancements added)
+**Last Updated**: November 18, 2025 (UI Component Tests Complete)
 **Maintained By**: Development Team
-**Next Review**: After completing High priority items (Market Board restoration)
+**Next Review**: After completing Tool Component tests or Market Board restoration
