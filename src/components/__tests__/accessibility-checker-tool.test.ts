@@ -7,11 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AccessibilityCheckerTool } from '../accessibility-checker-tool';
-import {
-  createTestContainer,
-  cleanupTestContainer,
-  cleanupComponent,
-} from './test-utils';
+import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 
 describe('AccessibilityCheckerTool Component', () => {
   let container: HTMLElement;

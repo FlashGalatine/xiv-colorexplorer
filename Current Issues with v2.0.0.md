@@ -8,8 +8,6 @@
 
 ## Harmony Explorer
 
-* **BUG! Monochromatic, Compound, and Shades are NOT being populated with color wheels and suggested dyes!**
-  * However, implementation should follow a similar scheme to the suggestions listed below.
 * **SUGGESTION**: Toggle for "Simple Suggestions" and "Expanded Suggestions"
   * Simple Suggestions will follow a **simple and strict** scheme:
     * **Complementary**: will ONLY display two dyes on this list:
@@ -42,4 +40,3 @@
     * Exclude Jet Black (ID: 13115) and Pure White (ID: 13114) : Does not display these two VERY EXPENSIVE dyes in the results.
     * Default Setting for all Filters: Disabled
   * If a recommended dye is filtered out, then it is replaced with another dye with the next-lowest Deviance Rating on the Harmony results cards.
-* **CALCULATION BUG:** Triadic and Square look like they are producing the same results. Are the using the same calculations?

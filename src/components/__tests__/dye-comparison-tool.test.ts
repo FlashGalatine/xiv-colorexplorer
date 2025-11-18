@@ -7,11 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { DyeComparisonTool } from '../dye-comparison-tool';
-import {
-  createTestContainer,
-  cleanupTestContainer,
-  cleanupComponent,
-} from './test-utils';
+import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 
 describe('DyeComparisonTool Component', () => {
   let container: HTMLElement;

@@ -103,6 +103,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
     excludeExpensive: false,
   };
   private filterCheckboxes: Map<string, HTMLInputElement> = new Map();
+  private filtersExpanded: boolean = false;
+  private filterToggleButton: HTMLElement | null = null;
+  private filterCheckboxesContainer: HTMLElement | null = null;
 
   /**
    * Render the tool component
@@ -257,16 +260,52 @@ export class HarmonyGeneratorTool extends BaseComponent {
         'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
 
-    // Dye Filters section
+    // Dye Filters section with collapsible header
     const filtersSection = this.createElement('div', {
       className: 'space-y-3',
     });
 
+    // Collapsible header with toggle button
+    const filtersHeader = this.createElement('button', {
+      attributes: {
+        type: 'button',
+      },
+      className:
+        'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors',
+    });
+
     const filtersLabel = this.createElement('label', {
       textContent: 'Advanced Dye Filters',
-      className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
+      className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer',
     });
-    filtersSection.appendChild(filtersLabel);
+
+    const toggleChevron = this.createElement('span', {
+      textContent: '▼',
+      className: 'text-gray-400 dark:text-gray-500 text-xs transition-transform',
+      attributes: {
+        id: 'filters-toggle-chevron',
+      },
+    });
+
+    filtersHeader.appendChild(filtersLabel);
+    filtersHeader.appendChild(toggleChevron);
+    filtersSection.appendChild(filtersHeader);
+
+    // Store toggle button reference
+    this.filterToggleButton = filtersHeader;
+    (this as unknown as Record<string, HTMLElement>)._filterToggleButton = filtersHeader;
+
+    // Filter checkboxes container (collapsible)
+    const checkboxesContainer = this.createElement('div', {
+      className: 'space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out',
+      attributes: {
+        id: 'filters-checkboxes-container',
+      },
+    });
+
+    // Store reference to checkboxes container
+    this.filterCheckboxesContainer = checkboxesContainer;
+    (this as unknown as Record<string, HTMLElement>)._filterCheckboxesContainer = checkboxesContainer;
 
     // Filter checkboxes
     const filterOptions = [
@@ -286,10 +325,6 @@ export class HarmonyGeneratorTool extends BaseComponent {
         description: 'Hide Jet Black & Pure White',
       },
     ];
-
-    const checkboxesContainer = this.createElement('div', {
-      className: 'space-y-2',
-    });
 
     for (const option of filterOptions) {
       const checkboxDiv = this.createElement('div', {
@@ -458,8 +493,18 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
     }
 
+    // Initialize filter toggle button
+    const filterToggleButton = (this as unknown as Record<string, HTMLElement>)
+      ._filterToggleButton as HTMLElement;
+    if (filterToggleButton) {
+      this.on(filterToggleButton, 'click', () => {
+        this.toggleFilters();
+      });
+    }
+
     // Initialize filter checkboxes and load saved state
     this.loadFilterState();
+    this.loadFiltersExpandedState();
     for (const [_key, checkbox] of this.filterCheckboxes) {
       this.on(checkbox, 'change', () => {
         this.updateFilterState();
@@ -493,6 +538,59 @@ export class HarmonyGeneratorTool extends BaseComponent {
       this.dyeFilters[filterKey as keyof DyeFilterConfig] = checkbox.checked;
     }
     appStorage.setItem(STORAGE_KEYS.HARMONY_FILTERS, this.dyeFilters);
+  }
+
+  /**
+   * Load filters expanded state from localStorage
+   */
+  private loadFiltersExpandedState(): void {
+    const key = `${STORAGE_KEYS.HARMONY_FILTERS}_expanded`;
+    this.filtersExpanded = appStorage.getItem<boolean>(key, false) ?? false;
+    this.updateFiltersUI();
+  }
+
+  /**
+   * Toggle filters expanded/collapsed state
+   */
+  private toggleFilters(): void {
+    this.filtersExpanded = !this.filtersExpanded;
+    this.updateFiltersUI();
+
+    // Save state to localStorage
+    const key = `${STORAGE_KEYS.HARMONY_FILTERS}_expanded`;
+    appStorage.setItem(key, this.filtersExpanded);
+  }
+
+  /**
+   * Update filters UI based on expanded state
+   */
+  private updateFiltersUI(): void {
+    const checkboxesContainer = this.filterCheckboxesContainer;
+    const chevron = document.getElementById('filters-toggle-chevron');
+
+    if (!checkboxesContainer || !chevron) return;
+
+    // Set transition properties
+    checkboxesContainer.style.transition = 'max-height 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out';
+    chevron.style.transition = 'transform 300ms ease-in-out';
+
+    if (this.filtersExpanded) {
+      // Show checkboxes
+      checkboxesContainer.style.maxHeight = '500px';
+      checkboxesContainer.style.opacity = '1';
+      checkboxesContainer.style.marginTop = '0.75rem';
+
+      // Rotate chevron down
+      chevron.style.transform = 'rotate(0deg)';
+    } else {
+      // Hide checkboxes
+      checkboxesContainer.style.maxHeight = '0px';
+      checkboxesContainer.style.opacity = '0';
+      checkboxesContainer.style.marginTop = '0';
+
+      // Rotate chevron up
+      chevron.style.transform = 'rotate(-90deg)';
+    }
   }
 
   /**

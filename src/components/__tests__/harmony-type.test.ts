@@ -7,11 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { HarmonyType, type HarmonyTypeInfo } from '../harmony-type';
-import {
-  createTestContainer,
-  cleanupTestContainer,
-  cleanupComponent,
-} from './test-utils';
+import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 import type { Dye } from '@shared/types';
 
 // Mock data
