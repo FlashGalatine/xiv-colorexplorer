@@ -18,7 +18,7 @@ import { appStorage } from './storage-service';
 
 const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
   'standard-light': {
-    primary: '#4F46E5',
+    primary: '#DC2626',
     background: '#FFFFFF',
     text: '#1F2937',
     border: '#E5E7EB',
@@ -27,7 +27,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     textMuted: '#6B7280',
   },
   'standard-dark': {
-    primary: '#818CF8',
+    primary: '#F87171',
     background: '#111827',
     text: '#F3F4F6',
     border: '#374151',
