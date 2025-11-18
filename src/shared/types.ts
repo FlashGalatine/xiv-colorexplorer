@@ -118,7 +118,9 @@ export type ThemeName =
   | 'parchment-light'
   | 'parchment-dark'
   | 'sugar-riot-light'
-  | 'sugar-riot-dark';
+  | 'sugar-riot-dark'
+  | 'grayscale-light'
+  | 'grayscale-dark';
 
 /**
  * Color palette for a theme

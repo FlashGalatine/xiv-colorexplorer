@@ -80,6 +80,8 @@ export const THEME_NAMES: readonly ThemeName[] = [
   'parchment-dark',
   'sugar-riot-light',
   'sugar-riot-dark',
+  'grayscale-light',
+  'grayscale-dark',
 ] as const;
 
 export const THEME_COUNT = THEME_NAMES.length;
@@ -100,6 +102,8 @@ export const THEME_DISPLAY_NAMES: Record<ThemeName, string> = {
   'parchment-dark': 'Parchment (Dark)',
   'sugar-riot-light': 'Sugar Riot (Light)',
   'sugar-riot-dark': 'Sugar Riot (Dark)',
+  'grayscale-light': 'Grayscale (Light)',
+  'grayscale-dark': 'Grayscale (Dark)',
 };
 
 // ============================================================================

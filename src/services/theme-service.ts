@@ -107,6 +107,24 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     cardBackground: '#500724',
     textMuted: '#F9A8D4',
   },
+  'grayscale-light': {
+    primary: '#404040',
+    background: '#FFFFFF',
+    text: '#000000',
+    border: '#D1D5DB',
+    backgroundSecondary: '#F3F4F6',
+    cardBackground: '#FFFFFF',
+    textMuted: '#6B7280',
+  },
+  'grayscale-dark': {
+    primary: '#6B7280',
+    background: '#111827',
+    text: '#F3F4F6',
+    border: '#374151',
+    backgroundSecondary: '#1F2937',
+    cardBackground: '#111827',
+    textMuted: '#9CA3AF',
+  },
 };
 
 // ============================================================================
