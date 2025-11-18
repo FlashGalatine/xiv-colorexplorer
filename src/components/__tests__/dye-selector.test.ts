@@ -243,8 +243,8 @@ describe('DyeSelector', () => {
     it('should filter dyes by category', async () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const redBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
-      redBtn?.click();
+      const redsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
+      redsBtn?.click();
 
       // Wait for component to finish updating
       await waitForComponent(100);
@@ -255,15 +255,15 @@ describe('DyeSelector', () => {
         card.querySelector('.text-xs.text-gray-500')?.textContent
       );
 
-      // All visible dyes should be in Red category
+      // All visible dyes should be in Reds category
       if (categories.length > 0) {
         categories.forEach((cat) => {
-          expect(cat).toBe('Red');
+          expect(cat).toBe('Reds');
         });
       } else {
-        // If no Red dyes found, verify we have at least some dyes before the filter
+        // If no Reds dyes found, verify we have at least some dyes before the filter
         const allDyes = DyeService.getInstance().getAllDyes();
-        const redDyes = allDyes.filter(d => d.category === 'Red');
+        const redDyes = allDyes.filter(d => d.category === 'Reds');
         expect(redDyes.length).toBeGreaterThan(0);
       }
     });
@@ -272,12 +272,12 @@ describe('DyeSelector', () => {
       [component, container] = renderComponent(DyeSelector);
 
       // First filter to a specific category
-      const redBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
-      redBtn?.click();
+      const redsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
+      redsBtn?.click();
 
       await waitForComponent(50);
 
-      const redCount = container.querySelectorAll('.dye-select-btn').length;
+      const redsCount = container.querySelectorAll('.dye-select-btn').length;
 
       // Now click "All"
       const allBtn = container.querySelector('[data-category="all"]') as HTMLButtonElement;
@@ -287,44 +287,44 @@ describe('DyeSelector', () => {
 
       const allCount = container.querySelectorAll('.dye-select-btn').length;
 
-      expect(allCount).toBeGreaterThan(redCount);
+      expect(allCount).toBeGreaterThan(redsCount);
     });
 
     it('should highlight active category button', async () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const blueBtn = container.querySelector('[data-category="Blue"]') as HTMLButtonElement;
-      blueBtn?.click();
+      const bluesBtn = container.querySelector('[data-category="Blues"]') as HTMLButtonElement;
+      bluesBtn?.click();
 
       await waitForComponent(50);
 
       // Re-query button after component update
-      const updatedBlueBtn = container.querySelector('[data-category="Blue"]') as HTMLButtonElement;
-      expectElement.toHaveClass(updatedBlueBtn, 'bg-blue-500');
-      expectElement.toHaveClass(updatedBlueBtn, 'text-white');
+      const updatedBluesBtn = container.querySelector('[data-category="Blues"]') as HTMLButtonElement;
+      expectElement.toHaveClass(updatedBluesBtn, 'bg-blue-500');
+      expectElement.toHaveClass(updatedBluesBtn, 'text-white');
     });
 
     it('should remove highlight from previously active category', async () => {
       [component, container] = renderComponent(DyeSelector);
 
       const neutralBtn = container.querySelector('[data-category="Neutral"]') as HTMLButtonElement;
-      const redBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
+      const redsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
 
       // Neutral is highlighted by default
       expectElement.toHaveClass(neutralBtn, 'bg-blue-500');
 
-      // Click Red
-      redBtn?.click();
+      // Click Reds
+      redsBtn?.click();
 
       await waitForComponent(50);
 
       // Re-query buttons after component update
       const updatedNeutralBtn = container.querySelector('[data-category="Neutral"]') as HTMLButtonElement;
-      const updatedRedBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
+      const updatedRedsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
 
       // Neutral should no longer be highlighted
       expectElement.toNotHaveClass(updatedNeutralBtn, 'bg-blue-500');
-      expectElement.toHaveClass(updatedRedBtn, 'bg-blue-500');
+      expectElement.toHaveClass(updatedRedsBtn, 'bg-blue-500');
     });
   });
 
@@ -564,9 +564,9 @@ describe('DyeSelector', () => {
     it('should combine search and category filtering', async () => {
       [component, container] = renderComponent(DyeSelector);
 
-      // Select Red category
-      const redBtn = container.querySelector('[data-category="Red"]') as HTMLButtonElement;
-      redBtn?.click();
+      // Select Reds category
+      const redsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
+      redsBtn?.click();
 
       await waitForComponent(50);
 
@@ -582,7 +582,7 @@ describe('DyeSelector', () => {
         card.querySelector('.text-sm.font-semibold')?.textContent
       );
 
-      // All visible dyes should be Red AND contain "Rose"
+      // All visible dyes should be Reds AND contain "Rose"
       dyeNames.forEach((name) => {
         expect(name?.toLowerCase()).toContain('rose');
       });
@@ -592,7 +592,7 @@ describe('DyeSelector', () => {
       );
 
       categories.forEach((cat) => {
-        expect(cat).toBe('Red');
+        expect(cat).toBe('Reds');
       });
     });
   });
