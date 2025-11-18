@@ -314,6 +314,54 @@ Market Board integration was fully functional in v1.6.x using Universalis API. T
 
 ---
 
+## 🟠 HIGH PRIORITY (Next Investigation)
+
+**Estimated Total Time**: ~2-4 hours
+**Goal**: Investigate and fix Harmony Explorer anomalies
+
+### Harmony Explorer Triadic Harmony Bug Investigation
+
+**Status**: ❌ Not Started
+**Estimated Time**: 2-4 hours
+**Priority**: HIGH (user-facing bug affecting harmony generation)
+
+**Issue Description**:
+For certain dyes (Dragoon Blue, Carmine Red, Canary Yellow), the Triadic Harmony mode displays only **1 color instead of 2** harmony matches. Expected behavior: Triadic should always show 3 base dyes (base + 2 triadic matches).
+
+**Examples**:
+- Dragoon Blue: Shows only 1 triadic match (should show 2)
+- Carmine Red: Shows only 1 triadic match (should show 2)
+- Canary Yellow: Shows only 1 triadic match (should show 2)
+
+**Root Cause Analysis Needed**:
+1. Are these dyes being filtered out by Advanced Dye Filters?
+2. Is the deviance score too high and triggering early termination?
+3. Is there a harmony calculation bug for specific hue values?
+4. Are these dyes in a color range with insufficient dye database coverage?
+
+**Investigation Steps**:
+- [ ] Open Harmony Explorer and test with affected dyes
+- [ ] Check if filters are accidentally enabled (Metallic, Pastel, Expensive)
+- [ ] Inspect deviance scores for the missing matches
+- [ ] Review `getSimpleModeLimit()` for triadic (should return 3)
+- [ ] Check `findTriadicDyes()` in DyeService for angle calculation issues
+- [ ] Verify dye database has sufficient triadic matches at those hue positions
+- [ ] Add logging to track which dyes are being filtered/excluded
+
+**Affected Files** (likely):
+- `src/services/dye-service.ts` - findTriadicDyes() method
+- `src/components/harmony-generator-tool.ts` - harmony filtering logic
+- `src/shared/constants.ts` - harmony type configuration
+
+**Acceptance Criteria**:
+- [ ] Dragoon Blue shows 2 triadic matches (3 total including base)
+- [ ] Carmine Red shows 2 triadic matches (3 total including base)
+- [ ] Canary Yellow shows 2 triadic matches (3 total including base)
+- [ ] No regression in other harmony types
+- [ ] All 499+ tests still passing
+
+---
+
 ## 🟡 MEDIUM PRIORITY (Future Sessions)
 
 **Estimated Total Time**: ~20.5-23.5 hours (added 3 feature enhancements)
@@ -1025,16 +1073,22 @@ Modern font stack successfully implemented and deployed! ✅
 
 ## 📊 Progress Summary
 
-**Total Estimated Time**: ~45.5-48.5 hours across all priorities
+**Total Estimated Time**: ~48.5-52.5 hours across all priorities (added 2-4 hour bug investigation)
 
 | Priority | Tasks | Est. Time | Status |
 |----------|-------|-----------|--------|
 | 🔴 Critical | 5 tasks | ~2.5 hours | ✅ COMPLETE (100%) |
-| 🟠 High | 3 tasks | ~10 hours | ✅ COMPLETE (100% - Tasks 6, 7, 8 done) |
-| 🟡 Medium | 7 tasks | ~20.5-23.5 hours | ✅ 7/7 Complete (100% - Tasks 9, 10, 11, 13, 14, 15) |
+| 🟠 High | 4 tasks | ~12-14 hours | ⏳ IN PROGRESS (1 investigation queued) |
+| 🟡 Medium | 7 tasks | ~20.5-23.5 hours | ✅ 7/7 Complete (100% - Tasks 9-15) |
 | 🟢 Low | 4 tasks | ~10 hours | ⏳ Backlog (0%) |
 
-*Task 9 is 50% complete (3 of 6 tool components have test coverage)
+**Completed Medium Priority** (7/7):
+- ✅ Task 9: Component Test Coverage (6 UI + 3 tool components tested)
+- ✅ Task 10: Code Splitting Implementation (already optimized)
+- ✅ Task 11: Repository Cleanup (clean working tree)
+- ✅ Task 13: Harmony Explorer Color Wheel (9 harmony theories)
+- ✅ Task 14: Color Matcher File Size (20MB already set)
+- ✅ Task 15: Font Modernization (Outfit, Inter, JetBrains Mono)
 
 **Completed Sessions**:
 - Session 1 (Nov 17): Critical priority items (5 tasks, ~2 hours) ✅
@@ -1088,8 +1142,8 @@ Modern font stack successfully implemented and deployed! ✅
 
 ---
 
-**Last Updated**: November 18, 2025 (Variable Companion Dyes Enhancement + Session Complete)
-**Current Status**: 8/15 tasks complete (53% overall), All CRITICAL + HIGH priority done ✅
-**Latest Session**: Variable Companion Dyes feature (Optional enhancement) - ✅ COMPLETE
+**Last Updated**: November 18, 2025 (Variable Companion Dyes + Harmony Explorer Bug Investigation Added)
+**Current Status**: 12/16 tasks queued (75% overall), All CRITICAL + 3/4 HIGH priority done
+**Latest Session**: Variable Companion Dyes feature + Harmony Explorer bug investigation identified
 **Maintained By**: Development Team
-**Next Session**: Low Priority Backlog or Additional Tool Testing
+**Next Session**: HIGH Priority - Harmony Explorer Triadic Harmony Bug Investigation
