@@ -237,7 +237,7 @@ a:hover {
 .harmony-title,
 .harmony-description,
 .harmony-deviance-info {
-  color: var(--theme-text) !important;
+  color: #ffffff !important;
 }
 
 /* Form elements */
