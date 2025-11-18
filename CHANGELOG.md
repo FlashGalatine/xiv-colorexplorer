@@ -53,6 +53,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundle size increase: +2.83 KB (27.43 KB gzipped for harmony tool)
 - Foundation enables users to choose between precision (Simple) and exploration (Expanded)
 
+#### Optional Enhancement: Variable Companion Dyes Count ✅
+- **Purpose**: Allow users to customize how many companion dyes appear for each harmony color in Expanded mode
+- **Range**: 1-3 additional companion dyes per harmony color (configurable)
+- **UI**: Range slider input (1-3) visible only in Expanded Suggestions mode
+  - Shows current selection with live value display
+  - Hidden automatically when switching to Simple mode
+  - Labeled: "Additional Dyes per Harmony Color"
+- **Algorithm**: Modified companion dye selection to find N closest dyes per harmony color
+  - Uses color distance for finding companions (Euclidean RGB space)
+  - Prevents duplicate selections with usedDyeIds set
+  - Stops gracefully when insufficient unmatched dyes available
+- **Persistence**: Saved to localStorage key: `xivdyetools_harmony_companion_dyes`
+  - Defaults to 1 if not set (matches original behavior)
+  - Validated to stay within 1-3 range
+- **Bundle Size**: Minimal increase (+0.54 KB gzipped, 27.97 KB for harmony tool)
+- **Examples**:
+  - Value 1: Tetradic = 4 base dyes + 3 additional = 7 total
+  - Value 2: Tetradic = 4 base dyes + 6 additional = 10 total
+  - Value 3: Tetradic = 4 base dyes + 9 additional = 13 total
+- **Result**: Exploration users can control detail level from focused (1) to comprehensive (3)
+
 #### Issue 4: Advanced Dye Filters ✅
 - Filter UI implemented in Harmony Explorer (3 checkbox filters)
 - Exclude Metallic: Hide dyes with "Metallic" in the name

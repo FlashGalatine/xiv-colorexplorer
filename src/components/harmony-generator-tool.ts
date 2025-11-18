@@ -13,7 +13,13 @@ import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { ColorService, DyeService } from '@services/index';
 import { appStorage } from '@services/storage-service';
-import { STORAGE_KEYS, EXPENSIVE_DYE_IDS } from '@shared/constants';
+import {
+  STORAGE_KEYS,
+  EXPENSIVE_DYE_IDS,
+  COMPANION_DYES_MIN,
+  COMPANION_DYES_MAX,
+  COMPANION_DYES_DEFAULT,
+} from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
 
 /**
@@ -113,6 +119,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private filterCheckboxesContainer: HTMLElement | null = null;
   private suggestionsMode: SuggestionsMode = 'simple';
   private suggestionsModeRadios: Map<SuggestionsMode, HTMLInputElement> = new Map();
+  private companionDyesCount: number = COMPANION_DYES_DEFAULT;
+  private companionDyesInput: HTMLInputElement | null = null;
 
   /**
    * Render the tool component
@@ -459,7 +467,64 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }
 
     suggestionsSection.appendChild(suggestionsContainer);
+
+    // Companion Dyes Count section (only for Expanded mode)
+    const companionSection = this.createElement('div', {
+      className: 'space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700 hidden',
+      attributes: {
+        id: 'companion-dyes-section',
+      },
+    });
+
+    const companionLabel = this.createElement('label', {
+      textContent: 'Additional Dyes per Harmony Color',
+      className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
+      attributes: {
+        for: 'companion-dyes-input',
+      },
+    });
+    companionSection.appendChild(companionLabel);
+
+    const companionDescription = this.createElement('p', {
+      textContent: 'Choose how many additional companion dyes to show for each harmony color',
+      className: 'text-xs text-gray-500 dark:text-gray-400',
+    });
+    companionSection.appendChild(companionDescription);
+
+    const companionInputDiv = this.createElement('div', {
+      className: 'flex items-center gap-4',
+    });
+
+    const companionInput = this.createElement('input', {
+      attributes: {
+        type: 'range',
+        id: 'companion-dyes-input',
+        min: COMPANION_DYES_MIN.toString(),
+        max: COMPANION_DYES_MAX.toString(),
+        value: COMPANION_DYES_DEFAULT.toString(),
+      },
+      className: 'w-32 h-2 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer',
+    }) as HTMLInputElement;
+
+    const companionValue = this.createElement('span', {
+      textContent: COMPANION_DYES_DEFAULT.toString(),
+      className: 'text-sm font-medium text-gray-700 dark:text-gray-300 min-w-8 text-center',
+      attributes: {
+        id: 'companion-dyes-value',
+      },
+    });
+
+    companionInputDiv.appendChild(companionInput);
+    companionInputDiv.appendChild(companionValue);
+    companionSection.appendChild(companionInputDiv);
+
+    suggestionsSection.appendChild(companionSection);
     section.appendChild(suggestionsSection);
+
+    // Store for event binding
+    this.companionDyesInput = companionInput;
+    (this as unknown as Record<string, HTMLInputElement>)._companionDyesInput = companionInput;
+    (this as unknown as Record<string, HTMLElement>)._companionDyesSection = companionSection;
 
     // Divider 2
     const divider2 = this.createElement('div', {
@@ -606,6 +671,16 @@ export class HarmonyGeneratorTool extends BaseComponent {
     for (const [_mode, radio] of this.suggestionsModeRadios) {
       this.on(radio, 'change', () => {
         this.updateSuggestionsMode();
+        this.toggleCompanionSection();
+        this.generateHarmonies();
+      });
+    }
+
+    // Initialize companion dyes input and load saved state
+    this.loadCompanionDyesCount();
+    if (this.companionDyesInput) {
+      this.on(this.companionDyesInput, 'input', () => {
+        this.updateCompanionDyesCount();
         this.generateHarmonies();
       });
     }
@@ -818,39 +893,45 @@ export class HarmonyGeneratorTool extends BaseComponent {
       const simpleLimit = this.getSimpleModeLimit(harmonyId);
       const simpleDyes = matchedDyes.slice(0, simpleLimit);
 
-      // For each dye (except base), find one additional similar dye
+      // For each harmony dye (except base), find companion dyes based on companion count
       const allDyes = DyeService.getInstance().getAllDyes();
       const usedDyeIds = new Set(simpleDyes.map((d) => d.dye.itemID));
       const expandedDyes = [...simpleDyes];
 
-      // For each harmony dye (skip base at index 0), add an additional similar dye
+      // For each harmony dye (skip base at index 0), add companion dyes
       for (let i = 1; i < simpleDyes.length; i++) {
         const harmonyDye = simpleDyes[i].dye;
         const targetColor = harmonyDye.hex;
 
-        // Find the closest dye to this harmony dye (that we haven't used)
-        let closestDye: Dye | null = null;
-        let closestDistance = Infinity;
+        // Find N companion dyes (where N = this.companionDyesCount)
+        for (let companionIndex = 0; companionIndex < this.companionDyesCount; companionIndex++) {
+          let closestDye: Dye | null = null;
+          let closestDistance = Infinity;
 
-        for (const dye of allDyes) {
-          if (usedDyeIds.has(dye.itemID) || dye.category === 'Facewear') {
-            continue;
+          // Find the next closest dye to this harmony dye (that we haven't used)
+          for (const dye of allDyes) {
+            if (usedDyeIds.has(dye.itemID) || dye.category === 'Facewear') {
+              continue;
+            }
+
+            const distance = ColorService.getColorDistance(targetColor, dye.hex);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestDye = dye;
+            }
           }
 
-          const distance = ColorService.getColorDistance(targetColor, dye.hex);
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestDye = dye;
+          // Add the companion dye if found
+          if (closestDye) {
+            usedDyeIds.add(closestDye.itemID);
+            expandedDyes.push({
+              dye: closestDye,
+              deviance: ColorService.getColorDistance(harmonyDye.hex, closestDye.hex) / 44.17,
+            });
+          } else {
+            // No more dyes available, stop looking for this harmony color
+            break;
           }
-        }
-
-        // Add the similar dye if found
-        if (closestDye) {
-          usedDyeIds.add(closestDye.itemID);
-          expandedDyes.push({
-            dye: closestDye,
-            deviance: ColorService.getColorDistance(harmonyDye.hex, closestDye.hex) / 44.17,
-          });
         }
       }
 
@@ -1038,6 +1119,60 @@ export class HarmonyGeneratorTool extends BaseComponent {
       showPrices: this.showPrices,
       harmoniesGenerated: this.harmonyDisplays.size,
     };
+  }
+
+  /**
+   * Load companion dyes count from localStorage
+   */
+  private loadCompanionDyesCount(): void {
+    const saved = appStorage.getItem<number>(
+      STORAGE_KEYS.HARMONY_COMPANION_DYES,
+      COMPANION_DYES_DEFAULT
+    ) ?? COMPANION_DYES_DEFAULT;
+    this.companionDyesCount = Math.max(COMPANION_DYES_MIN, Math.min(COMPANION_DYES_MAX, saved));
+
+    // Update input and display
+    if (this.companionDyesInput) {
+      this.companionDyesInput.value = this.companionDyesCount.toString();
+    }
+    this.updateCompanionDyesDisplay();
+  }
+
+  /**
+   * Update companion dyes count from input and save to localStorage
+   */
+  private updateCompanionDyesCount(): void {
+    if (this.companionDyesInput) {
+      this.companionDyesCount = parseInt(this.companionDyesInput.value, 10);
+      appStorage.setItem(STORAGE_KEYS.HARMONY_COMPANION_DYES, this.companionDyesCount);
+      this.updateCompanionDyesDisplay();
+    }
+  }
+
+  /**
+   * Update companion dyes count display value
+   */
+  private updateCompanionDyesDisplay(): void {
+    const display = document.getElementById('companion-dyes-value');
+    if (display) {
+      display.textContent = this.companionDyesCount.toString();
+    }
+  }
+
+  /**
+   * Toggle companion dyes section visibility based on suggestions mode
+   */
+  private toggleCompanionSection(): void {
+    const section = (this as unknown as Record<string, HTMLElement>)._companionDyesSection as HTMLElement | undefined;
+    if (!section) return;
+
+    if (this.suggestionsMode === 'expanded') {
+      // Show companion section in expanded mode
+      section.classList.remove('hidden');
+    } else {
+      // Hide companion section in simple mode
+      section.classList.add('hidden');
+    }
   }
 
   /**

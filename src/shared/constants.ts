@@ -173,6 +173,7 @@ export const STORAGE_KEYS = {
   SAVED_PALETTES: `${STORAGE_PREFIX}_saved_palettes`,
   HARMONY_FILTERS: `${STORAGE_PREFIX}_harmony_filters`,
   HARMONY_SUGGESTIONS_MODE: `${STORAGE_PREFIX}_harmony_suggestions_mode`,
+  HARMONY_COMPANION_DYES: `${STORAGE_PREFIX}_harmony_companion_dyes`,
 } as const;
 
 // ============================================================================
@@ -258,6 +259,13 @@ export const MAX_DYES_COMPARISON = 4;
  * Maximum dyes selectable in accessibility checker
  */
 export const MAX_DYES_ACCESSIBILITY = 6; // 6 outfit slots
+
+/**
+ * Companion dyes configuration for Expanded Suggestions mode
+ */
+export const COMPANION_DYES_MIN = 1;
+export const COMPANION_DYES_MAX = 3;
+export const COMPANION_DYES_DEFAULT = 1;
 
 /**
  * Expensive dye IDs for filtering
