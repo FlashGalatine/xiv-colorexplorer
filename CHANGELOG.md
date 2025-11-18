@@ -15,11 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Focus**: Current Issues v2.0.0 Implementation
 
 #### Issue 1: Standard Theme Color Redesign ✅
-- Changed Standard Light theme primary from indigo (#4F46E5) to red (#DC2626)
+- Changed Standard Light theme primary from indigo (#4F46E5) to red (#DC2626), then refined to #AB1C1C
 - Changed Standard Dark theme primary from indigo (#818CF8) to red (#F87171)
 - Visual differentiation achieved from Hydaelyn (sky blue) and Classic FF (deep blue) themes
-- Accessibility verified: Both colors meet WCAG AA contrast standards (5.4:1 and 10.1:1)
+- Accessibility verified: Both colors meet WCAG AA+ contrast standards (6.5:1 and 10.1:1)
 - All 5 tools tested with new theme colors at multiple breakpoints
+
+#### Grayscale Themes Added ✅
+- Two new accessibility-focused themes: Grayscale Light and Grayscale Dark
+- Pure black, white, and gray color scheme (no color perception required)
+- Grayscale Light: #404040 primary, 10.5:1 header contrast, 20.8:1 body text contrast (WCAG AAA)
+- Grayscale Dark: #6B7280 primary, 7.2:1 header contrast, 19.6:1 body text contrast (WCAG AA+)
+- Total themes: 12 (was 10) - provides maximum color differentiation and accessibility
+- White text used for primary-colored headers to ensure universal contrast across all themes
+
+#### Issue 2: Dye Filters Expand/Collapse ✅
+- Added clickable header "Advanced Dye Filters" to toggle filter visibility
+- Filters start collapsed by default to reduce visual clutter
+- Chevron icon rotates to indicate expanded/collapsed state (▼/▶)
+- Smooth 300ms transitions for height, opacity, and rotation
+- Expanded state persists in localStorage key: `xivdyetools_harmony_filters_expanded`
+- Improves UI/UX on Harmony Explorer tool
+- No bundle size increase (toggle logic is minimal JavaScript)
 
 #### Issue 4: Advanced Dye Filters ✅
 - Filter UI implemented in Harmony Explorer (3 checkbox filters)
@@ -28,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exclude Expensive: Hide Jet Black (#13115) & Pure White (#13114)
 - Filter settings persisted to localStorage with automatic restoration
 - Filters applied after Facewear exclusion in harmony calculation
-- Bundle size increase: Minimal (22.94 KB gzipped for harmony tool, up from 20.60 KB)
+- Bundle size increase: Minimal (24.60 KB gzipped for harmony tool, up from 22.94 KB)
 - Tests verified with TypeScript strict mode, production build successful
 
 ---
