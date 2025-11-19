@@ -369,3 +369,241 @@ export class NamespacedStorage {
  * Convenience export of app storage namespace
  */
 export const appStorage = StorageService.createNamespace('xivdyetools');
+
+// ============================================================================
+// Secure Storage with Integrity Checks
+// ============================================================================
+
+/**
+ * Maximum cache size in bytes (5 MB)
+ */
+const MAX_CACHE_SIZE = 5 * 1024 * 1024;
+
+/**
+ * Storage entry with integrity check
+ */
+interface SecureStorageEntry<T> {
+  value: T;
+  checksum: string;
+  timestamp: number;
+}
+
+/**
+ * Generate HMAC checksum for data integrity
+ */
+async function generateChecksum(data: string): Promise<string> {
+  try {
+    // Use a simple secret key derived from the app (not truly secret, but prevents casual tampering)
+    const secretKey = 'xivdyetools-integrity-key-v1';
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(secretKey);
+    const messageData = encoder.encode(data);
+
+    // Import key for HMAC
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    // Generate HMAC
+    const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+    const hashArray = Array.from(new Uint8Array(signature));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  } catch (error) {
+    console.warn('Failed to generate checksum, falling back to simple hash', error);
+    // Fallback: simple hash for environments without Web Crypto API
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      const char = data.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(16);
+  }
+}
+
+/**
+ * Verify checksum for data integrity
+ */
+async function verifyChecksum(data: string, checksum: string): Promise<boolean> {
+  const computed = await generateChecksum(data);
+  return computed === checksum;
+}
+
+/**
+ * Secure storage methods with integrity checks and size limits
+ */
+export class SecureStorage {
+  /**
+   * Store item with integrity check
+   */
+  static async setItem<T>(key: string, value: T): Promise<boolean> {
+    try {
+      if (!StorageService.isAvailable()) {
+        return false;
+      }
+
+      // Check cache size before storing
+      await this.enforceSizeLimit();
+
+      const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+      const checksum = await generateChecksum(serialized);
+
+      const entry: SecureStorageEntry<T> = {
+        value,
+        checksum,
+        timestamp: Date.now(),
+      };
+
+      return StorageService.setItem(key, entry);
+    } catch (error) {
+      console.error(`Failed to set secure item: ${key}`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Get item with integrity verification
+   */
+  static async getItem<T>(key: string, defaultValue?: T): Promise<T | null> {
+    try {
+      const entry = StorageService.getItem<SecureStorageEntry<T>>(key);
+
+      if (!entry) {
+        return defaultValue || null;
+      }
+
+      // Verify integrity
+      const serialized = typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
+      const isValid = await verifyChecksum(serialized, entry.checksum);
+
+      if (!isValid) {
+        console.warn(`Integrity check failed for key: ${key}. Removing corrupted entry.`);
+        StorageService.removeItem(key);
+        return defaultValue || null;
+      }
+
+      return entry.value;
+    } catch (error) {
+      console.warn(`Failed to get secure item: ${key}`, error);
+      // If entry structure is invalid, remove it
+      StorageService.removeItem(key);
+      return defaultValue || null;
+    }
+  }
+
+  /**
+   * Remove item
+   */
+  static removeItem(key: string): boolean {
+    return StorageService.removeItem(key);
+  }
+
+  /**
+   * Clear all secure storage
+   */
+  static clear(): boolean {
+    return StorageService.clear();
+  }
+
+  /**
+   * Enforce maximum cache size using LRU eviction
+   */
+  private static async enforceSizeLimit(): Promise<void> {
+    try {
+      const currentSize = StorageService.getSize();
+
+      if (currentSize < MAX_CACHE_SIZE) {
+        return; // Within limits
+      }
+
+      // Get all keys with timestamps for LRU eviction
+      const keys = StorageService.getKeys();
+      const entries: Array<{ key: string; timestamp: number; size: number }> = [];
+
+      for (const key of keys) {
+        const entry = StorageService.getItem<SecureStorageEntry<unknown>>(key);
+        if (entry && entry.timestamp) {
+          const value = StorageService.getItem(key);
+          const size = key.length + (value ? JSON.stringify(value).length : 0);
+          entries.push({ key, timestamp: entry.timestamp, size });
+        }
+      }
+
+      // Sort by timestamp (oldest first)
+      entries.sort((a, b) => a.timestamp - b.timestamp);
+
+      // Remove oldest entries until under limit
+      let freed = 0;
+      for (const entry of entries) {
+        if (currentSize - freed < MAX_CACHE_SIZE) {
+          break;
+        }
+        StorageService.removeItem(entry.key);
+        freed += entry.size;
+      }
+
+      if (freed > 0) {
+        console.info(`LRU eviction: Freed ${freed} bytes from cache`);
+      }
+    } catch (error) {
+      console.warn('Failed to enforce size limit', error);
+    }
+  }
+
+  /**
+   * Get current cache size
+   */
+  static getSize(): number {
+    return StorageService.getSize();
+  }
+
+  /**
+   * Get cache size limit
+   */
+  static getSizeLimit(): number {
+    return MAX_CACHE_SIZE;
+  }
+
+  /**
+   * Clean up corrupted entries
+   */
+  static async cleanupCorrupted(): Promise<number> {
+    let removed = 0;
+    const keys = StorageService.getKeys();
+
+    for (const key of keys) {
+      try {
+        const entry = StorageService.getItem<SecureStorageEntry<unknown>>(key);
+        if (!entry || !entry.checksum || !entry.timestamp) {
+          // Invalid structure
+          StorageService.removeItem(key);
+          removed++;
+          continue;
+        }
+
+        // Verify checksum
+        const serialized = typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
+        const isValid = await verifyChecksum(serialized, entry.checksum);
+
+        if (!isValid) {
+          StorageService.removeItem(key);
+          removed++;
+        }
+      } catch {
+        // Entry is corrupted, remove it
+        StorageService.removeItem(key);
+        removed++;
+      }
+    }
+
+    if (removed > 0) {
+      console.info(`Cleanup: Removed ${removed} corrupted entries`);
+    }
+
+    return removed;
+  }
+}

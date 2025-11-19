@@ -16,7 +16,7 @@ import { APIService } from './api-service';
 // Export service classes
 export { ColorService };
 export { DyeService, dyeService } from './dye-service';
-export { StorageService, appStorage, NamespacedStorage } from './storage-service';
+export { StorageService, appStorage, NamespacedStorage, SecureStorage } from './storage-service';
 export { ThemeService };
 export { APIService, apiService } from './api-service';
 
