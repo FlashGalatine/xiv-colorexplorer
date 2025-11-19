@@ -1165,12 +1165,11 @@ Implemented `SecureStorage` class with HMAC-based integrity checks and size limi
 - ✅ Task 9: COMPLETE - All tool components now have test coverage
 - ✅ Task 11: COMPLETE - Repository cleanup (legacy deprecation, historical docs organized)
 - ✅ Task 12: COMPLETE - CLAUDE.md architecture documentation updated
-- ✅ Task 13: COMPLETE - StorageService test coverage improved (40 tests, edge cases covered)
 - ✅ Task 14: COMPLETE - SecureStorage with integrity checks and size limits implemented
 
 **Remaining Low Priority Tasks**:
-- ⏳ Task 13: Improve StorageService Test Coverage (79.78% → 90%+ target)
-- ⏳ Task 17: Research Camera Upload for Color Matcher (Mobile) - Feasibility study
+- ⏳ Task 13: Improve StorageService Test Coverage (79.78% → 90%+ target) - Add edge cases for quota exceeded, concurrent read/write, data corruption handling
+- ⏳ Task 17: Research Camera Upload for Color Matcher (Mobile) - Feasibility study for mobile camera integration
 
 **Next Session Focus** (Low Priority Backlog):
 1. **Option A**: Improve StorageService Test Coverage (Task 13) - Add edge case tests
