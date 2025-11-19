@@ -144,6 +144,10 @@ describe('ColorMatcherTool', () => {
 
     (instance as unknown as { matchedDyes: Dye[] }).matchedDyes = [fakeDye];
 
+    if (!marketContainer) {
+      throw new Error('marketContainer is null');
+    }
+
     marketContainer.dispatchEvent(
       new CustomEvent('toggle-prices', { detail: { showPrices: true } })
     );

@@ -8,6 +8,8 @@
  */
 
 import { BaseComponent } from './base-component';
+import { ThemeService } from '@services/index';
+import { ColorService } from '@services/index';
 
 /**
  * Tool definition for dropdown
@@ -27,6 +29,7 @@ export interface ToolDef {
 export class ToolsDropdown extends BaseComponent {
   private tools: ToolDef[] = [];
   private isDropdownOpen: boolean = false;
+  private closeOtherDropdownsHandler: EventListener | null = null;
 
   constructor(container: HTMLElement, tools: ToolDef[]) {
     super(container);
@@ -37,26 +40,44 @@ export class ToolsDropdown extends BaseComponent {
    * Render the tools dropdown component
    */
   render(): void {
+    // Calculate optimal text color based on primary theme color
+    const currentTheme = ThemeService.getCurrentTheme();
+    const themeObject = ThemeService.getTheme(currentTheme);
+    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
+    const isLightText = optimalTextColor === '#FFFFFF';
+    
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'tools-dropdown-btn',
       className:
-        'p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ' +
+        'p-2 rounded-lg border transition-colors ' +
         'hidden md:inline-flex items-center gap-2',
       attributes: {
         'aria-label': 'Toggle tools menu',
         'aria-haspopup': 'true',
         'aria-expanded': 'false',
+        style: `color: ${optimalTextColor}; border-color: ${isLightText ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};`,
       },
     });
 
     button.innerHTML = '🛠️ Tools';
+    
+    // Add hover effect using theme colors
+    button.addEventListener('mouseenter', () => {
+      button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+    });
+    button.addEventListener('mouseleave', () => {
+      button.style.backgroundColor = 'transparent';
+    });
 
-    // Create dropdown menu container
+    // Create dropdown menu container - use theme CSS variables for background
     const dropdown = this.createElement('div', {
       id: 'tools-dropdown-menu',
       className:
-        'hidden absolute right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-56',
+        'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-56',
+      attributes: {
+        style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
+      },
     });
 
     // Create tools list
@@ -68,11 +89,19 @@ export class ToolsDropdown extends BaseComponent {
     for (const tool of this.tools) {
       const toolBtn = this.createElement('button', {
         className:
-          'px-4 py-3 text-left text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3',
+          'px-4 py-3 text-left text-sm rounded transition-colors flex items-center gap-3',
         attributes: {
           'data-tool-id': tool.id,
           title: tool.description,
         },
+      });
+      
+      // Add hover effect using theme colors
+      toolBtn.addEventListener('mouseenter', () => {
+        toolBtn.style.backgroundColor = 'var(--theme-card-hover)';
+      });
+      toolBtn.addEventListener('mouseleave', () => {
+        toolBtn.style.backgroundColor = 'transparent';
       });
 
       // Tool icon
@@ -88,14 +117,20 @@ export class ToolsDropdown extends BaseComponent {
 
       // Tool name
       const nameElement = this.createElement('div', {
-        className: 'font-medium text-gray-900 dark:text-white',
+        className: 'font-medium',
         textContent: tool.name,
+        attributes: {
+          style: 'color: var(--theme-text);',
+        },
       });
 
       // Tool description
       const descElement = this.createElement('div', {
-        className: 'text-xs text-gray-500 dark:text-gray-400',
+        className: 'text-xs',
         textContent: tool.description,
+        attributes: {
+          style: 'color: var(--theme-text-muted);',
+        },
       });
 
       infoContainer.appendChild(nameElement);
@@ -130,6 +165,14 @@ export class ToolsDropdown extends BaseComponent {
     const dropdown = this.querySelector<HTMLElement>('#tools-dropdown-menu');
 
     if (!button || !dropdown) return;
+
+    // Listen for close requests from other dropdowns
+    this.closeOtherDropdownsHandler = ((e: CustomEvent<{ source: string }>) => {
+      if (e.detail.source !== 'tools' && this.isDropdownOpen) {
+        this.closeDropdown();
+      }
+    }) as EventListener;
+    document.addEventListener('close-other-dropdowns', this.closeOtherDropdownsHandler);
 
     // Toggle dropdown on button click
     this.on(button, 'click', (e: Event) => {
@@ -194,6 +237,9 @@ export class ToolsDropdown extends BaseComponent {
     const button = this.querySelector<HTMLButtonElement>('#tools-dropdown-btn');
 
     if (dropdown && button) {
+      // Close other dropdowns (Theme switcher)
+      document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'tools' } }));
+      
       dropdown.classList.remove('hidden');
       button.setAttribute('aria-expanded', 'true');
       this.isDropdownOpen = true;
@@ -211,6 +257,26 @@ export class ToolsDropdown extends BaseComponent {
       dropdown.classList.add('hidden');
       button.setAttribute('aria-expanded', 'false');
       this.isDropdownOpen = false;
+    }
+  }
+
+  /**
+   * Initialize component - subscribe to theme changes
+   */
+  onMount(): void {
+    // Subscribe to theme changes to update button text colors
+    ThemeService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  /**
+   * Cleanup event listeners
+   */
+  onUnmount(): void {
+    if (this.closeOtherDropdownsHandler) {
+      document.removeEventListener('close-other-dropdowns', this.closeOtherDropdownsHandler);
+      this.closeOtherDropdownsHandler = null;
     }
   }
 

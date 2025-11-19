@@ -100,22 +100,12 @@ body {
 
 .app-header {
   background-color: var(--theme-primary) !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.app-header .text-gray-900,
-.app-header .text-gray-500,
-.app-header .text-gray-400 {
-  color: #ffffff !important;
-}
-
-.app-header .bg-white,
-.app-header .dark\:bg-gray-800 {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
-}
+/* Header text colors are now dynamically set via inline styles based on theme primary color */
+/* Removed hardcoded white text to allow dynamic contrast-based colors */
 
 .app-footer {
   background-color: var(--theme-card-background) !important;

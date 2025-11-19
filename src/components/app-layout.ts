@@ -9,6 +9,8 @@
 
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
+import { ThemeService } from '@services/index';
+import { ColorService } from '@services/index';
 
 /**
  * Main application layout component
@@ -65,27 +67,38 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
-    // Logo image
+    // Logo image - use absolute path for production, fallback for dev
     const logo = this.createElement('img', {
       attributes: {
-        src: 'assets/icons/icon-192x192.png',
+        src: '/assets/icons/icon-192x192.png',
         alt: 'XIV Dye Tools Logo',
         title: 'XIV Dye Tools',
+        onerror: "this.onerror=null; this.src='assets/icons/icon-192x192.png';",
       },
       className: 'w-10 h-10 rounded',
     });
     titleDiv.appendChild(logo);
 
+    // Calculate optimal text color based on primary theme color
+    const currentTheme = ThemeService.getCurrentTheme();
+    const themeObject = ThemeService.getTheme(currentTheme);
+    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
+    const isLightText = optimalTextColor === '#FFFFFF';
+    
     const title = this.createElement('h1', {
       textContent: 'XIV Dye Tools',
-      className: 'text-2xl font-bold text-white',
+      className: 'text-2xl font-bold',
+      attributes: {
+        style: `color: ${optimalTextColor};`,
+      },
     });
 
     const version = this.createElement('span', {
       textContent: 'v2.0.0',
-      className: 'text-sm text-white/80 font-mono',
+      className: 'text-sm font-mono',
       attributes: {
         'data-app-version': 'v2.0.0',
+        style: `color: ${isLightText ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)'};`,
       },
     });
 
@@ -202,6 +215,33 @@ export class AppLayout extends BaseComponent {
     if (themeSwitcherContainer) {
       this.themeSwitcher = new ThemeSwitcher(themeSwitcherContainer);
       this.themeSwitcher.init();
+    }
+    
+    // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
+    ThemeService.subscribe(() => {
+      this.updateHeaderColors();
+    });
+  }
+
+  /**
+   * Update header text colors based on current theme (without re-rendering)
+   */
+  private updateHeaderColors(): void {
+    const currentTheme = ThemeService.getCurrentTheme();
+    const themeObject = ThemeService.getTheme(currentTheme);
+    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
+    const isLightText = optimalTextColor === '#FFFFFF';
+
+    // Update title text color
+    const title = this.querySelector<HTMLElement>('header h1');
+    if (title) {
+      title.style.color = optimalTextColor;
+    }
+
+    // Update version text color
+    const version = this.querySelector<HTMLElement>('header span[data-app-version]');
+    if (version) {
+      version.style.color = isLightText ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
     }
   }
 
