@@ -36,9 +36,9 @@ describe('ThemeService Integration', () => {
     });
 
     it('should load saved theme from storage', () => {
-      ThemeService.setTheme('hydaelyn-dark');
+      ThemeService.setTheme('standard-dark');
       const current = ThemeService.getCurrentTheme();
-      expect(current).toBe('hydaelyn-dark');
+      expect(current).toBe('standard-dark');
     });
 
     it('should have a valid theme object', () => {
@@ -107,8 +107,8 @@ describe('ThemeService Integration', () => {
     });
 
     it('should get dark variant of a theme', () => {
-      const dark = ThemeService.getDarkVariant('hydaelyn-light');
-      expect(dark).toBe('hydaelyn-dark');
+      const dark = ThemeService.getDarkVariant('standard-light');
+      expect(dark).toBe('standard-dark');
     });
 
     it('should get theme variants by base name', () => {
@@ -204,9 +204,9 @@ describe('ThemeService Integration', () => {
 
       StorageService.clear();
 
-      ThemeService.setTheme('hydaelyn-dark' as ThemeName);
+      ThemeService.setTheme('standard-dark' as ThemeName);
       const current = ThemeService.getCurrentTheme();
-      expect(current).toBe('hydaelyn-dark');
+      expect(current).toBe('standard-dark');
     });
 
     it('should fall back to default if storage is invalid', () => {

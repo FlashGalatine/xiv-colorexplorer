@@ -75,10 +75,10 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Now set theme and update component
-      ThemeService.setTheme('hydaelyn-dark');
+      ThemeService.setTheme('standard-dark');
       component.update();
 
-      const activeButton = container.querySelector('[data-theme="hydaelyn-dark"]');
+      const activeButton = container.querySelector('[data-theme="standard-dark"]');
       expect(activeButton).not.toBeNull();
       expectElement.toHaveClass(activeButton as HTMLElement, 'font-semibold');
     });
@@ -192,12 +192,12 @@ describe('ThemeSwitcher', () => {
 
       // Click on a different theme
       const themeButton = container.querySelector(
-        '[data-theme="hydaelyn-dark"]'
+        '[data-theme="standard-dark"]'
       ) as HTMLButtonElement;
       themeButton.click();
 
       const newTheme = ThemeService.getCurrentTheme();
-      expect(newTheme).toBe('hydaelyn-dark');
+      expect(newTheme).toBe('standard-dark');
       expect(newTheme).not.toBe(initialTheme);
     });
 
@@ -320,12 +320,12 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       const themeButton = container.querySelector(
-        '[data-theme="hydaelyn-dark"]'
+        '[data-theme="standard-dark"]'
       ) as HTMLButtonElement;
       themeButton.click();
 
       // Verify ThemeService applied the theme to document.documentElement (the <html> element)
-      expect(document.documentElement.classList.contains('theme-hydaelyn-dark')).toBe(true);
+      expect(document.documentElement.classList.contains('theme-standard-dark')).toBe(true);
     });
   });
 

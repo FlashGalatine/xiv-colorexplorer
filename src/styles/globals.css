@@ -66,8 +66,8 @@ body {
 
 /* Theme-aware styles for tool cards */
 body.dark-mode .tool-card,
-body.hydaelyn-dark .tool-card,
-body.classic-ff-dark .tool-card,
+body.standard-dark .tool-card,
+body.theme-og-classic-dark .tool-card,
 body.parchment-dark .tool-card,
 body.sugar-riot-dark .tool-card {
   background-color: var(--theme-card-bg);
@@ -75,8 +75,8 @@ body.sugar-riot-dark .tool-card {
 }
 
 body.dark-mode .tool-card:hover,
-body.hydaelyn-dark .tool-card:hover,
-body.classic-ff-dark .tool-card:hover,
+body.standard-dark .tool-card:hover,
+body.theme-og-classic-dark .tool-card:hover,
 body.parchment-dark .tool-card:hover,
 body.sugar-riot-dark .tool-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);

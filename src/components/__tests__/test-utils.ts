@@ -170,7 +170,6 @@ export const mockThemes = [
   { name: 'standard-light', palette: 'standard', isDark: false },
   { name: 'standard-dark', palette: 'standard', isDark: true },
   { name: 'hydaelyn-light', palette: 'hydaelyn', isDark: false },
-  { name: 'hydaelyn-dark', palette: 'hydaelyn', isDark: true },
 ];
 
 /**
