@@ -800,29 +800,34 @@ export class HarmonyGeneratorTool extends BaseComponent {
   }
 
   /**
+   * Check if a dye should be excluded based on current filter settings
+   */
+  private isDyeExcluded(dye: Dye): boolean {
+    // Exclude Metallic dyes
+    if (this.dyeFilters.excludeMetallic && dye.name.includes('Metallic')) {
+      return true;
+    }
+
+    // Exclude Pastel dyes
+    if (this.dyeFilters.excludePastel && dye.name.includes('Pastel')) {
+      return true;
+    }
+
+    // Exclude Jet Black and Pure White
+    if (this.dyeFilters.excludeExpensive && EXPENSIVE_DYE_IDS.includes(dye.itemID)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Apply dye filters to matched dyes
    */
   private applyDyeFilters(
     dyes: Array<{ dye: Dye; deviance: number }>
   ): Array<{ dye: Dye; deviance: number }> {
-    return dyes.filter((item) => {
-      // Exclude Metallic dyes
-      if (this.dyeFilters.excludeMetallic && item.dye.name.includes('Metallic')) {
-        return false;
-      }
-
-      // Exclude Pastel dyes
-      if (this.dyeFilters.excludePastel && item.dye.name.includes('Pastel')) {
-        return false;
-      }
-
-      // Exclude Jet Black and Pure White
-      if (this.dyeFilters.excludeExpensive && EXPENSIVE_DYE_IDS.includes(item.dye.itemID)) {
-        return false;
-      }
-
-      return true;
-    });
+    return dyes.filter((item) => !this.isDyeExcluded(item.dye));
   }
 
   /**
@@ -913,7 +918,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
           // Find the next closest dye to this harmony dye (that we haven't used)
           for (const dye of allDyes) {
-            if (usedDyeIds.has(dye.itemID) || dye.category === 'Facewear') {
+            if (
+              usedDyeIds.has(dye.itemID) ||
+              dye.category === 'Facewear' ||
+              this.isDyeExcluded(dye)
+            ) {
               continue;
             }
 
