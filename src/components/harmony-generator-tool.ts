@@ -29,6 +29,7 @@ interface DyeFilterConfig {
   excludeMetallic: boolean;
   excludePastel: boolean;
   excludeExpensive: boolean;
+  excludeDark: boolean;
 }
 
 /**
@@ -112,6 +113,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     excludeMetallic: false,
     excludePastel: false,
     excludeExpensive: false,
+    excludeDark: false,
   };
   private filterCheckboxes: Map<string, HTMLInputElement> = new Map();
   private filtersExpanded: boolean = false;
@@ -336,6 +338,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
         key: 'excludePastel',
         label: 'Exclude Pastel Dyes',
         description: 'Hide dyes with "Pastel" in the name',
+      },
+      {
+        key: 'excludeDark',
+        label: 'Exclude Dark Dyes',
+        description: 'Hide dyes that begin with "Dark"',
       },
       {
         key: 'excludeExpensive',
@@ -810,6 +817,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Exclude Pastel dyes
     if (this.dyeFilters.excludePastel && dye.name.includes('Pastel')) {
+      return true;
+    }
+
+    // Exclude Dark dyes (begin with "Dark")
+    if (this.dyeFilters.excludeDark && dye.name.toLowerCase().startsWith('dark')) {
       return true;
     }
 
