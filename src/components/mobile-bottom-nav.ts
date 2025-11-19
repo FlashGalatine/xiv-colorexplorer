@@ -142,7 +142,8 @@ export class MobileBottomNav extends BaseComponent {
         'bg-blue-50',
         'dark:bg-blue-900/20',
         'text-gray-600',
-        'dark:text-gray-400'
+        'dark:text-gray-400',
+        'active'
       );
 
       // Add appropriate classes
@@ -151,7 +152,8 @@ export class MobileBottomNav extends BaseComponent {
           'text-blue-600',
           'dark:text-blue-400',
           'bg-blue-50',
-          'dark:bg-blue-900/20'
+          'dark:bg-blue-900/20',
+          'active'
         );
         btn.setAttribute('aria-selected', 'true');
       } else {
