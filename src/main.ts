@@ -223,31 +223,16 @@ async function initializeApp(): Promise<void> {
         currentTool.init();
 
         // Update button styles
-        document.querySelectorAll('[data-tool-id]').forEach((btn) => {
+        document.querySelectorAll<HTMLButtonElement>('[data-tool-id]').forEach((btn) => {
           const isSelected = btn.getAttribute('data-tool-id') === toolId;
-          // Remove all style classes
-          btn.classList.remove(
-            'bg-blue-600',
-            'text-white',
-            'bg-gray-200',
-            'dark:bg-gray-700',
-            'text-gray-900',
-            'dark:text-white',
-            'hover:bg-gray-300',
-            'dark:hover:bg-gray-600'
-          );
-          // Add appropriate classes for current state
+          
+          // Apply theme-aware styling
           if (isSelected) {
-            btn.classList.add('bg-blue-600', 'text-white');
+            btn.style.backgroundColor = 'var(--theme-primary)';
+            btn.style.color = 'var(--theme-text-header)';
           } else {
-            btn.classList.add(
-              'bg-gray-200',
-              'dark:bg-gray-700',
-              'text-gray-900',
-              'dark:text-white',
-              'hover:bg-gray-300',
-              'dark:hover:bg-gray-600'
-            );
+            btn.style.backgroundColor = 'var(--theme-background-secondary)';
+            btn.style.color = 'var(--theme-text)';
           }
         });
 
@@ -284,11 +269,34 @@ async function initializeApp(): Promise<void> {
     tools.forEach((tool) => {
       const btn = document.createElement('button');
       btn.setAttribute('data-tool-id', tool.id);
-      btn.className =
-        'px-4 py-2 rounded-lg font-medium transition-colors ' +
-        (tool.id === 'harmony'
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600');
+      const isActive = tool.id === 'harmony';
+      
+      // Base classes
+      btn.className = 'px-4 py-2 rounded-lg font-medium transition-all duration-200';
+      
+      // Apply theme-aware styling
+      if (isActive) {
+        btn.style.backgroundColor = 'var(--theme-primary)';
+        btn.style.color = 'var(--theme-text-header)';
+      } else {
+        btn.style.backgroundColor = 'var(--theme-background-secondary)';
+        btn.style.color = 'var(--theme-text)';
+      }
+      
+      // Add hover effect with brightness filter
+      btn.addEventListener('mouseenter', () => {
+        btn.style.filter = 'brightness(0.9)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.filter = '';
+      });
+      btn.addEventListener('mousedown', () => {
+        btn.style.filter = 'brightness(0.8)';
+      });
+      btn.addEventListener('mouseup', () => {
+        btn.style.filter = 'brightness(0.9)';
+      });
+      
       btn.innerHTML = `${tool.icon} ${tool.name}`;
       btn.title = tool.description;
       btn.addEventListener('click', () => {
