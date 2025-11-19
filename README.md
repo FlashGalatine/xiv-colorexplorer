@@ -1,6 +1,6 @@
 # XIV Dye Tools v2.0.1
 
-**Status**: ✅ Production Ready | **Version**: 2.0.1 | **Release**: December 2025 | **Phase**: 12 Complete
+**Status**: ✅ Production Ready | **Version**: 2.0.1 | **Release**: November 19, 2025 | **Phase**: 12 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
