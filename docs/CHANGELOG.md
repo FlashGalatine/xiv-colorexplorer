@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2025-11-18
 
-### 🎨 Theme Redesign & Advanced Filtering (Latest Session)
+### 🎨 UI Polish & Theme System Enhancements (Latest Session)
 
 **Status**: ✅ COMPLETE | Session: Current
-**Focus**: All Current Issues v2.0.0 Implementation - 4 Issues Resolved
+**Focus**: Theme-aware UI components, Advanced Dye Filters refactor, and comprehensive UI improvements
 
 #### Issue 1: Standard Theme Color Redesign ✅
 - Changed Standard Light theme primary from indigo (#4F46E5) to red (#DC2626), then refined to #AB1C1C
@@ -83,6 +83,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filters applied after Facewear exclusion in harmony calculation
 - Bundle size increase: Minimal (24.60 KB gzipped for harmony tool, up from 22.94 KB)
 - Tests verified with TypeScript strict mode, production build successful
+
+#### Advanced Dye Filters Component Refactor ✅
+- **Reusable Component**: Extracted filter UI and logic into new `DyeFilters` component (`src/components/dye-filters.ts`)
+- **Multi-Tool Integration**: Integrated into Harmony Explorer, Color Matcher, and Dye Mixer tools
+- **New Exclusion Filters**:
+  - **Exclude Dark Dyes**: Hide dyes that begin with "Dark" in their name
+  - **Exclude Cosmic Dyes**: Hide dyes with "Cosmic Exploration" or "Cosmic Fortunes" acquisition
+- **Collapsed by Default**: Filters start collapsed to reduce visual clutter
+- **Persistent State**: Expanded/collapsed state and filter preferences saved per tool
+- **Harmony Explorer Fix**: Excluded dyes now replaced with next-best alternatives in all harmony types
+- **Storage Keys**: Tool-specific localStorage keys (e.g., `harmony_filters`, `colormatcher_filters`, `dyemixer_filters`)
+
+#### Theme System Enhancements ✅
+- **Custom Header Text Color**: New `--theme-text-header` CSS variable for customizable header text colors
+  - Applied to: "XIV Dye Tools" title, version text, harmony card headers, activated buttons, "Generate" button, "Refresh Prices" button
+  - Defaults to `--theme-text` color but customizable via Theme Editor
+  - All 12 theme palettes updated with `textHeader` property
+- **Theme-Aware Button Hover Effects**: All action buttons now use brightness filter for consistent hover feedback
+  - Generate button (Harmony Explorer)
+  - Clear button (Dye Selector)
+  - Refresh Prices button (Market Board)
+  - Copy Share URL button (Dye Mixer)
+  - Tool navigation buttons (main.ts)
+  - Hover: `brightness(0.9)`, Active: `brightness(0.8)`
+  - Smooth transitions with `transition-all duration-200`
+- **Theme-Aware Input Sliders**: Range inputs use `accent-color: var(--theme-primary)` for theme consistency
+  - Color Matcher sample size slider
+  - Dye Mixer step count slider
+  - All sliders adapt to theme changes automatically
+
+#### UI Fixes & Improvements ✅
+- **Logo Path Fix**: Updated logo path to `/assets/icons/icon-192x192.png` with fallback handling
+- **Menu Closing Logic**: Tools and Theme dropdowns now close when the other is clicked (cross-component communication)
+- **Theme Menu Background**: Fixed transparent background for better readability
+- **Header Text Contrast**: Improved readability of "XIV Dye Tools" text across all 12 themes
+- **Hardcoded Colors Removed**: Eliminated hardcoded white colors, now uses `--theme-text-header` variable
+- **Market Board Default**: "Show Prices" option now defaults to disabled (false)
+- **CSS Rule Cleanup**: Removed global `h1-h6` color override that was conflicting with `--theme-text-header`
+
+#### Test Coverage Expansion ✅
+- **Total Tests**: 514 passing (up from 140)
+  - Service tests: 140
+  - UI component tests: 230
+  - Tool component tests: 142
+  - Harmony generator tests: 2
+- **New Test Files**:
+  - `src/components/__tests__/dye-filters.test.ts` (pending)
+  - Expanded coverage for all tool components
 
 ---
 
@@ -200,16 +248,23 @@ Before (v1.6.x):          After (v2.0.0):
 | ColorService | 89.87% | ✅ |
 | StorageService | 79.78% | ✅ |
 
-**Tests**: 140/140 passing (100%)
+**Tests**: 514/514 passing (100%)
 
 ### 🎨 Theme System
 
-All 10 themes fully functional:
-- Standard (Light/Dark)
-- Hydaelyn (Light/Dark)
-- Classic FF (Light/Dark)
-- Parchment (Light/Dark)
-- Sugar Riot (Light/Dark)
+All 12 themes fully functional:
+- Standard (Light/Dark) - Red primary color
+- Hydaelyn (Light/Dark) - Sky blue primary color
+- Classic FF (Light/Dark) - Deep blue primary color
+- Parchment (Light/Dark) - Warm beige primary color
+- Sugar Riot (Light/Dark) - Vibrant pink primary color
+- Grayscale (Light/Dark) - Pure black/white/gray (accessibility-focused)
+
+**Theme Features:**
+- Customizable header text colors via `--theme-text-header` CSS variable
+- Theme-aware button hover effects (brightness filter)
+- Theme-aware input sliders (accent-color)
+- All interactive elements adapt to theme changes
 
 ### ⚠️ Breaking Changes
 

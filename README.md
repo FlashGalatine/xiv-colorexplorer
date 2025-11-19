@@ -1,10 +1,10 @@
 # XIV Dye Tools v2.0.0
 
-**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 17, 2025 | **Phase**: 12 Complete
+**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 18, 2025 | **Phase**: 12 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.0.0 Release Notes**: Complete TypeScript/Vite refactor with modern component-based architecture, 140 unit tests (100% passing), strict type safety, and optimized performance. **Phase 12 Complete** — All features working perfectly. See [CHANGELOG.md](CHANGELOG.md) for detailed release information. Market pricing support coming in a future release.
+> **v2.0.0 Release Notes**: Complete TypeScript/Vite refactor with modern component-based architecture, 514 unit tests (100% passing), strict type safety, and optimized performance. **Phase 12 Complete** — All features working perfectly. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information. Market pricing support fully integrated.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -33,7 +33,11 @@ Find smooth color transitions between any two FFXIV dyes using HSV color space i
 - **Collapsible Panel** - All saved gradients in expandable section showing creation date/time
 
 **Dye Exclusion Filters:**
+- **Advanced Dye Filters Component** - Reusable filter system integrated across all tools
 - **Exclude by Type** - Filter out Metallic, Pastel, Dark, or Cosmic dyes from recommendations
+- **Exclude Dark Dyes** - Hide dyes that begin with "Dark" in their name
+- **Exclude Cosmic Dyes** - Hide dyes with "Cosmic Exploration" or "Cosmic Fortunes" acquisition
+- **Collapsible UI** - Filters start collapsed by default to reduce visual clutter
 - **Auto-Regenerate** - Recommendations update instantly when filter settings change
 - **Persistent Filters** - Selections saved to localStorage and included in shareable URLs
 
@@ -212,15 +216,16 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Theme System (v1.6.1)
-Comprehensive theme system with 10 theme variants (5 themes × light/dark), all fully WCAG compliant:
+### 🌓 Theme System (v2.0.0)
+Comprehensive theme system with 12 theme variants (6 themes × light/dark), all fully WCAG compliant:
 
 **Available Themes:**
-- **Standard** - Classic indigo light/dark (default)
+- **Standard** - Classic red light/dark (default)
 - **Hydaelyn** - FFXIV sky blue light/dark
 - **Classic Final Fantasy** - Deep blue light/dark (FF tradition)
 - **Parchment** - Warm beige light/dark (retro aesthetic)
 - **Sugar Riot** - Vibrant pink light/dark (fun & playful)
+- **Grayscale** - Pure black/white/gray light/dark (accessibility-focused)
 
 **Theme System Features:**
 - Unified theme switcher in navigation (all tools synchronized)
@@ -229,6 +234,9 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
 - Persistent theme preference storage via localStorage
 - Real-time theme switching across all open tool windows
 - Full support for all interactive elements: buttons, inputs, sliders, toggles, dropdowns
+- **Customizable Header Text Colors** - `--theme-text-header` variable for titles, activated buttons, and header text
+- **Theme-Aware Hover Effects** - All action buttons use brightness filter for consistent hover feedback
+- **Theme-Aware Input Sliders** - Range inputs use `accent-color` for theme consistency
 - Vision Type Simulation sliders theme-aware
 - Market Price toggle switches theme-aware
 - File input browse button theme-aware
@@ -411,7 +419,7 @@ All tools are production-ready stable versions with full feature support. The ap
 - **TypeScript 5.x** - Strict mode with full type safety
 - **Vite 5.x** - Modern build system with instant HMR
 - **Tailwind CSS** - Utility-first CSS framework
-- **Vitest 1.x** - Unit testing framework (140 tests, 100% passing)
+- **Vitest 1.x** - Unit testing framework (514 tests, 100% passing)
 - **Component Architecture** - Reusable UI components with lifecycle hooks
 - **Service Layer** - Centralized business logic (ColorService, DyeService, ThemeService, StorageService)
 - localStorage for user preferences and theme persistence
