@@ -51,10 +51,10 @@ export class MobileBottomNav extends BaseComponent {
     this.tools.forEach((tool) => {
       const navItem = this.createElement('button', {
         className:
-          'flex flex-col items-center justify-center w-full h-full transition-colors ' +
+          'mobile-nav-item flex flex-col items-center justify-center w-full h-full transition-colors ' +
           'hover:bg-gray-100 dark:hover:bg-gray-700 ' +
           (tool.id === this.currentToolId
-            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 active'
             : 'text-gray-600 dark:text-gray-400'),
         attributes: {
           'data-tool-id': tool.id,
