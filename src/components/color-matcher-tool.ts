@@ -577,6 +577,46 @@ export class ColorMatcherTool extends BaseComponent {
   ): void {
     const MIN_ZOOM = 10;
     const MAX_ZOOM = 400;
+    const MIN_CONTAINER_DIMENSION = 50; // Minimum valid container dimension in pixels
+
+    /**
+     * Get container dimensions with fallbacks for mobile reliability
+     */
+    const getContainerDimensions = (): { width: number; height: number } => {
+      // Try clientWidth/clientHeight first (most accurate for content area)
+      let width = canvasContainer.clientWidth;
+      let height = canvasContainer.clientHeight;
+
+      // If clientWidth/clientHeight are invalid, try offsetWidth/offsetHeight
+      if (width <= 0 || height <= 0) {
+        width = canvasContainer.offsetWidth;
+        height = canvasContainer.offsetHeight;
+      }
+
+      // If still invalid, try getBoundingClientRect as final fallback
+      if (width <= 0 || height <= 0) {
+        const rect = canvasContainer.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+      }
+
+      // If still invalid, use viewport dimensions as last resort
+      if (width <= 0 || height <= 0) {
+        width = window.innerWidth - 32; // Account for padding/margins
+        height = window.innerHeight * 0.4; // Use 40% of viewport height as reasonable default
+        console.warn('Color Matcher: Using fallback container dimensions', { width, height });
+      }
+
+      // Ensure minimum dimensions
+      width = Math.max(width, MIN_CONTAINER_DIMENSION);
+      height = Math.max(height, MIN_CONTAINER_DIMENSION);
+
+      // Account for padding/borders (16px total)
+      return {
+        width: Math.max(width - 16, MIN_CONTAINER_DIMENSION),
+        height: Math.max(height - 16, MIN_CONTAINER_DIMENSION),
+      };
+    };
 
     const updateZoom = (newZoom: number): void => {
       this.zoomLevel = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
@@ -609,24 +649,48 @@ export class ColorMatcherTool extends BaseComponent {
     };
 
     const fitToContainer = (): void => {
-      const containerWidth = canvasContainer.clientWidth - 16; // Account for padding
-      const containerHeight = canvasContainer.clientHeight - 16;
-      const imageWidth = image.width;
-      const imageHeight = image.height;
+      // Use requestAnimationFrame to ensure layout is complete on mobile
+      requestAnimationFrame(() => {
+        const container = getContainerDimensions();
+        // Use naturalWidth/naturalHeight for reliable image dimensions (handles EXIF orientation)
+        const imageWidth = image.naturalWidth || image.width;
+        const imageHeight = image.naturalHeight || image.height;
 
-      const zoomX = (containerWidth / imageWidth) * 100;
-      const zoomY = (containerHeight / imageHeight) * 100;
-      const newZoom = Math.min(zoomX, zoomY, 100); // Cap at 100% to avoid upscaling
+        // Validate image dimensions
+        if (imageWidth <= 0 || imageHeight <= 0) {
+          console.warn('Color Matcher: Invalid image dimensions', { imageWidth, imageHeight });
+          return;
+        }
 
-      updateZoom(newZoom);
+        const zoomX = (container.width / imageWidth) * 100;
+        const zoomY = (container.height / imageHeight) * 100;
+        const newZoom = Math.min(zoomX, zoomY, 100); // Cap at 100% to avoid upscaling
+
+        // Ensure minimum zoom threshold
+        const finalZoom = Math.max(newZoom, MIN_ZOOM);
+        updateZoom(finalZoom);
+      });
     };
 
     const zoomToWidth = (): void => {
-      const containerWidth = canvasContainer.clientWidth - 16;
-      const imageWidth = image.width;
-      const newZoom = (containerWidth / imageWidth) * 100;
+      // Use requestAnimationFrame to ensure layout is complete on mobile
+      requestAnimationFrame(() => {
+        const container = getContainerDimensions();
+        // Use naturalWidth for reliable image dimensions (handles EXIF orientation)
+        const imageWidth = image.naturalWidth || image.width;
 
-      updateZoom(Math.min(newZoom, 400)); // Still respect max zoom
+        // Validate image dimensions
+        if (imageWidth <= 0) {
+          console.warn('Color Matcher: Invalid image width', { imageWidth });
+          return;
+        }
+
+        const newZoom = (container.width / imageWidth) * 100;
+
+        // Ensure minimum zoom threshold and respect max zoom
+        const finalZoom = Math.max(Math.min(newZoom, MAX_ZOOM), MIN_ZOOM);
+        updateZoom(finalZoom);
+      });
     };
 
     // Setup button listeners
