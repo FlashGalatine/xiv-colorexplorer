@@ -255,10 +255,24 @@ export class DyeMixerTool extends BaseComponent {
       id: 'copy-url-btn',
       textContent: '🔗 Copy Share URL',
       className:
-        'px-4 py-3 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
+        'px-4 py-3 rounded-lg transition-all duration-200 text-sm font-semibold flex-1 min-h-[44px]',
       attributes: {
-        style: 'background-color: var(--theme-primary);',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
+    });
+
+    // Add hover effect with brightness filter
+    shareBtn.addEventListener('mouseenter', () => {
+      shareBtn.style.filter = 'brightness(0.9)';
+    });
+    shareBtn.addEventListener('mouseleave', () => {
+      shareBtn.style.filter = '';
+    });
+    shareBtn.addEventListener('mousedown', () => {
+      shareBtn.style.filter = 'brightness(0.8)';
+    });
+    shareBtn.addEventListener('mouseup', () => {
+      shareBtn.style.filter = 'brightness(0.9)';
     });
 
     actionsContainer.appendChild(saveBtn);
