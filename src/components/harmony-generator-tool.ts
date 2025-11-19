@@ -822,7 +822,64 @@ export class HarmonyGeneratorTool extends BaseComponent {
   }
 
   /**
-   * Apply dye filters to matched dyes
+   * Replace excluded dyes with alternatives that don't match exclusion criteria
+   * This ensures harmony cards always show the expected number of dyes
+   */
+  private replaceExcludedDyes(
+    dyes: Array<{ dye: Dye; deviance: number }>,
+    harmonyId: string
+  ): Array<{ dye: Dye; deviance: number }> {
+    const result: Array<{ dye: Dye; deviance: number }> = [];
+    const usedDyeIds = new Set<number>();
+    const allDyes = DyeService.getInstance().getAllDyes();
+
+    for (const item of dyes) {
+      // If dye is not excluded, keep it
+      if (!this.isDyeExcluded(item.dye)) {
+        result.push(item);
+        usedDyeIds.add(item.dye.itemID);
+        continue;
+      }
+
+      // Dye is excluded, find alternative
+      // Use the target color from the excluded dye to find a similar alternative
+      const targetColor = item.dye.hex;
+      let bestAlternative: Dye | null = null;
+      let bestDistance = Infinity;
+
+      // Find the closest dye that:
+      // 1. Doesn't match exclusion criteria
+      // 2. Isn't already used
+      // 3. Isn't Facewear
+      for (const dye of allDyes) {
+        if (
+          usedDyeIds.has(dye.itemID) ||
+          dye.category === 'Facewear' ||
+          this.isDyeExcluded(dye)
+        ) {
+          continue;
+        }
+
+        const distance = ColorService.getColorDistance(targetColor, dye.hex);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestAlternative = dye;
+        }
+      }
+
+      // Add the alternative if found, otherwise skip (better than showing excluded dye)
+      if (bestAlternative) {
+        const deviance = Math.min(bestDistance / 44.17, 10);
+        result.push({ dye: bestAlternative, deviance });
+        usedDyeIds.add(bestAlternative.itemID);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Apply dye filters to matched dyes (legacy method, kept for compatibility)
    */
   private applyDyeFilters(
     dyes: Array<{ dye: Dye; deviance: number }>
@@ -1058,8 +1115,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
       // Filter out Facewear dyes from results
       matchedDyes = matchedDyes.filter((item) => item.dye.category !== 'Facewear');
 
-      // Apply user-selected dye filters
-      matchedDyes = this.applyDyeFilters(matchedDyes);
+      // Replace excluded dyes with alternatives instead of just removing them
+      matchedDyes = this.replaceExcludedDyes(matchedDyes, harmony.id);
 
       // Apply suggestions mode (Simple or Expanded)
       matchedDyes = this.applySuggestionsMode(harmony.id, matchedDyes);
