@@ -556,7 +556,7 @@ export class APIService {
    */
   async isAPIAvailable(): Promise<boolean> {
     try {
-      const response = await fetch(`${UNIVERSALIS_API_BASE}/stats`);
+      const response = await fetch(`${UNIVERSALIS_API_BASE}/data-centers`);
       return response.ok;
     } catch {
       return false;
