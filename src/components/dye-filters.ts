@@ -190,6 +190,10 @@ export class DyeFilters extends BaseComponent {
     filtersSection.appendChild(checkboxesContainer);
     this.element = filtersSection;
 
+    // Clear container and append element
+    this.container.innerHTML = '';
+    this.container.appendChild(this.element);
+
     return this.element;
   }
 
