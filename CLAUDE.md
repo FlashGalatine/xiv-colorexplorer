@@ -14,7 +14,7 @@ XIV Dye Tools is a client-side web application providing five specialized tools 
 
 **Status**: v2.0.0 Production (TypeScript/Vite/Lit)
 **Repository**: Main branch
-**Latest**: 2025-11-18
+**Latest**: 2025-11-18 (Updated with --theme-text-header support)
 
 ---
 
@@ -30,6 +30,7 @@ v2.0.0 uses a modern TypeScript + Lit component architecture with a service laye
 - **Build Optimization**: Vite for fast development and optimized production builds
 - **No Duplication**: Shared services used across all tools
 - **Easy Testing**: Unit tests for all services and components (514 tests, 100% pass rate)
+- **Theme System**: 12 customizable themes with `--theme-text-header` for header text colors
 - **Framework Agnostic**: Lit for web components, framework-independent
 
 **Legacy Files**: Original monolithic HTML files (v1.6.x) preserved in `legacy/` folder for historical reference. See `docs/ARCHITECTURE.md` for migration details.
@@ -322,3 +323,4 @@ If you modify a service, test all tools that use it.
 
 **Last Updated**: November 18, 2025
 **Version**: v2.0.0
+**Latest Changes**: Added `--theme-text-header` CSS variable for customizable header text colors

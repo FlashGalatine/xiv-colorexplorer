@@ -1,6 +1,9 @@
-# Legacy v1.6.x Files
+# Legacy Files (v1.6.x)
 
-This folder contains the legacy v1.6.x HTML-based implementation of XIV Dye Tools.
+⚠️ **DEPRECATED**: These files are no longer maintained.
+
+This folder contains the original v1.6.x monolithic HTML files.
+For current development, see the v2.0.0 TypeScript codebase in `src/`.
 
 ## Migration to v2.0.0
 
@@ -18,6 +21,13 @@ With the release of v2.0.0 (November 17, 2025), the project has been completely 
 - Service layer pattern
 - 140 unit tests (100% passing)
 - Optimized build system
+
+These files are kept for:
+- Historical reference
+- Comparison with v2.0.0 architecture
+- Rollback capability (if critical v2.0.0 bugs found)
+
+**Do not edit these files.** All development happens in `src/`.
 
 ## Files in This Folder
 
