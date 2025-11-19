@@ -102,7 +102,7 @@ export class AppLayout extends BaseComponent {
         title: 'XIV Dye Tools',
         loading: 'eager',
         fetchpriority: 'high',
-        onerror: "this.onerror=null; this.src='assets/icons/icon-192x192.png';",
+        onerror: "this.onerror=null; this.src='/assets/icons/icon-192x192.png';",
       },
       className: 'w-10 h-10 rounded',
     });
