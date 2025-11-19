@@ -43,6 +43,18 @@ body {
     font-size: 16px; /* Explicit 16px prevents iOS auto-zoom on input focus */
     line-height: 1.5; /* Comfortable line-height for mobile readability */
   }
+  
+  /* Prevent horizontal scrolling on mobile */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Ensure all containers respect viewport width */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 /* Monospace elements */
