@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { ThemeService } from '@services/index';
+import { APP_VERSION } from '@shared/constants';
 
 /**
  * Main application layout component
@@ -87,11 +88,12 @@ export class AppLayout extends BaseComponent {
       },
     });
 
+    const versionText = `v${APP_VERSION}`;
     const version = this.createElement('span', {
-      textContent: 'v2.0.0',
+      textContent: versionText,
       className: 'text-sm font-mono',
       attributes: {
-        'data-app-version': 'v2.0.0',
+        'data-app-version': versionText,
         style: 'color: var(--theme-text-header); opacity: 0.8;',
       },
     });
@@ -137,7 +139,7 @@ export class AppLayout extends BaseComponent {
     const copyright = this.createElement('div', {
       className: 'text-center text-sm text-gray-600 dark:text-gray-400 mb-6',
       innerHTML:
-        'XIV Dye Tools v2.0.0 • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS',
+        `XIV Dye Tools v${APP_VERSION} • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS`,
     });
     footerContent.appendChild(copyright);
 

@@ -14,6 +14,7 @@ import '@/styles/tailwind.css';
 // Import services
 import { initializeServices, getServicesStatus } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
+import { APP_VERSION } from '@shared/constants';
 
 // Import components (non-tool components only - tools are lazy-loaded)
 import {
@@ -35,7 +36,7 @@ async function initializeApp(): Promise<void> {
 
   try {
     // Log startup info
-    console.info('🚀 XIV Dye Tools v2.0.0');
+    console.info(`🚀 XIV Dye Tools v${APP_VERSION}`);
     console.info('📋 Phase 12: Architecture Refactor');
     console.info('🏗️ Build System: Vite 5.x + TypeScript 5.x');
 

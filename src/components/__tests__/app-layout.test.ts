@@ -116,7 +116,7 @@ describe('AppLayout', () => {
 
       const version = container.querySelector('.font-mono');
       expect(version).not.toBeNull();
-      expect(version?.textContent).toBe('v2.0.0');
+      expect(version?.textContent).toBe('v2.0.1');
     });
 
     it('should render tools dropdown container', () => {
@@ -157,7 +157,7 @@ describe('AppLayout', () => {
       component.init();
 
       const footer = container.querySelector('footer');
-      expect(footer?.textContent).toContain('XIV Dye Tools v2.0.0');
+      expect(footer?.textContent).toContain('XIV Dye Tools v2.0.1');
       expect(footer?.textContent).toContain('Phase 12 Architecture Refactor');
     });
 
