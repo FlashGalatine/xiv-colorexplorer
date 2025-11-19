@@ -33,7 +33,7 @@ export class MarketBoard extends BaseComponent {
   private dataCenters: DataCenter[] = [];
   private worlds: World[] = [];
   private selectedServer: string = 'Crystal'; // Default data center
-  private showPrices: boolean = true;
+  private showPrices: boolean = false;
   private priceCategories: PriceCategorySettings;
   private isRefreshing: boolean = false;
 
@@ -42,7 +42,7 @@ export class MarketBoard extends BaseComponent {
     this.apiService = APIService.getInstance();
 
     // Load saved settings from localStorage
-    this.showPrices = appStorage.getItem('market_board_show_prices', true) ?? true;
+    this.showPrices = appStorage.getItem('market_board_show_prices', false) ?? false;
     this.selectedServer = appStorage.getItem('market_board_server', 'Crystal') ?? 'Crystal';
     this.priceCategories = appStorage.getItem('market_board_categories', {
       baseDyes: PRICE_CATEGORIES.baseDyes.default,
