@@ -97,6 +97,9 @@ export class DyeFilters extends BaseComponent {
       },
     });
 
+    // Set initial collapsed state for chevron (rotated up)
+    toggleChevron.style.transform = 'rotate(-90deg)';
+
     filtersHeader.appendChild(filtersLabel);
     filtersHeader.appendChild(toggleChevron);
     filtersSection.appendChild(filtersHeader);
@@ -111,6 +114,11 @@ export class DyeFilters extends BaseComponent {
         id: `${this.container.id || 'filters'}-checkboxes-container`,
       },
     });
+
+    // Set initial collapsed state (default: collapsed)
+    checkboxesContainer.style.maxHeight = '0px';
+    checkboxesContainer.style.opacity = '0';
+    checkboxesContainer.style.marginTop = '0';
 
     // Store reference to checkboxes container
     this.filterCheckboxesContainer = checkboxesContainer;
