@@ -270,21 +270,31 @@ export class MarketBoard extends BaseComponent {
     const refreshBtn = this.createElement('button', {
       textContent: 'Refresh Prices',
       className:
-        'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition font-medium mt-3',
+        'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-all duration-200 font-medium mt-3',
       attributes: {
         id: 'mb-refresh-btn',
         style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
     });
 
-    // Add hover effect
+    // Add hover effect with brightness filter (only when not disabled)
     refreshBtn.addEventListener('mouseenter', () => {
       if (!refreshBtn.disabled) {
-        refreshBtn.style.opacity = '0.9';
+        refreshBtn.style.filter = 'brightness(0.9)';
       }
     });
     refreshBtn.addEventListener('mouseleave', () => {
-      refreshBtn.style.opacity = '1';
+      refreshBtn.style.filter = '';
+    });
+    refreshBtn.addEventListener('mousedown', () => {
+      if (!refreshBtn.disabled) {
+        refreshBtn.style.filter = 'brightness(0.8)';
+      }
+    });
+    refreshBtn.addEventListener('mouseup', () => {
+      if (!refreshBtn.disabled) {
+        refreshBtn.style.filter = 'brightness(0.9)';
+      }
     });
     priceSettings.appendChild(refreshBtn);
 

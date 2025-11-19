@@ -74,11 +74,26 @@ export class DyeSelector extends BaseComponent {
     const clearBtn = this.createElement('button', {
       textContent: 'Clear',
       className:
-        'px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto',
+        'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
       attributes: {
         id: 'dye-selector-clear-btn',
         'aria-label': 'Clear all selections',
+        style: 'background-color: var(--theme-background-secondary); color: var(--theme-text);',
       },
+    });
+
+    // Add hover effect with brightness filter
+    clearBtn.addEventListener('mouseenter', () => {
+      clearBtn.style.filter = 'brightness(0.9)';
+    });
+    clearBtn.addEventListener('mouseleave', () => {
+      clearBtn.style.filter = '';
+    });
+    clearBtn.addEventListener('mousedown', () => {
+      clearBtn.style.filter = 'brightness(0.8)';
+    });
+    clearBtn.addEventListener('mouseup', () => {
+      clearBtn.style.filter = 'brightness(0.9)';
     });
 
     searchContainer.appendChild(searchInput);
