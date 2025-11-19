@@ -40,18 +40,10 @@ html.theme-hydaelyn-light {
   color-scheme: light;
 }
 
-html.theme-hydaelyn-dark {
-  color-scheme: dark;
-}
-
 /* =====================================================
-   CLASSIC THEME (Light/Dark)
+   OG CLASSIC THEME (Dark)
    ===================================================== */
-html.theme-classic-light {
-  color-scheme: light;
-}
-
-html.theme-classic-dark {
+html.theme-og-classic-dark {
   color-scheme: dark;
 }
 

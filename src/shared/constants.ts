@@ -14,7 +14,7 @@ import type { ThemeName, VisionType, ColorblindMatrices } from './types';
 // ============================================================================
 
 export const APP_NAME = 'XIV Dye Tools';
-export const APP_VERSION = '2.0.0-alpha.1';
+export const APP_VERSION = '2.0.1';
 export const APP_DESCRIPTION =
   'A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors';
 
@@ -73,9 +73,7 @@ export const THEME_NAMES: readonly ThemeName[] = [
   'standard-light',
   'standard-dark',
   'hydaelyn-light',
-  'hydaelyn-dark',
-  'classic-light',
-  'classic-dark',
+  'og-classic-dark',
   'parchment-light',
   'parchment-dark',
   'sugar-riot-light',
@@ -95,9 +93,7 @@ export const THEME_DISPLAY_NAMES: Record<ThemeName, string> = {
   'standard-light': 'Standard (Light)',
   'standard-dark': 'Standard (Dark)',
   'hydaelyn-light': 'Hydaelyn (Light)',
-  'hydaelyn-dark': 'Hydaelyn (Dark)',
-  'classic-light': 'Classic FF (Light)',
-  'classic-dark': 'Classic FF (Dark)',
+  'og-classic-dark': 'OG Classic Dark',
   'parchment-light': 'Parchment (Light)',
   'parchment-dark': 'Parchment (Dark)',
   'sugar-riot-light': 'Sugar Riot (Light)',

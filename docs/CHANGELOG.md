@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.1] - 2025-12-XX
+
+### 🎨 Theme System Updates & Color Matcher Enhancements
+
+**Status**: ✅ COMPLETE
+**Focus**: Theme refinements, Color Matcher improvements, and Theme Editor enhancements
+
+#### Theme System Updates ✅
+- **Standard Light Theme** - Updated with refined color palette:
+  - Background: `#E4DFD0` (warm beige)
+  - Text: `#1E1E1E` (near black)
+  - Text Header: `#F9F8F4` (off-white)
+  - Card Background: `#F9F8F4`
+  - Card Hover: `#FDFDFC`
+  - Improved contrast and readability
+- **Standard Dark Theme** - Updated with refined color palette:
+  - Primary: `#E4AA8A` (warm peach)
+  - Background: `#2B2923` (warm dark brown)
+  - Text Header: `#1E1E1E` (dark for contrast on primary)
+  - Background Secondary: `#2B2923`
+  - Card Hover: `#242424`
+- **Hydaelyn Light Theme** - Updated with refined color palette:
+  - Primary: `#4056A4` (deep blue)
+  - Background: `#B2C4CE` (soft blue-gray)
+  - Text: `#312D57` (dark purple-gray)
+  - Background Secondary: `#B2C4CE`
+- **OG Classic Dark Theme** (formerly Classic Light) - Renamed and updated:
+  - Renamed from "Classic Light" to "OG Classic Dark" to better reflect its dark aesthetic
+  - Background: `#181820` (very dark blue-gray)
+  - Text: `#F9F8F4` (off-white)
+  - Card Background: `#000B9D` (deep blue)
+  - Card Hover: `#5052D9` (bright blue)
+- **Grayscale Themes** - Updated for better contrast:
+  - Grayscale Light: Text Header `#FFFFFF`, Border `#404040`
+  - Grayscale Dark: Border `#9CA3AF`
+
+#### Theme Removals ✅
+- **Hydaelyn Dark** - Removed from theme system
+- **Classic Dark** - Removed from theme system
+- Total themes reduced from 12 to 10 for streamlined experience
+
+#### Color Matcher Enhancements ✅
+- **Copy Hex Button** - Added "Copy Hex" button to each dye card (Matched Dye and Similar Dyes)
+  - One-click hex code copying to clipboard
+  - Toast notifications for success/error feedback
+  - Fallback support for older browsers
+  - Theme-aware styling with hover effects
+  - Positioned after category badge for easy access
+
+#### Theme Editor Improvements ✅
+- **WCAG Compliance Matrix Toggles** - Added show/hide controls for rows and columns
+  - Separate controls for foreground colors (rows) and background colors (columns)
+  - Default visibility optimized for typical WCAG testing scenarios
+  - Rows: Text, Text Header, Border, Text Muted visible by default
+  - Columns: Primary, Background, Background Secondary, Card Background, Card Hover visible by default
+  - Checkboxes persist state and update matrix in real-time
+  - Improved usability for accessibility testing workflows
+
+#### Technical Updates ✅
+- Updated TypeScript types to reflect theme changes
+- Updated test files to use new theme names
+- Updated CSS theme class definitions
+- All 514 tests passing with updated theme references
+
+---
+
 ## [2.0.0] - 2025-11-18
 
 ### 🎨 UI Polish & Theme System Enhancements (Latest Session)
@@ -99,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Custom Header Text Color**: New `--theme-text-header` CSS variable for customizable header text colors
   - Applied to: "XIV Dye Tools" title, version text, harmony card headers, activated buttons, "Generate" button, "Refresh Prices" button
   - Defaults to `--theme-text` color but customizable via Theme Editor
-  - All 12 theme palettes updated with `textHeader` property
+  - All 10 theme palettes updated with `textHeader` property
 - **Theme-Aware Button Hover Effects**: All action buttons now use brightness filter for consistent hover feedback
   - Generate button (Harmony Explorer)
   - Clear button (Dye Selector)
@@ -117,7 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Logo Path Fix**: Updated logo path to `/assets/icons/icon-192x192.png` with fallback handling
 - **Menu Closing Logic**: Tools and Theme dropdowns now close when the other is clicked (cross-component communication)
 - **Theme Menu Background**: Fixed transparent background for better readability
-- **Header Text Contrast**: Improved readability of "XIV Dye Tools" text across all 12 themes
+- **Header Text Contrast**: Improved readability of "XIV Dye Tools" text across all 10 themes
 - **Hardcoded Colors Removed**: Eliminated hardcoded white colors, now uses `--theme-text-header` variable
 - **Market Board Default**: "Show Prices" option now defaults to disabled (false)
 - **CSS Rule Cleanup**: Removed global `h1-h6` color override that was conflicting with `--theme-text-header`
@@ -252,7 +318,7 @@ Before (v1.6.x):          After (v2.0.0):
 
 ### 🎨 Theme System
 
-All 12 themes fully functional:
+All 10 themes fully functional:
 - Standard (Light/Dark) - Red primary color
 - Hydaelyn (Light/Dark) - Sky blue primary color
 - Classic FF (Light/Dark) - Deep blue primary color

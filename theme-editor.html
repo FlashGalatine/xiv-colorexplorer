@@ -466,6 +466,72 @@
     .wcag-info li {
       margin: 5px 0;
     }
+
+    /* WCAG Matrix Toggle Controls */
+    .wcag-controls {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      flex-wrap: wrap;
+    }
+
+    .wcag-control-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .wcag-control-group h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #374151;
+    }
+
+    .wcag-checkbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .wcag-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wcag-checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #4f46e5;
+    }
+
+    .wcag-checkbox-item label {
+      font-size: 13px;
+      cursor: pointer;
+      color: #374151;
+      user-select: none;
+    }
+
+    .wcag-checkbox-item label:hover {
+      color: #111827;
+    }
+
+    /* Hide rows/columns */
+    .wcag-matrix table tr.hidden-row {
+      display: none;
+    }
+
+    .wcag-matrix table th.hidden-col,
+    .wcag-matrix table td.hidden-col {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -480,9 +546,7 @@
           <option value="standard-light">Standard Light</option>
           <option value="standard-dark">Standard Dark</option>
           <option value="hydaelyn-light">Hydaelyn Light</option>
-          <option value="hydaelyn-dark">Hydaelyn Dark</option>
-          <option value="classic-light">Classic Light</option>
-          <option value="classic-dark">Classic Dark</option>
+          <option value="og-classic-dark">OG Classic Dark</option>
           <option value="parchment-light">Parchment Light</option>
           <option value="parchment-dark">Parchment Dark</option>
           <option value="sugar-riot-light">Sugar Riot Light</option>
@@ -625,6 +689,7 @@
 
         <div class="wcag-section">
           <h3 class="panel-title">WCAG Compliance Matrix</h3>
+          <div class="wcag-controls" id="wcagControls"></div>
           <div class="wcag-matrix" id="wcagMatrix"></div>
           <div class="wcag-info">
             <h4>WCAG Contrast Requirements</h4>
@@ -684,69 +749,47 @@
     const defaultThemes = {
       'standard-light': {
         primary: '#781A1A',
-        background: '#FFFFFF',
-        text: '#1F2937',
-        textHeader: '#1F2937',
-        border: '#E5E7EB',
-        backgroundSecondary: '#F3F4F6',
-        cardBackground: '#FFFFFF',
-        cardHover: '#F3F4F6',
-        textMuted: '#6B7280'
+        background: '#E4DFD0',
+        text: '#1E1E1E',
+        textHeader: '#F9F8F4',
+        border: '#451511',
+        backgroundSecondary: '#E4DFD0',
+        cardBackground: '#F9F8F4',
+        cardHover: '#FDFDFC',
+        textMuted: '#484742'
       },
       'standard-dark': {
-        primary: '#C99156',
-        background: '#120A0A',
-        text: '#F3F4F6',
-        textHeader: '#F3F4F6',
-        border: '#4A2C17',
-        backgroundSecondary: '#1F1010',
-        cardBackground: '#321919',
-        cardHover: '#412121',
-        textMuted: '#D6B898'
+        primary: '#E4AA8A',
+        background: '#2B2923',
+        text: '#F9F8F4',
+        textHeader: '#1E1E1E',
+        border: '#E69F96',
+        backgroundSecondary: '#2B2923',
+        cardBackground: '#1E1E1E',
+        cardHover: '#242424',
+        textMuted: '#ACA8A2'
       },
       'hydaelyn-light': {
-        primary: '#0EA5E9',
-        background: '#F0F9FF',
-        text: '#1F2937',
-        textHeader: '#1F2937',
-        border: '#E0F2FE',
-        backgroundSecondary: '#E0F2FE',
-        cardBackground: '#FFFFFF',
-        cardHover: '#E0F2FE',
+        primary: '#4056A4',
+        background: '#B2C4CE',
+        text: '#312D57',
+        textHeader: '#F9F8F4',
+        border: '#4056A4',
+        backgroundSecondary: '#B2C4CE',
+        cardBackground: '#F9F8F4',
+        cardHover: '#FDFDFC',
         textMuted: '#0C4A6E'
       },
-      'hydaelyn-dark': {
-        primary: '#38BDF8',
-        background: '#0C2D47',
-        text: '#E0F2FE',
-        textHeader: '#E0F2FE',
-        border: '#164E63',
-        backgroundSecondary: '#164E63',
-        cardBackground: '#0C2D47',
-        cardHover: '#164E63',
-        textMuted: '#7DD3FC'
-      },
-      'classic-light': {
+      'og-classic-dark': {
         primary: '#1E40AF',
-        background: '#EFF6FF',
-        text: '#1F2937',
-        textHeader: '#1F2937',
-        border: '#DBEAFE',
-        backgroundSecondary: '#DBEAFE',
-        cardBackground: '#FFFFFF',
-        cardHover: '#DBEAFE',
-        textMuted: '#1E40AF'
-      },
-      'classic-dark': {
-        primary: '#60A5FA',
-        background: '#1E3A8A',
-        text: '#DBEAFE',
-        textHeader: '#DBEAFE',
-        border: '#1E40AF',
-        backgroundSecondary: '#1E40AF',
-        cardBackground: '#1E3A8A',
-        cardHover: '#1E40AF',
-        textMuted: '#93C5FD'
+        background: '#181820',
+        text: '#F9F8F4',
+        textHeader: '#F9F8F4',
+        border: '#E4DFD0',
+        backgroundSecondary: '#4056A4',
+        cardBackground: '#000B9D',
+        cardHover: '#5052D9',
+        textMuted: '#E4DFD0'
       },
       'parchment-light': {
         primary: '#D97706',
@@ -796,8 +839,8 @@
         primary: '#404040',
         background: '#FFFFFF',
         text: '#000000',
-        textHeader: '#000000',
-        border: '#D1D5DB',
+        textHeader: '#FFFFFF',
+        border: '#404040',
         backgroundSecondary: '#F3F4F6',
         cardBackground: '#FFFFFF',
         cardHover: '#F3F4F6',
@@ -808,7 +851,7 @@
         background: '#111827',
         text: '#F3F4F6',
         textHeader: '#F3F4F6',
-        border: '#374151',
+        border: '#9CA3AF',
         backgroundSecondary: '#1F2937',
         cardBackground: '#111827',
         cardHover: '#1F2937',
@@ -819,12 +862,30 @@
     let currentTheme = { ...defaultThemes['standard-light'] };
     let currentThemeName = 'standard-light';
     let editingColorKey = null;
+    
+    // Track visibility state for WCAG matrix rows and columns separately
+    let wcagRowVisibility = {}; // For rows (foreground colors)
+    let wcagColVisibility = {}; // For columns (background colors)
+    
+    // Set default visibility based on typical WCAG testing needs
+    // Rows (foreground): Show text elements that need contrast testing
+    // Columns (background): Show background elements that text appears on
+    colorKeys.forEach(({ key }) => {
+      // Rows: Show text, textHeader, border, textMuted (foreground elements)
+      // Hide: primary, background, backgroundSecondary, cardBackground, cardHover
+      wcagRowVisibility[key] = ['text', 'textHeader', 'border', 'textMuted'].includes(key);
+      
+      // Columns: Show primary, background, backgroundSecondary, cardBackground, cardHover (background elements)
+      // Hide: text, textHeader, border, textMuted
+      wcagColVisibility[key] = ['primary', 'background', 'backgroundSecondary', 'cardBackground', 'cardHover'].includes(key);
+    });
 
     // Initialize
     function init() {
       renderColorGrid();
       updatePreview();
       updateCSS();
+      renderWCAGControls();
       
       document.getElementById('themeSelect').addEventListener('change', (e) => {
         currentThemeName = e.target.value;
@@ -1022,6 +1083,72 @@
       return results;
     }
 
+    // Render WCAG visibility controls
+    function renderWCAGControls() {
+      const controls = document.getElementById('wcagControls');
+      controls.innerHTML = '';
+
+      // Rows control group
+      const rowsGroup = document.createElement('div');
+      rowsGroup.className = 'wcag-control-group';
+      const rowsTitle = document.createElement('h4');
+      rowsTitle.textContent = 'Show/Hide Rows (Foreground Colors)';
+      rowsGroup.appendChild(rowsTitle);
+
+      const rowsList = document.createElement('div');
+      rowsList.className = 'wcag-checkbox-list';
+      colorKeys.forEach(({ key, label }) => {
+        const item = document.createElement('div');
+        item.className = 'wcag-checkbox-item';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `wcag-row-${key}`;
+        checkbox.checked = wcagRowVisibility[key];
+        checkbox.addEventListener('change', () => {
+          wcagRowVisibility[key] = checkbox.checked;
+          updateWCAGMatrix();
+        });
+        const labelEl = document.createElement('label');
+        labelEl.htmlFor = `wcag-row-${key}`;
+        labelEl.textContent = label;
+        item.appendChild(checkbox);
+        item.appendChild(labelEl);
+        rowsList.appendChild(item);
+      });
+      rowsGroup.appendChild(rowsList);
+      controls.appendChild(rowsGroup);
+
+      // Columns control group
+      const colsGroup = document.createElement('div');
+      colsGroup.className = 'wcag-control-group';
+      const colsTitle = document.createElement('h4');
+      colsTitle.textContent = 'Show/Hide Columns (Background Colors)';
+      colsGroup.appendChild(colsTitle);
+
+      const colsList = document.createElement('div');
+      colsList.className = 'wcag-checkbox-list';
+      colorKeys.forEach(({ key, label }) => {
+        const item = document.createElement('div');
+        item.className = 'wcag-checkbox-item';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `wcag-col-${key}`;
+        checkbox.checked = wcagColVisibility[key];
+        checkbox.addEventListener('change', () => {
+          wcagColVisibility[key] = checkbox.checked;
+          updateWCAGMatrix();
+        });
+        const labelEl = document.createElement('label');
+        labelEl.htmlFor = `wcag-col-${key}`;
+        labelEl.textContent = label;
+        item.appendChild(checkbox);
+        item.appendChild(labelEl);
+        colsList.appendChild(item);
+      });
+      colsGroup.appendChild(colsList);
+      controls.appendChild(colsGroup);
+    }
+
     // Update WCAG compliance matrix
     function updateWCAGMatrix() {
       const matrix = document.getElementById('wcagMatrix');
@@ -1031,10 +1158,13 @@
       const headerRow = document.createElement('tr');
       headerRow.appendChild(document.createElement('th')); // Empty corner cell
       
-      colorKeys.forEach(({ label }) => {
+      colorKeys.forEach(({ key, label }) => {
         const th = document.createElement('th');
         th.textContent = label;
         th.style.minWidth = '120px';
+        if (!wcagColVisibility[key]) {
+          th.classList.add('hidden-col');
+        }
         headerRow.appendChild(th);
       });
       table.appendChild(headerRow);
@@ -1042,8 +1172,11 @@
       // Create data rows
       colorKeys.forEach(({ key: fgKey, label: fgLabel }) => {
         const row = document.createElement('tr');
+        if (!wcagRowVisibility[fgKey]) {
+          row.classList.add('hidden-row');
+        }
         
-        // Row header
+        // Row header (first column - only hidden when row is hidden, not by column visibility)
         const rowHeader = document.createElement('td');
         rowHeader.textContent = fgLabel;
         rowHeader.style.minWidth = '150px';
@@ -1053,6 +1186,9 @@
         colorKeys.forEach(({ key: bgKey }) => {
           const cell = document.createElement('td');
           cell.className = 'contrast-cell';
+          if (!wcagColVisibility[bgKey]) {
+            cell.classList.add('hidden-col');
+          }
 
           if (fgKey === bgKey) {
             cell.innerHTML = '<span style="color: #9ca3af;">—</span>';

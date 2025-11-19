@@ -1,10 +1,10 @@
-# XIV Dye Tools v2.0.0
+# XIV Dye Tools v2.0.1
 
-**Status**: ✅ Production Ready | **Version**: 2.0.0 | **Release**: November 18, 2025 | **Phase**: 12 Complete
+**Status**: ✅ Production Ready | **Version**: 2.0.1 | **Release**: December 2025 | **Phase**: 12 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.0.0 Release Notes**: Complete TypeScript/Vite refactor with modern component-based architecture, 514 unit tests (100% passing), strict type safety, and optimized performance. **Phase 12 Complete** — All features working perfectly. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information. Market pricing support fully integrated.
+> **v2.0.1 Release Notes**: Theme system updates, improved Color Matcher with copy hex functionality, and streamlined theme management. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -216,13 +216,13 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Theme System (v2.0.0)
-Comprehensive theme system with 12 theme variants (6 themes × light/dark), all fully WCAG compliant:
+### 🌓 Theme System (v2.0.1)
+Comprehensive theme system with 10 theme variants, all fully WCAG compliant:
 
 **Available Themes:**
 - **Standard** - Classic red light/dark (default)
-- **Hydaelyn** - FFXIV sky blue light/dark
-- **Classic Final Fantasy** - Deep blue light/dark (FF tradition)
+- **Hydaelyn** - FFXIV sky blue (light only)
+- **OG Classic Dark** - Deep blue dark theme (FF tradition)
 - **Parchment** - Warm beige light/dark (retro aesthetic)
 - **Sugar Riot** - Vibrant pink light/dark (fun & playful)
 - **Grayscale** - Pure black/white/gray light/dark (accessibility-focused)

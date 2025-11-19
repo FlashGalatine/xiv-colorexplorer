@@ -230,12 +230,12 @@ describe('ThemeSwitcher', () => {
       container.addEventListener('theme-changed', eventHandler);
 
       const themeButton = container.querySelector(
-        '[data-theme="classic-dark"]'
+        '[data-theme="og-classic-dark"]'
       ) as HTMLButtonElement;
       themeButton.click();
 
       expect(eventHandler).toHaveBeenCalledTimes(1);
-      expect(eventHandler.mock.calls[0][0].detail.theme).toBe('classic-dark');
+      expect(eventHandler.mock.calls[0][0].detail.theme).toBe('og-classic-dark');
     });
 
     it('should persist theme to storage', () => {
@@ -288,11 +288,11 @@ describe('ThemeSwitcher', () => {
 
   describe('Theme Service Integration', () => {
     it('should initialize with current theme from service', () => {
-      ThemeService.setTheme('classic-light');
+      ThemeService.setTheme('og-classic-dark');
       [component, container] = renderComponent(ThemeSwitcher);
 
       const state = component['getState']();
-      expect(state.currentTheme).toBe('classic-light');
+      expect(state.currentTheme).toBe('og-classic-dark');
     });
 
     it('should update when theme changes externally', async () => {
@@ -399,12 +399,12 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Change theme externally to trigger update
-      ThemeService.setTheme('classic-dark');
+      ThemeService.setTheme('og-classic-dark');
 
       await waitForComponent(100);
 
       // Verify component re-rendered with new theme
-      const highlightedButton = container.querySelector('[data-theme="classic-dark"]');
+      const highlightedButton = container.querySelector('[data-theme="og-classic-dark"]');
       expectElement.toHaveClass(highlightedButton as HTMLElement, 'font-semibold');
     });
 
@@ -434,7 +434,7 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Rapidly select multiple themes
-      const themes = ['hydaelyn-light', 'parchment-dark', 'sugar-riot-light', 'classic-dark'];
+      const themes = ['hydaelyn-light', 'parchment-dark', 'sugar-riot-light', 'og-classic-dark'];
 
       for (const themeName of themes) {
         const themeButton = container.querySelector(
@@ -446,7 +446,7 @@ describe('ThemeSwitcher', () => {
       await waitForComponent(100);
 
       // Final theme should be applied
-      expect(ThemeService.getCurrentTheme()).toBe('classic-dark');
+      expect(ThemeService.getCurrentTheme()).toBe('og-classic-dark');
     });
 
     it('should handle empty dropdown state', () => {

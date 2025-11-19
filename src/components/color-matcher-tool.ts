@@ -945,6 +945,52 @@ export class ColorMatcherTool extends BaseComponent {
     });
     card.appendChild(category);
 
+    // Copy Hex button
+    const copyButton = this.createElement('button', {
+      textContent: 'Copy Hex',
+      className:
+        'px-2 py-1 text-xs font-medium rounded transition-colors border cursor-pointer',
+      attributes: {
+        style:
+          'background-color: var(--theme-background-secondary); color: var(--theme-text); border-color: var(--theme-border);',
+        title: `Copy ${dye.hex} to clipboard`,
+      },
+    });
+
+    // Add hover effect
+    copyButton.addEventListener('mouseenter', () => {
+      copyButton.style.backgroundColor = 'var(--theme-card-hover)';
+    });
+    copyButton.addEventListener('mouseleave', () => {
+      copyButton.style.backgroundColor = 'var(--theme-background-secondary)';
+    });
+
+    // Copy to clipboard on click
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(dye.hex);
+        this.showToast(`✓ Copied ${dye.hex} to clipboard`, 'success');
+      } catch (error) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = dye.hex;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          this.showToast(`✓ Copied ${dye.hex} to clipboard`, 'success');
+        } catch {
+          this.showToast('Failed to copy hex code', 'error');
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    });
+
+    card.appendChild(copyButton);
+
     // Optional market price
     if (this.showPrices) {
       const priceDiv = this.createElement('div', {

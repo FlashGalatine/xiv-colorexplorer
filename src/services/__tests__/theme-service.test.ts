@@ -146,7 +146,7 @@ describe('ThemeService Integration', () => {
     });
 
     it('should get color from current theme palette', () => {
-      ThemeService.setTheme('classic-dark' as ThemeName);
+      ThemeService.setTheme('og-classic-dark' as ThemeName);
 
       const primary = ThemeService.getColor('primary');
       expect(primary).toBeDefined();
@@ -250,7 +250,7 @@ describe('ThemeService Integration', () => {
       const unsub1 = ThemeService.subscribe((t) => themes1.push(t));
       const unsub2 = ThemeService.subscribe((t) => themes2.push(t));
 
-      ThemeService.setTheme('classic-dark' as ThemeName);
+      ThemeService.setTheme('og-classic-dark' as ThemeName);
 
       expect(themes1.length).toBeGreaterThan(0);
       expect(themes2.length).toBeGreaterThan(0);
@@ -312,12 +312,12 @@ describe('ThemeService Integration', () => {
         return;
       }
 
-      ThemeService.setTheme('classic-light' as ThemeName);
+      ThemeService.setTheme('og-classic-dark' as ThemeName);
       const root = document.documentElement;
 
       ThemeService.setTheme('sugar-riot-dark' as ThemeName);
 
-      expect(root.classList.contains('theme-classic-light')).toBe(false);
+      expect(root.classList.contains('theme-og-classic-dark')).toBe(false);
       expect(root.classList.contains('theme-sugar-riot-dark')).toBe(true);
     });
   });
@@ -331,13 +331,13 @@ describe('ThemeService Integration', () => {
       'standard-light',
       'standard-dark',
       'hydaelyn-light',
-      'hydaelyn-dark',
-      'classic-light',
-      'classic-dark',
+      'og-classic-dark',
       'parchment-light',
       'parchment-dark',
       'sugar-riot-light',
       'sugar-riot-dark',
+      'grayscale-light',
+      'grayscale-dark',
     ];
 
     expectedThemes.forEach((themeName) => {
