@@ -150,7 +150,7 @@ export class AppLayout extends BaseComponent {
     const footer = this.createElement('footer', {
       className: 'app-footer mt-12',
       attributes: {
-        style: 'min-height: 200px;', // Reserve space to prevent layout shift when fonts load
+        style: 'min-height: 300px;', // Reserve space to prevent layout shift when fonts load (actual height ~298px)
       },
     });
 
