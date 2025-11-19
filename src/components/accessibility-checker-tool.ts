@@ -425,12 +425,12 @@ export class AccessibilityCheckerTool extends BaseComponent {
       key: keyof typeof result.colorblindnessSimulations;
       label: string;
     }> = [
-      { key: 'normal', label: 'Normal' },
-      { key: 'deuteranopia', label: 'Deuteranopia' },
-      { key: 'protanopia', label: 'Protanopia' },
-      { key: 'tritanopia', label: 'Tritanopia' },
-      { key: 'achromatopsia', label: 'Achromatopsia' },
-    ];
+        { key: 'normal', label: 'Normal' },
+        { key: 'deuteranopia', label: 'Deuteranopia' },
+        { key: 'protanopia', label: 'Protanopia' },
+        { key: 'tritanopia', label: 'Tritanopia' },
+        { key: 'achromatopsia', label: 'Achromatopsia' },
+      ];
 
     for (const visionType of visionTypes) {
       const simCard = this.createElement('div', {
@@ -597,13 +597,45 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
   /**
    * Calculate overall accessibility score from selected dyes
-   * Averages contrast scores and returns 0-100 value
+   * Uses legacy logic: Starts at 100 and subtracts points for distinguishability issues
+   * across all vision types (Normal, Deuteranopia, Protanopia, Tritanopia).
    */
   private calculateOverallAccessibilityScore(): number {
-    if (this.dyeResults.length === 0) return 100;
+    // If less than 2 dyes, there are no pairs to compare, so score is 100% (Pass)
+    if (this.selectedDyes.length < 2) return 100;
 
-    const totalScore = this.dyeResults.reduce((sum, result) => sum + result.contrastScore, 0);
-    return Math.round(totalScore / this.dyeResults.length);
+    let score = 100;
+    const visionTypes: ('normal' | 'deuteranopia' | 'protanopia' | 'tritanopia')[] = [
+      'normal',
+      'deuteranopia',
+      'protanopia',
+      'tritanopia',
+    ];
+
+    // Check every pair of dyes
+    for (let i = 0; i < this.selectedDyes.length; i++) {
+      for (let j = i + 1; j < this.selectedDyes.length; j++) {
+        const dye1 = this.selectedDyes[i];
+        const dye2 = this.selectedDyes[j];
+
+        // Check distinguishability under each vision type
+        for (const visionType of visionTypes) {
+          const c1 = ColorService.simulateColorblindnessHex(dye1.hex, visionType);
+          const c2 = ColorService.simulateColorblindnessHex(dye2.hex, visionType);
+          const distance = ColorService.getColorDistance(c1, c2);
+
+          // Apply penalties based on distance (thresholds from legacy tool)
+          if (distance < 30) {
+            score -= 10; // Hard to distinguish
+          } else if (distance < 60) {
+            score -= 2; // Somewhat similar
+          }
+        }
+      }
+    }
+
+    // Clamp score between 0 and 100
+    return Math.max(0, Math.min(100, score));
   }
 
   /**

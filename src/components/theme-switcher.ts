@@ -65,7 +65,16 @@ export class ThemeSwitcher extends BaseComponent {
     });
 
     // Get all available themes and create buttons
-    const themes = ThemeService.getAllThemes();
+    const themes = ThemeService.getAllThemes().sort((a, b) => {
+      // Priority: standard-light, standard-dark, then alphabetical
+      if (a.name === 'standard-light') return -1;
+      if (b.name === 'standard-light') return 1;
+
+      if (a.name === 'standard-dark') return -1;
+      if (b.name === 'standard-dark') return 1;
+
+      return a.name.localeCompare(b.name);
+    });
     const themeList = this.createElement('div', {
       className: 'flex flex-col p-2',
     });

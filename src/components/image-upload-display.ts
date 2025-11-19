@@ -79,10 +79,36 @@ export class ImageUploadDisplay extends BaseComponent {
       className: 'hidden',
     });
 
+    const cameraInput = this.createElement('input', {
+      attributes: {
+        type: 'file',
+        accept: 'image/*',
+        capture: 'environment',
+        id: 'camera-file-input',
+      },
+      className: 'hidden',
+    });
+
+    const cameraBtn = this.createElement('button', {
+      textContent: '📷 Take Photo',
+      className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
+      attributes: {
+        type: 'button',
+      },
+    });
+
+    // Stop propagation to prevent triggering the drop zone click
+    cameraBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cameraInput.click();
+    });
+
     dropContent.appendChild(icon);
     dropContent.appendChild(text);
+    dropContent.appendChild(cameraBtn);
     dropZone.appendChild(dropContent);
     dropZone.appendChild(fileInput);
+    dropZone.appendChild(cameraInput);
     wrapper.appendChild(dropZone);
 
     // Info text
@@ -177,6 +203,16 @@ export class ImageUploadDisplay extends BaseComponent {
       this.on(fileInput, 'change', () => {
         if (fileInput.files) {
           this.handleFiles(fileInput.files);
+        }
+      });
+    }
+
+    // Camera input change
+    const cameraInput = this.querySelector<HTMLInputElement>('#camera-file-input');
+    if (cameraInput) {
+      this.on(cameraInput, 'change', () => {
+        if (cameraInput.files) {
+          this.handleFiles(cameraInput.files);
         }
       });
     }

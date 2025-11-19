@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.1] - 2025-11-19
 
-### 🚀 Mobile Performance Optimization
+### 🛠️ UI Polish & Bug Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: UI refinements, test coverage, and bug fixes for v2.0.0 release.
+
+#### UI Polish ✅
+- **Theme Switcher**: Sorted themes alphabetically with "Standard" themes pinned to top.
+- **Color Matcher**: Reintroduced "Camera Upload" option for mobile devices.
+
+#### Bug Fixes ✅
+- **Harmony Explorer**: Fixed "dot hovering anomaly" where dots would nudge off canvas (switched to SVG radius animation).
+- **Accessibility Checker**: Restored legacy pairwise scoring logic (starts at 100%, penalties for conflicts) to match user expectations.
+
+#### Test Coverage ✅
+- **Dye Comparison Chart**: Added comprehensive unit tests covering rendering, interactions, and theme changes.
+- **Test Environment**: Fixed missing canvas mocks (`fill`, `rotate`) in test utilities.
+
+---
+
+## [2.0.0] - 2025-11-18
 
 **Status**: ✅ COMPLETE
 **Focus**: Mobile performance improvements, render-blocking resource elimination, and image optimization

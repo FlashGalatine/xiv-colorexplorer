@@ -203,21 +203,23 @@ export class ColorWheelDisplay extends BaseComponent {
       circle.setAttribute('fill', dye.hex);
       circle.setAttribute('stroke', dotStrokeColor);
       circle.setAttribute('stroke-width', '2.5');
-      circle.classList.add('cursor-pointer', 'transition-all', 'duration-200', 'hover:scale-125');
+      circle.classList.add('cursor-pointer', 'transition-all', 'duration-200');
 
       // Add tooltip
       const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
       title.textContent = `${dye.name} (${dye.hex})`;
       circle.appendChild(title);
 
-      // Hover effect to enlarge glow
+      // Hover effect to enlarge glow and dot
       circle.addEventListener('mouseenter', () => {
         glowCircle.setAttribute('r', '16');
         glowCircle.setAttribute('opacity', '0.5');
+        circle.setAttribute('r', '11');
       });
       circle.addEventListener('mouseleave', () => {
         glowCircle.setAttribute('r', '12');
         glowCircle.setAttribute('opacity', '0.3');
+        circle.setAttribute('r', '9');
       });
 
       svg.appendChild(circle);

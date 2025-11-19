@@ -268,6 +268,7 @@ export function setupCanvasMocks(): void {
     moveTo: vi.fn(),
     lineTo: vi.fn(),
     stroke: vi.fn(),
+    fill: vi.fn(),
     arc: vi.fn(),
     fillText: vi.fn(),
     measureText: vi.fn(() => ({ width: 0 })),
@@ -275,6 +276,7 @@ export function setupCanvasMocks(): void {
     restore: vi.fn(),
     translate: vi.fn(),
     scale: vi.fn(),
+    rotate: vi.fn(),
   } as unknown as CanvasRenderingContext2D;
 
   vi.spyOn(window.HTMLCanvasElement.prototype, 'getContext').mockReturnValue(mockContext);
