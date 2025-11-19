@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { asyncCss } from './vite-plugin-async-css'
 
 export default defineConfig({
   root: 'src',
@@ -85,4 +86,8 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+
+  plugins: [
+    asyncCss(),
+  ],
 })
