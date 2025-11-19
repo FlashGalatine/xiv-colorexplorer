@@ -37,6 +37,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile typography: Ensure 16px base font size to prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Explicit 16px prevents iOS auto-zoom on input focus */
+    line-height: 1.5; /* Comfortable line-height for mobile readability */
+  }
+}
+
 /* Monospace elements */
 code,
 pre,
