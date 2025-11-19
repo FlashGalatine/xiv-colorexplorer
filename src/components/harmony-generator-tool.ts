@@ -30,6 +30,7 @@ interface DyeFilterConfig {
   excludePastel: boolean;
   excludeExpensive: boolean;
   excludeDark: boolean;
+  excludeCosmic: boolean;
 }
 
 /**
@@ -114,6 +115,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     excludePastel: false,
     excludeExpensive: false,
     excludeDark: false,
+    excludeCosmic: false,
   };
   private filterCheckboxes: Map<string, HTMLInputElement> = new Map();
   private filtersExpanded: boolean = false;
@@ -343,6 +345,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
         key: 'excludeDark',
         label: 'Exclude Dark Dyes',
         description: 'Hide dyes that begin with "Dark"',
+      },
+      {
+        key: 'excludeCosmic',
+        label: 'Exclude Cosmic Dyes',
+        description: 'Hide dyes from Cosmic Exploration & Cosmic Fortunes',
       },
       {
         key: 'excludeExpensive',
@@ -822,6 +829,14 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Exclude Dark dyes (begin with "Dark")
     if (this.dyeFilters.excludeDark && dye.name.toLowerCase().startsWith('dark')) {
+      return true;
+    }
+
+    // Exclude Cosmic dyes (Cosmic Exploration or Cosmic Fortunes)
+    if (
+      this.dyeFilters.excludeCosmic &&
+      (dye.acquisition === 'Cosmic Exploration' || dye.acquisition === 'Cosmic Fortunes')
+    ) {
       return true;
     }
 
