@@ -260,7 +260,9 @@ export class ColorWheelDisplay extends BaseComponent {
     centerLabel.setAttribute('x', String(this.wheelCenter));
     centerLabel.setAttribute('y', String(this.wheelCenter + 4)); // Slight vertical adjustment for better centering
     centerLabel.setAttribute('text-anchor', 'middle');
-    centerLabel.setAttribute('font-size', String(this.wheelSize * 0.06)); // 6% of wheel size
+    // Ensure font-size is at least 12px for mobile readability (Lighthouse requirement)
+    const fontSize = Math.max(12, this.wheelSize * 0.06);
+    centerLabel.setAttribute('font-size', String(fontSize));
     centerLabel.setAttribute('font-weight', '600');
     centerLabel.setAttribute('fill', theme.isDark ? '#CCCCCC' : '#666666');
     centerLabel.setAttribute('opacity', '0.7');
