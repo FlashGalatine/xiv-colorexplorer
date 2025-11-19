@@ -94,6 +94,7 @@ export class ImageUploadDisplay extends BaseComponent {
       className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
       attributes: {
         type: 'button',
+        'aria-label': 'Take photo from camera',
       },
     });
 
@@ -110,6 +111,21 @@ export class ImageUploadDisplay extends BaseComponent {
     dropZone.appendChild(fileInput);
     dropZone.appendChild(cameraInput);
     wrapper.appendChild(dropZone);
+
+    // Privacy notice for camera uploads (mobile)
+    const privacyNotice = this.createElement('div', {
+      className: 'mt-3 p-3 rounded-lg border text-xs md:hidden',
+      attributes: {
+        style: `
+          background-color: color-mix(in srgb, var(--theme-primary) 5%, var(--theme-background));
+          border-color: color-mix(in srgb, var(--theme-primary) 20%, var(--theme-border));
+          color: var(--theme-text);
+        `,
+      },
+      innerHTML:
+        '🔒 <strong>Privacy Protected:</strong> Photos and images are processed locally in your browser and never uploaded to any server. <a href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer" class="underline font-semibold">Learn more</a>',
+    });
+    wrapper.appendChild(privacyNotice);
 
     // Info text
     const info = this.createElement('p', {
