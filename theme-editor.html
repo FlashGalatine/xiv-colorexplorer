@@ -256,7 +256,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #ffffff;
+      color: var(--preview-text-header);
       font-size: 14px;
     }
 
@@ -280,7 +280,7 @@
 
     .preview-button {
       background: var(--preview-primary);
-      color: white;
+      color: var(--preview-text-header);
       padding: 10px 20px;
       border: none;
       border-radius: 6px;
@@ -476,6 +476,8 @@
           <option value="parchment-dark">Parchment Dark</option>
           <option value="sugar-riot-light">Sugar Riot Light</option>
           <option value="sugar-riot-dark">Sugar Riot Dark</option>
+          <option value="grayscale-light">Grayscale Light</option>
+          <option value="grayscale-dark">Grayscale Dark</option>
         </select>
       </div>
       <button onclick="loadDefaultTheme()">Load Default</button>
@@ -517,14 +519,83 @@
               <button class="preview-button" style="background: var(--preview-background-secondary); color: var(--preview-text);">Secondary Button</button>
               <p class="preview-text-muted">This is muted text that uses the textMuted color.</p>
             </div>
-            <div class="preview-card">
-              <h4 style="margin-bottom: 8px;">Another Card</h4>
-              <p>Cards use the cardBackground color, and hover states use cardHover.</p>
+            
+            <!-- Harmony Card Mock-up -->
+            <div class="preview-card" style="border: 1px solid var(--preview-border); overflow: hidden;">
+              <!-- Harmony Card Header -->
+              <div style="background: var(--preview-primary); padding: 16px; border-bottom: 1px solid var(--preview-border);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                  <span style="font-size: 24px;">⬜</span>
+                  <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--preview-text-header);">Square Harmony</h3>
+                </div>
+                <p style="margin: 0; font-size: 14px; font-weight: 500; color: var(--preview-text-header);">
+                  Four colors evenly spaced on the color wheel (90° apart)
+                </p>
+                <div style="margin-top: 8px; font-size: 12px; color: var(--preview-text-header); opacity: 0.8;">
+                  Avg Deviance: 2.6/10
+                </div>
+              </div>
+              
+              <!-- Harmony Card Content -->
+              <div style="padding: 16px; background: var(--preview-card-bg);">
+                <!-- Base Color Swatch -->
+                <div style="display: flex; justify-content: center; padding: 12px 0; border-bottom: 1px solid var(--preview-border); margin-bottom: 12px;">
+                  <div style="width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--preview-border); background: #6f5aa2; position: relative;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                      <div style="font-size: 14px;">Violet Purple</div>
+                      <div style="font-size: 11px; opacity: 0.9;">#6F5AA2</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Dye List -->
+                <div style="space-y: 8px;">
+                  <!-- Meadow Green -->
+                  <div style="display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 6px; border: 1px solid var(--preview-border); margin-bottom: 8px; background: var(--preview-card-bg);">
+                    <div style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--preview-border); background: #8bc34a; flex-shrink: 0;"></div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-weight: 600; color: var(--preview-text); margin-bottom: 4px;">Meadow Green</div>
+                      <div style="font-size: 12px; color: var(--preview-text-muted);">Greens</div>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0;">
+                      <div style="font-size: 12px; font-weight: 600; color: var(--preview-text); margin-bottom: 2px;">2.2 deviance</div>
+                      <div style="font-size: 11px; color: var(--preview-text-muted);">598G market</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Celeste Green -->
+                  <div style="display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 6px; border: 1px solid var(--preview-border); margin-bottom: 8px; background: var(--preview-card-bg);">
+                    <div style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--preview-border); background: #4dd0e1; flex-shrink: 0;"></div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-weight: 600; color: var(--preview-text); margin-bottom: 4px;">Celeste Green</div>
+                      <div style="font-size: 12px; color: var(--preview-text-muted);">Greens</div>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0;">
+                      <div style="font-size: 12px; font-weight: 600; color: var(--preview-text); margin-bottom: 2px;">2.5 deviance</div>
+                      <div style="font-size: 11px; color: var(--preview-text-muted);">550G market</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Rolanberry Red -->
+                  <div style="display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 6px; border: 1px solid var(--preview-border); background: var(--preview-card-bg);">
+                    <div style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--preview-border); background: #c62828; flex-shrink: 0;"></div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-weight: 600; color: var(--preview-text); margin-bottom: 4px;">Rolanberry Red</div>
+                      <div style="font-size: 12px; color: var(--preview-text-muted);">Reds</div>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0;">
+                      <div style="font-size: 12px; font-weight: 600; color: var(--preview-text); margin-bottom: 2px;">3.2 deviance</div>
+                      <div style="font-size: 11px; color: var(--preview-text-muted);">494G market</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+            
             <div class="preview-card">
               <h4 style="margin-bottom: 8px;">Scroll Test</h4>
               <p>Scroll this preview area to see the sticky header in action. The header stays at the top and uses the primary color.</p>
-              <p style="margin-top: 20px;">The header background uses the primary color, and text is white for contrast.</p>
+              <p style="margin-top: 20px;">The header background uses the primary color, and text uses --theme-text-header for contrast.</p>
             </div>
           </div>
         </div>
@@ -697,6 +768,28 @@
         cardBackground: '#831843',
         cardHover: '#9F1239',
         textMuted: '#FBCFE8'
+      },
+      'grayscale-light': {
+        primary: '#404040',
+        background: '#FFFFFF',
+        text: '#000000',
+        textHeader: '#000000',
+        border: '#D1D5DB',
+        backgroundSecondary: '#F3F4F6',
+        cardBackground: '#FFFFFF',
+        cardHover: '#F3F4F6',
+        textMuted: '#6B7280'
+      },
+      'grayscale-dark': {
+        primary: '#6B7280',
+        background: '#111827',
+        text: '#F3F4F6',
+        textHeader: '#F3F4F6',
+        border: '#374151',
+        backgroundSecondary: '#1F2937',
+        cardBackground: '#111827',
+        cardHover: '#1F2937',
+        textMuted: '#9CA3AF'
       }
     };
 

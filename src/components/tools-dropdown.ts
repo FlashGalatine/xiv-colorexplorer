@@ -40,11 +40,10 @@ export class ToolsDropdown extends BaseComponent {
    * Render the tools dropdown component
    */
   render(): void {
-    // Calculate optimal text color based on primary theme color
+    // Get current theme to determine border opacity
     const currentTheme = ThemeService.getCurrentTheme();
     const themeObject = ThemeService.getTheme(currentTheme);
-    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
-    const isLightText = optimalTextColor === '#FFFFFF';
+    const isLightText = ColorService.getOptimalTextColor(themeObject.palette.primary) === '#FFFFFF';
     
     // Create button to toggle dropdown
     const button = this.createElement('button', {
@@ -56,7 +55,7 @@ export class ToolsDropdown extends BaseComponent {
         'aria-label': 'Toggle tools menu',
         'aria-haspopup': 'true',
         'aria-expanded': 'false',
-        style: `color: ${optimalTextColor}; border-color: ${isLightText ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};`,
+        style: `color: var(--theme-text-header); border-color: ${isLightText ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};`,
       },
     });
 
