@@ -67,34 +67,20 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
-    // Logo image - responsive picture element with WebP support
+    // Logo image - responsive picture element with WebP support and density descriptors
+    // Logo displays at 40x40px (w-10 h-10), so we use srcset with density descriptors
+    // for optimal image selection based on device pixel ratio
     const picture = this.createElement('picture', {});
     
-    // WebP sources for different screen sizes
-    const sourceMobile = this.createElement('source', {
+    // WebP source with density descriptors (1x, 1.5x, 2x) for high-DPI screens
+    const sourceWebP = this.createElement('source', {
       attributes: {
-        srcset: '/assets/icons/icon-40x40.webp',
-        media: '(max-width: 640px)',
+        srcset: '/assets/icons/icon-40x40.webp 1x, /assets/icons/icon-60x60.webp 1.5x, /assets/icons/icon-80x80.webp 2x',
         type: 'image/webp',
       },
     });
     
-    const sourceTablet = this.createElement('source', {
-      attributes: {
-        srcset: '/assets/icons/icon-80x80.webp',
-        media: '(max-width: 1024px)',
-        type: 'image/webp',
-      },
-    });
-    
-    const sourceDefault = this.createElement('source', {
-      attributes: {
-        srcset: '/assets/icons/icon-192x192.webp',
-        type: 'image/webp',
-      },
-    });
-    
-    // Fallback PNG image
+    // Fallback PNG image (single size, browser will scale)
     const logo = this.createElement('img', {
       attributes: {
         src: '/assets/icons/icon-192x192.png',
@@ -102,14 +88,14 @@ export class AppLayout extends BaseComponent {
         title: 'XIV Dye Tools',
         loading: 'eager',
         fetchpriority: 'high',
+        width: '40',
+        height: '40',
         onerror: "this.onerror=null; this.src='/assets/icons/icon-192x192.png';",
       },
       className: 'w-10 h-10 rounded',
     });
     
-    picture.appendChild(sourceMobile);
-    picture.appendChild(sourceTablet);
-    picture.appendChild(sourceDefault);
+    picture.appendChild(sourceWebP);
     picture.appendChild(logo);
     titleDiv.appendChild(picture);
 
@@ -163,6 +149,9 @@ export class AppLayout extends BaseComponent {
   private renderFooter(): HTMLElement {
     const footer = this.createElement('footer', {
       className: 'app-footer mt-12',
+      attributes: {
+        style: 'min-height: 200px;', // Reserve space to prevent layout shift when fonts load
+      },
     });
 
     const footerContent = this.createElement('div', {

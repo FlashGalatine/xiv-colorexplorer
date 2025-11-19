@@ -16,6 +16,7 @@ const __dirname = path.dirname(__filename);
 const iconsDir = path.join(__dirname, '../assets/icons');
 const sizes = [
   { name: 'icon-40x40.webp', width: 40, height: 40 },
+  { name: 'icon-60x60.webp', width: 60, height: 60 },
   { name: 'icon-80x80.webp', width: 80, height: 80 },
   { name: 'icon-192x192.webp', width: 192, height: 192 },
   { name: 'icon-512x512.webp', width: 512, height: 512 }

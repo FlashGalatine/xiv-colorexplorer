@@ -14,6 +14,8 @@ export default defineConfig({
     target: 'ES2020',
     reportCompressedSize: true,
     emptyOutDir: true,
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id) {
