@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import { ColorInterpolationDisplay } from './color-interpolation-display';
 import type { InterpolationStep } from './color-interpolation-display';
+import { DyeFilters } from './dye-filters';
 import { ColorService, dyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
@@ -21,6 +22,7 @@ import type { Dye } from '@shared/types';
 export class DyeMixerTool extends BaseComponent {
   private selectedDyes: Dye[] = [];
   private dyeSelector: DyeSelector | null = null;
+  private dyeFilters: DyeFilters | null = null;
   private interpolationDisplay: ColorInterpolationDisplay | null = null;
   private stepCount: number = 10;
   private colorSpace: 'rgb' | 'hsv' = 'hsv';
@@ -71,6 +73,20 @@ export class DyeMixerTool extends BaseComponent {
     selectorSection.appendChild(dyeSelectorContainer);
 
     wrapper.appendChild(selectorSection);
+
+    // Dye Filters section
+    const filtersSection = this.createElement('div', {
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+    });
+
+    const filtersContainer = this.createElement('div', {
+      attributes: {
+        id: 'dyemixer-filters-container',
+      },
+    });
+    filtersSection.appendChild(filtersContainer);
+    wrapper.appendChild(filtersSection);
 
     // Settings section
     const settingsSection = this.createElement('div', {
@@ -321,6 +337,23 @@ export class DyeMixerTool extends BaseComponent {
       });
     }
 
+    // Initialize DyeFilters component
+    const filtersContainer = this.querySelector<HTMLElement>('#dyemixer-filters-container');
+    if (filtersContainer && !this.dyeFilters) {
+      this.dyeFilters = new DyeFilters(filtersContainer, {
+        storageKeyPrefix: 'dyemixer',
+        onFilterChange: () => {
+          // Recalculate interpolation if we have selected dyes
+          if (this.selectedDyes.length >= 2) {
+            this.updateInterpolation();
+          }
+        },
+      });
+      this.dyeFilters.render();
+      this.dyeFilters.bindEvents();
+      this.dyeFilters.onMount();
+    }
+
     // Step count slider
     const stepCountInput = this.querySelector<HTMLInputElement>('#step-count-input');
     const stepCountValue = this.querySelector<HTMLElement>('#step-count-value');
@@ -459,7 +492,23 @@ export class DyeMixerTool extends BaseComponent {
 
       // Find closest dye (excluding the start and end dyes)
       const excludeIds = [startDye.id, endDye.id];
-      const matchedDye = dyeService.findClosestDye(theoreticalColor, excludeIds);
+      let matchedDye = dyeService.findClosestDye(theoreticalColor, excludeIds);
+
+      // Apply filters if available
+      if (this.dyeFilters && matchedDye && this.dyeFilters.isDyeExcluded(matchedDye)) {
+        // Find next closest non-excluded dye
+        const allDyes = dyeService.getAllDyes();
+        const filteredDyes = this.dyeFilters.filterDyes(allDyes).filter(
+          (dye) => !excludeIds.includes(dye.id)
+        );
+        matchedDye = filteredDyes.length > 0
+          ? filteredDyes.reduce((best, dye) => {
+              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+              return dyeDist < bestDist ? dye : best;
+            })
+          : null;
+      }
 
       const distance = matchedDye
         ? ColorService.getColorDistance(theoreticalColor, matchedDye.hex)

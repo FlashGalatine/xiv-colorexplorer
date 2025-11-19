@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ImageUploadDisplay } from './image-upload-display';
 import { ColorPickerDisplay } from './color-picker-display';
 import { MarketBoard } from './market-board';
+import { DyeFilters } from './dye-filters';
 import { ColorService, dyeService, APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 
@@ -22,6 +23,7 @@ export class ColorMatcherTool extends BaseComponent {
   private imageUpload: ImageUploadDisplay | null = null;
   private colorPicker: ColorPickerDisplay | null = null;
   private marketBoard: MarketBoard | null = null;
+  private dyeFilters: DyeFilters | null = null;
   private matchedDyes: Dye[] = [];
   private priceData: Map<number, PriceData> = new Map();
   private showPrices: boolean = false;
@@ -163,6 +165,20 @@ export class ColorMatcherTool extends BaseComponent {
 
     wrapper.appendChild(settingsSection);
 
+    // Dye Filters section
+    const filtersSection = this.createElement('div', {
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+    });
+
+    const filtersContainer = this.createElement('div', {
+      attributes: {
+        id: 'colormatcher-filters-container',
+      },
+    });
+    filtersSection.appendChild(filtersContainer);
+    wrapper.appendChild(filtersSection);
+
     // Market Board section
     const marketBoardSection = this.createElement('div', {
       className:
@@ -241,6 +257,24 @@ export class ColorMatcherTool extends BaseComponent {
           valueDisplay.textContent = String(this.sampleSize);
         }
       });
+    }
+
+    // Initialize DyeFilters component
+    const filtersContainer = this.querySelector<HTMLElement>('#colormatcher-filters-container');
+    if (filtersContainer && !this.dyeFilters) {
+      this.dyeFilters = new DyeFilters(filtersContainer, {
+        storageKeyPrefix: 'colormatcher',
+        onFilterChange: () => {
+          // Re-match color if we have a current match
+          if (this.matchedDyes.length > 0) {
+            const lastColor = this.matchedDyes[0]?.hex || '#FF0000';
+            this.matchColor(lastColor);
+          }
+        },
+      });
+      this.dyeFilters.render();
+      this.dyeFilters.bindEvents();
+      this.dyeFilters.onMount();
     }
 
     // Initialize Market Board
@@ -751,8 +785,28 @@ export class ColorMatcherTool extends BaseComponent {
     }
 
     // Find closest dyes
-    const closestDye = dyeService.findClosestDye(hex);
-    const withinDistance = dyeService.findDyesWithinDistance(hex, 100, 10);
+    let closestDye = dyeService.findClosestDye(hex);
+    let withinDistance = dyeService.findDyesWithinDistance(hex, 100, 10);
+
+    // Apply filters if available
+    if (this.dyeFilters) {
+      // Filter closest dye
+      if (closestDye && this.dyeFilters.isDyeExcluded(closestDye)) {
+        // Find next closest non-excluded dye
+        const allDyes = dyeService.getAllDyes();
+        const filteredDyes = this.dyeFilters.filterDyes(allDyes);
+        closestDye = filteredDyes.length > 0
+          ? filteredDyes.reduce((best, dye) => {
+              const bestDist = ColorService.getColorDistance(hex, best.hex);
+              const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+              return dyeDist < bestDist ? dye : best;
+            })
+          : null;
+      }
+
+      // Filter within distance results
+      withinDistance = this.dyeFilters.filterDyes(withinDistance);
+    }
 
     if (!closestDye) {
       const empty = this.createElement('div', {
