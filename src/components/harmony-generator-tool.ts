@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
+import { DyeFilters, type DyeFilterConfig } from './dye-filters';
 import { ColorService, DyeService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import {
@@ -21,17 +22,6 @@ import {
   COMPANION_DYES_DEFAULT,
 } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
-
-/**
- * Dye filter configuration
- */
-interface DyeFilterConfig {
-  excludeMetallic: boolean;
-  excludePastel: boolean;
-  excludeExpensive: boolean;
-  excludeDark: boolean;
-  excludeCosmic: boolean;
-}
 
 /**
  * Suggestions mode type
@@ -110,17 +100,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private showPrices: boolean = false;
   private priceData: Map<number, PriceData> = new Map();
   private harmonyContainers: Map<string, HTMLElement> = new Map();
-  private dyeFilters: DyeFilterConfig = {
-    excludeMetallic: false,
-    excludePastel: false,
-    excludeExpensive: false,
-    excludeDark: false,
-    excludeCosmic: false,
-  };
-  private filterCheckboxes: Map<string, HTMLInputElement> = new Map();
-  private filtersExpanded: boolean = false;
-  private filterToggleButton: HTMLElement | null = null;
-  private filterCheckboxesContainer: HTMLElement | null = null;
+  private dyeFilters: DyeFilters | null = null;
   private suggestionsMode: SuggestionsMode = 'simple';
   private suggestionsModeRadios: Map<SuggestionsMode, HTMLInputElement> = new Map();
   private companionDyesCount: number = COMPANION_DYES_DEFAULT;
@@ -282,127 +262,13 @@ export class HarmonyGeneratorTool extends BaseComponent {
         'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
     });
 
-    // Dye Filters section with collapsible header
-    const filtersSection = this.createElement('div', {
-      className: 'space-y-3',
-    });
-
-    // Collapsible header with toggle button
-    const filtersHeader = this.createElement('button', {
+    // Dye Filters section - using DyeFilters component
+    const filtersContainer = this.createElement('div', {
       attributes: {
-        type: 'button',
-      },
-      className:
-        'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors',
-    });
-
-    const filtersLabel = this.createElement('label', {
-      textContent: 'Advanced Dye Filters',
-      className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer',
-    });
-
-    const toggleChevron = this.createElement('span', {
-      textContent: '▼',
-      className: 'text-gray-400 dark:text-gray-500 text-xs transition-transform',
-      attributes: {
-        id: 'filters-toggle-chevron',
+        id: 'harmony-filters-container',
       },
     });
-
-    filtersHeader.appendChild(filtersLabel);
-    filtersHeader.appendChild(toggleChevron);
-    filtersSection.appendChild(filtersHeader);
-
-    // Store toggle button reference
-    this.filterToggleButton = filtersHeader;
-    (this as unknown as Record<string, HTMLElement>)._filterToggleButton = filtersHeader;
-
-    // Filter checkboxes container (collapsible)
-    const checkboxesContainer = this.createElement('div', {
-      className: 'space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out',
-      attributes: {
-        id: 'filters-checkboxes-container',
-      },
-    });
-
-    // Store reference to checkboxes container
-    this.filterCheckboxesContainer = checkboxesContainer;
-    (this as unknown as Record<string, HTMLElement>)._filterCheckboxesContainer = checkboxesContainer;
-
-    // Filter checkboxes
-    const filterOptions = [
-      {
-        key: 'excludeMetallic',
-        label: 'Exclude Metallic Dyes',
-        description: 'Hide dyes with "Metallic" in the name',
-      },
-      {
-        key: 'excludePastel',
-        label: 'Exclude Pastel Dyes',
-        description: 'Hide dyes with "Pastel" in the name',
-      },
-      {
-        key: 'excludeDark',
-        label: 'Exclude Dark Dyes',
-        description: 'Hide dyes that begin with "Dark"',
-      },
-      {
-        key: 'excludeCosmic',
-        label: 'Exclude Cosmic Dyes',
-        description: 'Hide dyes from Cosmic Exploration & Cosmic Fortunes',
-      },
-      {
-        key: 'excludeExpensive',
-        label: 'Exclude Expensive Dyes',
-        description: 'Hide Jet Black & Pure White',
-      },
-    ];
-
-    for (const option of filterOptions) {
-      const checkboxDiv = this.createElement('div', {
-        className: 'flex items-start gap-3',
-      });
-
-      const checkbox = this.createElement('input', {
-        attributes: {
-          type: 'checkbox',
-          id: `filter-${option.key}`,
-        },
-        className:
-          'mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer',
-      });
-
-      const labelElement = this.createElement('label', {
-        attributes: {
-          for: `filter-${option.key}`,
-        },
-        className: 'cursor-pointer flex-1',
-      });
-
-      const labelText = this.createElement('div', {
-        textContent: option.label,
-        className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
-      });
-
-      const descText = this.createElement('div', {
-        textContent: option.description,
-        className: 'text-xs text-gray-500 dark:text-gray-400',
-      });
-
-      labelElement.appendChild(labelText);
-      labelElement.appendChild(descText);
-
-      checkboxDiv.appendChild(checkbox);
-      checkboxDiv.appendChild(labelElement);
-      checkboxesContainer.appendChild(checkboxDiv);
-
-      // Store checkbox reference
-      this.filterCheckboxes.set(option.key, checkbox);
-      (this as unknown as Record<string, HTMLInputElement>)[`_${option.key}Checkbox`] = checkbox;
-    }
-
-    filtersSection.appendChild(checkboxesContainer);
-    section.appendChild(filtersSection);
+    section.appendChild(filtersContainer);
 
     // Divider
     const divider = this.createElement('div', {
@@ -664,23 +530,18 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
     }
 
-    // Initialize filter toggle button
-    const filterToggleButton = (this as unknown as Record<string, HTMLElement>)
-      ._filterToggleButton as HTMLElement;
-    if (filterToggleButton) {
-      this.on(filterToggleButton, 'click', () => {
-        this.toggleFilters();
+    // Initialize DyeFilters component
+    const filtersContainer = this.querySelector<HTMLElement>('#harmony-filters-container');
+    if (filtersContainer && !this.dyeFilters) {
+      this.dyeFilters = new DyeFilters(filtersContainer, {
+        storageKeyPrefix: 'harmony',
+        onFilterChange: () => {
+          this.generateHarmonies();
+        },
       });
-    }
-
-    // Initialize filter checkboxes and load saved state
-    this.loadFilterState();
-    this.loadFiltersExpandedState();
-    for (const [_key, checkbox] of this.filterCheckboxes) {
-      this.on(checkbox, 'change', () => {
-        this.updateFilterState();
-        this.generateHarmonies();
-      });
+      this.dyeFilters.render();
+      this.dyeFilters.bindEvents();
+      this.dyeFilters.onMount();
     }
 
     // Initialize suggestions mode radio buttons and load saved state
@@ -703,85 +564,6 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }
   }
 
-  /**
-   * Load filter state from localStorage
-   */
-  private loadFilterState(): void {
-    const saved = appStorage.getItem<DyeFilterConfig>(
-      STORAGE_KEYS.HARMONY_FILTERS,
-      this.dyeFilters
-    ) ?? this.dyeFilters;
-    this.dyeFilters = saved;
-
-    // Update checkboxes to reflect saved state
-    for (const [filterKey, checkbox] of this.filterCheckboxes) {
-      const filterValue = this.dyeFilters[filterKey as keyof DyeFilterConfig] ?? false;
-      checkbox.checked = filterValue;
-    }
-  }
-
-  /**
-   * Update filter state from checkboxes and save to localStorage
-   */
-  private updateFilterState(): void {
-    for (const [filterKey, checkbox] of this.filterCheckboxes) {
-      this.dyeFilters[filterKey as keyof DyeFilterConfig] = checkbox.checked;
-    }
-    appStorage.setItem(STORAGE_KEYS.HARMONY_FILTERS, this.dyeFilters);
-  }
-
-  /**
-   * Load filters expanded state from localStorage
-   */
-  private loadFiltersExpandedState(): void {
-    const key = `${STORAGE_KEYS.HARMONY_FILTERS}_expanded`;
-    this.filtersExpanded = appStorage.getItem<boolean>(key, false) ?? false;
-    this.updateFiltersUI();
-  }
-
-  /**
-   * Toggle filters expanded/collapsed state
-   */
-  private toggleFilters(): void {
-    this.filtersExpanded = !this.filtersExpanded;
-    this.updateFiltersUI();
-
-    // Save state to localStorage
-    const key = `${STORAGE_KEYS.HARMONY_FILTERS}_expanded`;
-    appStorage.setItem(key, this.filtersExpanded);
-  }
-
-  /**
-   * Update filters UI based on expanded state
-   */
-  private updateFiltersUI(): void {
-    const checkboxesContainer = this.filterCheckboxesContainer;
-    const chevron = document.getElementById('filters-toggle-chevron');
-
-    if (!checkboxesContainer || !chevron) return;
-
-    // Set transition properties
-    checkboxesContainer.style.transition = 'max-height 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out';
-    chevron.style.transition = 'transform 300ms ease-in-out';
-
-    if (this.filtersExpanded) {
-      // Show checkboxes
-      checkboxesContainer.style.maxHeight = '500px';
-      checkboxesContainer.style.opacity = '1';
-      checkboxesContainer.style.marginTop = '0.75rem';
-
-      // Rotate chevron down
-      chevron.style.transform = 'rotate(0deg)';
-    } else {
-      // Hide checkboxes
-      checkboxesContainer.style.maxHeight = '0px';
-      checkboxesContainer.style.opacity = '0';
-      checkboxesContainer.style.marginTop = '0';
-
-      // Rotate chevron up
-      chevron.style.transform = 'rotate(-90deg)';
-    }
-  }
 
   /**
    * Load suggestions mode from localStorage
@@ -817,35 +599,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Check if a dye should be excluded based on current filter settings
    */
   private isDyeExcluded(dye: Dye): boolean {
-    // Exclude Metallic dyes
-    if (this.dyeFilters.excludeMetallic && dye.name.includes('Metallic')) {
-      return true;
-    }
-
-    // Exclude Pastel dyes
-    if (this.dyeFilters.excludePastel && dye.name.includes('Pastel')) {
-      return true;
-    }
-
-    // Exclude Dark dyes (begin with "Dark")
-    if (this.dyeFilters.excludeDark && dye.name.toLowerCase().startsWith('dark')) {
-      return true;
-    }
-
-    // Exclude Cosmic dyes (Cosmic Exploration or Cosmic Fortunes)
-    if (
-      this.dyeFilters.excludeCosmic &&
-      (dye.acquisition === 'Cosmic Exploration' || dye.acquisition === 'Cosmic Fortunes')
-    ) {
-      return true;
-    }
-
-    // Exclude Jet Black and Pure White
-    if (this.dyeFilters.excludeExpensive && EXPENSIVE_DYE_IDS.includes(dye.itemID)) {
-      return true;
-    }
-
-    return false;
+    return this.dyeFilters?.isDyeExcluded(dye) ?? false;
   }
 
   /**
