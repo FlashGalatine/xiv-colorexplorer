@@ -37,3 +37,4 @@ export { ColorWheelDisplay } from './color-wheel-display';
 export { MobileBottomNav, type MobileToolDef } from './mobile-bottom-nav';
 export { ToolsDropdown, type ToolDef } from './tools-dropdown';
 export { MarketBoard } from './market-board';
+export { PaletteExporter, type PaletteData, type PaletteExporterOptions } from './palette-exporter';

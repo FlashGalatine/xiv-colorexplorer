@@ -12,6 +12,7 @@ import { DyeSelector } from './dye-selector';
 import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { DyeFilters, type DyeFilterConfig } from './dye-filters';
+import { PaletteExporter, type PaletteData } from './palette-exporter';
 import { ColorService, DyeService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import {
@@ -105,6 +106,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private suggestionsModeRadios: Map<SuggestionsMode, HTMLInputElement> = new Map();
   private companionDyesCount: number = COMPANION_DYES_DEFAULT;
   private companionDyesInput: HTMLInputElement | null = null;
+  private paletteExporter: PaletteExporter | null = null;
 
   /**
    * Render the tool component
@@ -156,6 +158,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }
 
     wrapper.appendChild(harmoniesGrid);
+
+    // Export section
+    const exportContainer = this.createElement('div', {
+      id: 'harmony-export-container',
+    });
+    wrapper.appendChild(exportContainer);
 
     this.container.innerHTML = '';
     this.element = wrapper;
@@ -576,6 +584,17 @@ export class HarmonyGeneratorTool extends BaseComponent {
         this.generateHarmonies();
       });
     }
+
+    // Initialize PaletteExporter
+    const exportContainer = this.querySelector<HTMLElement>('#harmony-export-container');
+    if (exportContainer && !this.paletteExporter) {
+      this.paletteExporter = new PaletteExporter(exportContainer, {
+        title: 'Export Palette',
+        dataProvider: () => this.getPaletteData(),
+        enabled: () => this.harmonyDisplays.size > 0,
+      });
+      this.paletteExporter.init();
+    }
   }
 
 
@@ -941,6 +960,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
     if (this.showPrices && this.marketBoard) {
       this.fetchPricesForCurrentDyes();
     }
+
+    // Update palette exporter
+    if (this.paletteExporter) {
+      this.paletteExporter.update();
+    }
   }
 
   /**
@@ -1030,6 +1054,23 @@ export class HarmonyGeneratorTool extends BaseComponent {
   }
 
   /**
+   * Get palette data for export
+   */
+  private getPaletteData(): PaletteData {
+    const baseDye = DyeService.getInstance().findClosestDye(this.baseColor);
+    const groups: Record<string, Dye[]> = {};
+
+    for (const [harmonyId, display] of this.harmonyDisplays) {
+      const dyes = display.getDyes();
+      if (dyes.length > 0) {
+        groups[harmonyId] = dyes;
+      }
+    }
+
+    return { base: baseDye, groups };
+  }
+
+  /**
    * Cleanup child components
    */
   destroy(): void {
@@ -1038,6 +1079,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }
     if (this.marketBoard) {
       this.marketBoard.destroy();
+    }
+    if (this.paletteExporter) {
+      this.paletteExporter.destroy();
     }
     for (const display of this.harmonyDisplays.values()) {
       display.destroy();

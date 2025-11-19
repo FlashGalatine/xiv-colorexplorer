@@ -12,6 +12,7 @@ import { DyeSelector } from './dye-selector';
 import { ColorInterpolationDisplay } from './color-interpolation-display';
 import type { InterpolationStep } from './color-interpolation-display';
 import { DyeFilters } from './dye-filters';
+import { PaletteExporter, type PaletteData } from './palette-exporter';
 import { ColorService, dyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
@@ -26,6 +27,8 @@ export class DyeMixerTool extends BaseComponent {
   private interpolationDisplay: ColorInterpolationDisplay | null = null;
   private stepCount: number = 10;
   private colorSpace: 'rgb' | 'hsv' = 'hsv';
+  private currentSteps: InterpolationStep[] = [];
+  private paletteExporter: PaletteExporter | null = null;
 
   /**
    * Render the tool component
@@ -229,6 +232,12 @@ export class DyeMixerTool extends BaseComponent {
     });
     wrapper.appendChild(displayContainer);
 
+    // Export section
+    const exportContainer = this.createElement('div', {
+      id: 'dyemixer-export-container',
+    });
+    wrapper.appendChild(exportContainer);
+
     // Quick Actions section
     const actionsSection = this.createElement('div', {
       className: 'mt-6 pt-6 border-t border-gray-200 dark:border-gray-700',
@@ -421,6 +430,17 @@ export class DyeMixerTool extends BaseComponent {
 
     // Load saved gradients on init
     this.displaySavedGradients();
+
+    // Initialize PaletteExporter
+    const exportContainer = this.querySelector<HTMLElement>('#dyemixer-export-container');
+    if (exportContainer && !this.paletteExporter) {
+      this.paletteExporter = new PaletteExporter(exportContainer, {
+        title: 'Export Palette',
+        dataProvider: () => this.getPaletteData(),
+        enabled: () => this.selectedDyes.length >= 2 && this.currentSteps.length > 0,
+      });
+      this.paletteExporter.init();
+    }
   }
 
   /**
@@ -438,6 +458,11 @@ export class DyeMixerTool extends BaseComponent {
         textContent: 'Select 2 dyes to see interpolation',
       });
       displayContainer.appendChild(empty);
+      this.currentSteps = []; // Clear steps
+      // Update palette exporter
+      if (this.paletteExporter) {
+        this.paletteExporter.update();
+      }
       return;
     }
 
@@ -446,6 +471,7 @@ export class DyeMixerTool extends BaseComponent {
     const endDye = this.selectedDyes[1];
 
     const steps = this.calculateInterpolation(startDye, endDye, this.stepCount, this.colorSpace);
+    this.currentSteps = steps; // Store steps for export
 
     // Create and render display component
     if (this.interpolationDisplay) {
@@ -460,6 +486,11 @@ export class DyeMixerTool extends BaseComponent {
       this.colorSpace
     );
     this.interpolationDisplay.init();
+
+    // Update palette exporter
+    if (this.paletteExporter) {
+      this.paletteExporter.update();
+    }
   }
 
   /**
@@ -563,6 +594,31 @@ export class DyeMixerTool extends BaseComponent {
   }
 
   /**
+   * Get palette data for export
+   */
+  private getPaletteData(): PaletteData {
+    const startDye = this.selectedDyes[0] || null;
+    const endDye = this.selectedDyes[1] || null;
+
+    // Extract matched dyes from steps
+    const stepDyes = this.currentSteps
+      .map((step) => step.matchedDye)
+      .filter((dye): dye is Dye => dye !== null);
+
+    return {
+      base: startDye, // Use start as base
+      groups: {
+        end: endDye ? [endDye] : [],
+        steps: stepDyes,
+      },
+      metadata: {
+        stepCount: this.stepCount,
+        colorSpace: this.colorSpace,
+      },
+    };
+  }
+
+  /**
    * Cleanup child components
    */
   destroy(): void {
@@ -571,6 +627,9 @@ export class DyeMixerTool extends BaseComponent {
     }
     if (this.interpolationDisplay) {
       this.interpolationDisplay.destroy();
+    }
+    if (this.paletteExporter) {
+      this.paletteExporter.destroy();
     }
     super.destroy();
   }

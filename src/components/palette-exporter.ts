@@ -1,0 +1,415 @@
+/**
+ * XIV Dye Tools v2.0.0 - Palette Exporter Component
+ *
+ * Reusable component for exporting color palettes in various formats
+ * Supports JSON, CSS, SCSS exports and hex code copying
+ *
+ * @module components/palette-exporter
+ */
+
+import { BaseComponent } from './base-component';
+import type { Dye } from '@shared/types';
+
+/**
+ * Palette data structure for export
+ */
+export interface PaletteData {
+  base?: Dye | null; // Optional base color
+  groups?: Record<string, Dye[]>; // Named groups (e.g., harmonies, steps)
+  metadata?: Record<string, unknown>; // Additional metadata
+}
+
+/**
+ * Options for PaletteExporter component
+ */
+export interface PaletteExporterOptions {
+  title?: string; // Default: "Export Palette"
+  dataProvider: () => PaletteData;
+  enabled?: () => boolean; // Optional function to check if export should be enabled
+}
+
+/**
+ * Palette Exporter Component
+ * Provides export functionality for color palettes
+ */
+export class PaletteExporter extends BaseComponent {
+  private options: PaletteExporterOptions;
+  private jsonBtn: HTMLButtonElement | null = null;
+  private cssBtn: HTMLButtonElement | null = null;
+  private scssBtn: HTMLButtonElement | null = null;
+  private copyBtn: HTMLButtonElement | null = null;
+
+  constructor(container: HTMLElement, options: PaletteExporterOptions) {
+    super(container);
+    this.options = {
+      title: options.title || 'Export Palette',
+      dataProvider: options.dataProvider,
+      enabled: options.enabled || (() => true),
+    };
+  }
+
+  /**
+   * Render the export section
+   */
+  render(): void {
+    const section = this.createElement('div', {
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+    });
+
+    const title = this.createElement('h3', {
+      textContent: this.options.title,
+      className: 'text-lg font-semibold text-gray-900 dark:text-white',
+    });
+    section.appendChild(title);
+
+    const buttonGroup = this.createElement('div', {
+      className: 'flex flex-wrap gap-3 justify-center',
+    });
+
+    // JSON export button
+    this.jsonBtn = this.createElement('button', {
+      textContent: 'Export as JSON',
+      className:
+        'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-semibold min-h-[44px]',
+      attributes: {
+        'data-export': 'json',
+      },
+    });
+
+    // CSS export button
+    this.cssBtn = this.createElement('button', {
+      textContent: 'Export as CSS',
+      className:
+        'px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-500 transition-colors font-semibold min-h-[44px]',
+      attributes: {
+        'data-export': 'css',
+      },
+    });
+
+    // SCSS export button
+    this.scssBtn = this.createElement('button', {
+      textContent: 'Export as SCSS',
+      className:
+        'px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 dark:hover:bg-pink-500 transition-colors font-semibold min-h-[44px]',
+      attributes: {
+        'data-export': 'scss',
+      },
+    });
+
+    // Copy hex codes button
+    this.copyBtn = this.createElement('button', {
+      textContent: 'Copy All Hex Codes',
+      className:
+        'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-semibold min-h-[44px]',
+      attributes: {
+        'data-export': 'hex',
+      },
+    });
+
+    buttonGroup.appendChild(this.jsonBtn);
+    buttonGroup.appendChild(this.cssBtn);
+    buttonGroup.appendChild(this.scssBtn);
+    buttonGroup.appendChild(this.copyBtn);
+
+    section.appendChild(buttonGroup);
+
+    this.container.innerHTML = '';
+    this.element = section;
+    this.container.appendChild(this.element);
+
+    // Update button states
+    this.updateButtonStates();
+  }
+
+  /**
+   * Bind event listeners
+   */
+  bindEvents(): void {
+    if (this.jsonBtn) {
+      this.on(this.jsonBtn, 'click', () => {
+        this.handleJsonExport();
+      });
+    }
+
+    if (this.cssBtn) {
+      this.on(this.cssBtn, 'click', () => {
+        this.handleCssExport();
+      });
+    }
+
+    if (this.scssBtn) {
+      this.on(this.scssBtn, 'click', () => {
+        this.handleScssExport();
+      });
+    }
+
+    if (this.copyBtn) {
+      this.on(this.copyBtn, 'click', () => {
+        this.handleCopyHexCodes();
+      });
+    }
+  }
+
+  /**
+   * Update button enabled/disabled states
+   */
+  private updateButtonStates(): void {
+    const isEnabled = this.options.enabled?.() ?? true;
+    const buttons = [this.jsonBtn, this.cssBtn, this.scssBtn, this.copyBtn];
+
+    for (const btn of buttons) {
+      if (btn) {
+        btn.disabled = !isEnabled;
+        if (!isEnabled) {
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }
+    }
+  }
+
+  /**
+   * Handle JSON export
+   */
+  private handleJsonExport(): void {
+    try {
+      const data = this.options.dataProvider();
+      const json = this.generateJsonExport(data);
+      const timestamp = new Date().toISOString().split('T')[0];
+      this.downloadFile(`ffxiv-palette-${timestamp}.json`, json, 'application/json');
+    } catch (error) {
+      console.error('Failed to export JSON:', error);
+    }
+  }
+
+  /**
+   * Handle CSS export
+   */
+  private handleCssExport(): void {
+    try {
+      const data = this.options.dataProvider();
+      const css = this.generateCssExport(data);
+      const timestamp = new Date().toISOString().split('T')[0];
+      this.downloadFile(`ffxiv-palette-${timestamp}.css`, css, 'text/css');
+    } catch (error) {
+      console.error('Failed to export CSS:', error);
+    }
+  }
+
+  /**
+   * Handle SCSS export
+   */
+  private handleScssExport(): void {
+    try {
+      const data = this.options.dataProvider();
+      const scss = this.generateScssExport(data);
+      const timestamp = new Date().toISOString().split('T')[0];
+      this.downloadFile(`ffxiv-palette-${timestamp}.scss`, scss, 'text/scss');
+    } catch (error) {
+      console.error('Failed to export SCSS:', error);
+    }
+  }
+
+  /**
+   * Handle copy hex codes
+   */
+  private async handleCopyHexCodes(): Promise<void> {
+    try {
+      const data = this.options.dataProvider();
+      await this.copyAllHexCodes(data);
+    } catch (error) {
+      console.error('Failed to copy hex codes:', error);
+    }
+  }
+
+  /**
+   * Generate JSON export
+   */
+  private generateJsonExport(data: PaletteData): string {
+    const exportData: Record<string, unknown> = {
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add base color if present
+    if (data.base) {
+      exportData.base = data.base;
+    }
+
+    // Add groups
+    if (data.groups) {
+      for (const [key, dyes] of Object.entries(data.groups)) {
+        if (dyes && dyes.length > 0) {
+          exportData[key] = dyes;
+        }
+      }
+    }
+
+    // Add metadata if present
+    if (data.metadata) {
+      exportData.metadata = data.metadata;
+    }
+
+    return JSON.stringify(exportData, null, 2);
+  }
+
+  /**
+   * Generate CSS export
+   */
+  private generateCssExport(data: PaletteData): string {
+    let css = ':root {\n';
+
+    // Add base color if present
+    if (data.base) {
+      css += `  /* Base Color: ${data.base.name} */\n`;
+      css += `  --color-base: ${data.base.hex};\n\n`;
+    }
+
+    // Add groups
+    if (data.groups) {
+      for (const [groupKey, dyes] of Object.entries(data.groups)) {
+        if (dyes && dyes.length > 0) {
+          // Capitalize first letter of group key for display
+          const groupName = groupKey.charAt(0).toUpperCase() + groupKey.slice(1).replace(/-/g, ' ');
+          css += `  /* ${groupName} */\n`;
+          for (let i = 0; i < dyes.length; i++) {
+            const dye = dyes[i];
+            const varName = `--color-${groupKey}-${i + 1}`;
+            css += `  ${varName}: ${dye.hex}; /* ${dye.name} */\n`;
+          }
+          css += '\n';
+        }
+      }
+    }
+
+    css += '}';
+    return css;
+  }
+
+  /**
+   * Generate SCSS export
+   */
+  private generateScssExport(data: PaletteData): string {
+    const timestamp = new Date().toISOString().split('T')[0];
+    let scss = `// FFXIV Color Palette - Generated ${timestamp}\n\n`;
+
+    // Add base color if present
+    if (data.base) {
+      scss += `// Base Color: ${data.base.name}\n`;
+      scss += `$color-base: ${data.base.hex};\n\n`;
+    }
+
+    // Add groups
+    if (data.groups) {
+      for (const [groupKey, dyes] of Object.entries(data.groups)) {
+        if (dyes && dyes.length > 0) {
+          // Capitalize first letter of group key for display
+          const groupName = groupKey.charAt(0).toUpperCase() + groupKey.slice(1).replace(/-/g, ' ');
+          scss += `// ${groupName}\n`;
+          for (let i = 0; i < dyes.length; i++) {
+            const dye = dyes[i];
+            const varName = `$color-${groupKey}-${i + 1}`;
+            scss += `${varName}: ${dye.hex}; // ${dye.name}\n`;
+          }
+          scss += '\n';
+        }
+      }
+    }
+
+    return scss;
+  }
+
+  /**
+   * Copy all hex codes to clipboard
+   */
+  private async copyAllHexCodes(data: PaletteData): Promise<void> {
+    const hexCodes: string[] = [];
+
+    // Add base color hex if present
+    if (data.base) {
+      hexCodes.push(data.base.hex);
+    }
+
+    // Add all group hex codes
+    if (data.groups) {
+      for (const dyes of Object.values(data.groups)) {
+        if (dyes) {
+          for (const dye of dyes) {
+            hexCodes.push(dye.hex);
+          }
+        }
+      }
+    }
+
+    // Remove duplicates and join
+    const uniqueHexCodes = [...new Set(hexCodes)];
+    const hexString = uniqueHexCodes.join(', ');
+
+    try {
+      await navigator.clipboard.writeText(hexString);
+      console.log('Hex codes copied to clipboard');
+      // Could emit a custom event here for toast notifications if available
+      this.emit('export-copied', { type: 'hex', count: uniqueHexCodes.length });
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback: try to select text in a temporary textarea
+      this.fallbackCopyToClipboard(hexString);
+    }
+  }
+
+  /**
+   * Fallback copy method using temporary textarea
+   */
+  private fallbackCopyToClipboard(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      console.log('Hex codes copied to clipboard (fallback method)');
+    } catch (error) {
+      console.error('Fallback copy failed:', error);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  /**
+   * Download file with given content
+   */
+  private downloadFile(filename: string, content: string, mimeType: string): void {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    // Emit event for potential toast notifications
+    this.emit('export-downloaded', { type: mimeType, filename });
+  }
+
+  /**
+   * Update the exporter (refresh button states)
+   */
+  update(): void {
+    this.updateButtonStates();
+  }
+
+  /**
+   * Get component state
+   */
+  protected getState(): Record<string, unknown> {
+    return {
+      title: this.options.title,
+      enabled: this.options.enabled?.(),
+    };
+  }
+}
+
