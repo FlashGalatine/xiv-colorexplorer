@@ -138,6 +138,9 @@ export class HarmonyType extends BaseComponent {
     const description = this.createElement('p', {
       textContent: this.harmonyInfo.description,
       className: 'text-sm harmony-description font-medium',
+      attributes: {
+        style: 'color: var(--theme-text-header);',
+      },
     });
 
     header.appendChild(description);
@@ -149,6 +152,9 @@ export class HarmonyType extends BaseComponent {
       const devianceDiv = this.createElement('div', {
         className: 'text-xs mt-2 harmony-deviance-info',
         textContent: `Avg Deviance: ${avgDeviance.toFixed(1)}/10`,
+        attributes: {
+          style: 'color: var(--theme-text-header);',
+        },
       });
       header.appendChild(devianceDiv);
     }

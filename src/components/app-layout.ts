@@ -10,7 +10,6 @@
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { ThemeService } from '@services/index';
-import { ColorService } from '@services/index';
 
 /**
  * Main application layout component
@@ -79,17 +78,12 @@ export class AppLayout extends BaseComponent {
     });
     titleDiv.appendChild(logo);
 
-    // Calculate optimal text color based on primary theme color
-    const currentTheme = ThemeService.getCurrentTheme();
-    const themeObject = ThemeService.getTheme(currentTheme);
-    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
-    const isLightText = optimalTextColor === '#FFFFFF';
-    
+    // Use --theme-text-header for header text
     const title = this.createElement('h1', {
       textContent: 'XIV Dye Tools',
       className: 'text-2xl font-bold',
       attributes: {
-        style: `color: ${optimalTextColor};`,
+        style: 'color: var(--theme-text-header);',
       },
     });
 
@@ -98,7 +92,7 @@ export class AppLayout extends BaseComponent {
       className: 'text-sm font-mono',
       attributes: {
         'data-app-version': 'v2.0.0',
-        style: `color: ${isLightText ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)'};`,
+        style: 'color: var(--theme-text-header); opacity: 0.8;',
       },
     });
 
@@ -227,21 +221,18 @@ export class AppLayout extends BaseComponent {
    * Update header text colors based on current theme (without re-rendering)
    */
   private updateHeaderColors(): void {
-    const currentTheme = ThemeService.getCurrentTheme();
-    const themeObject = ThemeService.getTheme(currentTheme);
-    const optimalTextColor = ColorService.getOptimalTextColor(themeObject.palette.primary);
-    const isLightText = optimalTextColor === '#FFFFFF';
-
-    // Update title text color
+    // Update title text color using --theme-text-header
     const title = this.querySelector<HTMLElement>('header h1');
     if (title) {
-      title.style.color = optimalTextColor;
+      title.style.color = 'var(--theme-text-header)';
     }
 
-    // Update version text color
+    // Update version text color (muted version of header text)
     const version = this.querySelector<HTMLElement>('header span[data-app-version]');
     if (version) {
-      version.style.color = isLightText ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+      // Use opacity to create muted effect
+      version.style.color = 'var(--theme-text-header)';
+      version.style.opacity = '0.8';
     }
   }
 

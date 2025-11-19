@@ -270,10 +270,10 @@ export class MarketBoard extends BaseComponent {
     const refreshBtn = this.createElement('button', {
       textContent: 'Refresh Prices',
       className:
-        'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition font-medium mt-3',
+        'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition font-medium mt-3',
       attributes: {
         id: 'mb-refresh-btn',
-        style: 'background-color: var(--theme-primary);',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
     });
 

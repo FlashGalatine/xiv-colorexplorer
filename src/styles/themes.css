@@ -114,9 +114,8 @@ body {
 }
 
 /* Apply to text elements */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--theme-text) !important;
-}
+/* Removed h1-h6 color rule to allow --theme-text-header to be used for headers */
+/* Headings will inherit color from parent or use explicit --theme-text-header where needed */
 
 p {
   color: var(--theme-text) !important;
@@ -185,7 +184,7 @@ a:hover {
 .bg-blue-600,
 .bg-blue-500 {
   background-color: var(--theme-primary) !important;
-  color: #ffffff !important;
+  color: var(--theme-text-header) !important;
 }
 
 .text-blue-600,
@@ -268,7 +267,7 @@ a:hover {
 .harmony-title,
 .harmony-description,
 .harmony-deviance-info {
-  color: #ffffff !important;
+  color: var(--theme-text-header) !important;
 }
 
 /* Form elements */

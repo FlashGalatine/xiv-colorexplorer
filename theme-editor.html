@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XIV Dye Tools - Theme Editor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .theme-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    select, button {
+      padding: 10px 20px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    select:hover, button:hover {
+      border-color: #4f46e5;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+    }
+
+    button {
+      background: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    button.secondary {
+      background: white;
+      color: #4f46e5;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .editor-panel, .preview-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .color-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .color-swatch {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .color-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #374151;
+      padding: 8px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      cursor: text;
+    }
+
+    .color-value:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Color Picker Modal */
+    .color-picker-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .color-picker-modal.active {
+      display: flex;
+    }
+
+    .color-picker-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .color-picker-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .color-wheel-container {
+      margin-bottom: 20px;
+    }
+
+    /* Simple Color Wheel using input type="color" */
+    input[type="color"] {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .preview-area {
+      min-height: 500px;
+      max-height: 600px;
+      padding: 0;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.3s;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .preview-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .preview-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      object-fit: contain;
+    }
+
+    .preview-header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .preview-header-version {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .preview-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .preview-content {
+      padding: 20px;
+      min-height: 600px;
+    }
+
+    .preview-card {
+      background: var(--preview-card-bg);
+      color: var(--preview-text);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--preview-border);
+      margin-bottom: 15px;
+    }
+
+    .preview-card:hover {
+      background: var(--preview-card-hover);
+    }
+
+    .preview-button {
+      background: var(--preview-primary);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .preview-text-muted {
+      color: var(--preview-text-muted);
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .export-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 2000;
+    }
+
+    .notification.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* WCAG Compliance Matrix */
+    .wcag-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .wcag-matrix {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #e5e7eb;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+    }
+
+    th:first-child {
+      position: sticky;
+      left: 0;
+      background: #f9fafb;
+      z-index: 20;
+    }
+
+    td:first-child {
+      position: sticky;
+      left: 0;
+      background: white;
+      font-weight: 600;
+      z-index: 10;
+    }
+
+    .contrast-cell {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .contrast-ratio {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .wcag-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin: 2px;
+    }
+
+    .wcag-aa {
+      background: #10b981;
+      color: white;
+    }
+
+    .wcag-aaa {
+      background: #059669;
+      color: white;
+    }
+
+    .wcag-fail {
+      background: #ef4444;
+      color: white;
+    }
+
+    .wcag-large {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .wcag-info {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .wcag-info h4 {
+      margin-bottom: 10px;
+      color: #0369a1;
+    }
+
+    .wcag-info ul {
+      margin-left: 20px;
+      color: #0c4a6e;
+    }
+
+    .wcag-info li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 XIV Dye Tools - Theme Editor</h1>
+    <p class="subtitle">Edit theme colors and export CSS for development use</p>
+
+    <div class="toolbar">
+      <div class="theme-selector">
+        <label for="themeSelect"><strong>Theme:</strong></label>
+        <select id="themeSelect">
+          <option value="standard-light">Standard Light</option>
+          <option value="standard-dark">Standard Dark</option>
+          <option value="hydaelyn-light">Hydaelyn Light</option>
+          <option value="hydaelyn-dark">Hydaelyn Dark</option>
+          <option value="classic-light">Classic Light</option>
+          <option value="classic-dark">Classic Dark</option>
+          <option value="parchment-light">Parchment Light</option>
+          <option value="parchment-dark">Parchment Dark</option>
+          <option value="sugar-riot-light">Sugar Riot Light</option>
+          <option value="sugar-riot-dark">Sugar Riot Dark</option>
+        </select>
+      </div>
+      <button onclick="loadDefaultTheme()">Load Default</button>
+      <button onclick="importTheme()" class="secondary">Import JSON</button>
+      <button onclick="exportTheme()" class="secondary">Export JSON</button>
+      <button onclick="copyCSS()">Copy CSS</button>
+    </div>
+
+    <div class="main-content">
+      <div class="editor-panel">
+        <h2 class="panel-title">Color Editor</h2>
+        <div class="color-grid" id="colorGrid"></div>
+      </div>
+
+      <div class="preview-panel">
+        <h2 class="panel-title">Live Preview</h2>
+        <div class="preview-area" id="previewArea">
+          <!-- Sticky Header -->
+          <div class="preview-header" id="previewHeader">
+            <div class="preview-header-left">
+              <img src="assets/icons/icon-512x512.png" alt="XIV Dye Tools Logo" class="preview-logo" id="previewLogo" onerror="this.src='src/public/assets/icons/icon-512x512.png'; this.onerror=null;">
+              <div>
+                <h1 class="preview-header-title" style="color: var(--preview-text-header);">XIV Dye Tools</h1>
+                <span class="preview-header-version" style="color: var(--preview-text-header); opacity: 0.8;">v2.0.0</span>
+              </div>
+            </div>
+            <div class="preview-header-right">
+              <span>Tools</span>
+              <span>Theme</span>
+            </div>
+          </div>
+
+          <!-- Content Area -->
+          <div class="preview-content">
+            <div class="preview-card">
+              <h3 style="margin-bottom: 10px;">Sample Card</h3>
+              <p>This is a preview of how your theme will look. The colors update in real-time as you edit them.</p>
+              <button class="preview-button">Primary Button</button>
+              <button class="preview-button" style="background: var(--preview-background-secondary); color: var(--preview-text);">Secondary Button</button>
+              <p class="preview-text-muted">This is muted text that uses the textMuted color.</p>
+            </div>
+            <div class="preview-card">
+              <h4 style="margin-bottom: 8px;">Another Card</h4>
+              <p>Cards use the cardBackground color, and hover states use cardHover.</p>
+            </div>
+            <div class="preview-card">
+              <h4 style="margin-bottom: 8px;">Scroll Test</h4>
+              <p>Scroll this preview area to see the sticky header in action. The header stays at the top and uses the primary color.</p>
+              <p style="margin-top: 20px;">The header background uses the primary color, and text is white for contrast.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="wcag-section">
+          <h3 class="panel-title">WCAG Compliance Matrix</h3>
+          <div class="wcag-matrix" id="wcagMatrix"></div>
+          <div class="wcag-info">
+            <h4>WCAG Contrast Requirements</h4>
+            <ul>
+              <li><strong>AA Normal Text:</strong> 4.5:1 minimum contrast ratio</li>
+              <li><strong>AA Large Text:</strong> 3:1 minimum (18pt+ or 14pt+ bold)</li>
+              <li><strong>AAA Normal Text:</strong> 7:1 minimum contrast ratio</li>
+              <li><strong>AAA Large Text:</strong> 4.5:1 minimum</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 12px; color: #64748b;">
+              Matrix shows contrast ratios between foreground (rows) and background (columns). 
+              Green badges indicate compliance, red indicates failure.
+            </p>
+          </div>
+        </div>
+
+        <div class="export-section">
+          <h3 class="panel-title">Generated CSS</h3>
+          <textarea id="cssOutput" readonly></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Picker Modal -->
+  <div class="color-picker-modal" id="colorPickerModal">
+    <div class="color-picker-content">
+      <h3 class="color-picker-title" id="pickerTitle">Pick a Color</h3>
+      <div class="color-wheel-container">
+        <input type="color" id="colorPicker" value="#000000">
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button onclick="closeColorPicker()" class="secondary">Cancel</button>
+        <button onclick="applyColor()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // Theme data structure
+    const colorKeys = [
+      { key: 'primary', label: 'Primary' },
+      { key: 'background', label: 'Background' },
+      { key: 'text', label: 'Text' },
+      { key: 'textHeader', label: 'Text Header' },
+      { key: 'border', label: 'Border' },
+      { key: 'backgroundSecondary', label: 'Background Secondary' },
+      { key: 'cardBackground', label: 'Card Background' },
+      { key: 'cardHover', label: 'Card Hover' },
+      { key: 'textMuted', label: 'Text Muted' }
+    ];
+
+    // Default themes (from theme-service.ts)
+    const defaultThemes = {
+      'standard-light': {
+        primary: '#781A1A',
+        background: '#FFFFFF',
+        text: '#1F2937',
+        textHeader: '#1F2937',
+        border: '#E5E7EB',
+        backgroundSecondary: '#F3F4F6',
+        cardBackground: '#FFFFFF',
+        cardHover: '#F3F4F6',
+        textMuted: '#6B7280'
+      },
+      'standard-dark': {
+        primary: '#C99156',
+        background: '#120A0A',
+        text: '#F3F4F6',
+        textHeader: '#F3F4F6',
+        border: '#4A2C17',
+        backgroundSecondary: '#1F1010',
+        cardBackground: '#321919',
+        cardHover: '#412121',
+        textMuted: '#D6B898'
+      },
+      'hydaelyn-light': {
+        primary: '#0EA5E9',
+        background: '#F0F9FF',
+        text: '#1F2937',
+        textHeader: '#1F2937',
+        border: '#E0F2FE',
+        backgroundSecondary: '#E0F2FE',
+        cardBackground: '#FFFFFF',
+        cardHover: '#E0F2FE',
+        textMuted: '#0C4A6E'
+      },
+      'hydaelyn-dark': {
+        primary: '#38BDF8',
+        background: '#0C2D47',
+        text: '#E0F2FE',
+        textHeader: '#E0F2FE',
+        border: '#164E63',
+        backgroundSecondary: '#164E63',
+        cardBackground: '#0C2D47',
+        cardHover: '#164E63',
+        textMuted: '#7DD3FC'
+      },
+      'classic-light': {
+        primary: '#1E40AF',
+        background: '#EFF6FF',
+        text: '#1F2937',
+        textHeader: '#1F2937',
+        border: '#DBEAFE',
+        backgroundSecondary: '#DBEAFE',
+        cardBackground: '#FFFFFF',
+        cardHover: '#DBEAFE',
+        textMuted: '#1E40AF'
+      },
+      'classic-dark': {
+        primary: '#60A5FA',
+        background: '#1E3A8A',
+        text: '#DBEAFE',
+        textHeader: '#DBEAFE',
+        border: '#1E40AF',
+        backgroundSecondary: '#1E40AF',
+        cardBackground: '#1E3A8A',
+        cardHover: '#1E40AF',
+        textMuted: '#93C5FD'
+      },
+      'parchment-light': {
+        primary: '#D97706',
+        background: '#FEF3C7',
+        text: '#78350F',
+        textHeader: '#78350F',
+        border: '#FCD34D',
+        backgroundSecondary: '#FEF9E7',
+        cardBackground: '#FEF3C7',
+        cardHover: '#FEF9E7',
+        textMuted: '#92400E'
+      },
+      'parchment-dark': {
+        primary: '#FBBF24',
+        background: '#78350F',
+        text: '#FEF3C7',
+        textHeader: '#FEF3C7',
+        border: '#D97706',
+        backgroundSecondary: '#92400E',
+        cardBackground: '#78350F',
+        cardHover: '#92400E',
+        textMuted: '#FCD34D'
+      },
+      'sugar-riot-light': {
+        primary: '#EC4899',
+        background: '#FDF2F8',
+        text: '#1F2937',
+        textHeader: '#1F2937',
+        border: '#FBCFE8',
+        backgroundSecondary: '#FCE7F3',
+        cardBackground: '#FFFFFF',
+        cardHover: '#FCE7F3',
+        textMuted: '#BE185D'
+      },
+      'sugar-riot-dark': {
+        primary: '#F472B6',
+        background: '#831843',
+        text: '#FDF2F8',
+        textHeader: '#FDF2F8',
+        border: '#BE185D',
+        backgroundSecondary: '#9F1239',
+        cardBackground: '#831843',
+        cardHover: '#9F1239',
+        textMuted: '#FBCFE8'
+      }
+    };
+
+    let currentTheme = { ...defaultThemes['standard-light'] };
+    let currentThemeName = 'standard-light';
+    let editingColorKey = null;
+
+    // Initialize
+    function init() {
+      renderColorGrid();
+      updatePreview();
+      updateCSS();
+      
+      document.getElementById('themeSelect').addEventListener('change', (e) => {
+        currentThemeName = e.target.value;
+        currentTheme = { ...defaultThemes[currentThemeName] };
+        renderColorGrid();
+        updatePreview();
+        updateCSS();
+      });
+    }
+
+    // Render color grid
+    function renderColorGrid() {
+      const grid = document.getElementById('colorGrid');
+      grid.innerHTML = '';
+
+      colorKeys.forEach(({ key, label }) => {
+        const color = currentTheme[key] || '#000000';
+        const item = document.createElement('div');
+        item.className = 'color-item';
+        item.innerHTML = `
+          <div class="color-label">${label}</div>
+          <div class="color-swatch" style="background: ${color}" onclick="openColorPicker('${key}', '${label}')"></div>
+          <input type="text" class="color-value" value="${color}" 
+                 onchange="updateColor('${key}', this.value)" 
+                 onkeyup="if(event.key==='Enter') updateColor('${key}', this.value)">
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    // Open color picker
+    function openColorPicker(key, label) {
+      editingColorKey = key;
+      document.getElementById('pickerTitle').textContent = `Pick ${label} Color`;
+      document.getElementById('colorPicker').value = currentTheme[key];
+      document.getElementById('colorPickerModal').classList.add('active');
+    }
+
+    // Close color picker
+    function closeColorPicker() {
+      document.getElementById('colorPickerModal').classList.remove('active');
+      editingColorKey = null;
+    }
+
+    // Apply color from picker
+    function applyColor() {
+      if (editingColorKey) {
+        const color = document.getElementById('colorPicker').value;
+        updateColor(editingColorKey, color);
+        closeColorPicker();
+      }
+    }
+
+    // Update color
+    function updateColor(key, value) {
+      // Validate hex color
+      if (!/^#[0-9A-F]{6}$/i.test(value)) {
+        showNotification('Invalid color format. Use #RRGGBB', 'error');
+        return;
+      }
+
+      currentTheme[key] = value.toUpperCase();
+      renderColorGrid();
+      updatePreview();
+      updateCSS();
+    }
+
+    // Update preview
+    function updatePreview() {
+      const preview = document.getElementById('previewArea');
+      const header = document.getElementById('previewHeader');
+      
+      // Set CSS variables for preview
+      preview.style.setProperty('--preview-primary', currentTheme.primary);
+      preview.style.setProperty('--preview-background', currentTheme.background);
+      preview.style.setProperty('--preview-text', currentTheme.text);
+      preview.style.setProperty('--preview-text-header', currentTheme.textHeader);
+      preview.style.setProperty('--preview-border', currentTheme.border);
+      preview.style.setProperty('--preview-background-secondary', currentTheme.backgroundSecondary);
+      preview.style.setProperty('--preview-card-bg', currentTheme.cardBackground);
+      preview.style.setProperty('--preview-card-hover', currentTheme.cardHover);
+      preview.style.setProperty('--preview-text-muted', currentTheme.textMuted);
+      
+      // Apply background to preview area
+      preview.style.backgroundColor = currentTheme.background;
+      preview.style.color = currentTheme.text;
+      
+      // Apply primary color to header
+      if (header) {
+        header.style.backgroundColor = currentTheme.primary;
+      }
+      
+      // Try to load logo from different possible paths
+      const logo = document.getElementById('previewLogo');
+      if (logo) {
+        // Try multiple paths (in order of likelihood)
+        const paths = [
+          'assets/icons/icon-512x512.png',
+          'src/public/assets/icons/icon-512x512.png',
+          '../assets/icons/icon-512x512.png',
+          '../src/public/assets/icons/icon-512x512.png',
+          'public/assets/icons/icon-512x512.png'
+        ];
+        
+        // Set src and add error handler to try next path
+        let currentPathIndex = 0;
+        logo.src = paths[currentPathIndex];
+        logo.onerror = function() {
+          currentPathIndex++;
+          if (currentPathIndex < paths.length) {
+            this.src = paths[currentPathIndex];
+          } else {
+            // If all paths fail, use a placeholder or hide
+            this.style.display = 'none';
+          }
+        };
+      }
+    }
+
+    // Generate CSS
+    function generateCSS() {
+      const themeClass = `html.theme-${currentThemeName}`;
+      return `${themeClass} {
+  --theme-primary: ${currentTheme.primary};
+  --theme-background: ${currentTheme.background};
+  --theme-text: ${currentTheme.text};
+  --theme-text-header: ${currentTheme.textHeader};
+  --theme-border: ${currentTheme.border};
+  --theme-background-secondary: ${currentTheme.backgroundSecondary};
+  --theme-card-background: ${currentTheme.cardBackground};
+  --theme-card-hover: ${currentTheme.cardHover};
+  --theme-text-muted: ${currentTheme.textMuted};
+}`;
+    }
+
+    // Update CSS output
+    function updateCSS() {
+      document.getElementById('cssOutput').value = generateCSS();
+      updateWCAGMatrix();
+    }
+
+    // Calculate relative luminance (WCAG formula)
+    function getLuminance(hex) {
+      const rgb = hexToRgb(hex);
+      const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(val => {
+        val = val / 255;
+        return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    // Convert hex to RGB
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 0, g: 0, b: 0 };
+    }
+
+    // Calculate contrast ratio (WCAG formula)
+    function getContrastRatio(color1, color2) {
+      const lum1 = getLuminance(color1);
+      const lum2 = getLuminance(color2);
+      const lighter = Math.max(lum1, lum2);
+      const darker = Math.min(lum1, lum2);
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    // Format contrast ratio
+    function formatContrastRatio(ratio) {
+      return ratio.toFixed(2);
+    }
+
+    // Check WCAG compliance
+    function checkWCAG(ratio, isLarge = false) {
+      const results = {
+        aa: false,
+        aaa: false,
+        aaLarge: false,
+        aaaLarge: false
+      };
+
+      if (isLarge) {
+        results.aaLarge = ratio >= 3.0;
+        results.aaaLarge = ratio >= 4.5;
+      } else {
+        results.aa = ratio >= 4.5;
+        results.aaa = ratio >= 7.0;
+        results.aaLarge = ratio >= 3.0;
+        results.aaaLarge = ratio >= 4.5;
+      }
+
+      return results;
+    }
+
+    // Update WCAG compliance matrix
+    function updateWCAGMatrix() {
+      const matrix = document.getElementById('wcagMatrix');
+      const table = document.createElement('table');
+      
+      // Create header row
+      const headerRow = document.createElement('tr');
+      headerRow.appendChild(document.createElement('th')); // Empty corner cell
+      
+      colorKeys.forEach(({ label }) => {
+        const th = document.createElement('th');
+        th.textContent = label;
+        th.style.minWidth = '120px';
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // Create data rows
+      colorKeys.forEach(({ key: fgKey, label: fgLabel }) => {
+        const row = document.createElement('tr');
+        
+        // Row header
+        const rowHeader = document.createElement('td');
+        rowHeader.textContent = fgLabel;
+        rowHeader.style.minWidth = '150px';
+        row.appendChild(rowHeader);
+
+        // Calculate contrast for each background color
+        colorKeys.forEach(({ key: bgKey }) => {
+          const cell = document.createElement('td');
+          cell.className = 'contrast-cell';
+
+          if (fgKey === bgKey) {
+            cell.innerHTML = '<span style="color: #9ca3af;">—</span>';
+          } else {
+            const fgColor = currentTheme[fgKey];
+            const bgColor = currentTheme[bgKey];
+            const ratio = getContrastRatio(fgColor, bgColor);
+            const formatted = formatContrastRatio(ratio);
+            const wcag = checkWCAG(ratio);
+
+            const ratioSpan = document.createElement('div');
+            ratioSpan.className = 'contrast-ratio';
+            ratioSpan.textContent = formatted + ':1';
+            cell.appendChild(ratioSpan);
+
+            const badges = document.createElement('div');
+            
+            // Normal text badges
+            if (wcag.aaa) {
+              const badge = document.createElement('span');
+              badge.className = 'wcag-badge wcag-aaa';
+              badge.textContent = 'AAA';
+              badges.appendChild(badge);
+            } else if (wcag.aa) {
+              const badge = document.createElement('span');
+              badge.className = 'wcag-badge wcag-aa';
+              badge.textContent = 'AA';
+              badges.appendChild(badge);
+            } else {
+              const badge = document.createElement('span');
+              badge.className = 'wcag-badge wcag-fail';
+              badge.textContent = 'FAIL';
+              badges.appendChild(badge);
+            }
+
+            // Large text indicator
+            if (wcag.aaLarge && !wcag.aa) {
+              const badge = document.createElement('span');
+              badge.className = 'wcag-badge wcag-large';
+              badge.textContent = 'AA-L';
+              badge.title = 'Passes AA for large text (18pt+ or 14pt+ bold)';
+              badges.appendChild(badge);
+            }
+
+            cell.appendChild(badges);
+          }
+
+          row.appendChild(cell);
+        });
+
+        table.appendChild(row);
+      });
+
+      matrix.innerHTML = '';
+      matrix.appendChild(table);
+    }
+
+    // Copy CSS to clipboard
+    function copyCSS() {
+      const css = generateCSS();
+      navigator.clipboard.writeText(css).then(() => {
+        showNotification('CSS copied to clipboard!');
+      }).catch(() => {
+        showNotification('Failed to copy. Please select and copy manually.', 'error');
+      });
+    }
+
+    // Load default theme
+    function loadDefaultTheme() {
+      currentTheme = { ...defaultThemes[currentThemeName] };
+      renderColorGrid();
+      updatePreview();
+      updateCSS();
+      showNotification('Default theme loaded');
+    }
+
+    // Export theme as JSON
+    function exportTheme() {
+      const data = {
+        themeName: currentThemeName,
+        colors: currentTheme
+      };
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentThemeName}-theme.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showNotification('Theme exported!');
+    }
+
+    // Import theme from JSON
+    function importTheme() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.colors) {
+              currentTheme = { ...data.colors };
+              if (data.themeName) {
+                currentThemeName = data.themeName;
+                document.getElementById('themeSelect').value = currentThemeName;
+              }
+              renderColorGrid();
+              updatePreview();
+              updateCSS();
+              showNotification('Theme imported!');
+            } else {
+              showNotification('Invalid theme file format', 'error');
+            }
+          } catch (error) {
+            showNotification('Failed to parse JSON file', 'error');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.background = type === 'error' ? '#ef4444' : '#10b981';
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Close modal on outside click
+    document.getElementById('colorPickerModal').addEventListener('click', (e) => {
+      if (e.target.id === 'colorPickerModal') {
+        closeColorPicker();
+      }
+    });
+
+    // Initialize on load
+    init();
+    
+    // Initial WCAG matrix update
+    updateWCAGMatrix();
+  </script>
+</body>
+</html>
+

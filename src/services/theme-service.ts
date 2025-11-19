@@ -21,6 +21,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#781A1A',
     background: '#FFFFFF',
     text: '#1F2937',
+    textHeader: '#1F2937', // Default: same as text
     border: '#E5E7EB',
     backgroundSecondary: '#F3F4F6',
     cardBackground: '#FFFFFF',
@@ -31,6 +32,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#C99156',
     background: '#120A0A',
     text: '#F3F4F6',
+    textHeader: '#F3F4F6', // Default: same as text
     border: '#4A2C17',
     backgroundSecondary: '#1F1010',
     cardBackground: '#321919',
@@ -41,6 +43,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#0EA5E9',
     background: '#F0F9FF',
     text: '#1F2937',
+    textHeader: '#1F2937', // Default: same as text
     border: '#E0F2FE',
     backgroundSecondary: '#E0F2FE',
     cardBackground: '#FFFFFF',
@@ -51,6 +54,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#38BDF8',
     background: '#0C2D47',
     text: '#E0F2FE',
+    textHeader: '#E0F2FE', // Default: same as text
     border: '#164E63',
     backgroundSecondary: '#164E63',
     cardBackground: '#0C2D47',
@@ -61,6 +65,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#1E40AF',
     background: '#EFF6FF',
     text: '#1F2937',
+    textHeader: '#1F2937', // Default: same as text
     border: '#DBEAFE',
     backgroundSecondary: '#DBEAFE',
     cardBackground: '#FFFFFF',
@@ -71,6 +76,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#60A5FA',
     background: '#1E3A8A',
     text: '#DBEAFE',
+    textHeader: '#DBEAFE', // Default: same as text
     border: '#1E40AF',
     backgroundSecondary: '#1E40AF',
     cardBackground: '#1E3A8A',
@@ -81,6 +87,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#D97706',
     background: '#FEF3C7',
     text: '#78350F',
+    textHeader: '#78350F', // Default: same as text
     border: '#FCD34D',
     backgroundSecondary: '#FEF9E7',
     cardBackground: '#FEF3C7',
@@ -91,6 +98,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#FBBF24',
     background: '#78350F',
     text: '#FEF3C7',
+    textHeader: '#FEF3C7', // Default: same as text
     border: '#D97706',
     backgroundSecondary: '#92400E',
     cardBackground: '#78350F',
@@ -101,6 +109,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#EC4899',
     background: '#FFFFFF',
     text: '#831843',
+    textHeader: '#831843', // Default: same as text
     border: '#FBCFE8',
     backgroundSecondary: '#FDF2F8',
     cardBackground: '#FFFFFF',
@@ -111,6 +120,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#F472B6',
     background: '#500724',
     text: '#FDF2F8',
+    textHeader: '#FDF2F8', // Default: same as text
     border: '#EC4899',
     backgroundSecondary: '#831843',
     cardBackground: '#500724',
@@ -121,6 +131,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#404040',
     background: '#FFFFFF',
     text: '#000000',
+    textHeader: '#000000', // Default: same as text
     border: '#D1D5DB',
     backgroundSecondary: '#F3F4F6',
     cardBackground: '#FFFFFF',
@@ -131,6 +142,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     primary: '#6B7280',
     background: '#111827',
     text: '#F3F4F6',
+    textHeader: '#F3F4F6', // Default: same as text
     border: '#374151',
     backgroundSecondary: '#1F2937',
     cardBackground: '#111827',
@@ -254,6 +266,7 @@ export class ThemeService {
     style.setProperty('--theme-primary', palette.primary);
     style.setProperty('--theme-background', palette.background);
     style.setProperty('--theme-text', palette.text);
+    style.setProperty('--theme-text-header', palette.textHeader);
     style.setProperty('--theme-border', palette.border);
     style.setProperty('--theme-background-secondary', palette.backgroundSecondary);
     style.setProperty('--theme-card-background', palette.cardBackground);

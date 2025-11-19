@@ -129,6 +129,7 @@ export interface ThemePalette {
   primary: string;
   background: string;
   text: string;
+  textHeader: string; // Header text color (for titles, activated buttons, etc.)
   border: string;
   backgroundSecondary: string;
   cardBackground: string;
