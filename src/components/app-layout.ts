@@ -67,17 +67,51 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
-    // Logo image - use absolute path for production, fallback for dev
+    // Logo image - responsive picture element with WebP support
+    const picture = this.createElement('picture', {});
+    
+    // WebP sources for different screen sizes
+    const sourceMobile = this.createElement('source', {
+      attributes: {
+        srcset: '/assets/icons/icon-40x40.webp',
+        media: '(max-width: 640px)',
+        type: 'image/webp',
+      },
+    });
+    
+    const sourceTablet = this.createElement('source', {
+      attributes: {
+        srcset: '/assets/icons/icon-80x80.webp',
+        media: '(max-width: 1024px)',
+        type: 'image/webp',
+      },
+    });
+    
+    const sourceDefault = this.createElement('source', {
+      attributes: {
+        srcset: '/assets/icons/icon-192x192.webp',
+        type: 'image/webp',
+      },
+    });
+    
+    // Fallback PNG image
     const logo = this.createElement('img', {
       attributes: {
         src: '/assets/icons/icon-192x192.png',
         alt: 'XIV Dye Tools Logo',
         title: 'XIV Dye Tools',
+        loading: 'eager',
+        fetchpriority: 'high',
         onerror: "this.onerror=null; this.src='assets/icons/icon-192x192.png';",
       },
       className: 'w-10 h-10 rounded',
     });
-    titleDiv.appendChild(logo);
+    
+    picture.appendChild(sourceMobile);
+    picture.appendChild(sourceTablet);
+    picture.appendChild(sourceDefault);
+    picture.appendChild(logo);
+    titleDiv.appendChild(picture);
 
     // Use --theme-text-header for header text
     const title = this.createElement('h1', {

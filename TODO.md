@@ -844,6 +844,89 @@ Modern font stack successfully implemented and deployed! ✅
 
 ---
 
+### 16. Mobile Performance Optimization
+
+**Status**: ❌ Not Started
+**Estimated Time**: 4-6 hours
+**Priority**: MEDIUM (performance optimization, mobile UX improvement)
+
+**Goal**: Improve mobile experience by addressing Lighthouse performance issues identified in mobile audit (Performance score: 65% → target: 80%+)
+
+**Lighthouse Report**: `feedback/xivdyetools.projectgalatine.com-20251119T020407.json`
+
+**Key Issues Identified**:
+1. **Render-blocking resources**: 1,440ms potential savings
+   - Google Fonts CSS blocking render (779ms)
+   - Main CSS bundle blocking render (177ms)
+2. **Image optimization**: 52 KiB potential savings
+   - `icon-192x192.png` (34KB) displayed at 40x40px (70% wasted bytes)
+   - PNG format could be WebP/AVIF (29 KiB savings)
+3. **Mobile UX enhancements**: Verify tap targets, safe area handling
+
+**Phase 1: Optimize Font Loading** (~1 hour):
+- [ ] Preload critical fonts using `<link rel="preload">` with `as="font"` and `crossorigin`
+- [ ] Add `font-display: swap` to Google Fonts URL (verify already present)
+- [ ] Consider self-hosting Google Fonts or using `font-display: optional` for non-critical fonts
+- [ ] Move Google Fonts to async loading or inline critical font CSS
+- **Expected Impact**: ~779ms FCP/LCP improvement
+
+**Phase 2: Optimize CSS Loading** (~1 hour):
+- [ ] Inline critical CSS for above-the-fold content
+- [ ] Defer non-critical CSS (themes, tool-specific styles)
+- [ ] Add `media="print"` to non-critical stylesheets, then switch to `all` after load
+- [ ] Consider CSS splitting in Vite build for better code splitting
+- **Expected Impact**: ~177ms FCP/LCP improvement
+
+**Phase 3: Image Optimization** (~1.5 hours):
+- [ ] Convert PNG icons to WebP format (better compression, modern format)
+  - Create `icon-192x192.webp` (target: <10KB)
+  - Create `icon-512x512.webp` for larger displays
+- [ ] Create responsive image sizes:
+  - `icon-40x40.webp` for mobile header (actual display size)
+  - `icon-80x80.webp` for tablet
+  - Keep `icon-192x192.webp` for PWA manifest
+- [ ] Update image references to use `<picture>` element with `srcset`
+- [ ] Add `loading="lazy"` to non-critical images
+- [ ] Add `fetchpriority="high"` to LCP image (logo in header)
+- **Expected Impact**: ~52 KiB savings, ~150ms LCP improvement
+
+**Phase 4: Mobile UX Enhancements** (~30 minutes):
+- [ ] Verify all interactive elements meet 44x44px minimum tap target
+- [ ] Add `touch-action: manipulation` to prevent double-tap zoom delays
+- [ ] Ensure safe area insets are properly applied (verify existing implementation)
+- [ ] Test tap targets on actual mobile devices
+
+**Phase 5: Additional Performance Optimizations** (~30 minutes):
+- [ ] Enable CSS minification in production build (verify it's enabled)
+- [ ] Add resource hints (`preconnect`, `dns-prefetch`) for external resources
+- [ ] Consider adding `rel="modulepreload"` for critical JS chunks
+- [ ] Verify service worker is caching optimized assets
+
+**Files to Modify**:
+- `index.html` - Font preloading, resource hints
+- `vite.config.ts` - CSS splitting configuration
+- `assets/icons/icon-192x192.png` - Convert to WebP, create responsive sizes
+- `components/nav.html` (or wherever logo is used) - Update to `<picture>` element
+- `assets/css/shared-styles.css` - Tap target verification, touch-action
+
+**Testing & Validation**:
+- [ ] Run Lighthouse mobile audit after each phase
+- [ ] Test on actual mobile devices (iOS Safari, Chrome Android)
+- [ ] Verify images load correctly across all breakpoints
+- [ ] Check that fonts load without layout shift
+- [ ] Validate PWA functionality still works with new image formats
+
+**Success Criteria**:
+- Performance score: 80%+ (from 65%)
+- FCP improvement: ~1,000ms+ faster
+- LCP improvement: ~700ms+ faster
+- Image savings: 50+ KiB reduction
+- All mobile UX checks passing
+
+**Reference**: Mobile Performance Optimization Plan (created November 19, 2025)
+
+---
+
 ## 🟢 LOW PRIORITY (Backlog)
 
 **Estimated Total Time**: ~10 hours

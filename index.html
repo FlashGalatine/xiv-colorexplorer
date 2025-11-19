@@ -38,19 +38,26 @@
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512x512.png">
 
-    <!-- Modern Web Fonts (Preconnect for faster loading) -->
+    <!-- Resource Hints for Performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://universalis.app">
     <!-- Google Fonts: Outfit (headings), Inter (body), JetBrains Mono (code) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Load fonts asynchronously to prevent render blocking -->
+    <script src="public/js/load-fonts.js" defer></script>
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 
+    <!-- Critical CSS - Load immediately -->
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <!-- Shared Styles -->
-    <link rel="stylesheet" href="assets/css/shared-styles.css">
-    <!-- Theme System Styles -->
-    <link rel="stylesheet" href="src/styles/themes.css">
-    <!-- Global Styles (moved from inline <style> to comply with strict CSP) -->
-    <link rel="stylesheet" href="src/styles/globals.css">
+    <!-- Non-critical CSS - Defer loading to prevent render blocking -->
+    <script src="public/js/load-css.js" defer></script>
+    <noscript>
+      <link rel="stylesheet" href="assets/css/shared-styles.css">
+      <link rel="stylesheet" href="src/styles/themes.css">
+      <link rel="stylesheet" href="src/styles/globals.css">
+    </noscript>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
 
