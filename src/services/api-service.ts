@@ -4,6 +4,19 @@
  * Phase 12: Architecture Refactor
  * Universalis API integration with caching and debouncing
  *
+ * Security Features:
+ * - Cache versioning (invalidate on schema change)
+ * - Checksum validation (detect cache corruption)
+ * - Response size limits (1 MB maximum)
+ * - Response structure validation
+ * - Automatic cleanup of invalid cache entries
+ *
+ * API Key Management:
+ * - Universalis API is public and does not require API keys
+ * - For future private API integrations, use environment variables
+ * - Never commit API keys to git
+ * - Use SecureStorage for sensitive configuration if needed
+ *
  * @module services/api-service
  */
 
@@ -16,8 +29,10 @@ import {
   UNIVERSALIS_API_RETRY_DELAY,
   API_CACHE_TTL,
   API_RATE_LIMIT_DELAY,
+  API_CACHE_VERSION,
+  API_MAX_RESPONSE_SIZE,
 } from '@shared/constants';
-import { retry, sleep } from '@shared/utils';
+import { retry, sleep, generateChecksum } from '@shared/utils';
 import { appStorage } from './storage-service';
 
 // ============================================================================
@@ -59,26 +74,60 @@ export class APIService {
 
   /**
    * Load cache from localStorage
+   * Validates cache version and checksums to detect corruption
    */
   private loadCacheFromStorage(): void {
     try {
       const cached = appStorage.getItem<Record<string, CachedData<PriceData>>>('price_cache', {});
 
       if (cached && typeof cached === 'object') {
+        let validEntries = 0;
+        let invalidEntries = 0;
+
         for (const [key, value] of Object.entries(cached)) {
           // Check if cache entry has expired
           if (value && typeof value === 'object' && 'timestamp' in value && 'ttl' in value) {
             const cachedData = value as CachedData<PriceData>;
-            if (Date.now() - cachedData.timestamp < cachedData.ttl) {
-              this.cache.set(key, cachedData);
+
+            // Check cache version (invalidate if version mismatch)
+            if (cachedData.version && cachedData.version !== API_CACHE_VERSION) {
+              invalidEntries++;
+              continue;
             }
+
+            // Check if expired
+            if (Date.now() - cachedData.timestamp >= cachedData.ttl) {
+              invalidEntries++;
+              continue;
+            }
+
+            // Validate checksum if present
+            if (cachedData.checksum) {
+              const computedChecksum = generateChecksum(cachedData.data);
+              if (computedChecksum !== cachedData.checksum) {
+                console.warn(`Cache corruption detected for key: ${key}`);
+                invalidEntries++;
+                continue;
+              }
+            }
+
+            this.cache.set(key, cachedData);
+            validEntries++;
+          } else {
+            invalidEntries++;
           }
+        }
+
+        if (invalidEntries > 0) {
+          console.info(`🧹 Cleaned ${invalidEntries} invalid cache entries`);
         }
       }
 
       console.info(`✅ Loaded ${this.cache.size} cached prices from storage`);
     } catch (error) {
       console.warn('Failed to load cache from storage', error);
+      // Clear corrupted cache on load failure
+      this.cache.clear();
     }
   }
 
@@ -104,11 +153,18 @@ export class APIService {
 
   /**
    * Get price from cache if available and not expired
+   * Validates cache version and checksum
    */
   private getCachedPrice(cacheKey: string): PriceData | null {
     const cached = this.cache.get(cacheKey);
 
     if (!cached) {
+      return null;
+    }
+
+    // Check cache version
+    if (cached.version && cached.version !== API_CACHE_VERSION) {
+      this.cache.delete(cacheKey);
       return null;
     }
 
@@ -118,17 +174,30 @@ export class APIService {
       return null;
     }
 
+    // Validate checksum if present
+    if (cached.checksum) {
+      const computedChecksum = generateChecksum(cached.data);
+      if (computedChecksum !== cached.checksum) {
+        console.warn(`Cache corruption detected for key: ${cacheKey}`);
+        this.cache.delete(cacheKey);
+        return null;
+      }
+    }
+
     return cached.data;
   }
 
   /**
-   * Set price in cache
+   * Set price in cache with version and checksum
    */
   private setCachedPrice(cacheKey: string, data: PriceData): void {
+    const checksum = generateChecksum(data);
     this.cache.set(cacheKey, {
       data,
       timestamp: Date.now(),
       ttl: API_CACHE_TTL,
+      version: API_CACHE_VERSION,
+      checksum,
     });
 
     this.saveCacheToStorage();
@@ -251,7 +320,7 @@ export class APIService {
   }
 
   /**
-   * Fetch with timeout
+   * Fetch with timeout and size limits
    */
   private async fetchWithTimeout(
     url: string,
@@ -290,7 +359,31 @@ export class APIService {
         throw new Error('Invalid content type: expected application/json');
       }
 
-      return await response.json();
+      // Check content-length header if available
+      const contentLength = response.headers.get('content-length');
+      if (contentLength) {
+        const size = parseInt(contentLength, 10);
+        if (!isNaN(size) && size > API_MAX_RESPONSE_SIZE) {
+          throw new Error(
+            `Response too large: ${size} bytes (max: ${API_MAX_RESPONSE_SIZE} bytes)`
+          );
+        }
+      }
+
+      // Read response text and validate size
+      const text = await response.text();
+      if (text.length > API_MAX_RESPONSE_SIZE) {
+        throw new Error(
+          `Response too large: ${text.length} bytes (max: ${API_MAX_RESPONSE_SIZE} bytes)`
+        );
+      }
+
+      // Parse JSON with error handling
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        throw new Error(`Invalid JSON response: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+      }
     } finally {
       clearTimeout(timeoutId);
     }
@@ -322,6 +415,12 @@ export class APIService {
     itemID: number
   ): PriceData | null {
     try {
+      // Validate response structure
+      if (!data || typeof data !== 'object') {
+        console.warn(`Invalid API response structure for item ${itemID}`);
+        return null;
+      }
+
       // Parse aggregated endpoint response format
       if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
         console.warn(`No price data available for item ${itemID}`);
@@ -329,8 +428,14 @@ export class APIService {
       }
 
       const result = data.results[0];
-      if (!result || result.itemId !== itemID) {
-        console.warn(`Item ID mismatch: expected ${itemID}, got ${result?.itemId}`);
+      if (!result || typeof result !== 'object') {
+        console.warn(`Invalid result structure for item ${itemID}`);
+        return null;
+      }
+
+      // Validate itemId type and match
+      if (typeof result.itemId !== 'number' || result.itemId !== itemID) {
+        console.warn(`Item ID mismatch: expected ${itemID}, got ${result.itemId}`);
         return null;
       }
 

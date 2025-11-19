@@ -252,11 +252,8 @@ Comprehensive theme system with 10 theme variants (5 themes × light/dark), all 
   - Quick access to experimental features
   - Feature highlights and navigation
   - Responsive design adapts to all device sizes
-- **Color Accessibility Checker (Stable v1.6.1)**: Open `coloraccessibility_stable.html` to simulate colorblindness and ensure your glamour is accessible
-- **Color Harmony Explorer (Stable v1.6.1)**: Open `colorexplorer_stable.html` for the main tool
-- **Color Matcher (Stable v1.6.1)**: Open `colormatcher_stable.html` for image-based color matching with intelligent auto zoom
-- **Dye Comparison (Stable v1.6.1)**: Open `dyecomparison_stable.html` for side-by-side dye analysis with color charts
-- **Dye Mixer (Stable v1.6.1)**: Open `dye-mixer_stable.html` for finding smooth color transitions
+
+> **⚠️ Legacy Files (v1.6.x)**: The `legacy/` folder contains deprecated v1.6.x HTML files that are no longer maintained. These files are preserved for historical reference only. For current development, use the v2.0.0 TypeScript codebase in `src/`. See [legacy/README.md](legacy/README.md) for more information.
 - **Easy Navigation**: Use the "Tools ▼" dropdown menu in each tool's header to quickly switch between any tool
   - On mobile devices (≤768px): Bottom navigation bar for easy tool access
   - On larger displays (>768px): Tools dropdown in header as fallback navigation

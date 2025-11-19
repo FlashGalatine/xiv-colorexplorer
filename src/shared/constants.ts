@@ -190,6 +190,8 @@ export const UNIVERSALIS_API_RETRY_DELAY = 1000; // milliseconds
  */
 export const API_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 export const API_DEBOUNCE_DELAY = 500; // milliseconds
+export const API_CACHE_VERSION = '1.0.0'; // Increment to invalidate all cached data
+export const API_MAX_RESPONSE_SIZE = 1024 * 1024; // 1 MB maximum response size
 export const API_RATE_LIMIT_DELAY = 200; // milliseconds between requests
 
 // ============================================================================

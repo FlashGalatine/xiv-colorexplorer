@@ -19,7 +19,7 @@ With the release of v2.0.0 (November 17, 2025), the project has been completely 
 - TypeScript + Vite architecture
 - Component-based design with lifecycle hooks
 - Service layer pattern
-- 140 unit tests (100% passing)
+- 514 unit tests (100% passing)
 - Optimized build system
 
 These files are kept for:

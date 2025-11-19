@@ -242,6 +242,8 @@ export interface CachedData<T> {
   data: T;
   timestamp: number;
   ttl: number;
+  version?: string; // Cache version for invalidation
+  checksum?: string; // Optional checksum for corruption detection
 }
 
 // ============================================================================
