@@ -132,13 +132,14 @@ export class ColorMatcherTool extends BaseComponent {
 
     const sampleInput = this.createElement('input', {
       className:
-        'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+        'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none',
       attributes: {
         type: 'range',
         min: '1',
         max: '64',
         value: String(this.sampleSize),
         id: 'sample-size-input',
+        style: 'accent-color: var(--theme-primary);',
       },
     });
 
