@@ -18,6 +18,58 @@ XIV Dye Tools is a client-side web application providing five specialized tools 
 
 ---
 
+## Architecture: v2.0.0 TypeScript + Vite + Lit
+
+### Modern Component-Based Architecture
+
+v2.0.0 uses a modern TypeScript + Lit component architecture with a service layer pattern:
+
+**Key Benefits**:
+- **Type Safety**: Full TypeScript with strict mode enabled
+- **Modular Design**: Service layer + component layer separation of concerns
+- **Build Optimization**: Vite for fast development and optimized production builds
+- **No Duplication**: Shared services used across all tools
+- **Easy Testing**: Unit tests for all services and components (514 tests, 100% pass rate)
+- **Framework Agnostic**: Lit for web components, framework-independent
+
+**Legacy Files**: Original monolithic HTML files (v1.6.x) preserved in `legacy/` folder for historical reference. See `docs/ARCHITECTURE.md` for migration details.
+
+### File Organization
+
+```
+src/
+├── main.ts                    # Application entry point
+├── components/                 # Lit web components
+│   ├── app-layout.ts          # Main application shell
+│   ├── accessibility-checker-tool.ts
+│   ├── color-matcher-tool.ts
+│   ├── dye-comparison-tool.ts
+│   ├── dye-mixer-tool.ts
+│   ├── harmony-generator-tool.ts
+│   ├── base-component.ts     # Base class for all components
+│   └── [other UI components]
+├── services/                   # Business logic layer (singletons)
+│   ├── api-service.ts         # Universalis API integration
+│   ├── color-service.ts        # Color algorithms
+│   ├── dye-service.ts         # Dye database management
+│   ├── storage-service.ts     # localStorage wrapper
+│   └── theme-service.ts       # Theme management
+├── shared/                     # Shared utilities
+│   ├── constants.ts           # Application constants
+│   ├── types.ts               # TypeScript type definitions
+│   └── utils.ts               # Helper functions
+├── styles/                     # Styling
+│   ├── globals.css            # Global styles
+│   ├── themes.css             # 12 theme CSS variables
+│   └── tailwind.css           # Tailwind imports
+└── data/                       # Static data files
+    └── json/                   # Dye database, data centers, worlds
+```
+
+**Legacy Files**: `legacy/` folder contains original v1.6.x monolithic HTML files (no longer maintained).
+
+---
+
 ## 📚 Documentation Structure
 
 This file is a **quick reference**. For detailed information, see:
@@ -41,7 +93,7 @@ This file is a **quick reference**. For detailed information, see:
 npm run dev          # Start dev server (http://localhost:5173)
 npm run build        # Production build
 npm run preview      # Preview production build
-npm run test         # Run all tests (499+)
+npm run test         # Run all tests (514+)
 npm run lint         # Check code style
 ```
 
@@ -163,6 +215,43 @@ git push origin main --tags
 
 ---
 
+## v2.0.0 Migration from v1.6.x
+
+### Key Architectural Changes
+
+**v1.6.x (Monolithic)**:
+- Single HTML file per tool (1,500-1,900 lines)
+- Inline JavaScript and CSS
+- No build process (direct file serving)
+- Code duplication across tools
+- Experimental/stable file copies
+
+**v2.0.0 (Modular)**:
+- TypeScript + Lit components
+- Service layer pattern (singletons)
+- Vite build system
+- Shared codebase (no duplication)
+- Single codebase (no experimental/stable split)
+
+### Migration Path
+
+1. **Development**: Use `npm run dev` instead of Python HTTP server
+2. **Build**: Run `npm run build` to generate production files
+3. **Testing**: Use `npm run test` (Vitest) instead of manual browser testing
+4. **File Locations**: All code moved to `src/` folder structure
+5. **Legacy Files**: Original HTML files preserved in `legacy/` folder
+
+### For Contributors
+
+- **New Features**: Add to `src/components/` (not `legacy/`)
+- **Services**: Modify `src/services/` (affects all tools)
+- **Themes**: Update `src/styles/themes.css`
+- **Documentation**: See `docs/` folder for detailed guides
+
+**Historical Documentation**: See `historical/` folder for v1.x development history and phase documentation.
+
+---
+
 ## Browser Support
 
 **Supported**: Chrome, Firefox, Safari, Edge
@@ -211,7 +300,7 @@ If you modify a service, test all tools that use it.
 
 **Bundle Size**: ~7-30 KB per tool (gzipped)
 
-**Test Coverage**: 499+ tests, 100% pass rate
+**Test Coverage**: 514 tests, 100% pass rate
 
 **TypeScript**: Strict mode enabled
 

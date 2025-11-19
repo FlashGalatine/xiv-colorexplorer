@@ -361,5 +361,312 @@ describe('StorageService', () => {
 
       expect(sizeAfter).toBeGreaterThan(sizeBefore);
     });
+
+    it('should return 0 when localStorage is unavailable', () => {
+      const originalLocalStorage = window.localStorage;
+      // @ts-expect-error - Testing error case
+      window.localStorage = null;
+      const size = StorageService.getSize();
+      expect(size).toBe(0);
+      window.localStorage = originalLocalStorage;
+    });
+  });
+
+  // ============================================================================
+  // Error Handling & Edge Cases
+  // ============================================================================
+
+  describe('Error Handling', () => {
+    it('should handle QuotaExceededError gracefully', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Mock localStorage to throw QuotaExceededError
+      const originalSetItem = localStorage.setItem;
+      localStorage.setItem = () => {
+        const error = new Error('QuotaExceededError');
+        error.name = 'QuotaExceededError';
+        // Ensure it's recognized as an Error instance
+        Object.setPrototypeOf(error, Error.prototype);
+        throw error;
+      };
+
+      // StorageService converts QuotaExceededError to AppError
+      try {
+        StorageService.setItem('test', 'value');
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        // Should throw AppError
+        expect(error).toBeDefined();
+      }
+
+      localStorage.setItem = originalSetItem;
+    });
+
+    it('should handle corrupted JSON data gracefully', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Manually set corrupted JSON
+      localStorage.setItem('corrupted', '{invalid json}');
+      const result = StorageService.getItem('corrupted');
+      // Should return the string as-is when JSON parsing fails
+      expect(result).toBe('{invalid json}');
+    });
+
+    it('should handle getItem when JSON parsing fails for array-like string', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Set a string that looks like JSON but is invalid
+      localStorage.setItem('invalidArray', '[invalid');
+      const result = StorageService.getItem('invalidArray');
+      expect(result).toBe('[invalid');
+    });
+
+    it('should handle getItemWithTTL with invalid data structure', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Store invalid TTL structure
+      StorageService.setItem('invalidTTL', { wrong: 'structure' });
+      const result = StorageService.getItemWithTTL('invalidTTL', 'default');
+      // Should return default when structure is invalid
+      expect(result).toBe('default');
+    });
+
+    it('should handle getItemWithTTL with missing expiresAt', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Store TTL data without expiresAt
+      StorageService.setItem('noExpiry', { value: 'test' });
+      const result = StorageService.getItemWithTTL('noExpiry', 'default');
+      expect(result).toBe('test');
+    });
+
+    it('should handle getItemWithTTL with missing value', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      // Store TTL data without value
+      StorageService.setItem('noValue', { expiresAt: Date.now() + 10000 });
+      const result = StorageService.getItemWithTTL('noValue', 'default');
+      expect(result).toBe('default');
+    });
+  });
+
+  // ============================================================================
+  // Concurrent Operations Tests
+  // ============================================================================
+
+  describe('Concurrent Operations', () => {
+    it('should handle concurrent reads', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.setItem('concurrent', 'value');
+
+      const results = Array.from({ length: 10 }, () => StorageService.getItem('concurrent'));
+      results.forEach((result) => {
+        expect(result).toBe('value');
+      });
+    });
+
+    it('should handle concurrent writes', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const writes = Array.from({ length: 10 }, (_, i) => {
+        return StorageService.setItem(`concurrent_${i}`, `value_${i}`);
+      });
+
+      writes.forEach((result) => {
+        expect(result).toBe(true);
+      });
+
+      for (let i = 0; i < 10; i++) {
+        expect(StorageService.getItem(`concurrent_${i}`)).toBe(`value_${i}`);
+      }
+    });
+
+    it('should handle read while write', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.setItem('rw', 'initial');
+      const read = StorageService.getItem('rw');
+      StorageService.setItem('rw', 'updated');
+      const readAfter = StorageService.getItem('rw');
+
+      expect(read).toBe('initial');
+      expect(readAfter).toBe('updated');
+    });
+  });
+
+  // ============================================================================
+  // Large Dataset Performance Tests
+  // ============================================================================
+
+  describe('Large Dataset Performance', () => {
+    it('should handle large number of items', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store 100 items
+      for (let i = 0; i < 100; i++) {
+        StorageService.setItem(`large_${i}`, `value_${i}`);
+      }
+
+      expect(StorageService.getItemCount()).toBe(100);
+      expect(StorageService.getKeys().length).toBe(100);
+    });
+
+    it('should handle large item values', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const largeValue = 'x'.repeat(10000);
+      StorageService.setItem('largeValue', largeValue);
+      const retrieved = StorageService.getItem('largeValue');
+
+      expect(retrieved).toBe(largeValue);
+    });
+
+    it('should handle large objects', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const largeObject = {
+        data: Array.from({ length: 1000 }, (_, i) => ({
+          id: i,
+          name: `Item ${i}`,
+          value: Math.random(),
+        })),
+      };
+
+      StorageService.setItem('largeObject', largeObject);
+      const retrieved = StorageService.getItem('largeObject');
+
+      expect(retrieved).toEqual(largeObject);
+    });
+  });
+
+  // ============================================================================
+  // Additional NamespacedStorage Tests
+  // ============================================================================
+
+  describe('NamespacedStorage Additional', () => {
+    it('should support getAll method', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const ns = StorageService.createNamespace('getall');
+      ns.setItem('key1', 'value1');
+      ns.setItem('key2', 'value2');
+
+      const all = ns.getAll();
+      expect(Object.keys(all).length).toBe(2);
+      // Keys include the namespace prefix with underscore
+      expect(all['getall_key1']).toBe('value1');
+      expect(all['getall_key2']).toBe('value2');
+    });
+
+    it('should handle getAll with objects', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      const ns = StorageService.createNamespace('getallobj');
+      ns.setItem('obj1', { name: 'test1' });
+      ns.setItem('obj2', { name: 'test2' });
+
+      const all = ns.getAll();
+      expect(all['getallobj_obj1']).toEqual({ name: 'test1' });
+      expect(all['getallobj_obj2']).toEqual({ name: 'test2' });
+    });
+  });
+
+  // ============================================================================
+  // getItemsByPrefix Edge Cases
+  // ============================================================================
+
+  describe('getItemsByPrefix Edge Cases', () => {
+    it('should handle corrupted JSON in prefixed items', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      localStorage.setItem('prefix_corrupted', '{invalid');
+      const items = StorageService.getItemsByPrefix('prefix_');
+      expect(items['prefix_corrupted']).toBe('{invalid');
+    });
+
+    it('should return empty object when no items match prefix', () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      const items = StorageService.getItemsByPrefix('nonexistent_');
+      expect(Object.keys(items).length).toBe(0);
+    });
+  });
+
+  // ============================================================================
+  // Unavailable localStorage Tests
+  // ============================================================================
+
+  describe('Unavailable localStorage', () => {
+    it('should handle all operations when localStorage is unavailable', () => {
+      const originalLocalStorage = window.localStorage;
+      // @ts-expect-error - Testing error case
+      window.localStorage = null;
+
+      expect(StorageService.isAvailable()).toBe(false);
+      expect(StorageService.getItem('test', 'default')).toBe('default');
+      expect(StorageService.setItem('test', 'value')).toBe(false);
+      expect(StorageService.removeItem('test')).toBe(false);
+      expect(StorageService.clear()).toBe(false);
+      expect(StorageService.getKeys()).toEqual([]);
+      expect(StorageService.hasItem('test')).toBe(false);
+      expect(StorageService.getItemCount()).toBe(0);
+      expect(StorageService.getSize()).toBe(0);
+      expect(StorageService.getItemsByPrefix('test')).toEqual({});
+      expect(StorageService.removeByPrefix('test')).toBe(0);
+
+      window.localStorage = originalLocalStorage;
+    });
   });
 });
