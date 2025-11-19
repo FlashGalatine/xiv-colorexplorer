@@ -1,8 +1,8 @@
-# TODO List - XIV Dye Tools v2.0.0
+# TODO List - XIV Dye Tools v2.0.1
 
-**Last Updated**: November 18, 2025
-**Current Version**: v2.0.0
-**Status**: Post-TypeScript Migration - Component Testing & Feature Restoration Phase
+**Last Updated**: November 19, 2025
+**Current Version**: v2.0.1
+**Status**: Theme System Refinements & Feature Enhancements Complete
 
 This TODO list organizes upcoming development work across 4 priority tiers based on comprehensive codebase research conducted November 2025.
 
@@ -1065,7 +1065,58 @@ Implemented `SecureStorage` class with HMAC-based integrity checks and size limi
 
 ## 📋 Completed Items
 
-*(Items will be moved here as they are completed)*
+### v2.0.1 Release (November 19, 2025) ✅
+
+**Status**: ✅ COMPLETE
+**Focus**: Theme system refinements, Color Matcher enhancements, and Theme Editor improvements
+
+#### Theme System Updates ✅
+- **Standard Light Theme** - Updated with refined color palette (warm beige background, improved contrast)
+- **Standard Dark Theme** - Updated with refined color palette (warm peach primary, dark brown background)
+- **Hydaelyn Light Theme** - Updated with refined color palette (deep blue primary, soft blue-gray background)
+- **OG Classic Dark Theme** - Renamed from "Classic Light" and updated (very dark blue-gray background, deep blue cards)
+- **Grayscale Themes** - Updated for better contrast (text header and border colors refined)
+- **Theme Removals** - Removed Hydaelyn Dark and Classic Dark themes (reduced from 12 to 10 themes)
+
+#### Color Matcher Enhancements ✅
+- **Copy Hex Button** - Added to each dye card (Matched Dye and Similar Dyes)
+  - One-click hex code copying to clipboard
+  - Toast notifications for success/error feedback
+  - Fallback support for older browsers
+  - Theme-aware styling with hover effects
+
+#### Theme Editor Improvements ✅
+- **WCAG Compliance Matrix Toggles** - Added show/hide controls for rows and columns
+  - Separate controls for foreground colors (rows) and background colors (columns)
+  - Default visibility optimized for typical WCAG testing scenarios
+  - Checkboxes persist state and update matrix in real-time
+
+#### Technical Updates ✅
+- Updated TypeScript types to reflect theme changes
+- Updated all test files to use new theme names
+- Updated CSS theme class definitions
+- Fixed TypeScript build errors (removed references to deleted themes)
+- Updated version to 2.0.1 throughout codebase
+- Updated documentation (README, CHANGELOG, FAQ)
+- Version now dynamically pulled from constants.ts
+
+**Files Modified**:
+- `src/services/theme-service.ts` - Theme palette updates
+- `src/shared/constants.ts` - Version bump, theme list updates
+- `src/shared/types.ts` - ThemeName type updates
+- `src/styles/themes.css` - CSS class updates
+- `src/components/color-matcher-tool.ts` - Copy Hex button
+- `theme-editor.html` - WCAG matrix toggles, theme updates
+- `src/components/app-layout.ts` - Dynamic version display
+- `src/main.ts` - Dynamic version in console log
+- `src/index.html` - Updated meta tags
+- All test files - Updated theme references
+
+**Commits**:
+- `bc24ca4` - Version bump to 2.0.1 and documentation updates
+- `17688c7` - Fix removed theme references in tests and CSS
+- `ef70aaf` - Update version to 2.0.1 in web app header and metadata
+- `0bb48e7` - Update release date to November 19, 2025
 
 ---
 
@@ -1096,12 +1147,13 @@ Implemented `SecureStorage` class with HMAC-based integrity checks and size limi
 - Session 5 (Nov 18): TOOL COMPONENT TESTING Phase 1 (Task 9 - 118 new tests, 3 components, ~2.5 hours) ✅
 - Session 6 (Nov 18): FONT MODERNIZATION (Task 15 - Font optimization + production testing, ~1 hour) ✅
 - Session 7 (Nov 18): TOOL COMPONENT TESTING Phase 2 (Task 9 - 11 new tests, 3 components, Color Matcher/Mixer/Wheel, ~1 hour) ✅
+- Session 8 (Nov 19): v2.0.1 RELEASE (Theme updates, Color Matcher Copy Hex, Theme Editor WCAG toggles, version bump, ~2 hours) ✅
 
 - **Progress Since Start**:
 - 🔴 Critical: 5/5 COMPLETE ✅
 - 🟠 High: 4/4 COMPLETE ✅ (Security + Harmony Explorer fixes)
 - 🟡 Medium: 9/9 COMPLETE ✅ (Tests + Performance + Features + Font Modernization + Cleanup + Documentation - ALL DONE!)
-- 🟢 Low: 2/4 COMPLETE (Tasks 15 & 16 complete, 2 remaining)
+- 🟢 Low: 2/4 COMPLETE (Tasks 14 & 16 complete, 2 remaining: Task 13 & 17)
 
 **Overall Status**:
 - **Test Coverage**: 514 tests passing (140 services + 230 UI + 142 tool components + 2 harmony generator)
@@ -1116,10 +1168,13 @@ Implemented `SecureStorage` class with HMAC-based integrity checks and size limi
 - ✅ Task 13: COMPLETE - StorageService test coverage improved (40 tests, edge cases covered)
 - ✅ Task 14: COMPLETE - SecureStorage with integrity checks and size limits implemented
 
+**Remaining Low Priority Tasks**:
+- ⏳ Task 13: Improve StorageService Test Coverage (79.78% → 90%+ target)
+- ⏳ Task 17: Research Camera Upload for Color Matcher (Mobile) - Feasibility study
+
 **Next Session Focus** (Low Priority Backlog):
-1. **Option A**: Start camera-upload feasibility research (Low priority Task 17)
-2. **Option B**: Mark legacy/ folder as deprecated (Task 15)
-3. **Option C**: API Security Hardening (Task 16)
+1. **Option A**: Improve StorageService Test Coverage (Task 13) - Add edge case tests
+2. **Option B**: Research Camera Upload feasibility (Task 17) - Mobile UX enhancement
 
 ---
 
@@ -1144,8 +1199,8 @@ Implemented `SecureStorage` class with HMAC-based integrity checks and size limi
 
 ---
 
-**Last Updated**: November 18, 2025 (Tasks 11 & 12 Complete - Repository cleanup and documentation updates)
-**Current Status**: 20/21 tasks complete (95% overall), All CRITICAL + HIGH + MEDIUM priority done! ✅
-**Latest Session**: MEDIUM priority tasks completion (Repository cleanup, CLAUDE.md updates)
+**Last Updated**: November 19, 2025 (v2.0.1 Release - Theme updates, Color Matcher enhancements, Theme Editor improvements)
+**Current Status**: v2.0.1 Released ✅ | All CRITICAL + HIGH + MEDIUM priority tasks complete! ✅
+**Latest Session**: v2.0.1 Release (Theme system refinements, Copy Hex feature, WCAG matrix toggles, version updates)
 **Maintained By**: Development Team
-**Next Session**: Low Priority backlog (Task 15: Mark legacy/ folder as deprecated, Task 16: API Security Hardening, Task 17: Camera upload research)
+**Next Session**: Low Priority backlog (Task 13: Improve StorageService Test Coverage, Task 17: Camera upload research)
