@@ -60,6 +60,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### 🔍 Dye Selector Sort Options
+
+**Status**: ✅ COMPLETE
+**Focus**: Added flexible sorting options to DyeSelector component for improved dye browsing experience.
+
+#### New Features ✅
+- **Sort Dropdown Menu**: Added sort selector dropdown to DyeSelector component
+  - Positioned between search bar and category filters for easy access
+  - Preserves sort selection during component updates
+  - Applies sorting after all filters (category, search, facewear exclusion)
+- **Sort Options Available**:
+  - **Alphabetically** - Sorts by dye name (default)
+  - **Brightness (Dark → Light)** - Sorts by HSV V value ascending
+  - **Brightness (Light → Dark)** - Sorts by HSV V value descending
+  - **Hue (Color Wheel)** - Sorts by HSV H value with secondary sorting by saturation and brightness
+  - **Saturation (Muted → Vivid)** - Sorts by HSV S value ascending with secondary sorting by brightness
+  - **Category then Name** - Groups by category, then sorts alphabetically within each category
+
+#### Technical Implementation ✅
+- **Sort State Management**: Added `sortOption` state variable with type-safe `SortOption` type
+- **Comparison Logic**: Implemented `compareDyes()` method with intelligent multi-level sorting
+  - Hue sorting includes secondary sorting by saturation and brightness for better color wheel order
+  - Saturation sorting includes secondary sorting by brightness for consistent results
+  - Category sorting groups dyes logically before alphabetical sorting
+- **State Preservation**: Sort selection preserved during component updates and state management
+- **Performance**: Sorting uses existing HSV values from Dye objects (no additional conversions needed)
+
+#### Files Modified ✅
+- `src/components/dye-selector.ts` - Added sort dropdown UI, sort state management, and comparison logic
+
+#### User Experience ✅
+- Sort dropdown is accessible in all tools using DyeSelector (Harmony Generator, Dye Mixer, Color Matcher, Accessibility Checker, etc.)
+- Users can quickly switch between different sort orders to find dyes more efficiently
+- Sort selection persists during filtering and searching operations
+- Intuitive labels make it clear what each sort option does
+
+---
+
 ### 🚀 Mobile UX & Performance Enhancements
 
 **Status**: ✅ COMPLETE

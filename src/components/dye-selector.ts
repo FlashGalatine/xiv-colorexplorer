@@ -12,6 +12,11 @@ import { DyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 
 /**
+ * Sort options for dye list
+ */
+type SortOption = 'alphabetical' | 'brightness-asc' | 'brightness-desc' | 'hue' | 'saturation' | 'category';
+
+/**
  * Options for dye selector initialization
  */
 export interface DyeSelectorOptions {
@@ -32,6 +37,7 @@ export class DyeSelector extends BaseComponent {
   private filteredDyes: Dye[] = [];
   private currentCategory: string | null = 'Neutral';
   private searchQuery: string = '';
+  private sortOption: SortOption = 'alphabetical';
   private options: DyeSelectorOptions;
   private allowDuplicates: boolean = false;
 
@@ -99,6 +105,54 @@ export class DyeSelector extends BaseComponent {
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(clearBtn);
     wrapper.appendChild(searchContainer);
+
+    // Sort dropdown
+    const sortContainer = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    const sortLabel = this.createElement('label', {
+      textContent: 'Sort by:',
+      className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
+      attributes: {
+        for: 'dye-selector-sort',
+      },
+    });
+
+    const sortSelect = this.createElement('select', {
+      attributes: {
+        id: 'dye-selector-sort',
+        'aria-label': 'Sort dyes',
+      },
+      className:
+        'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm',
+    });
+
+    const sortOptions: Array<{ value: SortOption; label: string }> = [
+      { value: 'alphabetical', label: 'Alphabetically' },
+      { value: 'brightness-asc', label: 'Brightness (Dark → Light)' },
+      { value: 'brightness-desc', label: 'Brightness (Light → Dark)' },
+      { value: 'hue', label: 'Hue (Color Wheel)' },
+      { value: 'saturation', label: 'Saturation (Muted → Vivid)' },
+      { value: 'category', label: 'Category then Name' },
+    ];
+
+    for (const option of sortOptions) {
+      const optionElement = this.createElement('option', {
+        textContent: option.label,
+        attributes: {
+          value: option.value,
+        },
+      });
+      if (option.value === this.sortOption) {
+        optionElement.setAttribute('selected', 'selected');
+      }
+      sortSelect.appendChild(optionElement);
+    }
+
+    sortContainer.appendChild(sortLabel);
+    sortContainer.appendChild(sortSelect);
+    wrapper.appendChild(sortContainer);
 
     // Category filter (if enabled)
     if (this.options.showCategories) {
@@ -298,6 +352,15 @@ export class DyeSelector extends BaseComponent {
       });
     }
 
+    // Sort functionality
+    const sortSelect = this.querySelector<HTMLSelectElement>('#dye-selector-sort');
+    if (sortSelect) {
+      this.on(sortSelect, 'change', () => {
+        this.sortOption = sortSelect.value as SortOption;
+        this.update();
+      });
+    }
+
     // Clear selections
     if (clearBtn) {
       this.on(clearBtn, 'click', () => {
@@ -420,6 +483,10 @@ export class DyeSelector extends BaseComponent {
       const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
       const searchValue = searchInput?.value ?? '';
       const isSearchFocused = searchInput === document.activeElement;
+
+      // Preserve sort selection state
+      const sortSelect = this.querySelector<HTMLSelectElement>('#dye-selector-sort');
+      const sortValue = sortSelect?.value ?? 'alphabetical';
 
       // Update selected dyes display only
       const selectedList = this.querySelector<HTMLElement>('#selected-dyes-list');
@@ -579,6 +646,11 @@ export class DyeSelector extends BaseComponent {
         searchInput.focus();
       }
 
+      // Restore sort selection
+      if (sortSelect && sortValue !== this.sortOption) {
+        sortSelect.value = this.sortOption;
+      }
+
       this.onUpdate?.();
     } catch (error) {
       console.error('Error updating DyeSelector:', error);
@@ -608,7 +680,62 @@ export class DyeSelector extends BaseComponent {
       dyes = dyes.filter((d) => d.name.toLowerCase().includes(query));
     }
 
+    // Apply sorting based on selected option
+    dyes.sort((a, b) => this.compareDyes(a, b, this.sortOption));
+
     return dyes;
+  }
+
+  /**
+   * Compare two dyes based on sort option
+   */
+  private compareDyes(a: Dye, b: Dye, sortOption: SortOption): number {
+    switch (sortOption) {
+      case 'alphabetical':
+        return a.name.localeCompare(b.name);
+
+      case 'brightness-asc':
+        // Dark to Light (ascending brightness)
+        return a.hsv.v - b.hsv.v;
+
+      case 'brightness-desc':
+        // Light to Dark (descending brightness)
+        return b.hsv.v - a.hsv.v;
+
+      case 'hue':
+        // Sort by hue (color wheel order)
+        // If hues are similar, sort by saturation, then brightness
+        const hueDiff = a.hsv.h - b.hsv.h;
+        if (Math.abs(hueDiff) > 1) {
+          return hueDiff;
+        }
+        // If hues are very close, sort by saturation then brightness
+        const satDiff = b.hsv.s - a.hsv.s; // Higher saturation first
+        if (Math.abs(satDiff) > 1) {
+          return satDiff;
+        }
+        return b.hsv.v - a.hsv.v; // Then by brightness
+
+      case 'saturation':
+        // Muted to Vivid (ascending saturation)
+        // If saturation is similar, sort by brightness
+        const saturationDiff = a.hsv.s - b.hsv.s;
+        if (Math.abs(saturationDiff) > 1) {
+          return saturationDiff;
+        }
+        return a.hsv.v - b.hsv.v;
+
+      case 'category':
+        // Sort by category first, then alphabetically within category
+        const categoryDiff = a.category.localeCompare(b.category);
+        if (categoryDiff !== 0) {
+          return categoryDiff;
+        }
+        return a.name.localeCompare(b.name);
+
+      default:
+        return a.name.localeCompare(b.name);
+    }
   }
 
   /**
@@ -634,6 +761,7 @@ export class DyeSelector extends BaseComponent {
       selectedDyes: this.selectedDyes,
       searchQuery: this.searchQuery,
       currentCategory: this.currentCategory,
+      sortOption: this.sortOption,
     };
   }
 
@@ -649,6 +777,9 @@ export class DyeSelector extends BaseComponent {
     }
     if (newState.currentCategory === null || typeof newState.currentCategory === 'string') {
       this.currentCategory = newState.currentCategory;
+    }
+    if (typeof newState.sortOption === 'string') {
+      this.sortOption = newState.sortOption as SortOption;
     }
   }
 }
