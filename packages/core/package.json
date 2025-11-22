@@ -1,0 +1,51 @@
+{
+    "name": "xivdyetools-core",
+    "version": "1.0.0",
+    "description": "Core color algorithms and dye database for XIV Dye Tools",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "tsc --noEmit",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "ffxiv",
+        "final-fantasy-xiv",
+        "color",
+        "dye",
+        "harmony",
+        "accessibility",
+        "colorblind",
+        "color-theory",
+        "rgb",
+        "hsv",
+        "universalis"
+    ],
+    "author": "XIV Dye Tools Team",
+    "license": "ISC",
+    "homepage": "https://github.com/FlashGalatine/xivdyetools#readme",
+    "bugs": {
+        "url": "https://github.com/FlashGalatine/xivdyetools/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FlashGalatine/xivdyetools.git",
+        "directory": "packages/core"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "typescript": "^5.3.2",
+        "vitest": "^1.0.4"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
