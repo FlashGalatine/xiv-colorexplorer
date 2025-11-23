@@ -14,7 +14,7 @@ import type { ThemeName, VisionType, ColorblindMatrices } from './types';
 // ============================================================================
 
 export const APP_NAME = 'XIV Dye Tools';
-export const APP_VERSION = '2.0.1';
+export const APP_VERSION = '2.0.3';
 export const APP_DESCRIPTION =
   'A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors';
 
