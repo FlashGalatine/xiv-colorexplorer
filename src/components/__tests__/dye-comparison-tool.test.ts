@@ -6,13 +6,19 @@
  */
 
 import { DyeComparisonTool } from '../dye-comparison-tool';
-import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
+import {
+  createTestContainer,
+  cleanupTestContainer,
+  cleanupComponent,
+  setupResizeObserverMock,
+} from './test-utils';
 
 describe('DyeComparisonTool Component', () => {
   let container: HTMLElement;
   let component: DyeComparisonTool;
 
   beforeEach(() => {
+    setupResizeObserverMock();
     container = createTestContainer();
   });
 
