@@ -30,15 +30,14 @@
         "universalis"
     ],
     "author": "XIV Dye Tools Team",
-    "license": "ISC",
-    "homepage": "https://github.com/FlashGalatine/xivdyetools#readme",
+    "license": "MIT",
+    "homepage": "https://github.com/FlashGalatine/xivdyetools-core#readme",
     "bugs": {
-        "url": "https://github.com/FlashGalatine/xivdyetools/issues"
+        "url": "https://github.com/FlashGalatine/xivdyetools-core/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/FlashGalatine/xivdyetools.git",
-        "directory": "packages/core"
+        "url": "git+https://github.com/FlashGalatine/xivdyetools-core.git"
     },
     "devDependencies": {
         "@types/node": "^20.10.0",

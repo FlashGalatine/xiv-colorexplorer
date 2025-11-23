@@ -3,7 +3,7 @@
 > Core color algorithms and dye database for XIV Dye Tools - Environment-agnostic TypeScript library for FFXIV dye color matching, harmony generation, and accessibility checking.
 
 [![npm version](https://img.shields.io/npm/v/xivdyetools-core)](https://www.npmjs.com/package/xivdyetools-core)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](https://www.typescriptlang.org/)
 
 ## Features
@@ -317,7 +317,9 @@ Works in all modern browsers with ES6 module support:
 
 ## License
 
-ISC © XIV Dye Tools Team
+MIT © Flash Galatine
+
+See [LICENSE](./LICENSE) for full details.
 
 ## Related Projects
 
@@ -326,8 +328,9 @@ ISC © XIV Dye Tools Team
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/FlashGalatine/xivdyetools/issues)
-- **Documentation**: [Full Docs](https://github.com/FlashGalatine/xivdyetools/tree/main/docs)
+- **Issues**: [GitHub Issues](https://github.com/FlashGalatine/xivdyetools-core/issues)
+- **NPM Package**: [xivdyetools-core](https://www.npmjs.com/package/xivdyetools-core)
+- **Documentation**: [Full Docs](https://github.com/FlashGalatine/xivdyetools-core#readme)
 
 ---
 

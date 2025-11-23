@@ -9,6 +9,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2025-11-22
 
+### 📦 Dedicated Core Package Repository Setup
+
+**Status**: ✅ COMPLETE
+**Focus**: Created dedicated GitHub repository for xivdyetools-core npm package with automated CI/CD
+
+#### Repository Setup ✅
+
+**Dedicated Repository Created**: https://github.com/FlashGalatine/xivdyetools-core
+- Extracted `packages/core/` to standalone repository
+- 21 files, 7,234 lines of code
+- Full git history initialized
+- Version tag `v1.0.1` created (matching NPM)
+
+**License Standardization**
+- Changed from ISC to MIT for consistency with main project
+- Added FFXIV disclaimer matching main repository
+- Updated all references in package.json and README
+
+**Documentation Enhancements**
+- Created comprehensive SETUP_GUIDE.md for repository initialization
+- Updated README with dedicated repo links
+- Updated NPM package metadata to point to new repository
+- Added badges for npm version, MIT license, and TypeScript
+
+#### GitHub Actions Automation ✅
+
+**CI Workflow** (`.github/workflows/ci.yml`)
+- Runs on push to main/develop and pull requests
+- Tests on Node.js 18.x, 20.x, 22.x
+- Executes linter, test suite, and build verification
+
+**Publish Workflow** (`.github/workflows/publish.yml`)
+- Triggers on version tags (e.g., `v1.0.2`)
+- Automated NPM publishing with provenance
+- Creates GitHub releases with auto-generated notes
+- Uses NPM Granular Access Token (secured in GitHub Secrets)
+
+#### NPM Token Configuration ✅
+
+**Granular Access Token Setup**
+- Replaced deprecated Automation tokens with modern Granular Access Tokens
+- Package-scoped permissions (xivdyetools-core only)
+- 2FA bypass enabled for CI/CD automation
+- 90-day expiration for security
+- Token stored securely in GitHub repository secrets
+
+#### Benefits Achieved ✅
+- ✅ **Dedicated Issue Tracking** - Core library issues separate from web app
+- ✅ **Better NPM Package Page** - Shows GitHub stats, stars, and activity
+- ✅ **Automated Publishing** - One command workflow: `npm version patch && git push --tags`
+- ✅ **Continuous Integration** - Tests run automatically on every commit
+- ✅ **Professional Setup** - Complete with workflows, documentation, and license
+- ✅ **Improved Discoverability** - Easier to find and contribute to core library
+
+---
+
+### 🎨 Theme Updates
+
+**Status**: ✅ COMPLETE
+**Focus**: Updated Standard Dark theme primary color
+
+#### Color Changes ✅
+
+**Standard Dark Theme Primary Color Updated**
+- **Before**: `#E4AA8A` (light peach/beige)
+- **After**: `#CC6C5E` (coral/terracotta)
+- **Reason**: More vibrant and saturated appearance with better contrast
+- **Impact**: Affects header, buttons, active states, and all primary-colored UI elements
+
+#### Files Modified ✅
+- `src/services/theme-service.ts` - Updated Standard Dark palette
+
+---
+
 ### 🔧 Test Fixes
 
 **Status**: ✅ COMPLETE
