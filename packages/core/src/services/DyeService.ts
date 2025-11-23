@@ -347,28 +347,11 @@ export class DyeService {
 
   /**
    * Find analogous dyes (adjacent on color wheel)
+   * Returns dyes at ±angle degrees from the base color
    */
   findAnalogousDyes(hex: string, angle: number = 30): Dye[] {
-    this.ensureLoaded();
-
-    const baseDye = this.findClosestDye(hex);
-    if (!baseDye) return [];
-
-    const baseHue = baseDye.hsv.h;
-    const results: Array<{ dye: Dye; hueDiff: number }> = [];
-
-    for (const dye of this.dyes) {
-      const hueDiff = Math.min(Math.abs(dye.hsv.h - baseHue), 360 - Math.abs(dye.hsv.h - baseHue));
-
-      if (hueDiff >= angle - 15 && hueDiff <= angle + 15 && dye.id !== baseDye.id) {
-        results.push({ dye, hueDiff });
-      }
-    }
-
-    // Sort by hue difference
-    results.sort((a, b) => a.hueDiff - b.hueDiff);
-
-    return results.map((item) => item.dye);
+    // Use harmony helper to find dyes at +angle and -angle positions
+    return this.findHarmonyDyesByOffsets(hex, [angle, -angle]);
   }
 
   /**
