@@ -29,7 +29,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     textMuted: '#484742',
   },
   'standard-dark': {
-    primary: '#E4AA8A',
+    primary: '#CC6C5E',
     background: '#2B2923',
     text: '#F9F8F4',
     textHeader: '#1E1E1E',
