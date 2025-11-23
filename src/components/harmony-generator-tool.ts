@@ -90,6 +90,21 @@ const HARMONY_TYPES: HarmonyTypeInfo[] = [
 ];
 
 /**
+ * Harmony offsets (in degrees) for each harmony type
+ */
+const HARMONY_OFFSETS: Record<string, number[]> = {
+  complementary: [180],
+  analogous: [30, 330],
+  triadic: [120, 240],
+  'split-complementary': [150, 210],
+  tetradic: [60, 180, 240],
+  square: [90, 180, 270],
+  monochromatic: [0],
+  compound: [30, 180, 330],
+  shades: [15, 345],
+};
+
+/**
  * Harmony Generator Tool Component
  * Generates color harmony palettes from a base color
  */
@@ -558,7 +573,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
       this.dyeFilters = new DyeFilters(filtersContainer, {
         storageKeyPrefix: 'harmony',
         onFilterChange: () => {
-        this.generateHarmonies();
+          this.generateHarmonies();
         },
       });
       this.dyeFilters.render();
@@ -683,13 +698,34 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
       // Add the alternative if found, otherwise skip (better than showing excluded dye)
       if (bestAlternative) {
-        const deviance = Math.min(bestDistance / 44.17, 10);
+        // Calculate deviance using hue difference
+        const offsets = HARMONY_OFFSETS[harmonyId] || [];
+        const deviance = this.calculateHueDeviance(this.baseColor, bestAlternative.hex, offsets);
         result.push({ dye: bestAlternative, deviance });
         usedDyeIds.add(bestAlternative.itemID);
       }
     }
 
     return result;
+  }
+
+  /**
+   * Calculate hue deviance (difference in degrees) from the closest ideal offset
+   */
+  private calculateHueDeviance(baseHex: string, dyeHex: string, offsets: number[]): number {
+    const baseHsv = ColorService.hexToHsv(baseHex);
+    const dyeHsv = ColorService.hexToHsv(dyeHex);
+    let minDiff = Infinity;
+
+    for (const offset of offsets) {
+      const targetHue = (baseHsv.h + offset) % 360;
+      const diff = Math.abs(dyeHsv.h - targetHue);
+      // Handle wrap-around (e.g. 359 vs 1 is 2 degrees, not 358)
+      const shortestPath = Math.min(diff, 360 - diff);
+      minDiff = Math.min(minDiff, shortestPath);
+    }
+
+    return minDiff;
   }
 
   /**
@@ -778,7 +814,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
       const expandedDyes = [...simpleDyes];
 
       // For each harmony dye (skip base at index 0), add companion dyes
-    for (let i = 0; i < simpleDyes.length; i++) {
+      for (let i = 0; i < simpleDyes.length; i++) {
         const harmonyDye = simpleDyes[i].dye;
         const targetColor = harmonyDye.hex;
 
@@ -809,7 +845,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
             usedDyeIds.add(closestDye.itemID);
             expandedDyes.push({
               dye: closestDye,
-              deviance: ColorService.getColorDistance(harmonyDye.hex, closestDye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, closestDye.hex, HARMONY_OFFSETS[harmonyId] || []),
             });
           } else {
             // No more dyes available, stop looking for this harmony color
@@ -840,8 +876,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
           case 'complementary': {
             const dye = dyeService.findComplementaryPair(this.baseColor);
             if (dye) {
-              const distance = ColorService.getColorDistance(this.baseColor, dye.hex);
-              matchedDyes = [{ dye, deviance: Math.min(distance / 44.17, 10) }];
+              const deviance = this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.complementary);
+              matchedDyes = [{ dye, deviance }];
             }
             break;
           }
@@ -850,7 +886,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const dyes = dyeService.findAnalogousDyes(this.baseColor, 30);
             matchedDyes = dyes.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.analogous),
             }));
             break;
           }
@@ -859,7 +895,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const dyes = dyeService.findTriadicDyes(this.baseColor);
             matchedDyes = dyes.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.triadic),
             }));
             break;
           }
@@ -867,8 +903,8 @@ export class HarmonyGeneratorTool extends BaseComponent {
           case 'split-complementary': {
             const dyes = dyeService.findSplitComplementaryDyes(this.baseColor);
             matchedDyes = dyes.map((dye) => ({
-                dye,
-                deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              dye,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS['split-complementary']),
             }));
             break;
           }
@@ -876,48 +912,44 @@ export class HarmonyGeneratorTool extends BaseComponent {
           case 'tetradic': {
             const dyes = dyeService.findTetradicDyes(this.baseColor);
             matchedDyes = dyes.map((dye) => ({
-                dye,
-                deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              dye,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.tetradic),
             }));
             break;
           }
 
           case 'square': {
-            // Implement square: four colors at 90° intervals
             const square = dyeService.findSquareDyes(this.baseColor);
             matchedDyes = square.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.square),
             }));
             break;
           }
 
           case 'monochromatic': {
-            // Implement monochromatic: same hue, varying saturation/brightness
             const monochromatic = dyeService.findMonochromaticDyes(this.baseColor);
             matchedDyes = monochromatic.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.monochromatic),
             }));
             break;
           }
 
           case 'compound': {
-            // Implement compound: analogous + complementary (±30°, +180°)
             const compound = dyeService.findCompoundDyes(this.baseColor);
             matchedDyes = compound.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.compound),
             }));
             break;
           }
 
           case 'shades': {
-            // Implement shades: similar tones (±15°)
             const shades = dyeService.findShadesDyes(this.baseColor);
             matchedDyes = shades.map((dye) => ({
               dye,
-              deviance: ColorService.getColorDistance(this.baseColor, dye.hex) / 44.17,
+              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.shades),
             }));
             break;
           }

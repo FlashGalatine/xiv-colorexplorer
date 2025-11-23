@@ -151,7 +151,7 @@ export class HarmonyType extends BaseComponent {
         this.matchedDyes.reduce((sum, { deviance }) => sum + deviance, 0) / this.matchedDyes.length;
       const devianceDiv = this.createElement('div', {
         className: 'text-xs mt-2 harmony-deviance-info',
-        textContent: `Avg Deviance: ${avgDeviance.toFixed(1)}/10`,
+        textContent: `Avg Hue Diff: ${avgDeviance.toFixed(1)}°`,
         attributes: {
           style: 'color: var(--theme-text-header);',
         },
@@ -206,15 +206,15 @@ export class HarmonyType extends BaseComponent {
     });
 
     const devianceValue = this.createElement('div', {
-      textContent: deviance.toFixed(1),
+      textContent: `${deviance.toFixed(1)}°`,
       className: `text-sm font-bold ${this.getDevianceColor(deviance)}`,
       attributes: {
-        title: 'Deviance: 0-10 (lower is better)',
+        title: 'Hue Difference (lower is better)',
       },
     });
 
     const devianceLabel = this.createElement('div', {
-      textContent: 'deviance',
+      textContent: 'hue diff',
       className: 'text-xs text-gray-500 dark:text-gray-400',
     });
 
@@ -264,13 +264,13 @@ export class HarmonyType extends BaseComponent {
    * Get color class for deviance score
    */
   private getDevianceColor(deviance: number): string {
-    if (deviance <= 2) {
+    if (deviance <= 5) {
       return 'text-green-600 dark:text-green-400';
     }
-    if (deviance <= 5) {
+    if (deviance <= 15) {
       return 'text-blue-600 dark:text-blue-400';
     }
-    if (deviance <= 8) {
+    if (deviance <= 30) {
       return 'text-yellow-600 dark:text-yellow-400';
     }
     return 'text-red-600 dark:text-red-400';

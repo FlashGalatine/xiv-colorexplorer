@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+## [2.0.3] - 2025-11-23
+
+### 🎨 Harmony Explorer Updates
+
+**Status**: ✅ COMPLETE
+**Focus**: Updated Deviance rating to use Hue difference (degrees).
+
+#### New Features ✅
+
+**Hue-Based Deviance Rating**
+- Changed Deviance rating from 1-10 scale to Hue Difference in degrees
+- Shows exact difference from ideal harmony hue
+- Color coded: Green (<5°), Blue (<15°), Yellow (<30°), Red (>30°)
+- Consistent across all harmony types
+
+#### Files Modified ✅
+- `src/components/harmony-generator-tool.ts` - Implemented hue deviance calculation
+- `src/components/harmony-type.ts` - Updated display to show degrees
+
+---
+
 ## [Unreleased] - 2025-11-22
 
 ### 📦 Dedicated Core Package Repository Setup
