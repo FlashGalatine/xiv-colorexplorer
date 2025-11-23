@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { APIService } from '@services/api-service';
+import { APIService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import { PRICE_CATEGORIES } from '@shared/constants';
 import type { Dye, PriceData, DataCenter, World } from '@shared/types';
@@ -29,7 +29,7 @@ interface PriceCategorySettings {
  * Integrates with Universalis API to show current market board data
  */
 export class MarketBoard extends BaseComponent {
-  private apiService: APIService;
+  private apiService: ReturnType<typeof APIService.getInstance>;
   private dataCenters: DataCenter[] = [];
   private worlds: World[] = [];
   private selectedServer: string = 'Crystal'; // Default data center
@@ -434,7 +434,7 @@ export class MarketBoard extends BaseComponent {
 
     try {
       // Clear the price cache
-      this.apiService.clearCache();
+      await this.apiService.clearCache();
 
       // Emit event so parent component can re-fetch prices
       this.emit('refresh-requested', {});

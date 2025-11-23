@@ -4,9 +4,8 @@
  * Tests for dye selection, filtering, searching, and multi-selection
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DyeSelector, type DyeSelectorOptions } from '../dye-selector';
-import { DyeService } from '@services/dye-service';
+import { DyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 import {
   createTestContainer,

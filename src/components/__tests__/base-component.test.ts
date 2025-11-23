@@ -5,7 +5,6 @@
  * Covers lifecycle, DOM utilities, event handling, and state management
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { BaseComponent } from '../base-component';
 import {
   createTestContainer,

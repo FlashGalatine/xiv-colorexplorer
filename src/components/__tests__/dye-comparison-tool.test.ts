@@ -5,7 +5,6 @@
  * up to 4 dyes with visualizations and detailed information
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { DyeComparisonTool } from '../dye-comparison-tool';
 import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 

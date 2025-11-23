@@ -9,7 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
-import { APIService } from '@services/api-service';
+import { APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 
 /**

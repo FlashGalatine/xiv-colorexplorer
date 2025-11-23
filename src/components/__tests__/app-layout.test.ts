@@ -5,7 +5,6 @@
  * Covers layout structure, header, footer, content management, and child components
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AppLayout } from '../app-layout';
 import {
   createTestContainer,

@@ -3,8 +3,7 @@
  * Tests for color conversion and colorblindness simulation
  */
 
-import { describe, it, expect } from 'vitest';
-import { ColorService } from '../color-service';
+import { ColorService } from 'xivdyetools-core';
 
 describe('ColorService', () => {
   // ============================================================================

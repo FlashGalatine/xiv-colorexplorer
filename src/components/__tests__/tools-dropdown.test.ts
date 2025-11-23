@@ -5,7 +5,6 @@
  * Covers rendering, dropdown behavior, tool selection, and event handling
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ToolsDropdown, type ToolDef } from '../tools-dropdown';
 import {
   createTestContainer,

@@ -97,6 +97,32 @@ export class APIService {
   static resetInstance(): void {
     APIService.instance = null;
   }
+
+  /**
+   * Format price with commas and G suffix
+   * Delegates to core APIService
+   */
+  static formatPrice(price: number): string {
+    return CoreAPIService.formatPrice(price);
+  }
+
+  /**
+   * Clear all cached price data
+   */
+  static async clearCache(): Promise<void> {
+    return APIService.getInstance().clearCache();
+  }
+
+  /**
+   * Get price data for a specific item
+   */
+  static async getPriceData(
+    itemID: number,
+    worldID?: number,
+    dataCenterID?: string
+  ): Promise<PriceData | null> {
+    return APIService.getInstance().getPriceData(itemID, worldID, dataCenterID);
+  }
 }
 
 // Export singleton instance for direct use

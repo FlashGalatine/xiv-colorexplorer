@@ -5,7 +5,6 @@
  * colorblindness and checks dye accessibility for outfits
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AccessibilityCheckerTool } from '../accessibility-checker-tool';
 import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 

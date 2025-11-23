@@ -3,7 +3,6 @@
  * Tests for safe localStorage wrapper
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { StorageService } from '../storage-service';
 
 describe('StorageService', () => {

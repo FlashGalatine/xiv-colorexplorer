@@ -3,17 +3,16 @@
  * Tests for dye database management and search functionality
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { DyeService } from '../dye-service';
+import { DyeService } from '../dye-service-wrapper';
 
 describe('DyeService', () => {
   beforeEach(() => {
     // Reset singleton before each test
-    DyeService.reset();
+    DyeService.resetInstance();
   });
 
   afterEach(() => {
-    DyeService.reset();
+    DyeService.resetInstance();
   });
 
   // ============================================================================

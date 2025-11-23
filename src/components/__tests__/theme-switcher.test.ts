@@ -4,7 +4,6 @@
  * Tests for theme selection, dropdown interaction, and persistence
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeSwitcher } from '../theme-switcher';
 import { ThemeService } from '@services/theme-service';
 import { StorageService, appStorage } from '@services/storage-service';

@@ -5,7 +5,6 @@
  * Covers rendering, tool selection, active state management, and events
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MobileBottomNav, type MobileToolDef } from '../mobile-bottom-nav';
 import {
   createTestContainer,

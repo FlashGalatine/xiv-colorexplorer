@@ -3,7 +3,6 @@
  * Tests for secure storage with integrity checks and size limits
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SecureStorage, StorageService } from '../storage-service';
 
 describe('SecureStorage', () => {

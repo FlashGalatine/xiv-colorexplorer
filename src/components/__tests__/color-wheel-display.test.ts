@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ColorWheelDisplay } from '../color-wheel-display';
 import { createTestContainer, cleanupComponent } from './test-utils';
 import type { Dye } from '@shared/types';

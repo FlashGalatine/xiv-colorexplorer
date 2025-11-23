@@ -3,7 +3,6 @@
  * Tests for 10-theme system, persistence, and DOM integration
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { ThemeName } from '@shared/types';
 import { ThemeService } from '../theme-service';
 import { StorageService } from '../storage-service';
