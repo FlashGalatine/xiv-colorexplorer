@@ -1,16 +1,16 @@
 # Discord Bot Implementation Progress
 
-**Last Updated**: November 23, 2025 (Session 1)
-**Status**: Phase 3 Started ✅ | Infrastructure + /harmony Command Complete!
+**Last Updated**: November 23, 2025 (Session 2)
+**Status**: Phase 3 In Progress ✅ | 3 Commands Deployed (/harmony, /match, /mixer)!
 
 ---
 
-## 📊 Overall Progress: 40% Complete (Phases 1-2 Complete, Phase 3 Started)
+## 📊 Overall Progress: 50% Complete (Phases 1-2 Complete, Phase 3 ~50%)
 
 ### Timeline
 - **Phase 1**: ✅ Complete (November 22-23, 2025)
 - **Phase 2**: ✅ Complete (November 23, 2025)
-- **Phase 3**: 🔨 In Progress (Started November 23, 2025 - Infrastructure + /harmony complete)
+- **Phase 3**: 🔨 In Progress (Started November 23, 2025 - 3 commands deployed: /harmony, /match, /mixer)
 - **Phase 4**: ⏳ Not Started (Week 4-5)
 - **Phase 5**: ⏳ Not Started (Week 5-6)
 - **Phase 6**: ⏳ Not Started (Week 6)
@@ -195,8 +195,10 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 ## 🔨 Phase 3: Command Implementation (IN PROGRESS)
 
 **Duration**: Started November 23, 2025
-**Status**: 25% Complete (Infrastructure + /harmony deployed)
-**Git Commit**: `41b8b80` - feat: implement /harmony command with full infrastructure
+**Status**: 50% Complete (Infrastructure + 3 commands deployed)
+**Git Commits**:
+- `41b8b80` - feat: implement /harmony command with full infrastructure
+- Session 2 (Nov 23) - feat: add /match and /mixer commands with gradient renderer
 
 ###  Completed Tasks
 
@@ -243,8 +245,16 @@ We built a **new Node.js Discord bot** following the architecture documented in 
    - Connecting lines from center to harmony points
    - Uses @napi-rs/canvas for server-side rendering
 
+7. ✅ Created gradient renderer (`src/renderers/gradient.ts`)
+   - 800×200px horizontal gradient bar
+   - RGB color interpolation between start and end colors
+   - Step indicators with tick marks
+   - Hex color labels for each step
+   - Optional dye name annotations
+   - START/END labels for clarity
+
 #### Commands ✅
-7. ✅ Implemented `/harmony` command (`src/commands/harmony.ts`)
+8. ✅ Implemented `/harmony` command (`src/commands/harmony.ts`)
    - **All 9 harmony types supported:**
      - Complementary (180°)
      - Analogous (±30°)
@@ -273,22 +283,61 @@ We built a **new Node.js Discord bot** following the architecture documented in 
      - Quality indicators (Excellent/Good/Fair match)
    - **Optional companion limiting** (1-3)
 
-#### Integration ✅
-8. ✅ Updated `src/index.ts` to use new infrastructure
-   - Logger integration
-   - Config module usage
-   - Harmony command loaded
-   - Autocomplete interaction handler
-   - Error handling for both commands and autocomplete
+9. ✅ Implemented `/match` command (`src/commands/match.ts`)
+   - **Single color matching to closest dye**
+   - **Dual input support:**
+     - Hex colors: `#FF0000`, `#8A2BE2`
+     - Dye names: `Dalamud Red`, `Snow White`
+   - **Autocomplete for dye names**
+   - **Color distance calculation** (Euclidean distance in RGB space)
+   - **Match quality indicators:**
+     - Perfect (Δ=0) 🎯
+     - Excellent (<10) ✨
+     - Good (<25) 👍
+     - Fair (<50) 👌
+     - Approximate (≥50) 🔍
+   - **Rich Discord embed** with:
+     - Input color swatch and RGB/HSV values
+     - Closest dye with swatch and details
+     - Distance metric and quality rating
+     - Category and acquisition info
 
-9. ✅ Updated types (`src/types/index.ts`)
-   - ChatInputCommandInteraction support
-   - AutocompleteInteraction support
-   - SlashCommandOptionsOnlyBuilder support
-   - Optional autocomplete handler in BotCommand interface
+10. ✅ Implemented `/mixer` command (`src/commands/mixer.ts`)
+    - **Color gradient generation** between two colors
+    - **Configurable steps** (2-10, default: 5)
+    - **Dual input support** for both start and end colors:
+      - Hex colors: `#FF0000`, `#0000FF`
+      - Dye names: `Dalamud Red`, `Azure Blue`
+    - **Autocomplete for both color parameters**
+    - **RGB color interpolation**
+    - **Closest dye matching for each step**
+    - **Gradient visualization:**
+      - 800×200px horizontal gradient bar
+      - Color labels for each step
+      - Dye name annotations
+    - **Rich Discord embed** with:
+      - Start/end color info
+      - Intermediate steps with closest dyes
+      - Match quality and distance for each step
+      - Category information
+      - Helpful tip about using /match
+
+#### Integration ✅
+11. ✅ Updated `src/index.ts` to use new infrastructure
+    - Logger integration
+    - Config module usage
+    - All 3 commands loaded (/harmony, /match, /mixer)
+    - Autocomplete interaction handler
+    - Error handling for both commands and autocomplete
+
+12. ✅ Updated types (`src/types/index.ts`)
+    - ChatInputCommandInteraction support
+    - AutocompleteInteraction support
+    - SlashCommandOptionsOnlyBuilder support
+    - Optional autocomplete handler in BotCommand interface
 
 #### Deployment ✅
-10. ✅ Fly.io deployment configuration
+13. ✅ Fly.io deployment configuration
     - **Dockerfile** with multi-stage build
       - Alpine Linux base
       - Canvas dependencies (cairo, pango, jpeg, etc.)
@@ -302,7 +351,7 @@ We built a **new Node.js Discord bot** following the architecture documented in 
     - **Status**: ✅ Live and operational
 
 #### Bug Fixes ✅
-11. ✅ Fixed companion limiting issue
+14. ✅ Fixed companion limiting issue
     - **Problem**: All harmony types were showing only 1 companion
     - **Cause**: `companion_count` parameter defaulted to 1
     - **Solution**: Changed default to `null`, only limit when explicitly requested
@@ -312,25 +361,25 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 ### ⏳ Remaining Tasks
 
 #### More Commands
-- [ ] `/match` - Hex color matching to closest dye
+- [x] `/match` - Hex color matching to closest dye ✅ **COMPLETE**
+- [x] `/mixer` - Generate color gradients ✅ **COMPLETE**
 - [ ] `/dye info` - Dye information lookup
 - [ ] `/dye search` - Search dyes by name
 - [ ] `/dye list` - List dyes by category
 - [ ] `/dye random` - Get random dye
 - [ ] `/comparison` - Compare multiple dyes
-- [ ] `/mixer` - Generate color gradients
 - [ ] `/accessibility` - Colorblind simulation
 - [ ] `/match_image` - Extract colors from uploaded images
 
 #### Advanced Features
-- [ ] Autocomplete for remaining commands
+- [x] Autocomplete for /match and /mixer ✅ **COMPLETE**
 - [ ] Redis caching integration
 - [ ] Universalis API for live market pricing
 - [ ] Rate limiting enforcement (per-user and global)
 - [ ] Usage analytics
 
 #### Image Renderers
-- [ ] Gradient renderer (for `/mixer`)
+- [x] Gradient renderer (for `/mixer`) ✅ **COMPLETE**
 - [ ] Swatch grid renderer (for `/comparison`)
 - [ ] Accessibility comparison chart (for `/accessibility`)
 
@@ -376,6 +425,35 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 - ✅ **Deployed to Fly.io and operational**
 - ✅ Bug fix for companion limiting
 - ✅ Git commit created and pushed
+
+### 🎉 Session 2 Achievements (November 23, 2025)
+
+**New Commands:**
+- ✅ Implemented `/match` command - single color to dye matching
+- ✅ Implemented `/mixer` command - color gradient generation
+
+**New Renderers:**
+- ✅ Created gradient renderer for horizontal color gradients
+
+**Features Added:**
+- ✅ RGB color interpolation for smooth gradients
+- ✅ Euclidean distance calculation for color matching
+- ✅ Match quality indicators (Perfect/Excellent/Good/Fair/Approximate)
+- ✅ Configurable gradient steps (2-10)
+- ✅ Autocomplete support for all new commands
+- ✅ Dual input (hex + dye names) for all commands
+
+**Deployment:**
+- ✅ All 3 commands deployed to Discord globally
+- ✅ Updated Fly.io deployment with new code
+- ✅ Zero TypeScript compilation errors
+- ✅ Production tested and operational
+
+**Code Statistics:**
+- **New Files**: 2 commands + 1 renderer (3 files)
+- **Updated Files**: `index.ts`, `deploy-commands.ts` (2 files)
+- **Total New Code**: ~600 lines across 5 files
+- **Commands Live**: 3 (/harmony, /match, /mixer)
 
 ### Deployment Details
 
