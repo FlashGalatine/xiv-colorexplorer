@@ -110,19 +110,24 @@ console.log(closestDye.name); // "Coral Pink"
 **Estimated Duration**: 1 week
 **Status**: 0% Complete
 
-### Decision Point: New vs Existing Bot
+### ✅ Architectural Decision: New Node.js Bot
 
-**Option A: Build New Bot (Recommended by Planning Docs)**
-- Node.js + discord.js v14
-- Follows architecture in `docs/discord-bot/ARCHITECTURE.md`
-- Deploy to Fly.io or Railway
-- Full control over implementation
+**Decision Made**: November 23, 2025
 
-**Option B: Improve Existing Bot**
-- Located at `../XIVDyeTools-discord`
-- Cloudflare Workers-based
-- Different architecture than planning docs
-- Could integrate `xivdyetools-core` package
+We will build a **new Node.js Discord bot** following the architecture documented in `docs/discord-bot/ARCHITECTURE.md`.
+
+**Rationale:**
+- Cloudflare Workers bot (`../XIVDyeTools-discord`) is being **deprecated**
+- New bot will use discord.js v14 with proper slash command support
+- Can integrate `xivdyetools-core` package from day 1
+- Easier to implement canvas-based image rendering
+- Better Redis caching support
+- Deploy to Fly.io or Railway for cost-effective hosting
+
+**What Happens to Existing Bot:**
+- `../XIVDyeTools-discord` will remain for reference
+- Not maintained or updated going forward
+- New bot will replace all functionality
 
 ### Pending Tasks
 
