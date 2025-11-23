@@ -7,6 +7,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.2] - 2025-11-22
+
+### 🔧 Core Package Integration & Bug Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Refactored web app to use published npm package and fixed analogous harmony calculation bug.
+
+#### Major Changes ✅
+
+**Core Package Published**
+- Created and published `xivdyetools-core@1.0.1` to npm
+- Extracted ColorService, DyeService, and APIService into standalone package
+- Package size: 36.3 KB gzipped, 180 KB unpacked
+- Comprehensive test suite: 38 tests (100% passing)
+- Environment-agnostic design (Node.js + Browser compatible)
+
+**Web App Refactored**
+- Integrated `xivdyetools-core` package to eliminate code duplication
+- Created singleton wrapper pattern for backward compatibility
+- Zero breaking changes to existing codebase
+- All 555 tests passing (web app) + 38 tests passing (core package)
+- Build succeeds with 0 TypeScript errors
+
+#### Bug Fixes ✅
+
+**Fixed: Analogous Harmony Calculation** (Issue: returned random colors instead of adjacent ones)
+- **Root Cause**: Used range-based filtering (15-45°) instead of targeted hue offsets
+- **Impact**: Magenta base color returned Ash Grey, Kobold Brown, Ink Blue instead of adjacent colors
+- **Fix**: Changed to use `findHarmonyDyesByOffsets([angle, -angle])` for ±30° positions
+- **Result**: Now correctly returns colors specifically at +30° and -30° on color wheel
+- **Version**: Fixed in `xivdyetools-core@1.0.1`
+
+**Fixed: Vitest Test Suite** (Issue: "No test suite found in file" errors)
+- **Root Cause**: Explicit vitest imports conflicted with `globals: true` config
+- **Fix**: Removed `import { describe, it, expect } from 'vitest'` from all test files
+- **Result**: All 555 web app tests now passing
+
+#### Technical Implementation ✅
+
+**Singleton Wrapper Pattern**
+- `src/services/dye-service-wrapper.ts` - Maintains getInstance() API
+- `src/services/api-service-wrapper.ts` - Adds LocalStorageCacheBackend for browser
+- `src/services/index.ts` - Exports from core package + web-specific services
+
+**API Service Enhancements**
+- Added `clearCache()` method to wrapper
+- Added `getPriceData()` method to wrapper
+- Added `formatPrice()` static method
+- Implemented `LocalStorageCacheBackend` implementing `ICacheBackend` interface
+
+**Type Safety Improvements**
+- Fixed market-board.ts to use `ReturnType<typeof APIService.getInstance>`
+- Made `clearCache()` async to match core APIService signature
+- Updated all imports to use `@services/index` path alias
+
+#### Files Created ✅
+- `packages/core/` - New npm package directory
+- `src/services/dye-service-wrapper.ts` - DyeService singleton wrapper
+- `src/services/api-service-wrapper.ts` - APIService singleton wrapper with caching
+
+#### Files Modified ✅
+- `package.json` - Added xivdyetools-core dependency
+- `src/services/index.ts` - Updated to export from core package
+- `src/components/market-board.ts` - Fixed type annotations
+- `src/components/harmony-type.ts` - Fixed import paths
+- All test files (21 files) - Removed explicit vitest imports
+
+#### Files Removed ✅
+- `src/services/color-service.ts` - Now uses core package
+- `src/services/dye-service.ts` - Now uses core package
+- `src/services/api-service.ts` - Now uses core package
+
+#### Benefits Achieved ✅
+- ✅ **Single Source of Truth** - Core logic in one npm package
+- ✅ **Zero Duplication** - Eliminated duplicate service code
+- ✅ **Backward Compatible** - No breaking changes to existing code
+- ✅ **Independently Tested** - Core package has 38 passing tests
+- ✅ **Easy Updates** - Update core package to propagate fixes
+- ✅ **Smaller Bundle** - Shared code in vendor chunk
+
+#### Test Results ✅
+- **Web App**: 555 tests passing, 2 pre-existing failures (ResizeObserver in jsdom)
+- **Core Package**: 38 tests passing
+- **Build**: Success (0 TypeScript errors)
+
+---
+
 ## [2.0.1] - 2025-11-19
 
 ### 🎨 Palette Export Functionality
