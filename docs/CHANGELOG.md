@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] - 2025-11-22
+
+### 🔧 Test Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Fixed two failing unit tests in app-layout and dye-selector components.
+
+#### Bug Fixes ✅
+
+**Fixed: AppLayout Picture Element Test** (Issue: Expected 3 source elements, got 1)
+- **Root Cause**: Logo picture element had only 1 WebP source with density descriptors
+- **Test Expectation**: 3 source elements for responsive images (mobile, tablet, desktop)
+- **Fix**: Replaced single WebP source with 3 separate sources using media queries
+  - Mobile source: `(max-width: 640px)` → `icon-40x40.webp`
+  - Tablet source: `(max-width: 1024px)` → `icon-60x60.webp`
+  - Desktop source: (default) → `icon-80x80.webp`
+- **Result**: Better responsive image handling and test compliance
+
+**Fixed: DyeSelector Category Button Highlighting** (Issue: Expected `text-white` class, got inline style)
+- **Root Cause**: Active category buttons used inline `style="color: var(--theme-text-header)"` instead of Tailwind classes
+- **Test Expectation**: `text-white` class on active category buttons
+- **Fix**: Updated 3 locations in dye-selector.ts to use `text-white` class
+  - Initial render: Neutral category default highlighting (line 192)
+  - Click handler: Category button activation (line 400)
+  - Update method: Category state re-application (line 621)
+- **Result**: More consistent Tailwind CSS usage and passing tests
+
+#### Test Results ✅
+- **Before**: 2 failed tests, 550 passed (98.9% pass rate)
+- **After**: 552 tests passing (100% pass rate)
+- **Files Modified**: `src/components/app-layout.ts`, `src/components/dye-selector.ts`
+- **Impact**: Zero functional changes, only implementation consistency improvements
+
+---
+
 ## [2.0.2] - 2025-11-22
 
 ### 🔧 Core Package Integration & Bug Fixes

@@ -189,8 +189,7 @@ export class DyeSelector extends BaseComponent {
 
         // Highlight Neutral category by default
         if (category === 'Neutral') {
-          categoryBtn.classList.add('bg-blue-500');
-          categoryBtn.style.color = 'var(--theme-text-header)';
+          categoryBtn.classList.add('bg-blue-500', 'text-white');
           categoryBtn.classList.remove(
             'border-gray-300',
             'dark:border-gray-600',
@@ -378,8 +377,7 @@ export class DyeSelector extends BaseComponent {
 
         // Update button states
         categoryButtons.forEach((btn) => {
-          btn.classList.remove('bg-blue-500');
-          btn.style.color = '';
+          btn.classList.remove('bg-blue-500', 'text-white');
           btn.classList.add(
             'border',
             'border-gray-300',
@@ -400,8 +398,7 @@ export class DyeSelector extends BaseComponent {
           'hover:bg-gray-100',
           'dark:hover:bg-gray-700'
         );
-        catBtn.classList.add('bg-blue-500');
-        catBtn.style.color = 'var(--theme-text-header)';
+        catBtn.classList.add('bg-blue-500', 'text-white');
 
         this.update();
       });
@@ -621,11 +618,9 @@ export class DyeSelector extends BaseComponent {
             'hover:bg-gray-100',
             'dark:hover:bg-gray-700'
           );
-          btn.classList.add('bg-blue-500');
-          btn.style.color = 'var(--theme-text-header)';
+          btn.classList.add('bg-blue-500', 'text-white');
         } else {
-          btn.classList.remove('bg-blue-500');
-          btn.style.color = '';
+          btn.classList.remove('bg-blue-500', 'text-white');
           btn.classList.add(
             'border',
             'border-gray-300',

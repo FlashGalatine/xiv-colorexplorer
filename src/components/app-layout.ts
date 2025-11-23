@@ -67,19 +67,36 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
-    // Logo image - responsive picture element with WebP support and density descriptors
-    // Logo displays at 40x40px (w-10 h-10), so we use srcset with density descriptors
-    // for optimal image selection based on device pixel ratio
+    // Logo image - responsive picture element with WebP support
+    // Provides different image sizes for mobile, tablet, and desktop
     const picture = this.createElement('picture', {});
-    
-    // WebP source with density descriptors (1x, 1.5x, 2x) for high-DPI screens
-    const sourceWebP = this.createElement('source', {
+
+    // Mobile source (max-width: 640px)
+    const sourceMobile = this.createElement('source', {
       attributes: {
-        srcset: '/assets/icons/icon-40x40.webp 1x, /assets/icons/icon-60x60.webp 1.5x, /assets/icons/icon-80x80.webp 2x',
+        srcset: '/assets/icons/icon-40x40.webp',
+        media: '(max-width: 640px)',
         type: 'image/webp',
       },
     });
-    
+
+    // Tablet source (max-width: 1024px)
+    const sourceTablet = this.createElement('source', {
+      attributes: {
+        srcset: '/assets/icons/icon-60x60.webp',
+        media: '(max-width: 1024px)',
+        type: 'image/webp',
+      },
+    });
+
+    // Desktop source (default)
+    const sourceDesktop = this.createElement('source', {
+      attributes: {
+        srcset: '/assets/icons/icon-80x80.webp',
+        type: 'image/webp',
+      },
+    });
+
     // Fallback PNG image (single size, browser will scale)
     const logo = this.createElement('img', {
       attributes: {
@@ -94,8 +111,10 @@ export class AppLayout extends BaseComponent {
       },
       className: 'w-10 h-10 rounded',
     });
-    
-    picture.appendChild(sourceWebP);
+
+    picture.appendChild(sourceMobile);
+    picture.appendChild(sourceTablet);
+    picture.appendChild(sourceDesktop);
     picture.appendChild(logo);
     titleDiv.appendChild(picture);
 
@@ -235,7 +254,7 @@ export class AppLayout extends BaseComponent {
       this.themeSwitcher = new ThemeSwitcher(themeSwitcherContainer);
       this.themeSwitcher.init();
     }
-    
+
     // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
     ThemeService.subscribe(() => {
       this.updateHeaderColors();
