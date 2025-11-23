@@ -1,10 +1,10 @@
-# XIV Dye Tools v2.0.1
+# XIV Dye Tools v2.0.2
 
-**Status**: ✅ Production Ready | **Version**: 2.0.1 | **Release**: November 19, 2025 | **Phase**: 12 Complete
+**Status**: ✅ Production Ready | **Version**: 2.0.2 | **Release**: November 22, 2025 | **Phase**: 12 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.0.1 Release Notes**: Theme system updates, improved Color Matcher with copy hex functionality, and streamlined theme management. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
+> **v2.0.2 Release Notes**: Core package integration (now using `xivdyetools-core@1.0.1` from npm), fixed analogous harmony calculation bug, and eliminated code duplication across the codebase. Major architectural improvement with zero breaking changes. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
