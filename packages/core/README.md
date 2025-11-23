@@ -332,6 +332,19 @@ See [LICENSE](./LICENSE) for full details.
 - **NPM Package**: [xivdyetools-core](https://www.npmjs.com/package/xivdyetools-core)
 - **Documentation**: [Full Docs](https://github.com/FlashGalatine/xivdyetools-core#readme)
 
+## Connect With Me
+
+**Flash Galatine** | Balmung (Crystal)
+
+🎮 **FFXIV**: [Lodestone Character](https://na.finalfantasyxiv.com/lodestone/character/7677106/)  
+📝 **Blog**: [Project Galatine](https://blog.projectgalatine.com/)  
+💻 **GitHub**: [@FlashGalatine](https://github.com/FlashGalatine)  
+🐦 **X / Twitter**: [@AsheJunius](https://x.com/AsheJunius)  
+📺 **Twitch**: [flashgalatine](https://www.twitch.tv/flashgalatine)  
+🌐 **BlueSky**: [projectgalatine.com](https://bsky.app/profile/projectgalatine.com)  
+❤️ **Patreon**: [ProjectGalatine](https://patreon.com/ProjectGalatine)  
+💬 **Discord**: [Join Server](https://discord.gg/5VUSKTZCe5)
+
 ---
 
 **Made with ❤️ for the FFXIV community**
