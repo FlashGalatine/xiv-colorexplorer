@@ -1,16 +1,16 @@
 # Discord Bot Implementation Progress
 
-**Last Updated**: November 23, 2025 (Session 2)
-**Status**: Phase 3 In Progress ✅ | 3 Commands Deployed (/harmony, /match, /mixer)!
+**Last Updated**: November 23, 2025 (Session 3)
+**Status**: Phase 3 In Progress ✅ | 5 Commands Deployed!
 
 ---
 
-## 📊 Overall Progress: 50% Complete (Phases 1-2 Complete, Phase 3 ~50%)
+## 📊 Overall Progress: 65% Complete (Phases 1-2 Complete, Phase 3 ~80%)
 
 ### Timeline
 - **Phase 1**: ✅ Complete (November 22-23, 2025)
 - **Phase 2**: ✅ Complete (November 23, 2025)
-- **Phase 3**: 🔨 In Progress (Started November 23, 2025 - 3 commands deployed: /harmony, /match, /mixer)
+- **Phase 3**: 🔨 In Progress (Started November 23, 2025 - 5 commands deployed: /harmony, /match, /mixer, /dye, /match_image)
 - **Phase 4**: ⏳ Not Started (Week 4-5)
 - **Phase 5**: ⏳ Not Started (Week 5-6)
 - **Phase 6**: ⏳ Not Started (Week 6)
@@ -195,10 +195,11 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 ## 🔨 Phase 3: Command Implementation (IN PROGRESS)
 
 **Duration**: Started November 23, 2025
-**Status**: 50% Complete (Infrastructure + 3 commands deployed)
+**Status**: 80% Complete (Infrastructure + 5 commands deployed)
 **Git Commits**:
 - `41b8b80` - feat: implement /harmony command with full infrastructure
-- Session 2 (Nov 23) - feat: add /match and /mixer commands with gradient renderer
+- `27d8992` - feat: add /match and /mixer commands with gradient renderer
+- Session 3 (Nov 23) - feat: add /dye and /match_image commands
 
 ###  Completed Tasks
 
@@ -363,16 +364,17 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 #### More Commands
 - [x] `/match` - Hex color matching to closest dye ✅ **COMPLETE**
 - [x] `/mixer` - Generate color gradients ✅ **COMPLETE**
-- [ ] `/dye info` - Dye information lookup
-- [ ] `/dye search` - Search dyes by name
-- [ ] `/dye list` - List dyes by category
-- [ ] `/dye random` - Get random dye
+- [x] `/dye` command group ✅ **COMPLETE**
+  - [x] `/dye info` - Dye information lookup ✅
+  - [x] `/dye search` - Search dyes by name ✅
+  - [x] `/dye list` - List dyes by category ✅
+  - [x] `/dye random` - Get random dye ✅
+- [x] `/match_image` - Extract colors from uploaded images ✅ **COMPLETE**
 - [ ] `/comparison` - Compare multiple dyes
 - [ ] `/accessibility` - Colorblind simulation
-- [ ] `/match_image` - Extract colors from uploaded images
 
 #### Advanced Features
-- [x] Autocomplete for /match and /mixer ✅ **COMPLETE**
+- [x] Autocomplete for /match, /mixer, /dye info ✅ **COMPLETE**
 - [ ] Redis caching integration
 - [ ] Universalis API for live market pricing
 - [ ] Rate limiting enforcement (per-user and global)
@@ -454,6 +456,40 @@ We built a **new Node.js Discord bot** following the architecture documented in 
 - **Updated Files**: `index.ts`, `deploy-commands.ts` (2 files)
 - **Total New Code**: ~600 lines across 5 files
 - **Commands Live**: 3 (/harmony, /match, /mixer)
+
+### 🎉 Session 3 Achievements (November 23, 2025)
+
+**New Commands:**
+- ✅ Implemented `/dye` command group with 4 subcommands
+  - `/dye info` - Look up specific dye information
+  - `/dye search` - Search dyes by partial name match
+  - `/dye list` - List all dyes in a category
+  - `/dye random` - Get 1-5 random dyes
+- ✅ Implemented `/match_image` command - extract colors from images
+
+**New Features:**
+- ✅ Subcommand support in Discord.js (SlashCommandSubcommandsOnlyBuilder)
+- ✅ Image attachment processing with Discord CDN integration
+- ✅ Sharp image processing - dominant color extraction via histogram analysis
+- ✅ Image format validation (PNG, JPG, GIF, BMP, WebP, TIFF, AVIF)
+- ✅ File size validation (8MB limit)
+- ✅ Fetch timeout handling (10 second limit)
+- ✅ All 9 dye categories supported (Neutral, Reds, Browns, Yellows, Greens, Blues, Purples, Special, Facewear)
+- ✅ Autocomplete for `/dye info` subcommand
+- ✅ Compact vs detailed embed layouts
+
+**Deployment:**
+- ✅ All 5 commands deployed to Discord globally
+- ✅ Updated Fly.io deployment with new code
+- ✅ Zero TypeScript compilation errors
+- ✅ Production tested and operational
+
+**Code Statistics:**
+- **New Files**: 2 commands (dye.ts, match-image.ts)
+- **Updated Files**: `index.ts`, `deploy-commands.ts`, `types/index.ts` (3 files)
+- **Total New Code**: ~800 lines across 5 files
+- **Commands Live**: 5 (/harmony, /match, /mixer, /dye, /match_image)
+- **Total Bot Commands**: 9 (5 top-level + 4 /dye subcommands)
 
 ### Deployment Details
 
