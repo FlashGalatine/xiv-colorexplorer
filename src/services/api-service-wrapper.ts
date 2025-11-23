@@ -1,0 +1,106 @@
+/**
+ * API Service Singleton Wrapper
+ * Wraps xivdyetools-core APIService with singleton pattern and localStorage cache
+ */
+
+import {
+  APIService as CoreAPIService,
+  type ICacheBackend,
+  type PriceData,
+  type CachedData
+} from 'xivdyetools-core';
+
+/**
+ * LocalStorage Cache Backend for browser environment
+ */
+class LocalStorageCacheBackend implements ICacheBackend {
+  private keyPrefix = 'xivdyetools_api_';
+
+  get(key: string): CachedData<PriceData> | null {
+    try {
+      const data = localStorage.getItem(this.keyPrefix + key);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  set(key: string, value: CachedData<PriceData>): void {
+    try {
+      localStorage.setItem(this.keyPrefix + key, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to cache price data:', error);
+    }
+  }
+
+  delete(key: string): void {
+    try {
+      localStorage.removeItem(this.keyPrefix + key);
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  clear(): void {
+    try {
+      const keysToDelete: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith(this.keyPrefix)) {
+          keysToDelete.push(key);
+        }
+      }
+      keysToDelete.forEach(key => localStorage.removeItem(key));
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  keys(): string[] {
+    try {
+      const keys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith(this.keyPrefix)) {
+          keys.push(key.substring(this.keyPrefix.length));
+        }
+      }
+      return keys;
+    } catch {
+      return [];
+    }
+  }
+}
+
+/**
+ * Web app singleton wrapper for APIService
+ * Maintains backward compatibility with existing code using getInstance()
+ */
+export class APIService {
+  private static instance: CoreAPIService | null = null;
+
+  /**
+   * Get singleton instance of APIService
+   */
+  static getInstance(): CoreAPIService {
+    if (!APIService.instance) {
+      const cacheBackend = new LocalStorageCacheBackend();
+      APIService.instance = new CoreAPIService(cacheBackend);
+      console.info('✅ APIService initialized from xivdyetools-core with localStorage cache');
+    }
+    return APIService.instance;
+  }
+
+  /**
+   * Reset singleton (for testing)
+   */
+  static resetInstance(): void {
+    APIService.instance = null;
+  }
+}
+
+// Export singleton instance for direct use
+export const apiService = APIService.getInstance();
+
+// Re-export types
+export type { PriceData };

@@ -8,17 +8,18 @@
  */
 
 // Import service classes for internal use
-import { ColorService } from './color-service';
+// ColorService now from xivdyetools-core;
 import { StorageService } from './storage-service';
 import { ThemeService } from './theme-service';
-import { APIService } from './api-service';
+import { APIService } from './api-service-wrapper';
+// APIService now from wrapper;
 
 // Export service classes
-export { ColorService };
-export { DyeService, dyeService } from './dye-service';
+export { ColorService } from 'xivdyetools-core';
+export { DyeService, dyeService } from './dye-service-wrapper';
 export { StorageService, appStorage, NamespacedStorage, SecureStorage } from './storage-service';
 export { ThemeService };
-export { APIService, apiService } from './api-service';
+export { APIService, apiService } from './api-service-wrapper';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
