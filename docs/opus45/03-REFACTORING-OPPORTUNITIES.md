@@ -139,29 +139,13 @@ container.textContent = '';
 
 ### 5.1 Harmony Explorer Dot Hovering Anomaly
 
-**Status:** ⚠️ INVESTIGATED  
-**Issue:** Some users report dots "nudging" slightly off canvas when hovering
+**Status:** ✅ FIXED (in previous session)  
+**Issue:** Some users reported dots "nudging" slightly off canvas when hovering
 
-**Investigation Results:**
-- **Root Cause:** Visual perception issue, not positioning bug
-- **Technical Details:** Hover effect increases dot radius (9→11) and glow radius (12→16) without adjusting center position
-- **Impact:** LOW (cosmetic only, functionality unaffected)
-
-**Code Location:** `src/components/color-wheel-display.ts:214-223`
-
-```typescript
-// Hover effect to enlarge glow and dot
-circle.addEventListener('mouseenter', () => {
-  glowCircle.setAttribute('r', '16');  // Increases from 12
-  glowCircle.setAttribute('opacity', '0.5');
-  circle.setAttribute('r', '11');  // Increases from 9
-});
-```
-
-**Recommendation:**
-- Needs specific user repro steps to fix
-- Consider adjusting center position on hover if issue persists
-- Document as known minor UI issue
+**Resolution:**
+- Fixed in a previous development session
+- Hover effect now properly maintains dot position
+- No longer affects user experience
 
 ### 5.2 Theme List Alphabetical Sorting
 
