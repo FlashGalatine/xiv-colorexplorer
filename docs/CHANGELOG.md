@@ -9,6 +9,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.5] - 2025-11-24
+
+### 🔒 Security & Code Quality Audit (Opus45)
+
+**Status**: ✅ COMPLETE  
+**Focus**: Comprehensive security audit, performance verification, and code quality improvements.
+
+#### Security Fixes ✅
+
+**Dependency Vulnerabilities**
+- Fixed glob HIGH severity vulnerability (command injection)
+- Fixed 6 MODERATE vulnerabilities via vite/vitest upgrade (5.4.21→7.2.4, 1.6.1→4.0.13)
+- **Result**: 0 npm vulnerabilities
+
+**XSS Risk Mitigation**
+- Fixed 6 high-risk innerHTML usages with safe DOM manipulation
+- Replaced `formatPrice()` injection with `textContent` in 3 files
+- Replaced template literal injection in `color-display.ts` (3 instances)
+
+**Information Disclosure Prevention**
+- Centralized 56 console statements to new `logger.ts` utility
+- Dev-mode filtering prevents console output in production
+- Errors still logged for debugging
+
+#### Code Quality Improvements ✅
+
+**innerHTML Pattern Extraction**
+- Updated 20+ components to use `clearContainer()` utility
+- Replaces `innerHTML = ''` with explicit DOM manipulation
+- More explicit intent and easier to audit
+
+**Theme List Sorting**
+- Improved theme dropdown sorting
+- Groups themes by family (Standard, Grayscale, Hydaelyn, etc.)
+- Light variants appear before dark within each family
+
+#### New Features ✅
+
+**Error Tracking Integration (Sentry-ready)**
+- Added `initErrorTracking()` function in `logger.ts`
+- Errors/warnings automatically sent to tracker in production
+- Ready for @sentry/browser integration
+
+**Performance Monitoring**
+- Added `perf` object with timing utilities
+- `perf.start()/end()` for manual timing
+- `perf.measure()/measureSync()` for function timing
+- `perf.getMetrics()/getAllMetrics()/logMetrics()` for statistics
+
+**Bundle Size Monitoring**
+- Added `scripts/check-bundle-size.js` CI script
+- `npm run check-bundle-size` - Check sizes after build
+- `npm run build:check` - Build + check sizes
+- Configurable limits per bundle type
+- Exits with code 1 if limits exceeded (CI-friendly)
+
+#### Files Created ✅
+- `src/shared/logger.ts` - Centralized logging with error tracking and performance monitoring
+- `scripts/check-bundle-size.js` - Bundle size monitoring script
+- `docs/opus45/` - Comprehensive audit documentation (4 files)
+
+#### Files Modified ✅
+- 22 files updated with logger integration
+- 20+ components updated to use `clearContainer()`
+- `package.json` - Added check-bundle-size scripts, upgraded vite/vitest
+
+#### Test Results ✅
+- **All 552 tests passing**
+- **Build successful**
+- **Bundle sizes within limits**
+
+---
+
 ## [2.0.4] - 2025-11-23
 
 ### ⚡ Core Library Performance Upgrade
