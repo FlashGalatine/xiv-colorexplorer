@@ -545,7 +545,7 @@ export class DyeMixerTool extends BaseComponent {
         // Find next closest non-excluded dye
         const allDyes = dyeService.getAllDyes();
         const filteredDyes = this.dyeFilters.filterDyes(allDyes).filter(
-          (dye) => !excludeIds.includes(dye.id)
+          (dye) => !excludeIds.includes(dye.id) && dye.category !== 'Facewear'
         );
         matchedDye = filteredDyes.length > 0
           ? filteredDyes.reduce((best, dye) => {
