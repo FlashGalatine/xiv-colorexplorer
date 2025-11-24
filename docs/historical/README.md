@@ -1,9 +1,11 @@
 # Historical Documentation Index
 
-The `docs/historical/` folder preserves the v1.x research notes, phase reports, and testing logs that informed the v2.0.0 TypeScript/Vite rewrite. These files are no longer updated, but they provide helpful context when investigating regressions or comparing design decisions across phases.
+The `docs/historical/` folder preserves documentation from previous major versions, optimization initiatives, and phase reports. These files are no longer updated, but they provide helpful context when investigating regressions or comparing design decisions across phases.
 
 ## How the Folder Is Organized
 
+- **Optimization Initiative** (`optimization-20251123/`): Complete documentation from the November 2025 3-phase optimization initiative (performance, security, refactoring).
+- **Core Library Upgrades** (`CORE_UPGRADE_1.1.0.md`): Documentation for major core library version upgrades.
 - **Phase Reports** (`PHASE_*`): Session-by-session status updates, bug hunts, and release notes dating back to Phase 6.
 - **Testing Guides**: Browser checklists, accessibility audits, and regression plans that predate the new Vitest suite.
 - **Research & Planning** (`IMPLEMENTATION_PLAN.md`, `PERFORMANCE_OPTIMIZATION_GUIDE.md`, etc.): Deep dives on architecture experiments and performance spikes.
