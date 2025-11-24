@@ -147,12 +147,18 @@ container.textContent = '';
 - Hover effect now properly maintains dot position
 - No longer affects user experience
 
-### 5.2 Theme List Alphabetical Sorting
+### 5.2 Theme List Sorting
 
-**Status:** ⚠️ OPPORTUNITY  
-**Issue:** Theme list not alphabetically sorted for non-standard themes
+**Status:** ✅ FIXED  
+**Issue:** Theme list not sorted in user-friendly order
 
-**Recommendation:** Sort theme list alphabetically for better UX (UI polish, low priority)
+**Fix:** Updated sorting to group themes by family with light variants before dark:
+1. Standard (Light/Dark) - always first
+2. Grayscale (Light, Dark)
+3. Hydaelyn (Light)
+4. OG Classic (Dark)
+5. Parchment (Light, Dark)
+6. Sugar Riot (Light, Dark)
 
 ---
 

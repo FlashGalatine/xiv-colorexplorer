@@ -67,7 +67,7 @@ export class ThemeSwitcher extends BaseComponent {
     });
 
     // Get all available themes and sort by display name
-    // Priority: Standard themes first, then alphabetically by display name
+    // Priority: Standard themes first, then grouped by theme family (light before dark)
     const themes = ThemeService.getAllThemes().sort((a, b) => {
       // Standard themes always come first
       if (a.name === 'standard-light') return -1;
@@ -75,10 +75,21 @@ export class ThemeSwitcher extends BaseComponent {
       if (a.name === 'standard-dark') return -1;
       if (b.name === 'standard-dark') return 1;
 
-      // Sort alphabetically by display name
-      const displayA = THEME_DISPLAY_NAMES[a.name] || a.name;
-      const displayB = THEME_DISPLAY_NAMES[b.name] || b.name;
-      return displayA.localeCompare(displayB);
+      // Extract theme family (e.g., "hydaelyn" from "hydaelyn-light")
+      const familyA = a.name.replace(/-light$|-dark$/, '');
+      const familyB = b.name.replace(/-light$|-dark$/, '');
+
+      // Sort by family name first
+      if (familyA !== familyB) {
+        return familyA.localeCompare(familyB);
+      }
+
+      // Within same family, light comes before dark
+      const isLightA = a.name.endsWith('-light');
+      const isLightB = b.name.endsWith('-light');
+      if (isLightA && !isLightB) return -1;
+      if (!isLightA && isLightB) return 1;
+      return 0;
     });
     const themeList = this.createElement('div', {
       className: 'flex flex-col p-2',
