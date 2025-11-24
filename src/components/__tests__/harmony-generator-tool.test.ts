@@ -75,6 +75,11 @@ vi.mock('@services/index', () => {
   return {
     ColorService: {
       getColorDistance: () => 10,
+      hexToHsv: (hex: string) => {
+        // Simple mock that extracts HSV from hex or returns default
+        // Real implementation would convert, but for tests this is sufficient
+        return { h: 0, s: 100, v: 100 };
+      },
     },
     DyeService: {
       getInstance: () => mockDyeService,
