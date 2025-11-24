@@ -599,41 +599,44 @@ This TODO list tracks implementation of all optimization, security, and refactor
 ### Week 7-8: Infrastructure & Security
 
 #### S-8: Privacy Documentation
-**Status:** ⏳ Not Started  
+**Status:** ✅ Complete  
 **Priority:** Medium  
 **Effort:** 2-3 days  
 **Location:** `xivdyetools-discord-bot/docs/`
 
 **Tasks:**
-- [ ] Create `docs/PRIVACY.md`
-  - [ ] Data collection disclosure
-  - [ ] Data retention policy
-  - [ ] Data sharing policy
-- [ ] Add privacy notice to bot's Discord presence
-- [ ] Review data handling practices
-- [ ] Update README with privacy link
+- [x] Create `docs/PRIVACY.md`
+  - [x] Data collection disclosure
+  - [x] Data retention policy
+  - [x] Data sharing policy
+- [x] Add privacy notice to README
+- [x] Review data handling practices
+- [x] Update README with privacy link
 
-**Files to Create:**
+**Completed:** December 2024
+
+**Files Created:**
 - `xivdyetools-discord-bot/docs/PRIVACY.md`
 
 ---
 
 #### S-9: Redis Security
-**Status:** ⏳ Not Started  
+**Status:** ✅ Complete  
 **Priority:** Medium  
 **Effort:** 2-3 days  
 **Location:** `xivdyetools-discord-bot/src/services/redis.ts`
 
 **Tasks:**
-- [ ] Enable Redis authentication (if exposed)
-- [ ] Add TLS support for Redis connections
-- [ ] Update Redis configuration
-- [ ] Test secure connections
-- [ ] Document Redis security setup
+- [x] Enable Redis authentication (password support)
+- [x] Add TLS support for Redis connections (rediss:// or REDIS_TLS)
+- [x] Update Redis configuration with secure options
+- [x] Document Redis security setup
 
-**Files to Modify:**
-- `xivdyetools-discord-bot/src/services/redis.ts`
-- `xivdyetools-discord-bot/fly.toml` (if applicable)
+**Completed:** December 2024
+
+**Files Modified:**
+- `xivdyetools-discord-bot/src/services/redis.ts` - Added TLS and authentication support
+- `xivdyetools-discord-bot/docs/security/REDIS_SECURITY.md` - Comprehensive security guide
 
 ---
 
