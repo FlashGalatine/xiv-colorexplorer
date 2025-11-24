@@ -9,6 +9,7 @@
 
 import { ErrorCode, AppError } from '@shared/types';
 import { STORAGE_PREFIX } from '@shared/constants';
+import { logger } from '@shared/logger';
 
 // ============================================================================
 // Storage Service Class
@@ -59,7 +60,7 @@ export class StorageService {
 
       return item as T;
     } catch (error) {
-      console.warn(`Failed to get item from localStorage: ${key}`, error);
+      logger.warn(`Failed to get item from localStorage: ${key}`, error);
       return defaultValue || null;
     }
   }
@@ -70,7 +71,7 @@ export class StorageService {
   static setItem<T>(key: string, value: T): boolean {
     try {
       if (!this.isAvailable()) {
-        console.warn('localStorage is not available');
+        logger.warn('localStorage is not available');
         return false;
       }
 
@@ -89,7 +90,7 @@ export class StorageService {
         }
       }
 
-      console.error(`Failed to set item in localStorage: ${key}`, error);
+      logger.error(`Failed to set item in localStorage: ${key}`, error);
       return false;
     }
   }
@@ -106,7 +107,7 @@ export class StorageService {
       localStorage.removeItem(key);
       return true;
     } catch (error) {
-      console.warn(`Failed to remove item from localStorage: ${key}`, error);
+      logger.warn(`Failed to remove item from localStorage: ${key}`, error);
       return false;
     }
   }
@@ -123,7 +124,7 @@ export class StorageService {
       localStorage.clear();
       return true;
     } catch (error) {
-      console.warn('Failed to clear localStorage', error);
+      logger.warn('Failed to clear localStorage', error);
       return false;
     }
   }
@@ -146,7 +147,7 @@ export class StorageService {
       }
       return keys;
     } catch (error) {
-      console.warn('Failed to get storage keys', error);
+      logger.warn('Failed to get storage keys', error);
       return [];
     }
   }
@@ -176,7 +177,7 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.warn(`Failed to get items by prefix: ${prefix}`, error);
+      logger.warn(`Failed to get items by prefix: ${prefix}`, error);
     }
 
     return result;
@@ -218,7 +219,7 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.warn('Failed to calculate storage size', error);
+      logger.warn('Failed to calculate storage size', error);
     }
 
     return size;
@@ -258,7 +259,7 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.warn(`Failed to remove items by prefix: ${prefix}`, error);
+      logger.warn(`Failed to remove items by prefix: ${prefix}`, error);
     }
 
     return removed;
@@ -276,7 +277,7 @@ export class StorageService {
 
       return this.setItem(key, data);
     } catch (error) {
-      console.error(`Failed to set item with TTL: ${key}`, error);
+      logger.error(`Failed to set item with TTL: ${key}`, error);
       return false;
     }
   }
@@ -299,7 +300,7 @@ export class StorageService {
 
       return data.value || defaultValue || null;
     } catch (error) {
-      console.warn(`Failed to get item with TTL: ${key}`, error);
+      logger.warn(`Failed to get item with TTL: ${key}`, error);
       return defaultValue || null;
     }
   }
@@ -413,7 +414,7 @@ async function generateChecksum(data: string): Promise<string> {
     const hashArray = Array.from(new Uint8Array(signature));
     return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   } catch (error) {
-    console.warn('Failed to generate checksum, falling back to simple hash', error);
+    logger.warn('Failed to generate checksum, falling back to simple hash', error);
     // Fallback: simple hash for environments without Web Crypto API
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
@@ -460,7 +461,7 @@ export class SecureStorage {
 
       return StorageService.setItem(key, entry);
     } catch (error) {
-      console.error(`Failed to set secure item: ${key}`, error);
+      logger.error(`Failed to set secure item: ${key}`, error);
       return false;
     }
   }
@@ -481,14 +482,14 @@ export class SecureStorage {
       const isValid = await verifyChecksum(serialized, entry.checksum);
 
       if (!isValid) {
-        console.warn(`Integrity check failed for key: ${key}. Removing corrupted entry.`);
+        logger.warn(`Integrity check failed for key: ${key}. Removing corrupted entry.`);
         StorageService.removeItem(key);
         return defaultValue || null;
       }
 
       return entry.value;
     } catch (error) {
-      console.warn(`Failed to get secure item: ${key}`, error);
+      logger.warn(`Failed to get secure item: ${key}`, error);
       // If entry structure is invalid, remove it
       StorageService.removeItem(key);
       return defaultValue || null;
@@ -547,10 +548,10 @@ export class SecureStorage {
       }
 
       if (freed > 0) {
-        console.info(`LRU eviction: Freed ${freed} bytes from cache`);
+        logger.info(`LRU eviction: Freed ${freed} bytes from cache`);
       }
     } catch (error) {
-      console.warn('Failed to enforce size limit', error);
+      logger.warn('Failed to enforce size limit', error);
     }
   }
 
@@ -601,7 +602,7 @@ export class SecureStorage {
     }
 
     if (removed > 0) {
-      console.info(`Cleanup: Removed ${removed} corrupted entries`);
+      logger.info(`Cleanup: Removed ${removed} corrupted entries`);
     }
 
     return removed;

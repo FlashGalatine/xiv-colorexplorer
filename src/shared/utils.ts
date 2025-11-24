@@ -401,6 +401,16 @@ export function hasClass(element: HTMLElement, className: string): boolean {
   return element.classList.contains(className);
 }
 
+/**
+ * Clear all children from an element safely
+ * Preferred over innerHTML = '' for better performance and explicit intent
+ */
+export function clearContainer(element: HTMLElement): void {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
 // ============================================================================
 // Validation Utilities
 // ============================================================================

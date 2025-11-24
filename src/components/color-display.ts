@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ColorService } from '@services/index';
 import type { Dye } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Options for color display initialization
@@ -240,12 +241,22 @@ export class ColorDisplay extends BaseComponent {
     const distanceDiv = this.createElement('div', {
       className: 'text-sm text-blue-800 dark:text-blue-200',
     });
-    distanceDiv.innerHTML = `
-      <div><strong>Color Distance:</strong> ${distance.toFixed(2)} (0-441.67 scale)</div>
-      <div class="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-        <div class="bg-blue-500 h-2 rounded-full" style="width: ${(distance / 441.67) * 100}%"></div>
-      </div>
-    `;
+    const distanceLabel = this.createElement('div', {});
+    const distanceStrong = this.createElement('strong', { textContent: 'Color Distance:' });
+    distanceLabel.appendChild(distanceStrong);
+    distanceLabel.appendChild(document.createTextNode(` ${distance.toFixed(2)} (0-441.67 scale)`));
+    distanceDiv.appendChild(distanceLabel);
+    
+    const progressContainer = this.createElement('div', {
+      className: 'mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2',
+    });
+    const progressBar = this.createElement('div', {
+      className: 'bg-blue-500 h-2 rounded-full',
+    });
+    const progressWidth = Math.min(100, Math.max(0, (distance / 441.67) * 100));
+    progressBar.style.width = `${progressWidth}%`;
+    progressContainer.appendChild(progressBar);
+    distanceDiv.appendChild(progressContainer);
     section.appendChild(distanceDiv);
 
     // Contrast ratio
@@ -262,10 +273,24 @@ export class ColorDisplay extends BaseComponent {
     const wcagDiv = this.createElement('div', {
       className: 'text-sm text-blue-800 dark:text-blue-200',
     });
-    wcagDiv.innerHTML = `
-      <div>WCAG AA: <span class="${wcagAA ? 'text-green-600 font-semibold' : 'text-red-600'}">${wcagAA ? '✓ Pass' : '✗ Fail'}</span></div>
-      <div>WCAG AAA: <span class="${wcagAAA ? 'text-green-600 font-semibold' : 'text-red-600'}">${wcagAAA ? '✓ Pass' : '✗ Fail'}</span></div>
-    `;
+    
+    const wcagAADiv = this.createElement('div', {});
+    wcagAADiv.appendChild(document.createTextNode('WCAG AA: '));
+    const wcagAASpan = this.createElement('span', {
+      textContent: wcagAA ? '✓ Pass' : '✗ Fail',
+      className: wcagAA ? 'text-green-600 font-semibold' : 'text-red-600',
+    });
+    wcagAADiv.appendChild(wcagAASpan);
+    wcagDiv.appendChild(wcagAADiv);
+    
+    const wcagAAADiv = this.createElement('div', {});
+    wcagAAADiv.appendChild(document.createTextNode('WCAG AAA: '));
+    const wcagAAASpan = this.createElement('span', {
+      textContent: wcagAAA ? '✓ Pass' : '✗ Fail',
+      className: wcagAAA ? 'text-green-600 font-semibold' : 'text-red-600',
+    });
+    wcagAAADiv.appendChild(wcagAAASpan);
+    wcagDiv.appendChild(wcagAAADiv);
     section.appendChild(wcagDiv);
 
     return section;
@@ -362,9 +387,14 @@ export class ColorDisplay extends BaseComponent {
     const textColor = ColorService.getOptimalTextColor(this.displayDye.hex);
 
     const textColorValue = this.createElement('div', {});
-    textColorValue.innerHTML = `
-      Optimal Text Color: <span style="color: ${textColor}; font-weight: bold;">${textColor}</span>
-    `;
+    textColorValue.appendChild(document.createTextNode('Optimal Text Color: '));
+    const textColorSpan = this.createElement('span', {
+      textContent: textColor,
+      attributes: {
+        style: `color: ${textColor}; font-weight: bold;`,
+      },
+    });
+    textColorValue.appendChild(textColorSpan);
 
     infoDiv.appendChild(luminanceValue);
     infoDiv.appendChild(brightnessValue);
@@ -394,7 +424,7 @@ export class ColorDisplay extends BaseComponent {
               element.textContent = originalText;
             }, 2000);
           } catch (error) {
-            console.warn('Failed to copy to clipboard:', error);
+            logger.warn('Failed to copy to clipboard:', error);
           }
         }
       });

@@ -15,6 +15,8 @@ import { DyeFilters } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
 import { ColorService, dyeService } from '@services/index';
 import type { Dye } from '@shared/types';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Dye Mixer Tool Component
@@ -332,7 +334,7 @@ export class DyeMixerTool extends BaseComponent {
 
     wrapper.appendChild(savedSection);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -450,7 +452,7 @@ export class DyeMixerTool extends BaseComponent {
     const displayContainer = this.querySelector<HTMLElement>('#interpolation-display-container');
     if (!displayContainer) return;
 
-    displayContainer.innerHTML = '';
+    clearContainer(displayContainer);
 
     if (this.selectedDyes.length < 2) {
       const empty = this.createElement('div', {
@@ -666,7 +668,7 @@ export class DyeMixerTool extends BaseComponent {
       this.showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
       this.displaySavedGradients();
     } catch (error) {
-      console.error('Error saving gradient:', error);
+      logger.error('Error saving gradient:', error);
       this.showToast('Failed to save gradient', 'error');
     }
   }
@@ -728,7 +730,7 @@ export class DyeMixerTool extends BaseComponent {
       this.updateInterpolation();
       this.showToast(`✓ Loaded gradient "${gradient.name}"`, 'success');
     } catch (error) {
-      console.error('Error loading gradient:', error);
+      logger.error('Error loading gradient:', error);
       this.showToast('Failed to load gradient', 'error');
     }
   }
@@ -753,7 +755,7 @@ export class DyeMixerTool extends BaseComponent {
       this.showToast(`✓ Gradient "${gradientName}" deleted`, 'success');
       this.displaySavedGradients();
     } catch (error) {
-      console.error('Error deleting gradient:', error);
+      logger.error('Error deleting gradient:', error);
       this.showToast('Failed to delete gradient', 'error');
     }
   }
@@ -772,7 +774,7 @@ export class DyeMixerTool extends BaseComponent {
         localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]'
       ) as Array<{ name: string; dye1Name: string; dye2Name: string; timestamp: string }>;
 
-      container.innerHTML = '';
+      clearContainer(container);
 
       if (savedGradients.length === 0) {
         noText.style.display = 'block';
@@ -824,7 +826,7 @@ export class DyeMixerTool extends BaseComponent {
         container.appendChild(item);
       }
     } catch (error) {
-      console.error('Error displaying saved gradients:', error);
+      logger.error('Error displaying saved gradients:', error);
     }
   }
 
@@ -869,10 +871,10 @@ export class DyeMixerTool extends BaseComponent {
       .writeText(url)
       .then(() => {
         this.showToast('✓ Share URL copied to clipboard!', 'success');
-        console.info('Share URL copied:', url);
+        logger.info('Share URL copied:', url);
       })
       .catch((error: Error) => {
-        console.error('Failed to copy URL:', error);
+        logger.error('Failed to copy URL:', error);
         this.showToast('Failed to copy URL. Please try again.', 'error');
       });
   }

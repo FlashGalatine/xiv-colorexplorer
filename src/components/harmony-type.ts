@@ -236,7 +236,7 @@ export class HarmonyType extends BaseComponent {
             style: 'color: var(--theme-primary);',
           },
         });
-        priceValue.innerHTML = APIService.formatPrice(price.currentAverage);
+        priceValue.textContent = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
           textContent: 'market',
           className: 'text-xs',

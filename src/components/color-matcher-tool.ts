@@ -14,6 +14,7 @@ import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
 import { ColorService, dyeService, APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Color Matcher Tool Component
@@ -232,7 +233,7 @@ export class ColorMatcherTool extends BaseComponent {
       imageUploadContainer.addEventListener('error', (event: Event) => {
         const customEvent = event as CustomEvent;
         const message = customEvent.detail?.message || 'Failed to load image';
-        console.error('Image upload error:', customEvent.detail);
+        logger.error('Image upload error:', customEvent.detail);
         this.showToast(message, 'error');
       });
     }
@@ -604,7 +605,7 @@ export class ColorMatcherTool extends BaseComponent {
       if (width <= 0 || height <= 0) {
         width = window.innerWidth - 32; // Account for padding/margins
         height = window.innerHeight * 0.4; // Use 40% of viewport height as reasonable default
-        console.warn('Color Matcher: Using fallback container dimensions', { width, height });
+        logger.warn('Color Matcher: Using fallback container dimensions', { width, height });
       }
 
       // Ensure minimum dimensions
@@ -658,7 +659,7 @@ export class ColorMatcherTool extends BaseComponent {
 
         // Validate image dimensions
         if (imageWidth <= 0 || imageHeight <= 0) {
-          console.warn('Color Matcher: Invalid image dimensions', { imageWidth, imageHeight });
+          logger.warn('Color Matcher: Invalid image dimensions', { imageWidth, imageHeight });
           return;
         }
 
@@ -681,7 +682,7 @@ export class ColorMatcherTool extends BaseComponent {
 
         // Validate image dimensions
         if (imageWidth <= 0) {
-          console.warn('Color Matcher: Invalid image width', { imageWidth });
+          logger.warn('Color Matcher: Invalid image width', { imageWidth });
           return;
         }
 
@@ -1069,7 +1070,7 @@ export class ColorMatcherTool extends BaseComponent {
             style: 'color: var(--theme-primary);',
           },
         });
-        priceValue.innerHTML = APIService.formatPrice(price.currentAverage);
+        priceValue.textContent = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
           textContent: 'market',
           className: 'text-xs',

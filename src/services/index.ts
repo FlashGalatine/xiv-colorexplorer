@@ -26,31 +26,32 @@ export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
 
 // Re-export commonly used utilities
 export { ErrorHandler, withErrorHandling, withAsyncErrorHandling } from '@shared/error-handler';
+import { logger } from '@shared/logger';
 
 /**
  * Initialize all services
  */
 export function initializeServices(): void {
-  console.info('🔧 Initializing all services...');
+  logger.info('🔧 Initializing all services...');
 
   try {
     // Theme service auto-initializes on module load
-    console.info('✅ ThemeService ready');
+    logger.info('✅ ThemeService ready');
 
     // DyeService initializes on first getInstance
-    console.info('✅ DyeService ready');
+    logger.info('✅ DyeService ready');
 
     // StorageService checks availability
-    console.info(
+    logger.info(
       `✅ StorageService: ${StorageService.isAvailable() ? 'Available' : 'Not available'}`
     );
 
     // APIService initializes on first getInstance
-    console.info('✅ APIService ready');
+    logger.info('✅ APIService ready');
 
-    console.info('🚀 All services initialized successfully');
+    logger.info('🚀 All services initialized successfully');
   } catch (error) {
-    console.error('Failed to initialize services:', error);
+    logger.error('Failed to initialize services:', error);
     throw error;
   }
 }

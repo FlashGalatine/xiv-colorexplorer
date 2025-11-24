@@ -93,7 +93,7 @@ export const THEME_DISPLAY_NAMES: Record<ThemeName, string> = {
   'standard-light': 'Standard (Light)',
   'standard-dark': 'Standard (Dark)',
   'hydaelyn-light': 'Hydaelyn (Light)',
-  'og-classic-dark': 'OG Classic Dark',
+  'og-classic-dark': 'OG Classic',
   'parchment-light': 'Parchment (Light)',
   'parchment-dark': 'Parchment (Dark)',
   'sugar-riot-light': 'Sugar Riot (Light)',

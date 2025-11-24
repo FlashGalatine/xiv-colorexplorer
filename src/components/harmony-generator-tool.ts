@@ -23,6 +23,7 @@ import {
   COMPANION_DYES_DEFAULT,
 } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Suggestions mode type
@@ -955,7 +956,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
           }
         }
       } catch (error) {
-        console.warn(`Failed to generate ${harmony.id} harmony:`, error);
+        logger.warn(`Failed to generate ${harmony.id} harmony:`, error);
       }
 
       // Filter out Facewear dyes from results

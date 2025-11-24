@@ -85,8 +85,9 @@ describe('ThemeSwitcher', () => {
     it('should format theme names for display', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
+      // Uses THEME_DISPLAY_NAMES from constants
       const button = container.querySelector('[data-theme="standard-light"]');
-      expect(button?.textContent).toContain('Standard Light');
+      expect(button?.textContent).toContain('Standard (Light)');
     });
 
     it('should include color swatches for each theme', () => {

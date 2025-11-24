@@ -295,7 +295,7 @@ export class DyeComparisonTool extends BaseComponent {
               style: 'color: var(--theme-primary);',
             },
           });
-          priceSpan.innerHTML = `(${APIService.formatPrice(price.currentAverage)})`;
+          priceSpan.textContent = `(${APIService.formatPrice(price.currentAverage)})`;
           tag.appendChild(priceSpan);
         }
       }

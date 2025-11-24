@@ -8,6 +8,8 @@
  */
 
 import { ErrorHandler } from '@shared/error-handler';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Options for creating HTML elements within components
@@ -75,7 +77,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
    */
   init(): this {
     if (this.isInitialized) {
-      console.warn('Component already initialized');
+      logger.warn('Component already initialized');
       return this;
     }
 
@@ -96,7 +98,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
    */
   update(): void {
     if (!this.isInitialized) {
-      console.warn('Component not initialized');
+      logger.warn('Component not initialized');
       return;
     }
 
@@ -188,7 +190,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
    * Set element content
    */
   protected setContent(element: HTMLElement, content: string | HTMLElement): void {
-    element.innerHTML = '';
+    clearContainer(element);
     if (typeof content === 'string') {
       element.textContent = content;
     } else {
@@ -410,8 +412,8 @@ export abstract class BaseComponent implements ComponentLifecycle {
    * Log debug info
    */
   debug(): void {
-    console.info(`🔍 ${this.constructor.name} Debug Info`);
-    console.info(this.getDebugInfo());
-    console.info('--- End Debug Info ---');
+    logger.info(`🔍 ${this.constructor.name} Debug Info`);
+    logger.info(this.getDebugInfo());
+    logger.info('--- End Debug Info ---');
   }
 }

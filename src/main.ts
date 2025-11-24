@@ -15,6 +15,7 @@ import '@/styles/tailwind.css';
 import { initializeServices, getServicesStatus } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
 import { APP_VERSION } from '@shared/constants';
+import { logger } from '@shared/logger';
 
 // Import components (non-tool components only - tools are lazy-loaded)
 import {
@@ -36,9 +37,9 @@ async function initializeApp(): Promise<void> {
 
   try {
     // Log startup info
-    console.info(`🚀 XIV Dye Tools v${APP_VERSION}`);
-    console.info('📋 Phase 12: Architecture Refactor');
-    console.info('🏗️ Build System: Vite 5.x + TypeScript 5.x');
+    logger.info(`🚀 XIV Dye Tools v${APP_VERSION}`);
+    logger.info('📋 Phase 12: Architecture Refactor');
+    logger.info('🏗️ Build System: Vite 5.x + TypeScript 5.x');
 
     // Get or create app container
     const appContainer = document.getElementById('app');
@@ -47,19 +48,19 @@ async function initializeApp(): Promise<void> {
     }
 
     // Initialize all services
-    console.info('🔧 Initializing services...');
+    logger.info('🔧 Initializing services...');
     initializeServices();
 
     // Log service status
     const status = await getServicesStatus();
-    console.info({
+    logger.info({
       'Theme Service': status.theme.current,
       'Storage Service': status.storage.available ? 'Available' : 'Unavailable',
       'API Service': status.api.available ? `Available (${status.api.latency}ms)` : 'Unavailable',
     });
 
     // Initialize application layout
-    console.info('🎨 Initializing app layout...');
+    logger.info('🎨 Initializing app layout...');
     const appLayout = new AppLayout(appContainer);
     appLayout.init();
 
@@ -175,7 +176,7 @@ async function initializeApp(): Promise<void> {
     const loadTool = async (toolId: string): Promise<void> => {
       // Prevent concurrent loading
       if (isLoadingTool) {
-        console.warn(`⚠️ Tool loading in progress, ignoring request for: ${toolId}`);
+        logger.warn(`⚠️ Tool loading in progress, ignoring request for: ${toolId}`);
         return;
       }
 
@@ -196,7 +197,7 @@ async function initializeApp(): Promise<void> {
         // Find tool definition
         const toolDef = tools.find((t) => t.id === toolId);
         if (!toolDef) {
-          console.error(`Tool not found: ${toolId}`);
+          logger.error(`Tool not found: ${toolId}`);
           return;
         }
 
@@ -213,7 +214,7 @@ async function initializeApp(): Promise<void> {
         contentContainer!.appendChild(currentToolContainer);
 
         // Dynamically import tool component
-        console.info(`📦 Loading tool: ${toolDef.name}...`);
+        logger.info(`📦 Loading tool: ${toolDef.name}...`);
         const ComponentClass = await toolDef.loadComponent();
 
         // Clear loading spinner
@@ -242,9 +243,9 @@ async function initializeApp(): Promise<void> {
           mobileNav.setActiveToolId(toolId);
         }
 
-        console.info(`✅ Loaded tool: ${toolDef.name}`);
+        logger.info(`✅ Loaded tool: ${toolDef.name}`);
       } catch (error) {
-        console.error(`❌ Failed to load tool:`, error);
+        logger.error(`❌ Failed to load tool:`, error);
 
         // Show error message to user
         if (currentToolContainer) {
@@ -343,11 +344,11 @@ async function initializeApp(): Promise<void> {
     // Load the default tool (harmony)
     void loadTool('harmony');
 
-    console.info('✅ Application initialized successfully');
-    console.info('📦 Phase 12: All 5 tools integrated and ready');
+    logger.info('✅ Application initialized successfully');
+    logger.info('📦 Phase 12: All 5 tools integrated and ready');
   } catch (error) {
     const appError = ErrorHandler.log(error);
-    console.error('❌ Failed to initialize application:', appError);
+    logger.error('❌ Failed to initialize application:', appError);
 
     // Show error to user
     const container = document.getElementById('app');

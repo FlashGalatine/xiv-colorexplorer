@@ -9,6 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import type { Dye } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Palette data structure for export
@@ -180,7 +181,7 @@ export class PaletteExporter extends BaseComponent {
       const timestamp = new Date().toISOString().split('T')[0];
       this.downloadFile(`ffxiv-palette-${timestamp}.json`, json, 'application/json');
     } catch (error) {
-      console.error('Failed to export JSON:', error);
+      logger.error('Failed to export JSON:', error);
     }
   }
 
@@ -194,7 +195,7 @@ export class PaletteExporter extends BaseComponent {
       const timestamp = new Date().toISOString().split('T')[0];
       this.downloadFile(`ffxiv-palette-${timestamp}.css`, css, 'text/css');
     } catch (error) {
-      console.error('Failed to export CSS:', error);
+      logger.error('Failed to export CSS:', error);
     }
   }
 
@@ -208,7 +209,7 @@ export class PaletteExporter extends BaseComponent {
       const timestamp = new Date().toISOString().split('T')[0];
       this.downloadFile(`ffxiv-palette-${timestamp}.scss`, scss, 'text/scss');
     } catch (error) {
-      console.error('Failed to export SCSS:', error);
+      logger.error('Failed to export SCSS:', error);
     }
   }
 
@@ -220,7 +221,7 @@ export class PaletteExporter extends BaseComponent {
       const data = this.options.dataProvider();
       await this.copyAllHexCodes(data);
     } catch (error) {
-      console.error('Failed to copy hex codes:', error);
+      logger.error('Failed to copy hex codes:', error);
     }
   }
 
@@ -348,11 +349,11 @@ export class PaletteExporter extends BaseComponent {
 
     try {
       await navigator.clipboard.writeText(hexString);
-      console.log('Hex codes copied to clipboard');
+      logger.info('Hex codes copied to clipboard');
       // Could emit a custom event here for toast notifications if available
       this.emit('export-copied', { type: 'hex', count: uniqueHexCodes.length });
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
+      logger.error('Failed to copy to clipboard:', error);
       // Fallback: try to select text in a temporary textarea
       this.fallbackCopyToClipboard(hexString);
     }
@@ -370,9 +371,9 @@ export class PaletteExporter extends BaseComponent {
     textarea.select();
     try {
       document.execCommand('copy');
-      console.log('Hex codes copied to clipboard (fallback method)');
+      logger.info('Hex codes copied to clipboard (fallback method)');
     } catch (error) {
-      console.error('Fallback copy failed:', error);
+      logger.error('Fallback copy failed:', error);
     }
     document.body.removeChild(textarea);
   }

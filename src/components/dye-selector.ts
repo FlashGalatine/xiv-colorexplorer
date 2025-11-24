@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { DyeService } from '@services/index';
 import type { Dye } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Sort options for dye list
@@ -284,7 +285,7 @@ export class DyeSelector extends BaseComponent {
       // Verify attribute was set
       const verifyId = dyeCard.getAttribute('data-dye-id');
       if (verifyId !== String(dye.id)) {
-        console.warn(
+        logger.warn(
           `🎨 DyeSelector: Failed to set data-dye-id for ${dye.name}. Expected: ${dye.id}, Got: ${verifyId}`
         );
       }
@@ -471,7 +472,7 @@ export class DyeSelector extends BaseComponent {
    */
   override update(): void {
     if (!this.isInitialized) {
-      console.warn('Component not initialized');
+      logger.warn('Component not initialized');
       return;
     }
 
@@ -648,7 +649,7 @@ export class DyeSelector extends BaseComponent {
 
       this.onUpdate?.();
     } catch (error) {
-      console.error('Error updating DyeSelector:', error);
+      logger.error('Error updating DyeSelector:', error);
     }
   }
 

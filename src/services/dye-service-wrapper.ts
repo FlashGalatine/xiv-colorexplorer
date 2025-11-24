@@ -8,6 +8,7 @@ import {
   dyeDatabase,
   type Dye
 } from 'xivdyetools-core';
+import { logger } from '@shared/logger';
 
 /**
  * Web app singleton wrapper for DyeService
@@ -22,7 +23,7 @@ export class DyeService {
   static getInstance(): CoreDyeService {
     if (!DyeService.instance) {
       DyeService.instance = new CoreDyeService(dyeDatabase);
-      console.info('✅ DyeService initialized from xivdyetools-core');
+      logger.info('✅ DyeService initialized from xivdyetools-core');
     }
     return DyeService.instance;
   }

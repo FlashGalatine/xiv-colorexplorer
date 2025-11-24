@@ -9,6 +9,8 @@
 
 import { BaseComponent } from './base-component';
 import { ColorService } from '@services/index';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Color Picker Display Component
@@ -157,7 +159,7 @@ export class ColorPickerDisplay extends BaseComponent {
     });
     wrapper.appendChild(this.eyedropperCanvas);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -260,7 +262,7 @@ export class ColorPickerDisplay extends BaseComponent {
       }
     } catch {
       // User cancelled or error occurred
-      console.info('Eyedropper cancelled or not supported');
+      logger.info('Eyedropper cancelled or not supported');
     }
   }
 

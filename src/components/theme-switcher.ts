@@ -11,6 +11,8 @@ import { BaseComponent } from './base-component';
 import { ThemeService } from '@services/index';
 import { ColorService } from '@services/index';
 import type { ThemeName } from '@shared/types';
+import { THEME_DISPLAY_NAMES } from '@shared/constants';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Theme switcher component - allows users to select from 10 available themes
@@ -64,16 +66,19 @@ export class ThemeSwitcher extends BaseComponent {
       },
     });
 
-    // Get all available themes and create buttons
+    // Get all available themes and sort by display name
+    // Priority: Standard themes first, then alphabetically by display name
     const themes = ThemeService.getAllThemes().sort((a, b) => {
-      // Priority: standard-light, standard-dark, then alphabetical
+      // Standard themes always come first
       if (a.name === 'standard-light') return -1;
       if (b.name === 'standard-light') return 1;
-
       if (a.name === 'standard-dark') return -1;
       if (b.name === 'standard-dark') return 1;
 
-      return a.name.localeCompare(b.name);
+      // Sort alphabetically by display name
+      const displayA = THEME_DISPLAY_NAMES[a.name] || a.name;
+      const displayB = THEME_DISPLAY_NAMES[b.name] || b.name;
+      return displayA.localeCompare(displayB);
     });
     const themeList = this.createElement('div', {
       className: 'flex flex-col p-2',
@@ -109,12 +114,8 @@ export class ThemeSwitcher extends BaseComponent {
 
       themeBtn.appendChild(swatch);
 
-      // Format theme name for display (e.g., "standard-light" → "Standard Light")
-      const displayName = theme.name
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-
+      // Use the official display name from constants
+      const displayName = THEME_DISPLAY_NAMES[theme.name] || theme.name;
       themeBtn.appendChild(this.createElement('span', { textContent: displayName }));
 
       // Mark current theme
@@ -137,7 +138,7 @@ export class ThemeSwitcher extends BaseComponent {
     container.appendChild(dropdown);
 
     // Clear existing content and add new
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = container;
     this.container.appendChild(this.element);
   }

@@ -11,6 +11,7 @@ import type { Theme, ThemeName, ThemePalette } from '@shared/types';
 import { ErrorCode, AppError } from '@shared/types';
 import { THEME_NAMES, DEFAULT_THEME, STORAGE_KEYS } from '@shared/constants';
 import { appStorage } from './storage-service';
+import { logger } from '@shared/logger';
 
 // ============================================================================
 // Theme Definitions
@@ -153,7 +154,7 @@ export class ThemeService {
     }
 
     this.applyTheme(this.currentTheme);
-    console.info(`✅ Theme service initialized: ${this.currentTheme}`);
+    logger.info(`✅ Theme service initialized: ${this.currentTheme}`);
   }
 
   /**
@@ -208,7 +209,7 @@ export class ThemeService {
     // Notify listeners
     this.listeners.forEach((listener) => listener(themeName));
 
-    console.info(`✅ Theme changed to: ${themeName}`);
+    logger.info(`✅ Theme changed to: ${themeName}`);
   }
 
   /**

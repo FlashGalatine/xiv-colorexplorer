@@ -12,6 +12,7 @@ import { APIService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import { PRICE_CATEGORIES } from '@shared/constants';
 import type { Dye, PriceData, DataCenter, World } from '@shared/types';
+import { logger } from '@shared/logger';
 
 /**
  * Price category filter settings
@@ -79,8 +80,8 @@ export class MarketBoard extends BaseComponent {
       this.dataCenters = await dcResponse.json();
       this.worlds = await worldsResponse.json();
 
-      console.log('✓ Loaded data centers:', this.dataCenters.length);
-      console.log('✓ Loaded worlds:', this.worlds.length);
+      logger.info('✓ Loaded data centers:', this.dataCenters.length);
+      logger.info('✓ Loaded worlds:', this.worlds.length);
 
       // Re-populate server dropdown after data loads
       const serverSelect = this.querySelector<HTMLSelectElement>('#mb-server-select');
@@ -88,7 +89,7 @@ export class MarketBoard extends BaseComponent {
         this.populateServerDropdown(serverSelect);
       }
     } catch (error) {
-      console.error('Error loading server data:', error);
+      logger.error('Error loading server data:', error);
       // Use fallback empty arrays - component will still render but server selection disabled
       this.dataCenters = [];
       this.worlds = [];
@@ -446,7 +447,7 @@ export class MarketBoard extends BaseComponent {
         }, 3000);
       }
     } catch (error) {
-      console.error('Error refreshing prices:', error);
+      logger.error('Error refreshing prices:', error);
       if (statusMsg) {
         statusMsg.textContent = 'Error refreshing prices. Please try again.';
       }
@@ -521,7 +522,7 @@ export class MarketBoard extends BaseComponent {
     try {
       return await this.apiService.getPriceData(dye.itemID, undefined, this.selectedServer);
     } catch (error) {
-      console.error(`Failed to fetch price for ${dye.name}:`, error);
+      logger.error(`Failed to fetch price for ${dye.name}:`, error);
       return null;
     }
   }

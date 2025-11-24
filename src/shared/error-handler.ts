@@ -10,6 +10,7 @@
 import { AppError, ErrorCode } from './types';
 import type { ErrorSeverity } from './types';
 import { ERROR_MESSAGES } from './constants';
+import { logger } from './logger';
 
 // ============================================================================
 // Error Handler Class
@@ -29,13 +30,13 @@ export class ErrorHandler {
     switch (appError.severity) {
       case 'critical':
       case 'error':
-        console.error(`[${appError.code}]`, appError.message, appError);
+        logger.error(`[${appError.code}]`, appError.message, appError);
         break;
       case 'warning':
-        console.warn(`[${appError.code}]`, appError.message);
+        logger.warn(`[${appError.code}]`, appError.message);
         break;
       case 'info':
-        console.info(`[${appError.code}]`, appError.message);
+        logger.info(`[${appError.code}]`, appError.message);
         break;
     }
 
@@ -193,7 +194,7 @@ export async function createAsyncResult<T>(
 export function handleError(error: unknown, context?: string): AppError {
   const appError = ErrorHandler.normalize(error);
   if (context) {
-    console.error(`Error in ${context}:`, appError);
+    logger.error(`Error in ${context}:`, appError);
   }
   return appError;
 }

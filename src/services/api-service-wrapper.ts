@@ -9,6 +9,7 @@ import {
   type PriceData,
   type CachedData
 } from 'xivdyetools-core';
+import { logger } from '@shared/logger';
 
 /**
  * LocalStorage Cache Backend for browser environment
@@ -29,7 +30,7 @@ class LocalStorageCacheBackend implements ICacheBackend {
     try {
       localStorage.setItem(this.keyPrefix + key, JSON.stringify(value));
     } catch (error) {
-      console.warn('Failed to cache price data:', error);
+      logger.warn('Failed to cache price data:', error);
     }
   }
 
@@ -86,7 +87,7 @@ export class APIService {
     if (!APIService.instance) {
       const cacheBackend = new LocalStorageCacheBackend();
       APIService.instance = new CoreAPIService(cacheBackend);
-      console.info('✅ APIService initialized from xivdyetools-core with localStorage cache');
+      logger.info('✅ APIService initialized from xivdyetools-core with localStorage cache');
     }
     return APIService.instance;
   }
