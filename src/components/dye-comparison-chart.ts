@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ThemeService } from '@services/index';
 import type { Dye } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Chart type options
@@ -73,7 +74,7 @@ export class DyeComparisonChart extends BaseComponent {
     canvasContainer.appendChild(this.canvas);
     wrapper.appendChild(canvasContainer);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
 

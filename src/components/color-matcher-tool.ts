@@ -15,6 +15,7 @@ import { DyeFilters } from './dye-filters';
 import { ColorService, dyeService, APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Color Matcher Tool Component
@@ -200,7 +201,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
     wrapper.appendChild(resultsContainer);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -327,7 +328,7 @@ export class ColorMatcherTool extends BaseComponent {
     const resultsContainer = this.querySelector<HTMLElement>('#results-container');
     if (!resultsContainer) return;
 
-    resultsContainer.innerHTML = '';
+    clearContainer(resultsContainer);
 
     // Store current image for zoom interactions
     this.currentImage = image;

@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { appStorage } from '@services/storage-service';
 import { EXPENSIVE_DYE_IDS } from '@shared/constants';
 import type { Dye } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Dye filter configuration
@@ -199,7 +200,7 @@ export class DyeFilters extends BaseComponent {
     this.element = filtersSection;
 
     // Clear container and append element
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.container.appendChild(this.element);
 
     return this.element;

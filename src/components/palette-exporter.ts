@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Palette data structure for export
@@ -115,7 +116,7 @@ export class PaletteExporter extends BaseComponent {
 
     section.appendChild(buttonGroup);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = section;
     this.container.appendChild(this.element);
 

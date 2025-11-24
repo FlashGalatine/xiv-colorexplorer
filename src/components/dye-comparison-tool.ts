@@ -14,6 +14,7 @@ import { DyeComparisonChart } from './dye-comparison-chart';
 import { MarketBoard } from './market-board';
 import { ColorService, APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Dye Comparison Tool Component
@@ -131,7 +132,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     wrapper.appendChild(tabsSection);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -237,7 +238,7 @@ export class DyeComparisonTool extends BaseComponent {
     const summaryContainer = this.querySelector<HTMLElement>('#summary-container');
     if (!summaryContainer) return;
 
-    summaryContainer.innerHTML = '';
+    clearContainer(summaryContainer);
 
     if (this.selectedDyes.length === 0) {
       const empty = this.createElement('div', {
@@ -382,7 +383,7 @@ export class DyeComparisonTool extends BaseComponent {
     const matrixContainer = this.querySelector<HTMLElement>('#matrix-container');
     if (!matrixContainer) return;
 
-    matrixContainer.innerHTML = '';
+    clearContainer(matrixContainer);
 
     if (!this.colorMatrix) {
       this.colorMatrix = new ColorDistanceMatrix(matrixContainer, this.selectedDyes);
@@ -434,7 +435,7 @@ export class DyeComparisonTool extends BaseComponent {
     const exportContainer = this.querySelector<HTMLElement>('#export-container');
     if (!exportContainer) return;
 
-    exportContainer.innerHTML = '';
+    clearContainer(exportContainer);
 
     if (this.selectedDyes.length === 0) {
       return;

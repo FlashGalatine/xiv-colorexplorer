@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ThemeService } from '@services/index';
 import { ColorService } from '@services/index';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Tool definition for dropdown
@@ -151,7 +152,7 @@ export class ToolsDropdown extends BaseComponent {
     wrapper.appendChild(dropdown);
 
     // Clear and render
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

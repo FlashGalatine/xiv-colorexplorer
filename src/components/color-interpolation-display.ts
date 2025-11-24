@@ -9,6 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import type { Dye } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Interpolation step with dye match
@@ -65,7 +66,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
         textContent: 'No interpolation data available',
       });
       wrapper.appendChild(emptyState);
-      this.container.innerHTML = '';
+      clearContainer(this.container);
       this.element = wrapper;
       this.container.appendChild(this.element);
       return;
@@ -87,7 +88,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     const metrics = this.renderMetrics();
     wrapper.appendChild(metrics);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

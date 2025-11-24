@@ -24,6 +24,7 @@ import {
 } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Suggestions mode type
@@ -181,7 +182,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
     wrapper.appendChild(exportContainer);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

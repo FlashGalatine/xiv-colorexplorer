@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
 import { APIService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Harmony type information
@@ -104,7 +105,7 @@ export class HarmonyType extends BaseComponent {
 
     card.appendChild(content);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = card;
     this.container.appendChild(this.element);
   }

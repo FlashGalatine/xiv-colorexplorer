@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import type { Dye } from '@shared/types';
 import { ColorService } from '@services/index';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Individual dye accessibility analysis
@@ -111,7 +112,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
     wrapper.appendChild(resultsSection);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -148,7 +149,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const resultsContainer = this.querySelector<HTMLElement>('#results-container');
     if (!resultsContainer) return;
 
-    resultsContainer.innerHTML = '';
+    clearContainer(resultsContainer);
 
     this.selectedDyes = this.dyeSelector.getSelectedDyes();
 
@@ -760,7 +761,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     this.pairResults = [];
     const pairsContainer = this.querySelector<HTMLElement>('#pairs-container');
     if (pairsContainer) {
-      pairsContainer.innerHTML = '';
+      clearContainer(pairsContainer);
     }
   }
 }

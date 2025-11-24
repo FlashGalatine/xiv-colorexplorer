@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { ThemeService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Main application layout component
@@ -45,7 +46,7 @@ export class AppLayout extends BaseComponent {
     const footer = this.renderFooter();
     app.appendChild(footer);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = app;
     this.container.appendChild(this.element);
   }
@@ -293,7 +294,7 @@ export class AppLayout extends BaseComponent {
   setContent(content: HTMLElement | string): void {
     if (!this.contentContainer) return;
 
-    this.contentContainer.innerHTML = '';
+    clearContainer(this.contentContainer);
 
     if (typeof content === 'string') {
       this.contentContainer.textContent = content;

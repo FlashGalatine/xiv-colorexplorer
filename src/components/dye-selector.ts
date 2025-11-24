@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { DyeService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Sort options for dye list
@@ -330,7 +331,7 @@ export class DyeSelector extends BaseComponent {
     wrapper.appendChild(dyeListContainer);
 
     // Clear existing content and add new
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
@@ -495,7 +496,7 @@ export class DyeSelector extends BaseComponent {
           selectedLabel.textContent = `Selected: ${this.selectedDyes.length}/${this.options.maxSelections}`;
         }
 
-        selectedList.innerHTML = '';
+        clearContainer(selectedList);
 
         for (const dye of this.selectedDyes) {
           const dyeTag = this.createElement('div', {
@@ -547,7 +548,7 @@ export class DyeSelector extends BaseComponent {
       // Update dye list grid
       const dyeListContainer = this.querySelector<HTMLElement>('div.grid');
       if (dyeListContainer) {
-        dyeListContainer.innerHTML = '';
+        clearContainer(dyeListContainer);
 
         this.filteredDyes = this.getFilteredDyes();
 

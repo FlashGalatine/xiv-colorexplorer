@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ColorService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Options for color display initialization
@@ -68,7 +69,7 @@ export class ColorDisplay extends BaseComponent {
       emptyState.appendChild(emptyText);
       wrapper.appendChild(emptyState);
 
-      this.container.innerHTML = '';
+      clearContainer(this.container);
       this.element = wrapper;
       this.container.appendChild(this.element);
       return;
@@ -107,7 +108,7 @@ export class ColorDisplay extends BaseComponent {
       wrapper.appendChild(accessibilitySection);
     }
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

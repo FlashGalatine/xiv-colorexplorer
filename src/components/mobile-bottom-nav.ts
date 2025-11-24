@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Tool definition for mobile navigation
@@ -93,7 +94,7 @@ export class MobileBottomNav extends BaseComponent {
     }, 0);
 
     // Replace container content
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = nav;
     this.container.appendChild(this.element);
   }

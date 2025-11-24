@@ -11,6 +11,7 @@
 import { BaseComponent } from './base-component';
 import { ColorService, ThemeService } from '@services/index';
 import type { Dye } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Color Wheel Display Component
@@ -270,7 +271,7 @@ export class ColorWheelDisplay extends BaseComponent {
     svg.appendChild(centerLabel);
 
     wrapper.appendChild(svg);
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

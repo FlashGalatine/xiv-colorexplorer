@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import type { Dye } from '@shared/types';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Outfit slot configuration
@@ -94,7 +95,7 @@ export class OutfitSlotSelector extends BaseComponent {
 
     wrapper.appendChild(slotsGrid);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

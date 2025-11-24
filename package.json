@@ -15,7 +15,9 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "build:css": "tailwindcss -i ./src/tailwind-input.css -o ./assets/css/tailwind.css",
-    "build:css:watch": "tailwindcss -i ./src/tailwind-input.css -o ./assets/css/tailwind.css --watch"
+    "build:css:watch": "tailwindcss -i ./src/tailwind-input.css -o ./assets/css/tailwind.css --watch",
+    "check-bundle-size": "node scripts/check-bundle-size.js",
+    "build:check": "npm run build && npm run check-bundle-size"
   },
   "repository": {
     "type": "git",

@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Image Upload Display Component
@@ -157,7 +158,7 @@ export class ImageUploadDisplay extends BaseComponent {
     });
     wrapper.appendChild(this.canvas);
 
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }

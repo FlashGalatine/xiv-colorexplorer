@@ -13,6 +13,7 @@ import { appStorage } from '@services/storage-service';
 import { PRICE_CATEGORIES } from '@shared/constants';
 import type { Dye, PriceData, DataCenter, World } from '@shared/types';
 import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
 
 /**
  * Price category filter settings
@@ -314,7 +315,7 @@ export class MarketBoard extends BaseComponent {
     wrapper.appendChild(content);
 
     // Clear existing content and add new
-    this.container.innerHTML = '';
+    clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
   }
