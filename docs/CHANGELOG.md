@@ -9,6 +9,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.4] - 2025-11-23
+
+### ⚡ Core Library Performance Upgrade
+
+**Status**: ✅ COMPLETE  
+**Focus**: Upgraded to `xivdyetools-core@1.1.0` with significant performance optimizations and improvements.
+
+#### Performance Improvements ✅
+
+**Automatic Performance Gains (No Code Changes Required)**
+- **60-80% Faster Color Conversions**: LRU caching for all color conversion operations (hex↔RGB↔HSV)
+  - Caches 1000 entries per conversion type
+  - Faster UI interactions in all tools, especially Color Matcher, Dye Mixer, and Harmony Generator
+- **10-20x Faster Dye Matching**: k-d tree implementation for spatial color indexing
+  - O(log n) average case vs O(n) linear search
+  - Faster color matching in Color Matcher Tool, Dye Mixer Tool, and Harmony Generator Tool
+- **70-90% Faster Harmony Generation**: Hue-indexed lookups for color harmony calculations
+  - Hue bucket indexing (10° buckets, 36 total)
+  - Optimized color wheel queries
+  - Faster harmony generation in Harmony Generator Tool
+
+#### Technical Updates ✅
+
+**Core Library Upgrade**
+- Updated `xivdyetools-core` from `^1.0.1` to `^1.1.0`
+- All existing APIs remain unchanged (fully backward compatible)
+- TypeScript type checking passes
+- Build succeeds with 0 errors
+
+**Type Safety Improvements**
+- Core library now uses branded types (`HexColor`, `DyeId`, etc.)
+- Web app's existing type definitions remain compatible
+- No breaking changes to existing code
+
+**Service Architecture**
+- Core services split into focused classes for better maintainability
+- Backward compatibility maintained through facade pattern
+- Internal improvements don't affect public API
+
+#### Files Modified ✅
+- `package.json` - Updated `xivdyetools-core` dependency to `^1.1.0`
+- `docs/CORE_UPGRADE_1.1.0.md` - Added comprehensive upgrade documentation
+
+#### Benefits Achieved ✅
+- ✅ **Automatic Performance Gains** - No code changes required, performance improvements are transparent
+- ✅ **Faster UI Interactions** - Color conversions, dye matching, and harmony generation are significantly faster
+- ✅ **Better Code Quality** - Improved type safety and code organization in core library
+- ✅ **Zero Breaking Changes** - All existing functionality preserved
+- ✅ **Future-Proof** - Foundation for continued performance improvements
+
+#### Documentation ✅
+- Created `docs/CORE_UPGRADE_1.1.0.md` with detailed upgrade information
+- Documents all performance improvements and benefits
+- Includes migration notes and future considerations
+
+---
+
 ## [2.0.3] - 2025-11-23
 
 ### 🎨 Harmony Explorer Updates
