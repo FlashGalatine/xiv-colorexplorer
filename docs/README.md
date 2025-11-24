@@ -22,7 +22,8 @@ This folder contains detailed developer documentation for the XIV Dye Tools proj
 
 ### Additional Resources
 - **[CSP_DEPLOYMENT.md](./CSP_DEPLOYMENT.md)** - Content Security Policy deployment guide
-- **[historical/](./historical/)** - Historical documentation from previous phases
+- **[historical/](./historical/)** - Historical documentation from previous phases and major version upgrades
+  - Includes optimization initiative (November 2025), core library upgrades, and phase documentation
 
 ## 🚀 Getting Started
 

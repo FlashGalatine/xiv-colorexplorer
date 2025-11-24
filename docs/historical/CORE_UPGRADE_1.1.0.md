@@ -125,7 +125,7 @@ This could be useful for:
 
 - [Core Library CHANGELOG](../../xivdyetools-core/CHANGELOG.md)
 - [Core Library README](../../xivdyetools-core/README.md)
-- [Optimization Initiative Documentation](./optimization-20251123/README.md)
+- [Optimization Initiative Documentation](./optimization-20251123/README.md) (now in historical folder)
 
 ---
 

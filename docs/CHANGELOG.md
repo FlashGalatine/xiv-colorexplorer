@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Files Modified ✅
 - `package.json` - Updated `xivdyetools-core` dependency to `^1.1.0`
-- `docs/CORE_UPGRADE_1.1.0.md` - Added comprehensive upgrade documentation
+- `docs/historical/CORE_UPGRADE_1.1.0.md` - Added comprehensive upgrade documentation (moved to historical)
 
 #### Benefits Achieved ✅
 - ✅ **Automatic Performance Gains** - No code changes required, performance improvements are transparent
@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ **Future-Proof** - Foundation for continued performance improvements
 
 #### Documentation ✅
-- Created `docs/CORE_UPGRADE_1.1.0.md` with detailed upgrade information
+- Created `docs/historical/CORE_UPGRADE_1.1.0.md` with detailed upgrade information (moved to historical)
 - Documents all performance improvements and benefits
 - Includes migration notes and future considerations
 
