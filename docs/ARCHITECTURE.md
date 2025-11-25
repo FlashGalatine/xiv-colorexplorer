@@ -49,7 +49,7 @@ src/
 │   ├── color-service.ts                           # Color algorithms (accessibility, harmony)
 │   ├── dye-service.ts                             # Dye database management
 │   ├── storage-service.ts                         # localStorage wrapper
-│   ├── theme-service.ts                           # 10-theme system
+│   ├── theme-service.ts                           # 9-theme system
 │   └── __tests__/                                 # Unit tests (100% pass rate)
 │
 ├── shared/                                         # Shared utilities
@@ -59,7 +59,7 @@ src/
 │
 ├── styles/                                         # Styling
 │   ├── globals.css                                # Global styles
-│   ├── themes.css                                 # 12 theme CSS variables
+│   ├── themes.css                                 # 9 theme CSS variables
 │   └── components.css                             # Component-specific styles
 │
 ├── assets/

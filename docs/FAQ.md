@@ -6,7 +6,7 @@
 A: XIV Dye Tools is a free suite of five client-side web utilities designed to help FFXIV players with color and dye management. The tools include Dye Mixer, Color Accessibility Checker, Color Harmony Explorer, Color Matcher, and Dye Comparison—all available at https://xivdyetools.projectgalatine.com/
 
 **Q: What's the current version?**
-A: Version **v2.0.1** (released December 2025). This version includes theme system updates, Color Matcher enhancements with copy hex functionality, and improved Theme Editor with WCAG matrix toggles. See the CHANGELOG.md for detailed release notes.
+A: Version **v2.0.7** (released December 2025). This version includes test coverage improvements, theme system updates, Color Matcher enhancements with copy hex functionality, and improved Theme Editor with WCAG matrix toggles. See the CHANGELOG.md for detailed release notes.
 
 **Q: Do these tools cost money?**
 A: No, all tools are completely free with no ads, paywalls, or premium features.

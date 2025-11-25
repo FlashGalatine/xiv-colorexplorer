@@ -24,14 +24,16 @@ v2.0.0 uses a service-oriented architecture with TypeScript singletons for share
 
 ---
 
-## DyeService (`src/services/dye-service.ts`)
+## DyeService (from `xivdyetools-core`)
 
 **Purpose**: Manage FFXIV dye database, filtering, and discovery.
+
+**Note**: DyeService is now provided by the `xivdyetools-core` npm package. Import from `@services/index`.
 
 ### Usage Examples
 
 ```typescript
-import { DyeService } from './services/dye-service';
+import { DyeService } from '@services/index';
 
 // Get all dyes
 const allDyes = DyeService.getAllDyes();
@@ -61,14 +63,16 @@ const closest = DyeService.getClosestDye('#FF0000');
 
 ---
 
-## ColorService (`src/services/color-service.ts`)
+## ColorService (from `xivdyetools-core`)
 
 **Purpose**: Color calculations, conversions, harmony generation, and accessibility simulations.
+
+**Note**: ColorService is now provided by the `xivdyetools-core` npm package. Import from `@services/index`.
 
 ### Usage Examples
 
 ```typescript
-import { ColorService } from './services/color-service';
+import { ColorService } from '@services/index';
 
 // Color conversion
 const rgb = ColorService.hexToRgb('#FF0000');
@@ -188,7 +192,7 @@ import { ThemeService } from './services/theme-service';
 const theme = ThemeService.getCurrentTheme(); // "standard-light"
 
 // Set theme (saves to localStorage)
-ThemeService.setTheme('hydaelyn-dark');
+ThemeService.setTheme('hydaelyn-light');
 
 // Listen for changes
 ThemeService.onThemeChange((themeName) => {
@@ -196,27 +200,26 @@ ThemeService.onThemeChange((themeName) => {
 });
 ```
 
-### Available Themes (12 Total)
+### Available Themes (9 Total)
 
 **Standard Family**:
-- `standard-light` - Gray/indigo light
-- `standard-dark` - Gray/indigo dark
+- `standard-light` - Rich burgundy on light gray
+- `standard-dark` - Warm coral on dark gray
 
-**Hydaelyn Family**:
-- `hydaelyn-light` - Sky blue light
-- `hydaelyn-dark` - Sky blue dark
+**Hydaelyn**:
+- `hydaelyn-light` - Deep blue on soft blue-gray
 
-**Classic FF Family**:
-- `classic-light` - Deep blue light (retro FFXIV)
-- `classic-dark` - Deep blue dark
+**OG Classic**:
+- `og-classic-dark` - Deep blue on very dark background (retro FFXIV)
 
-**Parchment Family**:
-- `parchment-light` - Warm beige/brown light
-- `parchment-dark` - Warm beige/brown dark
+**Parchment**:
+- `parchment-light` - Warm beige/brown tones
 
-**Sugar Riot Family**:
-- `sugar-riot-light` - Vibrant pink light
-- `sugar-riot-dark` - Vibrant pink dark
+**Cotton Candy**:
+- `cotton-candy` - Soft pastel pink theme
+
+**Sugar Riot**:
+- `sugar-riot` - Neon pink with electric blue and yellow accents
 
 **Grayscale Family**:
 - `grayscale-light` - Pure grayscale light (WCAG AAA)

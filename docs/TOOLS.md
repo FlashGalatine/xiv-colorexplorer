@@ -320,38 +320,37 @@ XIV Dye Tools provides five specialized tools for Final Fantasy XIV players to e
 
 ### Overview
 
-XIV Dye Tools includes a unified 12-theme system providing visual customization across all tools.
+XIV Dye Tools includes a unified 9-theme system providing visual customization across all tools.
 
 ### Available Themes
 
-**Standard Family** (Gray/Indigo):
-- Standard Light
-- Standard Dark
+**Standard Family** (Burgundy/Coral):
+- Standard (Light) - Rich burgundy on light gray
+- Standard (Dark) - Warm coral on dark gray
 
-**Hydaelyn Family** (Sky Blue):
-- Hydaelyn Light
-- Hydaelyn Dark
+**Hydaelyn** (Sky Blue):
+- Hydaelyn - Deep blue on soft blue-gray
 
-**Classic FF Family** (Deep Blue - Retro FFXIV):
-- Classic Light
-- Classic Dark
+**OG Classic** (Deep Blue - Retro FFXIV):
+- OG Classic - Deep blue on very dark background
 
-**Parchment Family** (Warm Beige/Brown):
-- Parchment Light
-- Parchment Dark
+**Parchment** (Warm Beige):
+- Parchment - Warm beige/brown tones
 
-**Sugar Riot Family** (Vibrant Pink):
-- Sugar Riot Light
-- Sugar Riot Dark
+**Cotton Candy** (Soft Pastel):
+- Cotton Candy - Soft pastel pink theme
+
+**Sugar Riot** (Neon Cyberpunk):
+- Sugar Riot - Neon pink with electric blue and yellow accents
 
 **Grayscale Family** (Accessibility - WCAG AAA/AA+):
-- Grayscale Light (10.5:1 header, 20.8:1 body text)
-- Grayscale Dark (7.2:1 header, 19.6:1 body text)
+- Grayscale (Light) - 10.5:1 header, 20.8:1 body text contrast
+- Grayscale (Dark) - 7.2:1 header, 19.6:1 body text contrast
 
 ### How The Theme System Works
 
 **CSS Custom Properties** (`src/styles/themes.css`):
-- 12 complete color sets defined with CSS variables
+- 9 complete color sets defined with CSS variables
 - Applied via `body` class: `standard-light`, `standard-dark`, etc.
 - Core variables:
   - `--theme-primary` - Primary accent color
@@ -364,14 +363,14 @@ XIV Dye Tools includes a unified 12-theme system providing visual customization 
 
 **TypeScript Theme Management** (`src/services/theme-service.ts`):
 ```typescript
-import { ThemeService } from './services/theme-service';
+import { ThemeService } from '@services/index';
 
 // ThemeService is a singleton - automatically initialized
 // Get current theme
 const currentTheme = ThemeService.getCurrentTheme();
 
 // Set theme (saves to localStorage automatically)
-ThemeService.setTheme('hydaelyn-dark');
+ThemeService.setTheme('hydaelyn-light');
 
 // Listen for theme changes
 ThemeService.onThemeChange((themeName) => {
@@ -383,7 +382,7 @@ ThemeService.onThemeChange((themeName) => {
 
 **UI Component** (`src/components/theme-switcher.ts`):
 - Lit web component: `<theme-switcher>`
-- 12 theme options with visual swatches
+- 9 theme options with visual swatches
 - Dropdown menu in app header
 - Used across all tools via `<app-layout>`
 

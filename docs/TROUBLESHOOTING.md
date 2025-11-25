@@ -82,7 +82,7 @@ className: 'text-blue-600'
 ```
 
 **When Adding New Colors to a Theme**:
-1. Define in `src/styles/themes.css` for all 12 themes
+1. Define in `src/styles/themes.css` for all 9 themes
 2. Test in light AND dark variants
 3. Verify contrast ratio (WCAG AA minimum: 4.5:1 for text)
 4. Test in all 5 tools
@@ -229,7 +229,7 @@ className: 'w-full sm:w-auto px-6 py-2 ...'
 
 **Diagnosis Steps**:
 1. Inspect `<body>` element (right-click → Inspect)
-2. Check if class is applied: should be `standard-light`, `hydaelyn-dark`, etc.
+2. Check if class is applied: should be `standard-light`, `hydaelyn-light`, etc.
 3. Check if CSS variables are defined in `src/styles/themes.css`
 
 **Solutions**:
