@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🎨 Dye Comparison Tool Export Button Fixes
+
+**Status**: ✅ COMPLETE  
+**Focus**: Fixed export buttons to use theme colors and center alignment for consistency with other tools.
+
+#### UI Consistency Improvements ✅
+
+**Dye Comparison Tool Export Buttons**
+- Fixed hard-coded colors in export buttons
+  - Replaced `bg-blue-600`, `bg-purple-600`, `bg-green-600` with theme CSS variables
+  - All buttons now use `var(--theme-primary)` for consistent theming
+  - Text uses `var(--theme-text-header)` for proper contrast
+  - Hover effects use opacity transitions (0.9 on hover) for smooth feedback
+- Updated button alignment
+  - Changed from left-aligned (`flex flex-wrap gap-2`) to center-aligned (`flex flex-wrap gap-3 justify-center`)
+  - Matches the Export Palette buttons in Harmony Explorer and Dye Mixer tools
+  - Consistent spacing and visual alignment across all export sections
+
+#### Files Modified ✅
+- `src/components/dye-comparison-tool.ts` - Updated export buttons to use theme variables and center alignment
+
+#### Benefits Achieved ✅
+- ✅ **Theme Consistency** - Export buttons now adapt to all themes like other tools
+- ✅ **Visual Alignment** - Centered buttons match Harmony Explorer and Dye Mixer
+- ✅ **Better UX** - Consistent hover effects and spacing across all export sections
+
+---
+
 ### ✅ Test Coverage Improvements
 
 **Status**: ✅ COMPLETE  

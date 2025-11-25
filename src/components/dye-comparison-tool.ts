@@ -458,37 +458,58 @@ export class DyeComparisonTool extends BaseComponent {
     exportSection.appendChild(title);
 
     const buttonGroup = this.createElement('div', {
-      className: 'flex flex-wrap gap-2',
+      className: 'flex flex-wrap gap-3 justify-center',
     });
 
     // JSON export
     const jsonBtn = this.createElement('button', {
       textContent: 'Export as JSON',
-      className:
-        'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-semibold',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'json',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
+    });
+    // Add hover effect
+    jsonBtn.addEventListener('mouseenter', () => {
+      jsonBtn.style.opacity = '0.9';
+    });
+    jsonBtn.addEventListener('mouseleave', () => {
+      jsonBtn.style.opacity = '1';
     });
 
     // CSS export
     const cssBtn = this.createElement('button', {
       textContent: 'Export as CSS',
-      className:
-        'px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-500 transition-colors font-semibold',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'css',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
+    });
+    // Add hover effect
+    cssBtn.addEventListener('mouseenter', () => {
+      cssBtn.style.opacity = '0.9';
+    });
+    cssBtn.addEventListener('mouseleave', () => {
+      cssBtn.style.opacity = '1';
     });
 
     // Copy hex codes
     const copyBtn = this.createElement('button', {
       textContent: 'Copy Hex Codes',
-      className:
-        'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-semibold',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'hex',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
+    });
+    // Add hover effect
+    copyBtn.addEventListener('mouseenter', () => {
+      copyBtn.style.opacity = '0.9';
+    });
+    copyBtn.addEventListener('mouseleave', () => {
+      copyBtn.style.opacity = '1';
     });
 
     buttonGroup.appendChild(jsonBtn);
