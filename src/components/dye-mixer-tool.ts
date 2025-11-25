@@ -42,18 +42,23 @@ export class DyeMixerTool extends BaseComponent {
 
     // Title
     const title = this.createElement('div', {
-      className: 'space-y-2',
+      className: 'space-y-2 text-center',
     });
 
     const heading = this.createElement('h2', {
       textContent: 'Dye Mixer Tool',
-      className: 'text-3xl font-bold text-gray-900 dark:text-white',
+      className: 'text-3xl font-bold',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
     });
 
     const subtitle = this.createElement('p', {
       textContent:
         'Find intermediate dyes for smooth color transitions. Select two dyes and see all the steps needed to transition between them.',
-      className: 'text-gray-600 dark:text-gray-300',
+      attributes: {
+        style: 'color: var(--theme-text-muted);',
+      },
     });
 
     title.appendChild(heading);

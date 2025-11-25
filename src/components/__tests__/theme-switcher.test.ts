@@ -66,7 +66,7 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       const themeButtons = container.querySelectorAll('[data-theme]');
-      expect(themeButtons.length).toBe(10);
+      expect(themeButtons.length).toBe(9);
     });
 
     it('should highlight current theme', () => {
@@ -242,14 +242,14 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       const themeButton = container.querySelector(
-        '[data-theme="sugar-riot-light"]'
+        '[data-theme="cotton-candy"]'
       ) as HTMLButtonElement;
       themeButton.click();
 
       // Verify theme was saved via appStorage (namespaced storage)
       if (StorageService.isAvailable()) {
         const savedTheme = appStorage.getItem<ThemeName>(STORAGE_KEYS.THEME);
-        expect(savedTheme).toBe('sugar-riot-light');
+        expect(savedTheme).toBe('cotton-candy');
       }
     });
 
@@ -257,12 +257,12 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       const themeButton = container.querySelector(
-        '[data-theme="parchment-dark"]'
+        '[data-theme="sugar-riot"]'
       ) as HTMLButtonElement;
       themeButton.click();
 
       const state = component['getState']();
-      expect(state.currentTheme).toBe('parchment-dark');
+      expect(state.currentTheme).toBe('sugar-riot');
     });
 
     it('should highlight newly selected theme after update', async () => {
@@ -299,12 +299,12 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Simulate external theme change
-      ThemeService.setTheme('sugar-riot-dark');
+      ThemeService.setTheme('sugar-riot');
 
       await waitForComponent(100); // Wait for subscription callback + re-render
 
       const state = component['getState']();
-      expect(state.currentTheme).toBe('sugar-riot-dark');
+      expect(state.currentTheme).toBe('sugar-riot');
     });
 
     it('should subscribe to theme changes on mount', () => {
@@ -434,7 +434,7 @@ describe('ThemeSwitcher', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       // Rapidly select multiple themes
-      const themes = ['hydaelyn-light', 'parchment-dark', 'sugar-riot-light', 'og-classic-dark'];
+      const themes = ['hydaelyn-light', 'cotton-candy', 'sugar-riot', 'og-classic-dark'];
 
       for (const themeName of themes) {
         const themeButton = container.querySelector(

@@ -40,18 +40,23 @@ export class DyeComparisonTool extends BaseComponent {
 
     // Title
     const title = this.createElement('div', {
-      className: 'space-y-2',
+      className: 'space-y-2 text-center',
     });
 
     const heading = this.createElement('h2', {
       textContent: 'Dye Comparison Tool',
-      className: 'text-3xl font-bold text-gray-900 dark:text-white',
+      className: 'text-3xl font-bold',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
     });
 
     const subtitle = this.createElement('p', {
       textContent:
         'Compare up to 4 dyes using color distance matrices and visualizations. Analyze hue, saturation, and brightness relationships.',
-      className: 'text-gray-600 dark:text-gray-300',
+      attributes: {
+        style: 'color: var(--theme-text-muted);',
+      },
     });
 
     title.appendChild(heading);

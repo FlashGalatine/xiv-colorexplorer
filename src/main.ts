@@ -167,7 +167,7 @@ async function initializeApp(): Promise<void> {
     navContainer.className = 'hidden md:block border-b border-gray-200 dark:border-gray-700 mb-6';
 
     const toolButtonsContainer = document.createElement('div');
-    toolButtonsContainer.className = 'flex flex-wrap gap-2 pb-4';
+    toolButtonsContainer.className = 'flex flex-wrap gap-2 pb-4 justify-center';
 
     let currentTool: InstanceType<typeof BaseComponent> | null = null;
     let currentToolContainer: HTMLElement | null = null;

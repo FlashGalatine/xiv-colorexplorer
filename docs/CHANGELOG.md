@@ -50,6 +50,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.6] - 2025-11-25
+
+### 🎨 Theme Improvements & UI Enhancements
+
+**Status**: ✅ COMPLETE  
+**Focus**: Enhanced theme system with improved color palettes, new themes, and UI consistency improvements.
+
+#### Theme System Updates ✅
+
+**Standard Themes Enhanced**
+- **Standard Light**: Rich burgundy (#8B1A1A) on light gray (#D3D3D3) background
+  - Improved contrast and readability with warm reddish hues
+  - WCAG AA compliant color combinations
+- **Standard Dark**: Warm coral (#E85A5A) on dark gray (#2D2D2D) background
+  - Enhanced visual appeal with vibrant reddish tones
+  - Better contrast for dark mode users
+
+**New Themes Created**
+- **Cotton Candy** (formerly Sugar Riot Light): Soft pastel theme
+  - Pastel pink (#FFB6D9) primary on very light pink (#FFF5F9) background
+  - Light, airy aesthetic perfect for gentle color exploration
+  - WCAG AA compliant with dark pink text for readability
+- **Sugar Riot** (formerly Sugar Riot Dark): Neon cyberpunk theme
+  - Neon pink (#FF1493) primary with electric blue and yellow accents
+  - Very dark background (#0A0A0A) with high-contrast neon elements
+  - Bold, vibrant aesthetic for users who love bright colors
+
+**Theme Removals**
+- **Parchment Dark**: Removed from theme system
+  - Parchment Light retained as warm, earthy option
+  - Total themes reduced from 10 to 9 for streamlined experience
+
+**Theme System Improvements**
+- All themes now WCAG AA compliant (4.5:1 contrast for normal text, 3:1 for large text)
+- Updated dark mode detection to recognize `sugar-riot` as dark theme
+- Consistent color variable usage across all themes
+
+#### UI Consistency Improvements ✅
+
+**Export Palette Buttons**
+- Fixed hard-coded colors in Export Palette widget
+  - Replaced `bg-blue-600`, `bg-purple-600`, `bg-pink-600`, `bg-green-600` with theme variables
+  - All buttons now use `var(--theme-primary)` for consistent theming
+  - Text uses `var(--theme-text-header)` for proper contrast
+  - Hover effects use opacity transitions for smooth feedback
+- Updated container and title to use theme variables
+  - Background: `var(--theme-card-background)`
+  - Border: `var(--theme-border)`
+  - Text: `var(--theme-text)` and `var(--theme-text-muted)`
+
+**Center-Aligned UI Elements**
+- **Tool Buttons**: Center-aligned at top of page for better visual balance
+- **H2 Headings**: All tool titles center-aligned across all 5 tools
+  - Color Harmony Explorer
+  - Color Matcher
+  - Accessibility Checker
+  - Dye Comparison Tool
+  - Dye Mixer Tool
+- **Descriptions**: All tool descriptions center-aligned below headings
+- Replaced hard-coded color classes with theme variables for consistency
+
+#### Files Modified ✅
+- `src/services/theme-service.ts` - Updated theme palettes, removed Parchment Dark, added Cotton Candy and Sugar Riot
+- `src/shared/constants.ts` - Updated theme names and display names
+- `src/shared/types.ts` - Updated ThemeName type definition
+- `src/styles/themes.css` - Updated CSS classes for new theme structure
+- `src/styles/globals.css` - Updated tool card styles
+- `src/components/palette-exporter.ts` - Fixed hard-coded button colors to use theme variables
+- `src/components/harmony-generator-tool.ts` - Center-aligned heading and description
+- `src/components/color-matcher-tool.ts` - Center-aligned heading and description
+- `src/components/accessibility-checker-tool.ts` - Center-aligned heading and description
+- `src/components/dye-comparison-tool.ts` - Center-aligned heading and description
+- `src/components/dye-mixer-tool.ts` - Center-aligned heading and description
+- `src/main.ts` - Center-aligned tool buttons container
+- All test files updated to reflect 9 themes instead of 10
+
+#### Test Results ✅
+- All theme-related tests updated and passing
+- Theme count updated from 10 to 9 in test expectations
+- Dark mode detection tests updated for Sugar Riot theme
+
+#### Benefits Achieved ✅
+- ✅ **Better Visual Consistency** - All UI elements use theme variables
+- ✅ **Improved Accessibility** - All themes meet WCAG AA standards
+- ✅ **Enhanced User Experience** - Center-aligned elements for better visual balance
+- ✅ **Streamlined Theme Selection** - 9 focused themes instead of 10
+- ✅ **Theme-Aware Export Buttons** - Export Palette buttons adapt to all themes
+
+---
+
 ## [2.0.5] - 2025-11-24
 
 ### 🔒 Security & Code Quality Audit (Opus45)

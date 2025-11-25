@@ -2,12 +2,14 @@
  * XIV Dye Tools v2.0.0 - Theme Definitions
  * Phase 12: Modular CSS for theme management
  *
- * 10 theme variants with light/dark modes:
+ * 9 theme variants:
  * 1. Standard (Light/Dark)
- * 2. Hydaelyn (Light/Dark)
- * 3. Classic FF (Light/Dark)
- * 4. Parchment (Light/Dark)
- * 5. Sugar Riot (Light/Dark)
+ * 2. Hydaelyn (Light)
+ * 3. OG Classic (Dark)
+ * 4. Parchment (Light)
+ * 5. Cotton Candy (Light)
+ * 6. Sugar Riot (Dark)
+ * 7. Grayscale (Light/Dark)
  */
 
 :root {
@@ -48,24 +50,34 @@ html.theme-og-classic-dark {
 }
 
 /* =====================================================
-   PARCHMENT THEME (Light/Dark)
+   PARCHMENT THEME (Light)
    ===================================================== */
 html.theme-parchment-light {
   color-scheme: light;
 }
 
-html.theme-parchment-dark {
+/* =====================================================
+   COTTON CANDY THEME (Light)
+   ===================================================== */
+html.theme-cotton-candy {
+  color-scheme: light;
+}
+
+/* =====================================================
+   SUGAR RIOT THEME (Dark)
+   ===================================================== */
+html.theme-sugar-riot {
   color-scheme: dark;
 }
 
 /* =====================================================
-   SUGAR RIOT THEME (Light/Dark)
+   GRAYSCALE THEME (Light/Dark)
    ===================================================== */
-html.theme-sugar-riot-light {
+html.theme-grayscale-light {
   color-scheme: light;
 }
 
-html.theme-sugar-riot-dark {
+html.theme-grayscale-dark {
   color-scheme: dark;
 }
 

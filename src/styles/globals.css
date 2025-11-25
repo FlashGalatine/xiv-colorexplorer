@@ -88,8 +88,7 @@ body {
 body.dark-mode .tool-card,
 body.standard-dark .tool-card,
 body.theme-og-classic-dark .tool-card,
-body.parchment-dark .tool-card,
-body.sugar-riot-dark .tool-card {
+body.theme-sugar-riot .tool-card {
   background-color: var(--theme-card-bg);
   border-color: var(--theme-border);
 }
@@ -97,7 +96,6 @@ body.sugar-riot-dark .tool-card {
 body.dark-mode .tool-card:hover,
 body.standard-dark .tool-card:hover,
 body.theme-og-classic-dark .tool-card:hover,
-body.parchment-dark .tool-card:hover,
-body.sugar-riot-dark .tool-card:hover {
+body.theme-sugar-riot .tool-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }

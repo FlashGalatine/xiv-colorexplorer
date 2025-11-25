@@ -114,9 +114,8 @@ export type ThemeName =
   | 'hydaelyn-light'
   | 'og-classic-dark'
   | 'parchment-light'
-  | 'parchment-dark'
-  | 'sugar-riot-light'
-  | 'sugar-riot-dark'
+  | 'cotton-candy'
+  | 'sugar-riot'
   | 'grayscale-light'
   | 'grayscale-dark';
 

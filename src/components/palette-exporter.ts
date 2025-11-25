@@ -55,13 +55,18 @@ export class PaletteExporter extends BaseComponent {
    */
   render(): void {
     const section = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
+      className: 'rounded-lg border p-6 space-y-4',
+      attributes: {
+        style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
+      },
     });
 
     const title = this.createElement('h3', {
       textContent: this.options.title,
-      className: 'text-lg font-semibold text-gray-900 dark:text-white',
+      className: 'text-lg font-semibold',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
     });
     section.appendChild(title);
 
@@ -69,44 +74,72 @@ export class PaletteExporter extends BaseComponent {
       className: 'flex flex-wrap gap-3 justify-center',
     });
 
-    // JSON export button
+    // JSON export button - using theme primary color
     this.jsonBtn = this.createElement('button', {
       textContent: 'Export as JSON',
-      className:
-        'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors font-semibold min-h-[44px]',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'json',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
     });
+    // Add hover effect
+    this.jsonBtn.addEventListener('mouseenter', () => {
+      this.jsonBtn!.style.opacity = '0.9';
+    });
+    this.jsonBtn.addEventListener('mouseleave', () => {
+      this.jsonBtn!.style.opacity = '1';
+    });
 
-    // CSS export button
+    // CSS export button - using theme primary color
     this.cssBtn = this.createElement('button', {
       textContent: 'Export as CSS',
-      className:
-        'px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-500 transition-colors font-semibold min-h-[44px]',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'css',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
     });
+    // Add hover effect
+    this.cssBtn.addEventListener('mouseenter', () => {
+      this.cssBtn!.style.opacity = '0.9';
+    });
+    this.cssBtn.addEventListener('mouseleave', () => {
+      this.cssBtn!.style.opacity = '1';
+    });
 
-    // SCSS export button
+    // SCSS export button - using theme primary color
     this.scssBtn = this.createElement('button', {
       textContent: 'Export as SCSS',
-      className:
-        'px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 dark:hover:bg-pink-500 transition-colors font-semibold min-h-[44px]',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'scss',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
     });
+    // Add hover effect
+    this.scssBtn.addEventListener('mouseenter', () => {
+      this.scssBtn!.style.opacity = '0.9';
+    });
+    this.scssBtn.addEventListener('mouseleave', () => {
+      this.scssBtn!.style.opacity = '1';
+    });
 
-    // Copy hex codes button
+    // Copy hex codes button - using theme primary color
     this.copyBtn = this.createElement('button', {
       textContent: 'Copy All Hex Codes',
-      className:
-        'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-500 transition-colors font-semibold min-h-[44px]',
+      className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'hex',
+        style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
+    });
+    // Add hover effect
+    this.copyBtn.addEventListener('mouseenter', () => {
+      this.copyBtn!.style.opacity = '0.9';
+    });
+    this.copyBtn.addEventListener('mouseleave', () => {
+      this.copyBtn!.style.opacity = '1';
     });
 
     buttonGroup.appendChild(this.jsonBtn);
@@ -164,9 +197,13 @@ export class PaletteExporter extends BaseComponent {
       if (btn) {
         btn.disabled = !isEnabled;
         if (!isEnabled) {
-          btn.classList.add('opacity-50', 'cursor-not-allowed');
+          btn.classList.add('cursor-not-allowed');
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
         } else {
-          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          btn.classList.remove('cursor-not-allowed');
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
         }
       }
     }

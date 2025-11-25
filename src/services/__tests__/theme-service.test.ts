@@ -54,9 +54,9 @@ describe('ThemeService Integration', () => {
   // ============================================================================
 
   describe('Theme Selection', () => {
-    it('should support all 10 theme variants', () => {
+    it('should support all 9 theme variants', () => {
       const themes = ThemeService.getAllThemes();
-      expect(themes.length).toBe(10);
+      expect(themes.length).toBe(9);
     });
 
     it('should switch between light and dark themes', () => {
@@ -87,7 +87,7 @@ describe('ThemeService Integration', () => {
     });
 
     it('should reset to default theme', () => {
-      ThemeService.setTheme('parchment-dark' as ThemeName);
+      ThemeService.setTheme('sugar-riot' as ThemeName);
       ThemeService.resetToDefault();
 
       const theme = ThemeService.getCurrentTheme();
@@ -101,8 +101,8 @@ describe('ThemeService Integration', () => {
 
   describe('Theme Variants', () => {
     it('should get light variant of a theme', () => {
-      const light = ThemeService.getLightVariant('parchment-dark');
-      expect(light).toBe('parchment-light');
+      const light = ThemeService.getLightVariant('standard-dark');
+      expect(light).toBe('standard-light');
     });
 
     it('should get dark variant of a theme', () => {
@@ -118,10 +118,10 @@ describe('ThemeService Integration', () => {
     });
 
     it('should identify dark mode correctly', () => {
-      ThemeService.setTheme('sugar-riot-light' as ThemeName);
+      ThemeService.setTheme('cotton-candy' as ThemeName);
       expect(ThemeService.isDarkMode()).toBe(false);
 
-      ThemeService.setTheme('sugar-riot-dark' as ThemeName);
+      ThemeService.setTheme('sugar-riot' as ThemeName);
       expect(ThemeService.isDarkMode()).toBe(true);
     });
   });
@@ -236,8 +236,8 @@ describe('ThemeService Integration', () => {
         notifiedTheme = theme;
       });
 
-      ThemeService.setTheme('sugar-riot-light' as ThemeName);
-      expect(notifiedTheme).toBe('sugar-riot-light');
+      ThemeService.setTheme('cotton-candy' as ThemeName);
+      expect(notifiedTheme).toBe('cotton-candy');
 
       unsubscribe();
     });
@@ -298,7 +298,7 @@ describe('ThemeService Integration', () => {
         return;
       }
 
-      ThemeService.setTheme('parchment-dark' as ThemeName);
+      ThemeService.setTheme('sugar-riot' as ThemeName);
       const root = document.documentElement;
 
       const primaryColor = root.style.getPropertyValue('--theme-primary');
@@ -314,10 +314,10 @@ describe('ThemeService Integration', () => {
       ThemeService.setTheme('og-classic-dark' as ThemeName);
       const root = document.documentElement;
 
-      ThemeService.setTheme('sugar-riot-dark' as ThemeName);
+      ThemeService.setTheme('sugar-riot' as ThemeName);
 
       expect(root.classList.contains('theme-og-classic-dark')).toBe(false);
-      expect(root.classList.contains('theme-sugar-riot-dark')).toBe(true);
+      expect(root.classList.contains('theme-sugar-riot')).toBe(true);
     });
   });
 
@@ -325,16 +325,15 @@ describe('ThemeService Integration', () => {
   // All Themes Coverage Tests
   // ============================================================================
 
-  describe('All 10 Theme Coverage', () => {
+  describe('All 9 Theme Coverage', () => {
     const expectedThemes = [
       'standard-light',
       'standard-dark',
       'hydaelyn-light',
       'og-classic-dark',
       'parchment-light',
-      'parchment-dark',
-      'sugar-riot-light',
-      'sugar-riot-dark',
+      'cotton-candy',
+      'sugar-riot',
       'grayscale-light',
       'grayscale-dark',
     ];

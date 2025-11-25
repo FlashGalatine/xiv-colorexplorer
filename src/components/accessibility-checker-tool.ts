@@ -69,18 +69,23 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     // Title
     const title = this.createElement('div', {
-      className: 'space-y-2',
+      className: 'space-y-2 text-center',
     });
 
     const heading = this.createElement('h2', {
       textContent: 'Accessibility Checker',
-      className: 'text-3xl font-bold text-gray-900 dark:text-white',
+      className: 'text-3xl font-bold',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
     });
 
     const subtitle = this.createElement('p', {
       textContent:
         'Select up to 12 dyes to check how they appear to people with color vision deficiency. Includes analysis of individual dyes and optional pair comparisons.',
-      className: 'text-gray-600 dark:text-gray-300',
+      attributes: {
+        style: 'color: var(--theme-text-muted);',
+      },
     });
 
     title.appendChild(heading);

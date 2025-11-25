@@ -2,7 +2,7 @@
  * XIV Dye Tools v2.0.0 - Theme Service
  *
  * Phase 12: Architecture Refactor
- * 10-theme system management
+ * 9-theme system management
  *
  * @module services/theme-service
  */
@@ -19,26 +19,28 @@ import { logger } from '@shared/logger';
 
 const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
   'standard-light': {
-    primary: '#781A1A',
-    background: '#E4DFD0',
-    text: '#1E1E1E',
-    textHeader: '#F9F8F4',
-    border: '#451511',
-    backgroundSecondary: '#E4DFD0',
-    cardBackground: '#F9F8F4',
-    cardHover: '#FDFDFC',
-    textMuted: '#484742',
+    // Rich burgundy/maroon on light gray - WCAG AA compliant
+    primary: '#8B1A1A', // Rich burgundy red
+    background: '#D3D3D3', // Light gray background
+    text: '#1A1A1A', // Near black for 4.5:1+ contrast on light gray
+    textHeader: '#FFFFFF', // White text on burgundy header
+    border: '#6B1515', // Darker burgundy for borders
+    backgroundSecondary: '#E0E0E0', // Slightly lighter gray
+    cardBackground: '#F5F5F5', // Off-white cards
+    cardHover: '#FFFFFF', // Pure white on hover
+    textMuted: '#4A4A4A', // Medium gray for muted text
   },
   'standard-dark': {
-    primary: '#CC6C5E',
-    background: '#2B2923',
-    text: '#F9F8F4',
-    textHeader: '#1E1E1E',
-    border: '#E69F96',
-    backgroundSecondary: '#2B2923',
-    cardBackground: '#1E1E1E',
-    cardHover: '#242424',
-    textMuted: '#ACA8A2',
+    // Warm coral/red on dark gray - WCAG AA compliant
+    primary: '#E85A5A', // Warm coral red
+    background: '#2D2D2D', // Dark gray background
+    text: '#F5F5F5', // Light gray text for 4.5:1+ contrast
+    textHeader: '#1A1A1A', // Dark text on coral header
+    border: '#F08080', // Light coral for borders
+    backgroundSecondary: '#333333', // Slightly lighter dark gray
+    cardBackground: '#1F1F1F', // Very dark cards
+    cardHover: '#3A3A3A', // Lighter on hover
+    textMuted: '#B0B0B0', // Medium gray for muted text
   },
   'hydaelyn-light': {
     primary: '#4056A4',
@@ -73,38 +75,29 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     cardHover: '#FEF9E7',
     textMuted: '#92400E',
   },
-  'parchment-dark': {
-    primary: '#FBBF24',
-    background: '#78350F',
-    text: '#FEF3C7',
-    textHeader: '#FEF3C7', // Default: same as text
-    border: '#D97706',
-    backgroundSecondary: '#92400E',
-    cardBackground: '#78350F',
-    cardHover: '#92400E',
-    textMuted: '#FCD34D',
+  'cotton-candy': {
+    // Soft pastel theme - light and airy
+    primary: '#FFB6D9', // Soft pastel pink
+    background: '#FFF5F9', // Very light pink background
+    text: '#8B1A4A', // Dark pink for 4.5:1+ contrast
+    textHeader: '#8B1A4A', // Dark pink header text
+    border: '#FFC0E0', // Light pink border
+    backgroundSecondary: '#FFF9FC', // Almost white secondary
+    cardBackground: '#FFFFFF', // Pure white cards
+    cardHover: '#FFF5F9', // Light pink on hover
+    textMuted: '#A0526D', // Muted pink-gray
   },
-  'sugar-riot-light': {
-    primary: '#EC4899',
-    background: '#FFFFFF',
-    text: '#831843',
-    textHeader: '#831843', // Default: same as text
-    border: '#FBCFE8',
-    backgroundSecondary: '#FDF2F8',
-    cardBackground: '#FFFFFF',
-    cardHover: '#FDF2F8',
-    textMuted: '#9F1239',
-  },
-  'sugar-riot-dark': {
-    primary: '#F472B6',
-    background: '#500724',
-    text: '#FDF2F8',
-    textHeader: '#FDF2F8', // Default: same as text
-    border: '#EC4899',
-    backgroundSecondary: '#831843',
-    cardBackground: '#500724',
-    cardHover: '#831843',
-    textMuted: '#F9A8D4',
+  'sugar-riot': {
+    // Neon cyberpunk theme - pink primary, blue secondary, yellow tertiary
+    primary: '#FF1493', // Neon pink (DeepPink)
+    background: '#0A0A0A', // Very dark background
+    text: '#FFFFFF', // White text for maximum contrast
+    textHeader: '#0A0A0A', // Dark text on neon pink header
+    border: '#FF00FF', // Magenta border
+    backgroundSecondary: '#1A0A1A', // Dark purple-gray
+    cardBackground: '#1A0A1A', // Dark cards
+    cardHover: '#2A1A2A', // Lighter on hover
+    textMuted: '#FFB6FF', // Light pink for muted text
   },
   'grayscale-light': {
     primary: '#404040',
@@ -118,6 +111,7 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     textMuted: '#6B7280',
   },
   'grayscale-dark': {
+    // Professional dark theme
     primary: '#6B7280',
     background: '#111827',
     text: '#F3F4F6',
@@ -172,7 +166,8 @@ export class ThemeService {
       throw new AppError(ErrorCode.INVALID_THEME, `Invalid theme name: ${name}`, 'error');
     }
 
-    const isDark = name.endsWith('-dark');
+    // Determine if theme is dark: ends with -dark OR is sugar-riot (dark theme without suffix)
+    const isDark = name.endsWith('-dark') || name === 'sugar-riot';
     return {
       name,
       palette: THEME_PALETTES[name],
@@ -272,7 +267,7 @@ export class ThemeService {
    * Check if current theme is dark
    */
   static isDarkMode(): boolean {
-    return this.currentTheme.endsWith('-dark');
+    return this.currentTheme.endsWith('-dark') || this.currentTheme === 'sugar-riot';
   }
 
   /**
