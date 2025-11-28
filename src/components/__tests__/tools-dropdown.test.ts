@@ -508,6 +508,132 @@ describe('ToolsDropdown', () => {
   });
 
   // ==========================================================================
+  // Hover Effects
+  // ==========================================================================
+
+  describe('Hover Effects', () => {
+    it('should change background on button mouseenter', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      const button = container.querySelector('#tools-dropdown-btn') as HTMLButtonElement;
+      button.dispatchEvent(new MouseEvent('mouseenter'));
+
+      // Background should be set to semi-transparent (either light or dark based on theme)
+      expect(button.style.backgroundColor).toMatch(/rgba\(\d+, \d+, \d+, 0\.15\)/);
+    });
+
+    it('should reset background on button mouseleave', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      const button = container.querySelector('#tools-dropdown-btn') as HTMLButtonElement;
+      button.dispatchEvent(new MouseEvent('mouseenter'));
+      button.dispatchEvent(new MouseEvent('mouseleave'));
+
+      expect(button.style.backgroundColor).toBe('transparent');
+    });
+
+    it('should change background on tool button mouseenter', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      const toolBtn = container.querySelector('[data-tool-id="harmony"]') as HTMLButtonElement;
+      toolBtn.dispatchEvent(new MouseEvent('mouseenter'));
+
+      expect(toolBtn.style.backgroundColor).toBe('var(--theme-card-hover)');
+    });
+
+    it('should reset background on tool button mouseleave', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      const toolBtn = container.querySelector('[data-tool-id="harmony"]') as HTMLButtonElement;
+      toolBtn.dispatchEvent(new MouseEvent('mouseenter'));
+      toolBtn.dispatchEvent(new MouseEvent('mouseleave'));
+
+      expect(toolBtn.style.backgroundColor).toBe('transparent');
+    });
+  });
+
+  // ==========================================================================
+  // Dropdown Coordination (close-other-dropdowns)
+  // ==========================================================================
+
+  describe('Dropdown Coordination', () => {
+    it('should close when receiving close-other-dropdowns event from another source', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      // Open dropdown first
+      const button = container.querySelector('#tools-dropdown-btn') as HTMLButtonElement;
+      button.click();
+
+      expect(component['isDropdownOpen']).toBe(true);
+
+      // Simulate close-other-dropdowns event from theme-switcher
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'theme' } })
+      );
+
+      expect(component['isDropdownOpen']).toBe(false);
+    });
+
+    it('should NOT close when receiving close-other-dropdowns event from self', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      // Open dropdown first
+      const button = container.querySelector('#tools-dropdown-btn') as HTMLButtonElement;
+      button.click();
+
+      expect(component['isDropdownOpen']).toBe(true);
+
+      // Simulate close-other-dropdowns event from self (tools)
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'tools' } })
+      );
+
+      // Should stay open because source is 'tools'
+      expect(component['isDropdownOpen']).toBe(true);
+    });
+
+    it('should ignore close-other-dropdowns when already closed', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      // Dropdown is closed
+      expect(component['isDropdownOpen']).toBe(false);
+
+      // Simulate close-other-dropdowns event
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'theme' } })
+      );
+
+      // Should remain closed
+      expect(component['isDropdownOpen']).toBe(false);
+    });
+
+    it('should dispatch close-other-dropdowns when opening', () => {
+      component = new ToolsDropdown(container, mockTools);
+      component.init();
+
+      const eventHandler = vi.fn();
+      document.addEventListener('close-other-dropdowns', eventHandler);
+
+      // Open dropdown
+      const button = container.querySelector('#tools-dropdown-btn') as HTMLButtonElement;
+      button.click();
+
+      expect(eventHandler).toHaveBeenCalledTimes(1);
+      const event = eventHandler.mock.calls[0][0] as CustomEvent;
+      expect(event.detail.source).toBe('tools');
+
+      document.removeEventListener('close-other-dropdowns', eventHandler);
+    });
+  });
+
+  // ==========================================================================
   // Edge Cases
   // ==========================================================================
 
