@@ -29,8 +29,9 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   ...overrides,
 });
 
-// Type helper to access private methods
-type ComponentWithPrivate = DyeComparisonTool & {
+// Type helper to access private methods - use interface to avoid 'never' type
+interface ComponentWithPrivate {
+  init: () => void;
   selectedDyes: Dye[];
   showPrices: boolean;
   priceData: Map<number, { currentAverage: number }>;
@@ -43,7 +44,7 @@ type ComponentWithPrivate = DyeComparisonTool & {
   generateCssExport: () => string;
   renderStatCard: (label: string, value: string) => HTMLElement;
   getState: () => Record<string, unknown>;
-};
+}
 
 const mockFetchPrices = vi.fn().mockResolvedValue(new Map());
 const loadServerDataMock = vi.fn();

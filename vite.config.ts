@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import { asyncCss } from './vite-plugin-async-css'
+import pkg from './package.json'
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   root: 'src',
   base: '/',
   publicDir: '../public',

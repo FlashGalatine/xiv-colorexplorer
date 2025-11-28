@@ -189,7 +189,7 @@ export class AppLayout extends BaseComponent {
     const copyright = this.createElement('div', {
       className: 'text-center text-sm text-gray-600 dark:text-gray-400 mb-6',
       innerHTML:
-        `${LanguageService.t('app.title')} v${APP_VERSION} • ${LanguageService.t('footer.version')} ${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`,
+        `${LanguageService.t('app.title')} v${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`,
     });
     footerContent.appendChild(copyright);
 
@@ -294,7 +294,7 @@ export class AppLayout extends BaseComponent {
     // Update footer text
     const footerCopyright = this.querySelector<HTMLElement>('footer .text-sm');
     if (footerCopyright) {
-      footerCopyright.innerHTML = `${LanguageService.t('app.title')} v${APP_VERSION} • ${LanguageService.t('footer.version')} ${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`;
+      footerCopyright.innerHTML = `${LanguageService.t('app.title')} v${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`;
     }
 
     const footerCreator = this.querySelector<HTMLElement>('footer .text-xs:not(.border-t)');

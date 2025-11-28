@@ -153,7 +153,8 @@ describe('LanguageService', () => {
 
       unsubscribe();
 
-      const locale2 = locale1 === 'de' ? 'en' : 'de';
+      // Use a different locale than locale1 to test unsubscribe
+      const locale2 = locale1 === 'en' ? 'ja' : 'en';
       await LanguageService.setLocale(locale2);
       expect(listener).toHaveBeenCalledTimes(1); // Still 1, not called again
 

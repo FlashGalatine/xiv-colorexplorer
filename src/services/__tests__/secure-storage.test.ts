@@ -697,7 +697,7 @@ describe('SecureStorage', () => {
             timestamp: Date.now(),
           } as T;
         }
-        return originalGetItem.call(StorageService, key);
+        return originalGetItem.call(StorageService, key) as T | null;
       };
 
       const result = await SecureStorage.getItem('test-verify', 'fallback');

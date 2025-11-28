@@ -474,7 +474,8 @@ describe('Object Utilities', () => {
 
     it('should merge nested objects', () => {
       const target = { a: { x: 1 } };
-      const source = { a: { y: 2 } };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const source = { a: { y: 2 } } as any;
       expect(mergeObjects(target, source)).toEqual({ a: { x: 1, y: 2 } });
     });
   });

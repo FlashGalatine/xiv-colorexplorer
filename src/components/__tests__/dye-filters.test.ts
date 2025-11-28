@@ -29,6 +29,7 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   hsv: { h: 0, s: 100, v: 100 },
   category: 'Red',
   acquisition: 'Vendor',
+  cost: 0,
   ...overrides,
 });
 

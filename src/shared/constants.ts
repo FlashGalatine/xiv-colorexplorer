@@ -15,7 +15,9 @@ import type { LocaleCode, LocaleDisplay } from './i18n-types';
 // ============================================================================
 
 export const APP_NAME = 'XIV Dye Tools';
-export const APP_VERSION = '2.1.1';
+// Version injected from package.json by Vite at build time
+declare const __APP_VERSION__: string;
+export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0';
 export const APP_DESCRIPTION =
   'A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors';
 

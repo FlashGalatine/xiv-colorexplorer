@@ -25,8 +25,9 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   ...overrides,
 });
 
-// Type helper to access private methods
-type ComponentWithPrivate = ColorMatcherTool & {
+// Type helper to access private methods - use interface to avoid 'never' type
+interface ComponentWithPrivate {
+  init: () => void;
   matchColor: (hex: string) => void;
   renderDyeCard: (dye: Dye, sampledColor: string) => HTMLElement;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -39,7 +40,7 @@ type ComponentWithPrivate = ColorMatcherTool & {
   zoomLevel: number;
   lastSampledColor: string;
   priceData: Map<number, { currentAverage: number }>;
-};
+}
 
 vi.mock('../market-board', () => {
   return {

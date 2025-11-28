@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockInstance } from 'vitest';
-import { logger, perf, initErrorTracking, __setTestEnvironment } from '../logger';
+import { logger, perf, initErrorTracking, __setTestEnvironment, type ErrorTracker } from '../logger';
 
 describe('Logger Module', () => {
   // Store original console methods
@@ -414,8 +414,8 @@ describe('Error Tracker Integration', () => {
       setUser: vi.fn(),
     };
 
-    // Initialize the error tracker
-    initErrorTracking(mockTracker);
+    // Initialize the error tracker (cast to ErrorTracker for type compatibility)
+    initErrorTracking(mockTracker as unknown as ErrorTracker);
   });
 
   afterEach(() => {
@@ -606,8 +606,8 @@ describe('Production Mode Error Tracking', () => {
       setUser: vi.fn(),
     };
 
-    // Initialize the error tracker
-    initErrorTracking(mockTracker);
+    // Initialize the error tracker (cast to ErrorTracker for type compatibility)
+    initErrorTracking(mockTracker as unknown as ErrorTracker);
   });
 
   afterEach(() => {

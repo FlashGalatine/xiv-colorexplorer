@@ -728,11 +728,12 @@ describe('ImageUploadDisplay', () => {
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
       let callCount = 0;
       const originalGetContext = canvas.getContext.bind(canvas);
-      canvas.getContext = (contextId: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).getContext = (contextId: string) => {
         callCount++;
         if (callCount === 1) {
           // First call (getImageCanvas) - return valid context
-          return originalGetContext(contextId);
+          return originalGetContext(contextId as '2d');
         }
         // Second call (samplePixel) - return null
         return null;
@@ -759,10 +760,11 @@ describe('ImageUploadDisplay', () => {
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
       let callCount = 0;
       const originalGetContext = canvas.getContext.bind(canvas);
-      canvas.getContext = (contextId: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).getContext = (contextId: string) => {
         callCount++;
         if (callCount === 1) {
-          return originalGetContext(contextId);
+          return originalGetContext(contextId as '2d');
         }
         return null;
       };
@@ -798,7 +800,8 @@ describe('ImageUploadDisplay', () => {
           data: new Uint8ClampedArray([255, 0, 0, 255]),
         }),
       };
-      canvas.getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
 
       // Test with negative coordinates
       const result = component.samplePixel(-10, -10);
@@ -824,7 +827,8 @@ describe('ImageUploadDisplay', () => {
           data: new Uint8ClampedArray([0, 255, 0, 255]),
         }),
       };
-      canvas.getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
 
       // Test with coordinates exceeding bounds
       const result = component.samplePixel(500, 500);
@@ -850,7 +854,8 @@ describe('ImageUploadDisplay', () => {
           data: new Uint8ClampedArray([0, 0, 255, 255]),
         }),
       };
-      canvas.getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).getContext = () => mockCtx as unknown as CanvasRenderingContext2D;
 
       // Get average color at edge with large sample size
       const result = component.getAverageColor(98, 98, 10);

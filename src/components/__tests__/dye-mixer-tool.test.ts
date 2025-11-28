@@ -5,6 +5,7 @@ import {
   setupMockLocalStorage,
 } from './test-utils';
 import type { Dye } from '@shared/types';
+import type { LocaleCode } from '@shared/i18n-types';
 import { dyeService, ColorService, LanguageService } from '@services/index';
 import type { InterpolationStep } from '../color-interpolation-display';
 import type { PaletteData } from '../palette-exporter';
@@ -24,8 +25,9 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   ...overrides,
 });
 
-// Type helper to access private methods
-type ComponentWithPrivate = DyeMixerTool & {
+// Type helper to access private methods - use interface to avoid 'never' type
+interface ComponentWithPrivate {
+  init: () => void;
   selectedDyes: Dye[];
   stepCount: number;
   colorSpace: 'rgb' | 'hsv';
@@ -46,7 +48,7 @@ type ComponentWithPrivate = DyeMixerTool & {
   toggleSavedGradientsPanel: () => void;
   copyShareUrl: () => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
-};
+}
 
 const dyeSelectorInitMock = vi.fn();
 const dyeSelectorSetSelectedDyesMock = vi.fn();
@@ -396,8 +398,8 @@ describe('DyeMixerTool', () => {
 
       const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
 
-      expect(paletteData.groups.end).toHaveLength(1);
-      expect(paletteData.groups.end[0]?.name).toBe('End Dye');
+      expect(paletteData.groups?.end).toHaveLength(1);
+      expect(paletteData.groups?.end[0]?.name).toBe('End Dye');
     });
 
     it('should include step dyes in groups', () => {
@@ -413,8 +415,8 @@ describe('DyeMixerTool', () => {
 
       const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
 
-      expect(paletteData.groups.steps).toHaveLength(1);
-      expect(paletteData.groups.steps[0]?.name).toBe('Step Dye');
+      expect(paletteData.groups?.steps).toHaveLength(1);
+      expect(paletteData.groups?.steps[0]?.name).toBe('Step Dye');
     });
 
     it('should include metadata', () => {
@@ -821,7 +823,7 @@ describe('DyeMixerTool', () => {
         { position: 0.5, theoreticalColor: '#00FF00', matchedDye: createMockDye({id:3}), distance: 5 },
       ];
       const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
-      expect(paletteData.groups.steps).toHaveLength(1);
+      expect(paletteData.groups?.steps).toHaveLength(1);
     });
   });
 
@@ -837,7 +839,7 @@ describe('DyeMixerTool', () => {
     });
 
     it('should call update when language changes', () => {
-      let languageCallback: (() => void) | null = null;
+      let languageCallback: ((locale: LocaleCode) => void) | null = null;
       vi.spyOn(LanguageService, 'subscribe').mockImplementation((cb) => {
         languageCallback = cb;
         return () => {};
@@ -847,9 +849,9 @@ describe('DyeMixerTool', () => {
       const updateSpy = vi.spyOn(instance, 'update');
 
       // Trigger the language change callback
-      if (languageCallback) {
-        languageCallback();
-      }
+      expect(languageCallback).not.toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      languageCallback!('en');
 
       expect(updateSpy).toHaveBeenCalled();
     });

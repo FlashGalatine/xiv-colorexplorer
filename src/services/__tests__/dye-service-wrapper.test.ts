@@ -116,8 +116,8 @@ describe('DyeService Wrapper', () => {
 
     it('should have findClosestDye method', () => {
       const instance = DyeService.getInstance();
-      // Find closest to pure red
-      const closest = instance.findClosestDye({ r: 255, g: 0, b: 0 });
+      // Find closest to pure red (passing hex string)
+      const closest = instance.findClosestDye('#FF0000');
 
       // May return null if no dyes match, or a Dye object
       if (closest !== null) {

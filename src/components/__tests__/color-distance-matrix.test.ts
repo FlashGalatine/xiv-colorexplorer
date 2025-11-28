@@ -21,6 +21,7 @@ const createMockDye = (id: number, name: string, hex: string): Dye => ({
   hsv: { h: 0, s: 0, v: 50 },
   category: 'Test',
   acquisition: 'Test',
+  cost: 0,
 });
 
 const mockDyes = [

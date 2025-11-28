@@ -83,7 +83,7 @@ const isProd = (): boolean => {
  *   npm install @sentry/browser
  *   import * as Sentry from '@sentry/browser';
  */
-interface ErrorTracker {
+export interface ErrorTracker {
   captureException: (error: unknown, context?: Record<string, unknown>) => void;
   captureMessage: (message: string, level?: 'info' | 'warning' | 'error') => void;
   setTag: (key: string, value: string) => void;

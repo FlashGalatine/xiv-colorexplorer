@@ -378,7 +378,8 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container);
       component.init();
 
-      const emitSpy = vi.spyOn(component, 'emit');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const emitSpy = vi.spyOn(component as any, 'emit');
 
       const primaryContainer = container.querySelector('#dye-selector-head-primary');
       const mockDye = {
@@ -409,7 +410,8 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container);
       component.init();
 
-      const emitSpy = vi.spyOn(component, 'emit');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const emitSpy = vi.spyOn(component as any, 'emit');
 
       const primaryContainer = container.querySelector('#dye-selector-head-primary');
 
@@ -430,7 +432,8 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container);
       component.init();
 
-      const emitSpy = vi.spyOn(component, 'emit');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const emitSpy = vi.spyOn(component as any, 'emit');
 
       const primaryContainer = container.querySelector('#dye-selector-head-primary');
 
@@ -454,7 +457,8 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container, true);
       component.init();
 
-      const emitSpy = vi.spyOn(component, 'emit');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const emitSpy = vi.spyOn(component as any, 'emit');
 
       const secondaryContainer = container.querySelector('#dye-selector-head-secondary');
       const mockDye = {
@@ -485,7 +489,8 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container, true);
       component.init();
 
-      const emitSpy = vi.spyOn(component, 'emit');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const emitSpy = vi.spyOn(component as any, 'emit');
 
       const secondaryContainer = container.querySelector('#dye-selector-head-secondary');
 
@@ -570,7 +575,8 @@ describe('OutfitSlotSelector', () => {
   // ==========================================================================
 
   describe('slot card display with selected dyes', () => {
-    type ComponentWithSlots = OutfitSlotSelector & {
+    // Use interface to avoid 'never' type from intersection with private members
+    interface ComponentWithSlots {
       slots: Array<{
         id: string;
         name: string;
@@ -578,7 +584,7 @@ describe('OutfitSlotSelector', () => {
         primary: { id: number; name: string; hex: string } | null;
         secondary: { id: number; name: string; hex: string } | null;
       }>;
-    };
+    }
 
     it('should render primary dye display when primary is set', () => {
       component = new OutfitSlotSelector(container);
@@ -636,7 +642,8 @@ describe('OutfitSlotSelector', () => {
   // ==========================================================================
 
   describe('getSelectedSlots with selected dyes', () => {
-    type ComponentWithSlots = OutfitSlotSelector & {
+    // Use interface to avoid 'never' type from intersection with private members
+    interface ComponentWithSlots {
       slots: Array<{
         id: string;
         name: string;
@@ -644,7 +651,7 @@ describe('OutfitSlotSelector', () => {
         primary: { id: number; itemID: number; name: string; hex: string } | null;
         secondary: { id: number; itemID: number; name: string; hex: string } | null;
       }>;
-    };
+    }
 
     it('should return copies of dye objects', () => {
       component = new OutfitSlotSelector(container);

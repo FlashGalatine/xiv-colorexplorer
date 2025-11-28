@@ -20,11 +20,13 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   hsv: { h: 0, s: 100, v: 100 },
   category: 'Red',
   acquisition: 'Vendor',
+  cost: 0,
   ...overrides,
 });
 
-// Helper to access private methods
-type ComponentWithPrivate = AccessibilityCheckerTool & {
+// Helper to access private methods - use interface instead of intersection to avoid 'never' type
+interface ComponentWithPrivate {
+  init: () => void;
   analyzeDye: (dye: Dye) => {
     dyeId: number;
     dyeName: string;
@@ -46,7 +48,7 @@ type ComponentWithPrivate = AccessibilityCheckerTool & {
   getWCAGBadgeColor: (level: string) => string;
   getDistinguishabilityColor: (score: number) => string;
   selectedDyes: Dye[];
-};
+}
 
 describe('AccessibilityCheckerTool Component', () => {
   let container: HTMLElement;
@@ -868,11 +870,11 @@ describe('AccessibilityCheckerTool Component', () => {
   // ==========================================================================
 
   describe('updateResults integration', () => {
-    // Helper to access private updateResults
-    type ComponentWithUpdateResults = AccessibilityCheckerTool & {
+    // Helper to access private updateResults - use interface to avoid 'never' type
+    interface ComponentWithUpdateResults {
       updateResults: () => void;
       dyeSelector: { getSelectedDyes: () => Dye[] } | null;
-    };
+    }
 
     it('should display empty message when no dyes selected', () => {
       component = new AccessibilityCheckerTool(container);
@@ -944,7 +946,8 @@ describe('AccessibilityCheckerTool Component', () => {
   // ==========================================================================
 
   describe('renderDyeCard rendering', () => {
-    type ComponentWithRender = AccessibilityCheckerTool & {
+    // Use interface to avoid 'never' type from intersection with private members
+    interface ComponentWithRender {
       renderDyeCard: (result: {
         dyeId: number;
         dyeName: string;
@@ -954,7 +957,7 @@ describe('AccessibilityCheckerTool Component', () => {
         warnings: string[];
         colorblindnessSimulations: Record<string, string>;
       }) => HTMLElement;
-    };
+    }
 
     it('should render dye card with name and hex', () => {
       component = new AccessibilityCheckerTool(container);
@@ -1070,7 +1073,8 @@ describe('AccessibilityCheckerTool Component', () => {
   // ==========================================================================
 
   describe('renderPairCard rendering', () => {
-    type ComponentWithRender = AccessibilityCheckerTool & {
+    // Use interface to avoid 'never' type from intersection with private members
+    interface ComponentWithRender {
       renderPairCard: (result: {
         dye1Id: number;
         dye1Name: string;
@@ -1081,7 +1085,7 @@ describe('AccessibilityCheckerTool Component', () => {
         distinguishability: number;
         warnings: string[];
       }) => HTMLElement;
-    };
+    }
 
     it('should render both dye names', () => {
       component = new AccessibilityCheckerTool(container);
@@ -1153,10 +1157,11 @@ describe('AccessibilityCheckerTool Component', () => {
   // ==========================================================================
 
   describe('renderOverallAccessibilityScore rendering', () => {
-    type ComponentWithRender = AccessibilityCheckerTool & {
+    // Use interface to avoid 'never' type from intersection with private members
+    interface ComponentWithRender {
       renderOverallAccessibilityScore: (score: number) => HTMLElement;
       dyeResults: unknown[];
-    };
+    }
 
     it('should render score value', () => {
       component = new AccessibilityCheckerTool(container);

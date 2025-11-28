@@ -18,8 +18,9 @@ const createDye = (overrides: Partial<Dye> = {}): Dye => {
   };
 };
 
-// Type helper to access private methods
-type ComponentWithPrivate = HarmonyGeneratorTool & {
+// Type helper to access private methods - use interface to avoid 'never' type
+interface ComponentWithPrivate {
+  init: () => void;
   baseColor: string;
   showPrices: boolean;
   priceData: Map<number, PriceData>;
@@ -49,7 +50,7 @@ type ComponentWithPrivate = HarmonyGeneratorTool & {
   updateCompanionDyesCount: () => void;
   toggleCompanionSection: () => void;
   updateAllDisplays: () => void;
-};
+}
 
 const mockHarmonySnapshots: Record<string, Array<{ dye: Dye; deviance: number }>> = {};
 
@@ -475,7 +476,7 @@ describe('HarmonyGeneratorTool', () => {
 
       const paletteData = (component as unknown as ComponentWithPrivate).getPaletteData();
 
-      expect(Object.keys(paletteData.groups)).toHaveLength(0);
+      expect(Object.keys(paletteData.groups ?? {})).toHaveLength(0);
     });
   });
 
@@ -982,7 +983,7 @@ describe('HarmonyGeneratorTool', () => {
       const paletteData = (component as unknown as ComponentWithPrivate).getPaletteData();
 
       // All groups should be empty
-      expect(Object.keys(paletteData.groups)).toHaveLength(0);
+      expect(Object.keys(paletteData.groups ?? {})).toHaveLength(0);
     });
   });
 

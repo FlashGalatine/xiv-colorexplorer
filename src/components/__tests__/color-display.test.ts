@@ -350,7 +350,8 @@ describe('ColorDisplay', () => {
     });
 
     it('should display N/A when cost is not available', () => {
-      const dyeWithoutCost = { ...mockDye, cost: undefined };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dyeWithoutCost = { ...mockDye, cost: undefined } as any;
       component = new ColorDisplay(container);
       component.init();
       component.setDye(dyeWithoutCost);
