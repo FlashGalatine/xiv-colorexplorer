@@ -536,5 +536,433 @@ describe('MarketBoard', () => {
       refreshBtn.dispatchEvent(new MouseEvent('mouseleave'));
       expect(refreshBtn.style.filter).toBe('');
     });
+
+    it('should not apply brightness filter when button is disabled', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const refreshBtn = container.querySelector('#mb-refresh-btn') as HTMLButtonElement;
+      refreshBtn.disabled = true;
+
+      refreshBtn.dispatchEvent(new MouseEvent('mouseenter'));
+      // Filter should not be set when disabled
+      expect(refreshBtn.style.filter).toBe('');
+    });
+
+    it('should apply mousedown/mouseup filter effects', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const refreshBtn = container.querySelector('#mb-refresh-btn') as HTMLButtonElement;
+
+      refreshBtn.dispatchEvent(new MouseEvent('mousedown'));
+      expect(refreshBtn.style.filter).toContain('brightness(0.8)');
+
+      refreshBtn.dispatchEvent(new MouseEvent('mouseup'));
+      expect(refreshBtn.style.filter).toContain('brightness(0.9)');
+    });
+
+    it('should not apply mousedown filter when button is disabled', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const refreshBtn = container.querySelector('#mb-refresh-btn') as HTMLButtonElement;
+      refreshBtn.disabled = true;
+
+      refreshBtn.dispatchEvent(new MouseEvent('mousedown'));
+      expect(refreshBtn.style.filter).toBe('');
+
+      refreshBtn.dispatchEvent(new MouseEvent('mouseup'));
+      expect(refreshBtn.style.filter).toBe('');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - loadServerData
+  // ==========================================================================
+
+  describe('loadServerData branch coverage', () => {
+    it('should handle network error gracefully', async () => {
+      fetchMock.mockRejectedValue(new Error('Network error'));
+
+      component = new MarketBoard(container);
+      component.init();
+
+      // Should not throw
+      await expect(component.loadServerData()).resolves.not.toThrow();
+    });
+
+    it('should handle partial fetch failure', async () => {
+      fetchMock.mockImplementation((url: string) => {
+        if (url.includes('data-centers.json')) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockDataCenters),
+          });
+        }
+        // worlds.json fails
+        return Promise.resolve({ ok: false, status: 500 });
+      });
+
+      component = new MarketBoard(container);
+      component.init();
+
+      await expect(component.loadServerData()).resolves.not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - shouldFetchPrice acquisition types
+  // ==========================================================================
+
+  describe('shouldFetchPrice acquisition branch coverage', () => {
+    beforeEach(() => {
+      component = new MarketBoard(container);
+      component.init();
+    });
+
+    it('should return true for Base Dye with Dye Vendor acquisition when baseDyes enabled', () => {
+      // Enable baseDyes checkbox (default is false)
+      const baseDyesCheckbox = container.querySelector('#mb-price-baseDyes') as HTMLInputElement;
+      baseDyesCheckbox.checked = true;
+      baseDyesCheckbox.dispatchEvent(new Event('change'));
+
+      const dye = {
+        itemID: 123,
+        category: 'Red',
+        acquisition: 'Dye Vendor',
+      } as Dye;
+
+      expect(component.shouldFetchPrice(dye)).toBe(true);
+    });
+
+    it('should return true for Craft Dye with Crafting acquisition (default enabled)', () => {
+      const dye = {
+        itemID: 123,
+        category: 'Red',
+        acquisition: 'Crafting',
+      } as Dye;
+
+      expect(component.shouldFetchPrice(dye)).toBe(true);
+    });
+
+    it('should return true for Allied Society Dye when alliedSocietyDyes enabled', () => {
+      // Enable alliedSocietyDyes checkbox (default is false)
+      const alliedCheckbox = container.querySelector('#mb-price-alliedSocietyDyes') as HTMLInputElement;
+      alliedCheckbox.checked = true;
+      alliedCheckbox.dispatchEvent(new Event('change'));
+
+      const dye = {
+        itemID: 123,
+        category: 'Red',
+        acquisition: "Amalj'aa Vendor",
+      } as Dye;
+
+      expect(component.shouldFetchPrice(dye)).toBe(true);
+    });
+
+    it('should return true for Cosmic Dye with Cosmic Exploration acquisition (default enabled)', () => {
+      const dye = {
+        itemID: 123,
+        category: 'Red',
+        acquisition: 'Cosmic Exploration',
+      } as Dye;
+
+      expect(component.shouldFetchPrice(dye)).toBe(true);
+    });
+
+    it('should return false for unknown acquisition type', () => {
+      const dye = {
+        itemID: 123,
+        category: 'Red',
+        acquisition: 'Unknown Source',
+      } as Dye;
+
+      expect(component.shouldFetchPrice(dye)).toBe(false);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - fetchPrice
+  // ==========================================================================
+
+  describe('fetchPrice branch coverage', () => {
+    it('should return price data when showPrices is true and dye is valid', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      // Enable show prices
+      const toggle = container.querySelector('#show-mb-prices-toggle') as HTMLInputElement;
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change'));
+
+      const dye = {
+        itemID: 123,
+        name: 'Special Dye',
+        category: 'Special',
+        acquisition: 'Unknown',
+      } as Dye;
+
+      const result = await component.fetchPrice(dye);
+      expect(result).not.toBeNull();
+    });
+
+    it('should handle API error gracefully', async () => {
+      // Mock the API service to throw
+      const { APIService } = await import('@services/index');
+      vi.mocked(APIService.getInstance).mockReturnValue({
+        clearCache: vi.fn().mockResolvedValue(undefined),
+        getPriceData: vi.fn().mockRejectedValue(new Error('API Error')),
+      } as unknown as ReturnType<typeof APIService.getInstance>);
+
+      component = new MarketBoard(container);
+      component.init();
+
+      // Enable show prices
+      const toggle = container.querySelector('#show-mb-prices-toggle') as HTMLInputElement;
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change'));
+
+      const dye = {
+        itemID: 123,
+        name: 'Test Dye',
+        category: 'Special',
+        acquisition: 'Unknown',
+      } as Dye;
+
+      const result = await component.fetchPrice(dye);
+      expect(result).toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - refreshPrices
+  // ==========================================================================
+
+  describe('refreshPrices branch coverage', () => {
+    it('should handle clearCache error gracefully', async () => {
+      const { APIService } = await import('@services/index');
+      vi.mocked(APIService.getInstance).mockReturnValue({
+        clearCache: vi.fn().mockRejectedValue(new Error('Cache clear error')),
+        getPriceData: vi.fn().mockResolvedValue({ minPrice: 1000 }),
+      } as unknown as ReturnType<typeof APIService.getInstance>);
+
+      component = new MarketBoard(container);
+      component.init();
+
+      // Should not throw
+      await expect(component.refreshPrices()).resolves.not.toThrow();
+
+      // Status should show error message
+      const statusMsg = container.querySelector('#mb-price-status');
+      expect(statusMsg?.textContent).toContain('Error');
+    });
+
+    it('should handle missing refresh button gracefully', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      // Remove refresh button
+      container.querySelector('#mb-refresh-btn')?.remove();
+
+      // Should not throw
+      await expect(component.refreshPrices()).resolves.not.toThrow();
+    });
+
+    it('should handle missing status message gracefully', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      // Remove status message
+      container.querySelector('#mb-price-status')?.remove();
+
+      // Should not throw
+      await expect(component.refreshPrices()).resolves.not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - setState
+  // ==========================================================================
+
+  describe('setState branch coverage', () => {
+    it('should set selectedServer when string provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        selectedServer: 'Aether',
+      });
+
+      expect(component.getSelectedServer()).toBe('Aether');
+    });
+
+    it('should set showPrices when boolean provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        showPrices: true,
+      });
+
+      expect(component.getShowPrices()).toBe(true);
+    });
+
+    it('should set priceCategories when object provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        priceCategories: {
+          baseDyes: false,
+          craftDyes: true,
+          alliedSocietyDyes: false,
+          cosmicDyes: true,
+          specialDyes: false,
+        },
+      });
+
+      const categories = component.getPriceCategories();
+      expect(categories.craftDyes).toBe(true);
+      expect(categories.baseDyes).toBe(false);
+    });
+
+    it('should not set selectedServer when non-string provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const originalServer = component.getSelectedServer();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        selectedServer: 123,
+      });
+
+      expect(component.getSelectedServer()).toBe(originalServer);
+    });
+
+    it('should not set showPrices when non-boolean provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const originalShowPrices = component.getShowPrices();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        showPrices: 'true',
+      });
+
+      expect(component.getShowPrices()).toBe(originalShowPrices);
+    });
+
+    it('should not set priceCategories when null provided', () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const originalCategories = component.getPriceCategories();
+
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        priceCategories: null,
+      });
+
+      expect(component.getPriceCategories()).toEqual(originalCategories);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - server dropdown population
+  // ==========================================================================
+
+  describe('populateServerDropdown branch coverage', () => {
+    it('should select world when it matches selectedServer', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      // Set selected server to a world name
+      (component as unknown as { setState: (state: Record<string, unknown>) => void }).setState({
+        selectedServer: 'Balmung',
+      });
+
+      await component.loadServerData();
+      await waitForComponent();
+
+      const serverSelect = container.querySelector('#mb-server-select') as HTMLSelectElement;
+      expect(serverSelect.value).toBe('Balmung');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - event handlers
+  // ==========================================================================
+
+  describe('event handler branch coverage', () => {
+    it('should handle toggle change styling', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const toggle = container.querySelector('#show-mb-prices-toggle') as HTMLInputElement;
+      const toggleBg = toggle.nextElementSibling as HTMLElement;
+
+      // Toggle on
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change'));
+
+      expect(toggleBg.style.backgroundColor).toBe('var(--theme-primary)');
+
+      // Toggle off
+      toggle.checked = false;
+      toggle.dispatchEvent(new Event('change'));
+
+      expect(toggleBg.style.backgroundColor).toBe('');
+    });
+
+    it('should handle server select focus/blur styling', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const serverSelect = container.querySelector('#mb-server-select') as HTMLSelectElement;
+
+      serverSelect.dispatchEvent(new FocusEvent('focus'));
+      expect(serverSelect.style.borderColor).toBe('var(--theme-primary)');
+
+      serverSelect.dispatchEvent(new FocusEvent('blur'));
+      expect(serverSelect.style.borderColor).toBe('');
+    });
+
+    it('should handle checkbox without data-category attribute', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      const checkbox = container.querySelector('.mb-price-checkbox') as HTMLInputElement;
+
+      // Remove the data-category attribute
+      checkbox.removeAttribute('data-category');
+
+      // Should not throw
+      expect(() => {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change'));
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - fetchPricesForDyes
+  // ==========================================================================
+
+  describe('fetchPricesForDyes branch coverage', () => {
+    it('should skip dyes that return null price', async () => {
+      component = new MarketBoard(container);
+      component.init();
+
+      // showPrices is false by default, so fetchPrice will return null
+      const dyes: Dye[] = [
+        { itemID: 1, name: 'Dye 1', category: 'Special' } as Dye,
+        { itemID: 2, name: 'Dye 2', category: 'Special' } as Dye,
+      ];
+
+      const results = await component.fetchPricesForDyes(dyes);
+
+      // Results should be empty since showPrices is false
+      expect(results.size).toBe(0);
+    });
   });
 });

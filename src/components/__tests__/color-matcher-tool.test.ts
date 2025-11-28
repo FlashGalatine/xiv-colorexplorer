@@ -622,5 +622,354 @@ describe('ColorMatcherTool', () => {
       expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(400);
     });
   });
+
+  // ==========================================================================
+  // Branch Coverage Tests - refreshResults
+  // ==========================================================================
+
+  describe('refreshResults branch coverage', () => {
+    it('should handle empty matchedDyes gracefully', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).refreshResults();
+      }).not.toThrow();
+    });
+
+    it('should handle missing results section', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [createMockDye()];
+
+      // Don't create a results section
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).refreshResults();
+      }).not.toThrow();
+    });
+
+    it('should render other matches when present', async () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 1, name: 'Best Dye' }));
+      vi.spyOn(dyeService, 'findDyesWithinDistance').mockReturnValue([
+        createMockDye({ id: 2, name: 'Similar 1' }),
+        createMockDye({ id: 3, name: 'Similar 2' }),
+      ]);
+
+      const instance = await createComponent();
+
+      // First match to create the results section
+      (instance as unknown as ComponentWithPrivate).matchColor('#FF0000');
+
+      // Then refresh
+      (instance as unknown as ComponentWithPrivate).refreshResults();
+
+      const resultsContainer = container.querySelector('#results-container');
+      expect(resultsContainer?.textContent).toContain('Similar');
+    });
+
+    it('should use lastSampledColor for refreshing', async () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye());
+      vi.spyOn(dyeService, 'findDyesWithinDistance').mockReturnValue([]);
+
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).lastSampledColor = '#ABCDEF';
+      (instance as unknown as ComponentWithPrivate).matchColor('#FF0000');
+      (instance as unknown as ComponentWithPrivate).refreshResults();
+
+      // Should not throw
+      expect((instance as unknown as ComponentWithPrivate).lastSampledColor).toBe('#FF0000');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - matchColor with filters
+  // ==========================================================================
+
+  describe('matchColor filter branch coverage', () => {
+    it('should match without filters when dyeFilters is null', async () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye());
+      vi.spyOn(dyeService, 'findDyesWithinDistance').mockReturnValue([]);
+
+      const instance = await createComponent();
+
+      // Set dyeFilters to null
+      (instance as unknown as { dyeFilters: null }).dyeFilters = null;
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).matchColor('#FF0000');
+      }).not.toThrow();
+    });
+
+    it('should handle no similar dyes found', async () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ name: 'Only Dye' }));
+      vi.spyOn(dyeService, 'findDyesWithinDistance').mockReturnValue([]);
+
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).matchColor('#FF0000');
+
+      const resultsContainer = container.querySelector('#results-container');
+      expect(resultsContainer?.textContent).toContain('Only Dye');
+      // Should not have "Similar" section
+      const sections = resultsContainer?.querySelectorAll('.space-y-2');
+      // The section count confirms no similar dyes section was added
+      expect(resultsContainer?.textContent).not.toContain('Similar (');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - fetchPricesForMatchedDyes
+  // ==========================================================================
+
+  describe('fetchPricesForMatchedDyes branch coverage', () => {
+    it('should return early when marketBoard is null', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      // Set marketBoard to null
+      (instance as unknown as { marketBoard: null }).marketBoard = null;
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [createMockDye()];
+
+      await (instance as unknown as ComponentWithPrivate).fetchPricesForMatchedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should return early when showPrices is false', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = false;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [createMockDye()];
+
+      await (instance as unknown as ComponentWithPrivate).fetchPricesForMatchedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should return early when matchedDyes is empty', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      await (instance as unknown as ComponentWithPrivate).fetchPricesForMatchedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - toggle-prices event
+  // ==========================================================================
+
+  describe('toggle-prices event branch coverage', () => {
+    it('should clear priceData when showPrices is toggled off', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+
+      // First set some price data
+      (instance as unknown as ComponentWithPrivate).priceData.set(1, { currentAverage: 1000 });
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [createMockDye()];
+
+      // Toggle off
+      marketContainer?.dispatchEvent(
+        new CustomEvent('toggle-prices', { detail: { showPrices: false } })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).priceData.size).toBe(0);
+    });
+
+    it('should not fetch prices when matchedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      marketContainer?.dispatchEvent(
+        new CustomEvent('toggle-prices', { detail: { showPrices: true } })
+      );
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - renderDyeCard
+  // ==========================================================================
+
+  describe('renderDyeCard branch coverage', () => {
+    it('should not render price section when showPrices is false', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye({ itemID: 12345 });
+
+      (instance as unknown as ComponentWithPrivate).showPrices = false;
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+
+      // Should not contain price-related elements
+      expect(card.textContent).not.toContain('N/A');
+      expect(card.textContent).not.toContain('5,000');
+    });
+
+    it('should handle copy button click with clipboard API', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye({ hex: '#AABBCC' });
+
+      // Mock clipboard API
+      const writeTextMock = vi.fn().mockResolvedValue(undefined);
+      Object.assign(navigator, {
+        clipboard: { writeText: writeTextMock },
+      });
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+      const copyButton = card.querySelector('button');
+
+      await copyButton?.click();
+
+      // Give time for async click handler
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(writeTextMock).toHaveBeenCalledWith('#AABBCC');
+    });
+
+    it('should use fallback when clipboard API fails', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye({ hex: '#AABBCC' });
+
+      // Mock clipboard API to fail
+      Object.assign(navigator, {
+        clipboard: { writeText: vi.fn().mockRejectedValue(new Error('Clipboard failed')) },
+      });
+
+      // Mock execCommand
+      const execCommandMock = vi.fn().mockReturnValue(true);
+      document.execCommand = execCommandMock;
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+      const copyButton = card.querySelector('button');
+
+      await copyButton?.click();
+
+      // Give time for async click handler
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(execCommandMock).toHaveBeenCalledWith('copy');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - event handler missing matchedDyes
+  // ==========================================================================
+
+  describe('event handler branch coverage', () => {
+    it('should not fetch prices on server-changed when matchedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('server-changed'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices on categories-changed when matchedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('categories-changed'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices on refresh-requested when matchedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).matchedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('refresh-requested'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - sample size slider
+  // ==========================================================================
+
+  describe('sample size slider branch coverage', () => {
+    it('should handle missing value display element', async () => {
+      await createComponent();
+
+      // Remove the value display
+      const valueDisplay = container.querySelector('#sample-size-value');
+      valueDisplay?.remove();
+
+      const slider = container.querySelector<HTMLInputElement>('#sample-size-input');
+
+      // Should not throw even without display element
+      expect(() => {
+        slider!.value = '20';
+        slider!.dispatchEvent(new Event('input'));
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - image error handling
+  // ==========================================================================
+
+  describe('image error handling branch coverage', () => {
+    it('should handle error event from image upload', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+
+      // Clean up existing toasts
+      document.getElementById('toast-container')?.remove();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('error', { detail: { message: 'Test error message' } })
+      );
+
+      // Should show error toast
+      const toastContainer = document.getElementById('toast-container');
+      expect(toastContainer?.textContent).toContain('Test error message');
+
+      // Cleanup
+      toastContainer?.remove();
+    });
+
+    it('should handle error event without message', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+
+      document.getElementById('toast-container')?.remove();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('error', { detail: {} })
+      );
+
+      // Should show default error message
+      const toastContainer = document.getElementById('toast-container');
+      expect(toastContainer?.textContent).toContain('Failed to load image');
+
+      toastContainer?.remove();
+    });
+  });
 });
 

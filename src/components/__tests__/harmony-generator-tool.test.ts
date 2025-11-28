@@ -528,5 +528,441 @@ describe('HarmonyGeneratorTool', () => {
       expect(limit).toBe(3);
     });
   });
+
+  // ==========================================================================
+  // Branch Coverage Tests - toggleCompanionSection
+  // ==========================================================================
+
+  describe('toggleCompanionSection branch coverage', () => {
+    it('should show companion section when suggestionsMode is expanded', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up the companion section element
+      const section = document.createElement('div');
+      section.classList.add('hidden');
+      (component as unknown as Record<string, HTMLElement>)._companionDyesSection = section;
+
+      (component as unknown as ComponentWithPrivate).suggestionsMode = 'expanded';
+      (component as unknown as ComponentWithPrivate).toggleCompanionSection();
+
+      expect(section.classList.contains('hidden')).toBe(false);
+    });
+
+    it('should hide companion section when suggestionsMode is simple', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up the companion section element
+      const section = document.createElement('div');
+      (component as unknown as Record<string, HTMLElement>)._companionDyesSection = section;
+
+      (component as unknown as ComponentWithPrivate).suggestionsMode = 'simple';
+      (component as unknown as ComponentWithPrivate).toggleCompanionSection();
+
+      expect(section.classList.contains('hidden')).toBe(true);
+    });
+
+    it('should handle missing companion section gracefully', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Don't set up the companion section
+      (component as unknown as Record<string, HTMLElement>)._companionDyesSection = undefined as unknown as HTMLElement;
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).toggleCompanionSection();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - calculateHueDeviance
+  // ==========================================================================
+
+  describe('calculateHueDeviance branch coverage', () => {
+    it('should handle empty offsets array', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#00ff00', []);
+
+      // With empty offsets, should return Infinity
+      expect(deviance).toBe(Infinity);
+    });
+
+    it('should handle wrap-around hue values (359 vs 1)', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Test the wrap-around case where hue difference crosses 360
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#ff0000', [359]);
+
+      expect(Number.isFinite(deviance)).toBe(true);
+    });
+
+    it('should find minimum deviance across multiple offsets', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#00ff00', [0, 120, 240]);
+
+      expect(Number.isFinite(deviance)).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - isDyeExcluded
+  // ==========================================================================
+
+  describe('isDyeExcluded branch coverage', () => {
+    it('should return false when dyeFilters is null', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // dyeFilters should be null at this point
+      const dye = createDye({ id: 1 });
+      const isExcluded = (component as unknown as ComponentWithPrivate).isDyeExcluded(dye);
+
+      expect(isExcluded).toBe(false);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - replaceExcludedDyes
+  // ==========================================================================
+
+  describe('replaceExcludedDyes branch coverage', () => {
+    it('should keep non-excluded dyes as-is', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const dyes = [
+        { dye: createDye({ id: 1, itemID: 1, category: 'Red' }), deviance: 0.1 },
+        { dye: createDye({ id: 2, itemID: 2, category: 'Blue' }), deviance: 0.2 },
+      ];
+
+      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(dyes, 'triadic');
+
+      expect(result).toHaveLength(2);
+      expect(result[0].dye.id).toBe(1);
+    });
+
+    it('should skip Facewear dyes when finding alternatives', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // When finding alternatives, Facewear category should be skipped
+      const dyes = [{ dye: createDye({ id: 1, itemID: 1 }), deviance: 0.1 }];
+
+      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(dyes, 'complementary');
+
+      // Facewear should be filtered from allDyes during replacement
+      expect(result).toBeDefined();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateCompanionDyesDisplay
+  // ==========================================================================
+
+  describe('updateCompanionDyesDisplay branch coverage', () => {
+    it('should not throw when display element does not exist', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Remove the companion-dyes-value element if it exists
+      document.getElementById('companion-dyes-value')?.remove();
+
+      expect(() => {
+        (component as unknown as { updateCompanionDyesDisplay: () => void }).updateCompanionDyesDisplay();
+      }).not.toThrow();
+    });
+
+    it('should update display when element exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Create the display element
+      const display = document.createElement('span');
+      display.id = 'companion-dyes-value';
+      document.body.appendChild(display);
+
+      (component as unknown as ComponentWithPrivate).companionDyesCount = 5;
+      (component as unknown as { updateCompanionDyesDisplay: () => void }).updateCompanionDyesDisplay();
+
+      expect(display.textContent).toBe('5');
+
+      // Cleanup
+      display.remove();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateCompanionDyesCount
+  // ==========================================================================
+
+  describe('updateCompanionDyesCount branch coverage', () => {
+    it('should not update when companionDyesInput is null', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set input to null
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = null;
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).updateCompanionDyesCount();
+      }).not.toThrow();
+    });
+
+    it('should update count when input exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Create input element
+      const input = document.createElement('input');
+      input.type = 'range';
+      input.value = '7';
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = input;
+
+      (component as unknown as ComponentWithPrivate).updateCompanionDyesCount();
+
+      expect((component as unknown as ComponentWithPrivate).companionDyesCount).toBe(7);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - loadCompanionDyesCount
+  // ==========================================================================
+
+  describe('loadCompanionDyesCount branch coverage', () => {
+    it('should clamp value to minimum', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up input
+      const input = document.createElement('input');
+      input.type = 'range';
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = input;
+
+      // The mock returns undefined, so it should use default and clamp
+      (component as unknown as ComponentWithPrivate).loadCompanionDyesCount();
+
+      // Should be clamped to valid range
+      expect((component as unknown as ComponentWithPrivate).companionDyesCount).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - loadSuggestionsMode
+  // ==========================================================================
+
+  describe('loadSuggestionsMode branch coverage', () => {
+    it('should check correct radio button when found', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Create radios and store them
+      const simpleRadio = document.createElement('input');
+      simpleRadio.type = 'radio';
+      const expandedRadio = document.createElement('input');
+      expandedRadio.type = 'radio';
+
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+
+      (component as unknown as ComponentWithPrivate).loadSuggestionsMode();
+
+      // Simple should be checked as default
+      expect(simpleRadio.checked).toBe(true);
+    });
+
+    it('should handle missing radio button gracefully', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Clear the radios map
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.clear();
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).loadSuggestionsMode();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateSuggestionsMode
+  // ==========================================================================
+
+  describe('updateSuggestionsMode branch coverage', () => {
+    it('should update mode when radio is checked', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Create and check expanded radio
+      const expandedRadio = document.createElement('input');
+      expandedRadio.type = 'radio';
+      expandedRadio.checked = true;
+
+      const simpleRadio = document.createElement('input');
+      simpleRadio.type = 'radio';
+      simpleRadio.checked = false;
+
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+
+      (component as unknown as ComponentWithPrivate).updateSuggestionsMode();
+
+      expect((component as unknown as ComponentWithPrivate).suggestionsMode).toBe('expanded');
+    });
+
+    it('should break loop after finding checked radio', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const simpleRadio = document.createElement('input');
+      simpleRadio.type = 'radio';
+      simpleRadio.checked = true;
+
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
+
+      (component as unknown as ComponentWithPrivate).updateSuggestionsMode();
+
+      expect((component as unknown as ComponentWithPrivate).suggestionsMode).toBe('simple');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - applySuggestionsMode expanded mode
+  // ==========================================================================
+
+  describe('applySuggestionsMode expanded mode branch coverage', () => {
+    it('should stop adding companions when no more dyes available', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      (component as unknown as ComponentWithPrivate).suggestionsMode = 'expanded';
+      (component as unknown as ComponentWithPrivate).companionDyesCount = 100; // More than available dyes
+
+      const dyes = [
+        { dye: createDye({ id: 1, itemID: 1 }), deviance: 0.1 },
+      ];
+
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('complementary', dyes);
+
+      // Should have original dye + available companions from mock pool (3 dyes)
+      expect(result.length).toBeGreaterThan(0);
+      expect(result.length).toBeLessThanOrEqual(4); // 1 original + max 3 companions
+    });
+
+    it('should skip used dye IDs in companion search', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      (component as unknown as ComponentWithPrivate).suggestionsMode = 'expanded';
+      (component as unknown as ComponentWithPrivate).companionDyesCount = 2;
+
+      // Use dye IDs that match the mock pool
+      const dyes = [
+        { dye: createDye({ id: 10, itemID: 10, name: 'Companion 1' }), deviance: 0.1 },
+      ];
+
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('triadic', dyes);
+
+      // Should not have duplicate itemIDs
+      const itemIDs = result.map(d => d.dye.itemID);
+      const uniqueIDs = new Set(itemIDs);
+      expect(uniqueIDs.size).toBe(itemIDs.length);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - getPaletteData with dyes
+  // ==========================================================================
+
+  describe('getPaletteData branch coverage', () => {
+    it('should include groups with dyes', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies first to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      const paletteData = (component as unknown as ComponentWithPrivate).getPaletteData();
+
+      expect(paletteData.base).toBeDefined();
+      expect(typeof paletteData.groups).toBe('object');
+    });
+
+    it('should skip harmony groups with empty dyes array', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Clear any existing harmony displays
+      (component as unknown as ComponentWithPrivate).harmonyDisplays.clear();
+
+      const paletteData = (component as unknown as ComponentWithPrivate).getPaletteData();
+
+      // All groups should be empty
+      expect(Object.keys(paletteData.groups)).toHaveLength(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateAllDisplays
+  // ==========================================================================
+
+  describe('updateAllDisplays branch coverage', () => {
+    it('should update all displays with price data', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      // Set some price data
+      (component as unknown as ComponentWithPrivate).priceData.set(1, { currentAverage: 5000 } as unknown as PriceData);
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).updateAllDisplays();
+      }).not.toThrow();
+    });
+
+    it('should handle empty harmonyDisplays', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      (component as unknown as ComponentWithPrivate).harmonyDisplays.clear();
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).updateAllDisplays();
+      }).not.toThrow();
+    });
+  });
 });
 

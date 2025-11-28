@@ -929,4 +929,380 @@ describe('DyeComparisonTool Component', () => {
       }).not.toThrow();
     });
   });
+
+  // ==========================================================================
+  // Branch Coverage Tests - fetchPricesForSelectedDyes
+  // ==========================================================================
+
+  describe('fetchPricesForSelectedDyes branch coverage', () => {
+    it('should return early when marketBoard is null', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as { marketBoard: null }).marketBoard = null;
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      // Access private method
+      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should return early when showPrices is false', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = false;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should return early when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateSummary
+  // ==========================================================================
+
+  describe('updateSummary branch coverage', () => {
+    it('should return early when summaryContainer is null', async () => {
+      const instance = await createComponent();
+
+      // Remove summary container
+      const summaryContainer = container.querySelector('#summary-container');
+      summaryContainer?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateSummary();
+      }).not.toThrow();
+    });
+
+    it('should not show statistics for single dye', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, name: 'Single Dye' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      // Should not contain avg saturation stats (only shown for 2+ dyes)
+      expect(summaryContainer?.textContent).not.toContain('Avg. Saturation');
+    });
+
+    it('should not display price when priceData is empty', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ itemID: 12345, name: 'No Price Dye' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).priceData = new Map();
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      // Should have the dye name but no price
+      expect(summaryContainer?.textContent).toContain('No Price Dye');
+      expect(summaryContainer?.textContent).not.toContain('5,000');
+    });
+
+    it('should calculate hue range correctly', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hsv: { h: 0, s: 80, v: 90 } }),
+        createMockDye({ id: 2, hsv: { h: 180, s: 80, v: 90 } }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      // Hue range should be 180 degrees
+      expect(summaryContainer?.textContent).toContain('180°');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateMatrix
+  // ==========================================================================
+
+  describe('updateMatrix branch coverage', () => {
+    it('should return early when matrixContainer is null', async () => {
+      const instance = await createComponent();
+
+      // Remove matrix container
+      const matrixContainer = container.querySelector('#matrix-container');
+      matrixContainer?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateMatrix();
+      }).not.toThrow();
+    });
+
+    it('should update existing matrix instead of creating new one', async () => {
+      const instance = await createComponent();
+
+      // First call creates the matrix
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({ id: 1 })];
+      (instance as unknown as ComponentWithPrivate).updateMatrix();
+
+      // Second call should update existing
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+      ];
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateMatrix();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateCharts
+  // ==========================================================================
+
+  describe('updateCharts branch coverage', () => {
+    it('should return early when hueSatContainer is null', async () => {
+      const instance = await createComponent();
+
+      // Remove hue-sat container
+      const hueSatContainer = container.querySelector('#hue-sat-container');
+      hueSatContainer?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateCharts();
+      }).not.toThrow();
+    });
+
+    it('should return early when brightnessContainer is null', async () => {
+      const instance = await createComponent();
+
+      // Remove brightness container
+      const brightnessContainer = container.querySelector('#brightness-container');
+      brightnessContainer?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateCharts();
+      }).not.toThrow();
+    });
+
+    it('should update existing charts instead of creating new ones', async () => {
+      const instance = await createComponent();
+
+      // First call creates the charts
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({ id: 1 })];
+      (instance as unknown as ComponentWithPrivate).updateCharts();
+
+      // Second call should update existing
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+      ];
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateCharts();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateExport
+  // ==========================================================================
+
+  describe('updateExport branch coverage', () => {
+    it('should return early when exportContainer is null', async () => {
+      const instance = await createComponent();
+
+      // Remove export container
+      const exportContainer = container.querySelector('#export-container');
+      exportContainer?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateExport();
+      }).not.toThrow();
+    });
+
+    it('should copy hex to clipboard when hex button clicked', async () => {
+      const instance = await createComponent();
+
+      const writeTextMock = vi.fn().mockResolvedValue(undefined);
+      Object.assign(navigator, {
+        clipboard: { writeText: writeTextMock },
+      });
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ hex: '#AABBCC' }),
+        createMockDye({ id: 2, hex: '#DDEEFF' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const hexBtn = container.querySelector<HTMLButtonElement>('[data-export="hex"]');
+      hexBtn?.click();
+
+      expect(writeTextMock).toHaveBeenCalledWith('#AABBCC\n#DDEEFF');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - toggle-prices event
+  // ==========================================================================
+
+  describe('toggle-prices event branch coverage', () => {
+    it('should clear priceData when showPrices is toggled off', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+
+      // First set some price data
+      (instance as unknown as ComponentWithPrivate).priceData.set(1, { currentAverage: 1000 });
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      // Toggle off
+      marketContainer?.dispatchEvent(
+        new CustomEvent('toggle-prices', { detail: { showPrices: false } })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).priceData.size).toBe(0);
+    });
+
+    it('should not fetch prices when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      marketContainer?.dispatchEvent(
+        new CustomEvent('toggle-prices', { detail: { showPrices: true } })
+      );
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - event handlers with empty selectedDyes
+  // ==========================================================================
+
+  describe('event handler branch coverage', () => {
+    it('should not fetch prices on server-changed when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('server-changed'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices on categories-changed when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('categories-changed'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices on refresh-requested when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      marketContainer?.dispatchEvent(new CustomEvent('refresh-requested'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should handle selection-changed with undefined selectedDyes', async () => {
+      const instance = await createComponent();
+      const selectorContainer = container.querySelector('#dye-selector-container');
+
+      selectorContainer?.dispatchEvent(
+        new CustomEvent('selection-changed', { detail: {} })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).selectedDyes).toHaveLength(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - updateAnalysis
+  // ==========================================================================
+
+  describe('updateAnalysis branch coverage', () => {
+    it('should not fetch prices when showPrices is false', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = false;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      (instance as unknown as ComponentWithPrivate).updateAnalysis();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices when marketBoard is null', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as { marketBoard: null }).marketBoard = null;
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      (instance as unknown as ComponentWithPrivate).updateAnalysis();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch prices when selectedDyes is empty', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      (instance as unknown as ComponentWithPrivate).updateAnalysis();
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+
+    it('should fetch prices when all conditions met', async () => {
+      const instance = await createComponent();
+      mockFetchPrices.mockClear();
+      mockFetchPrices.mockResolvedValue(new Map());
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      (instance as unknown as ComponentWithPrivate).updateAnalysis();
+
+      // Price fetch is async, so we check if it was called
+      expect(mockFetchPrices).toHaveBeenCalled();
+    });
+  });
 });

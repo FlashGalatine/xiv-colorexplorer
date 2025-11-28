@@ -597,5 +597,158 @@ describe('DyeMixerTool', () => {
       expect((instance as unknown as ComponentWithPrivate).colorSpace).toBe('hsv');
     });
   });
-});
 
+
+  // ==========================================================================
+  // Branch Coverage Tests - calculateInterpolation branches
+  // ==========================================================================
+
+  describe('calculateInterpolation branches', () => {
+    it('should handle hue wraparound in HSV mode', () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      const instance = initComponent();
+      const startDye = createMockDye({ id: 1, hex: '#FF1A00' });
+      const endDye = createMockDye({ id: 2, hex: '#FF0066' });
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 3, 'hsv');
+      expect(steps).toHaveLength(3);
+    });
+
+    it('should handle single step case', () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      const instance = initComponent();
+      const startDye = createMockDye({ id: 1, hex: '#FF0000' });
+      const endDye = createMockDye({ id: 2, hex: '#0000FF' });
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 1, 'rgb');
+      expect(steps).toHaveLength(1);
+      expect(steps[0].position).toBe(0);
+    });
+
+    it('should handle null matchedDye', () => {
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(null);
+      const instance = initComponent();
+      const startDye = createMockDye({ id: 1, hex: '#FF0000' });
+      const endDye = createMockDye({ id: 2, hex: '#0000FF' });
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 3, 'rgb');
+      expect(steps[0].matchedDye).toBeNull();
+      expect(steps[0].distance).toBe(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - saveGradient branches
+  // ==========================================================================
+
+  describe('saveGradient branches', () => {
+    it('should show error when less than 2 dyes', () => {
+      const instance = initComponent();
+      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+      (instance as unknown as ComponentWithPrivate).saveGradient();
+      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+    });
+
+    it('should return early when prompt cancelled', () => {
+      vi.spyOn(window, 'prompt').mockReturnValue(null);
+      const instance = initComponent();
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({ id: 1 }), createMockDye({ id: 2 })];
+      (instance as unknown as ComponentWithPrivate).saveGradient();
+      const saved = JSON.parse(localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]');
+      expect(saved).toHaveLength(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - loadSavedGradient branches
+  // ==========================================================================
+
+  describe('loadSavedGradient branches', () => {
+    it('should show error for invalid index', () => {
+      localStorage.setItem('xivdyetools_dyemixer_gradients', '[]');
+      const instance = initComponent();
+      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      (instance as unknown as ComponentWithPrivate).loadSavedGradient(999);
+      expect(showToastSpy).toHaveBeenCalledWith('Gradient not found', 'error');
+    });
+
+    it('should show error when dye not found', () => {
+      localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify([{name:'Test',dye1Id:99999,dye2Id:88888,stepCount:10,colorSpace:'hsv'}]));
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValue(null);
+      const instance = initComponent();
+      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      (instance as unknown as ComponentWithPrivate).loadSavedGradient(0);
+      expect(showToastSpy).toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - deleteSavedGradient branches
+  // ==========================================================================
+
+  describe('deleteSavedGradient branches', () => {
+    it('should show error for invalid index', () => {
+      localStorage.setItem('xivdyetools_dyemixer_gradients', '[]');
+      const instance = initComponent();
+      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      (instance as unknown as ComponentWithPrivate).deleteSavedGradient(999);
+      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - copyShareUrl branches
+  // ==========================================================================
+
+  describe('copyShareUrl branches', () => {
+    it('should show error when less than 2 dyes', () => {
+      const instance = initComponent();
+      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+      (instance as unknown as ComponentWithPrivate).copyShareUrl();
+      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - early returns
+  // ==========================================================================
+
+  describe('early returns', () => {
+    it('should handle toggleSavedGradientsPanel when container missing', () => {
+      const instance = initComponent();
+      container.querySelector('#saved-gradients-container')?.remove();
+      expect(() => (instance as unknown as ComponentWithPrivate).toggleSavedGradientsPanel()).not.toThrow();
+    });
+
+    it('should handle updateInterpolation when container missing', () => {
+      const instance = initComponent();
+      container.querySelector('#interpolation-display-container')?.remove();
+      expect(() => (instance as unknown as ComponentWithPrivate).updateInterpolation()).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - getPaletteData edge cases
+  // ==========================================================================
+
+  describe('getPaletteData edges', () => {
+    it('should handle empty selectedDyes', () => {
+      const instance = initComponent();
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+      (instance as unknown as ComponentWithPrivate).currentSteps = [];
+      const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
+      expect(paletteData.base).toBeNull();
+    });
+
+    it('should filter null matchedDye from steps', () => {
+      const instance = initComponent();
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({id:1}), createMockDye({id:2})];
+      (instance as unknown as ComponentWithPrivate).currentSteps = [
+        { position: 0, theoreticalColor: '#FF0000', matchedDye: null, distance: 0 },
+        { position: 0.5, theoreticalColor: '#00FF00', matchedDye: createMockDye({id:3}), distance: 5 },
+      ];
+      const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
+      expect(paletteData.groups.steps).toHaveLength(1);
+    });
+  });
+
+});

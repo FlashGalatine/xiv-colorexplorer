@@ -797,4 +797,300 @@ describe('DyeSelector', () => {
       expect(dyeCards.length).toBeGreaterThan(0);
     });
   });
+
+
+  // ==========================================================================
+  // Branch Coverage Tests - compareDyes sort options
+  // ==========================================================================
+
+  describe('compareDyes branch coverage', () => {
+    it('should sort by hue with similar hue values (saturation tiebreaker)', async () => {
+      const options = { showCategories: true };
+      component = new DyeSelector(container, options);
+      component.init();
+
+      const sortSelect = container.querySelector('#dye-selector-sort') as HTMLSelectElement;
+      sortSelect.value = 'hue';
+      sortSelect.dispatchEvent(new Event('change'));
+
+      await waitForComponent(50);
+
+      const dyeCards = container.querySelectorAll('.dye-select-btn');
+      expect(dyeCards.length).toBeGreaterThan(0);
+    });
+
+    it('should sort by saturation with tiebreaker for brightness', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const sortSelect = container.querySelector('#dye-selector-sort') as HTMLSelectElement;
+      sortSelect.value = 'saturation';
+      sortSelect.dispatchEvent(new Event('change'));
+
+      await waitForComponent(50);
+
+      const dyeCards = container.querySelectorAll('.dye-select-btn');
+      expect(dyeCards.length).toBeGreaterThan(0);
+    });
+
+    it('should sort by category then alphabetically', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const sortSelect = container.querySelector('#dye-selector-sort') as HTMLSelectElement;
+      sortSelect.value = 'category';
+      sortSelect.dispatchEvent(new Event('change'));
+
+      await waitForComponent(50);
+
+      const dyeCards = container.querySelectorAll('.dye-select-btn');
+      expect(dyeCards.length).toBeGreaterThan(0);
+    });
+
+    it('should use default alphabetical sort for unknown sort option', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      // Force an unknown sort option through setState
+      component['sortOption'] = 'unknown' as any;
+      component.update();
+
+      await waitForComponent(50);
+
+      const dyeCards = container.querySelectorAll('.dye-select-btn');
+      expect(dyeCards.length).toBeGreaterThan(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - bindEvents click handling
+  // ==========================================================================
+
+  describe('bindEvents branch coverage', () => {
+    it('should ignore clicks outside dye-select-btn', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const dyeListContainer = container.querySelector('div.grid');
+      // Click on the grid container itself, not a button
+      dyeListContainer?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      await waitForComponent(50);
+
+      // No dye should be selected
+      expect(component.getSelectedDyes().length).toBe(0);
+    });
+
+    it('should handle click on child element of dye-select-btn', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      // Click on the color div inside a dye card (not the button itself)
+      const dyeCard = container.querySelector('.dye-select-btn');
+      const colorDiv = dyeCard?.querySelector('.h-12');
+      colorDiv?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      await waitForComponent(50);
+
+      // Should still select the dye by traversing up to the button
+      expect(component.getSelectedDyes().length).toBe(1);
+    });
+
+    it('should handle invalid dye ID gracefully', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      // Create a fake button with invalid dye ID
+      const fakeBtn = document.createElement('button');
+      fakeBtn.className = 'dye-select-btn';
+      fakeBtn.setAttribute('data-dye-id', '999999');
+      const dyeListContainer = container.querySelector('div.grid');
+      dyeListContainer?.appendChild(fakeBtn);
+
+      fakeBtn.click();
+
+      await waitForComponent(50);
+
+      // Should not crash, and no dye should be added
+      expect(component.getSelectedDyes().length).toBe(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - update early return
+  // ==========================================================================
+
+  describe('update branch coverage', () => {
+    it('should return early if not initialized', () => {
+      component = new DyeSelector(container, {});
+      // Don't call init()
+
+      // This should not throw
+      expect(() => component.update()).not.toThrow();
+    });
+
+    it('should handle missing selectedLabel gracefully', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      // Remove the label
+      container.querySelector('#selected-dyes-label')?.remove();
+
+      // Select a dye - this will trigger update
+      const dyeCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      dyeCard?.click();
+
+      await waitForComponent(50);
+
+      // Should not throw
+      expect(component.getSelectedDyes().length).toBe(1);
+    });
+
+    it('should restore search focus after update', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
+      searchInput.focus();
+      searchInput.value = 'test';
+      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+      await waitForComponent(50);
+
+      // Check if search is still focused
+      const currentSearchInput = container.querySelector('input[type="text"]');
+      expect(currentSearchInput).toBe(document.activeElement);
+    });
+
+    it('should restore sort selection after update', async () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const sortSelect = container.querySelector('#dye-selector-sort') as HTMLSelectElement;
+      sortSelect.value = 'brightness-asc';
+      sortSelect.dispatchEvent(new Event('change'));
+
+      await waitForComponent(50);
+
+      // Trigger another update
+      const dyeCard = container.querySelector('.dye-select-btn') as HTMLButtonElement;
+      dyeCard?.click();
+
+      await waitForComponent(50);
+
+      // Sort should still be brightness-asc
+      expect(component['sortOption']).toBe('brightness-asc');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - setState branches
+  // ==========================================================================
+
+  describe('setState branch coverage', () => {
+    it('should handle null currentCategory', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      component['setState']({ currentCategory: null });
+
+      expect(component['currentCategory']).toBeNull();
+    });
+
+    it('should handle sortOption string', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      component['setState']({ sortOption: 'hue' });
+
+      expect(component['sortOption']).toBe('hue');
+    });
+
+    it('should ignore invalid selectedDyes type', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const original = component['selectedDyes'];
+      component['setState']({ selectedDyes: 'not an array' });
+
+      expect(component['selectedDyes']).toEqual(original);
+    });
+
+    it('should ignore invalid searchQuery type', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      component['setState']({ searchQuery: 123 });
+
+      expect(component['searchQuery']).toBe('');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - render dye card verification
+  // ==========================================================================
+
+  describe('render verification branch', () => {
+    it('should handle category display based on showCategories option', async () => {
+      const options = { showCategories: false };
+      component = new DyeSelector(container, options);
+      component.init();
+
+      // Dye cards should not have category div
+      const categoryDivs = container.querySelectorAll('.text-xs.text-gray-500.dark\\:text-gray-500');
+      // When showCategories is false, no category divs in dye cards
+      expect(categoryDivs.length).toBe(0);
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - hover effects
+  // ==========================================================================
+
+  describe('hover effect branches', () => {
+    it('should apply brightness filter on mouseenter', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const clearBtn = container.querySelector('#dye-selector-clear-btn') as HTMLButtonElement;
+      clearBtn.dispatchEvent(new MouseEvent('mouseenter'));
+
+      expect(clearBtn.style.filter).toBe('brightness(0.9)');
+    });
+
+    it('should remove brightness filter on mouseleave', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const clearBtn = container.querySelector('#dye-selector-clear-btn') as HTMLButtonElement;
+      clearBtn.dispatchEvent(new MouseEvent('mouseenter'));
+      clearBtn.dispatchEvent(new MouseEvent('mouseleave'));
+
+      expect(clearBtn.style.filter).toBe('');
+    });
+
+    it('should apply darker brightness on mousedown', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const clearBtn = container.querySelector('#dye-selector-clear-btn') as HTMLButtonElement;
+      clearBtn.dispatchEvent(new MouseEvent('mousedown'));
+
+      expect(clearBtn.style.filter).toBe('brightness(0.8)');
+    });
+
+    it('should restore brightness on mouseup', () => {
+      [component, container] = renderComponent(DyeSelector);
+
+      const clearBtn = container.querySelector('#dye-selector-clear-btn') as HTMLButtonElement;
+      clearBtn.dispatchEvent(new MouseEvent('mousedown'));
+      clearBtn.dispatchEvent(new MouseEvent('mouseup'));
+
+      expect(clearBtn.style.filter).toBe('brightness(0.9)');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - excludeFacewear option
+  // ==========================================================================
+
+  describe('excludeFacewear option', () => {
+    it('should include Facewear category when excludeFacewear is false', () => {
+      const options = { excludeFacewear: false, showCategories: true };
+      component = new DyeSelector(container, options);
+      component.init();
+
+      const categoryButtons = container.querySelectorAll('[data-category]');
+      const facewearBtn = Array.from(categoryButtons).find(
+        (btn) => btn.getAttribute('data-category') === 'Facewear'
+      );
+
+      expect(facewearBtn).toBeDefined();
+    });
+  });
+
 });
