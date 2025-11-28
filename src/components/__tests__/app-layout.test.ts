@@ -6,6 +6,7 @@
  */
 
 import { AppLayout } from '../app-layout';
+import { ThemeService, LanguageService } from '@services/index';
 import {
   createTestContainer,
   cleanupTestContainer,
@@ -494,6 +495,161 @@ describe('AppLayout', () => {
       // Content should be preserved (it's in private field contentContainer reference)
       const contentContainer = component.getContentContainer();
       expect(contentContainer).not.toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // Subscription Callbacks (Branch Coverage)
+  // ==========================================================================
+
+  describe('Subscription Callbacks', () => {
+    it('should update header colors when theme changes', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      const title = container.querySelector('header h1') as HTMLElement;
+      const version = container.querySelector('header span[data-app-version]') as HTMLElement;
+
+      // Trigger theme change
+      ThemeService.setTheme('standard-dark');
+
+      // Verify styles were applied
+      expect(title.style.color).toBe('var(--theme-text-header)');
+      expect(version.style.color).toBe('var(--theme-text-header)');
+      expect(version.style.opacity).toBe('0.8');
+    });
+
+    it('should update localized text when language changes', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      const title = container.querySelector('header h1') as HTMLElement;
+
+      // Trigger language change
+      LanguageService.setLocale('ja');
+
+      // Verify text was updated (title should be translated)
+      expect(title.textContent).toBeTruthy();
+    });
+
+    it('should handle updateHeaderColors when title element is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the title element
+      const title = container.querySelector('header h1');
+      title?.parentNode?.removeChild(title);
+
+      // Trigger theme change - should not throw
+      expect(() => {
+        ThemeService.setTheme('standard-light');
+      }).not.toThrow();
+    });
+
+    it('should handle updateHeaderColors when version element is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the version element
+      const version = container.querySelector('header span[data-app-version]');
+      version?.parentNode?.removeChild(version);
+
+      // Trigger theme change - should not throw
+      expect(() => {
+        ThemeService.setTheme('standard-dark');
+      }).not.toThrow();
+    });
+
+    it('should handle updateLocalizedText when title element is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the title element
+      const title = container.querySelector('header h1');
+      title?.parentNode?.removeChild(title);
+
+      // Trigger language change - should not throw
+      expect(() => {
+        LanguageService.setLocale('de');
+      }).not.toThrow();
+    });
+
+    it('should handle updateLocalizedText when footer copyright is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the footer copyright element
+      const footerCopyright = container.querySelector('footer .text-sm');
+      footerCopyright?.parentNode?.removeChild(footerCopyright);
+
+      // Trigger language change - should not throw
+      expect(() => {
+        LanguageService.setLocale('fr');
+      }).not.toThrow();
+    });
+
+    it('should handle updateLocalizedText when footer creator is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the footer creator element
+      const footerCreator = container.querySelector('footer .text-xs:not(.border-t)');
+      footerCreator?.parentNode?.removeChild(footerCreator);
+
+      // Trigger language change - should not throw
+      expect(() => {
+        LanguageService.setLocale('ko');
+      }).not.toThrow();
+    });
+
+    it('should handle updateLocalizedText when footer disclaimer is not found', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove the footer disclaimer element
+      const footerDisclaimer = container.querySelector('footer .border-t');
+      footerDisclaimer?.parentNode?.removeChild(footerDisclaimer);
+
+      // Trigger language change - should not throw
+      expect(() => {
+        LanguageService.setLocale('zh');
+      }).not.toThrow();
+    });
+
+    it('should handle updateLocalizedText when all footer elements are missing', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove all targeted footer elements
+      const footerCopyright = container.querySelector('footer .text-sm');
+      const footerCreator = container.querySelector('footer .text-xs:not(.border-t)');
+      const footerDisclaimer = container.querySelector('footer .border-t');
+
+      footerCopyright?.parentNode?.removeChild(footerCopyright);
+      footerCreator?.parentNode?.removeChild(footerCreator);
+      footerDisclaimer?.parentNode?.removeChild(footerDisclaimer);
+
+      // Trigger language change - should not throw
+      expect(() => {
+        LanguageService.setLocale('en');
+      }).not.toThrow();
+    });
+
+    it('should handle updateHeaderColors when both title and version are missing', () => {
+      component = new AppLayout(container);
+      component.init();
+
+      // Remove both title and version
+      const title = container.querySelector('header h1');
+      const version = container.querySelector('header span[data-app-version]');
+
+      title?.parentNode?.removeChild(title);
+      version?.parentNode?.removeChild(version);
+
+      // Trigger theme change - should not throw
+      expect(() => {
+        ThemeService.setTheme('standard-light');
+      }).not.toThrow();
     });
   });
 

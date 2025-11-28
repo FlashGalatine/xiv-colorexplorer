@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { APIService } from '../api-service-wrapper';
+import { APIService, LocalStorageCacheBackend } from '../api-service-wrapper';
 
 describe('APIService Wrapper', () => {
   beforeEach(() => {
@@ -252,5 +252,287 @@ describe('apiService export', () => {
 
     expect(apiService).toBeTruthy();
     expect(typeof apiService.getPriceData).toBe('function');
+  });
+});
+
+// ==========================================================================
+// LocalStorageCacheBackend Direct Method Tests (Branch Coverage)
+// ==========================================================================
+
+describe('LocalStorageCacheBackend Direct Methods', () => {
+  let cacheBackend: LocalStorageCacheBackend;
+  const keyPrefix = 'xivdyetools_api_';
+
+  beforeEach(() => {
+    localStorage.clear();
+    cacheBackend = new LocalStorageCacheBackend();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  // ==========================================================================
+  // get() method branch coverage
+  // ==========================================================================
+
+  describe('get() method', () => {
+    it('should return parsed data when key exists', () => {
+      const testData = { data: { minPrice: 100 }, timestamp: Date.now() };
+      localStorage.setItem(keyPrefix + 'test-key', JSON.stringify(testData));
+
+      const result = cacheBackend.get('test-key');
+
+      expect(result).toEqual(testData);
+    });
+
+    it('should return null when key does not exist', () => {
+      const result = cacheBackend.get('non-existent-key');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when localStorage throws an error', () => {
+      const originalGetItem = Storage.prototype.getItem;
+      Storage.prototype.getItem = vi.fn(() => {
+        throw new Error('Storage error');
+      });
+
+      const result = cacheBackend.get('test-key');
+
+      expect(result).toBeNull();
+
+      Storage.prototype.getItem = originalGetItem;
+    });
+
+    it('should return null when JSON parsing fails', () => {
+      localStorage.setItem(keyPrefix + 'invalid-json', 'not-valid-json');
+
+      const result = cacheBackend.get('invalid-json');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // set() method branch coverage
+  // ==========================================================================
+
+  describe('set() method', () => {
+    it('should store data successfully', () => {
+      const testData = { data: { minPrice: 200 }, timestamp: Date.now() };
+
+      cacheBackend.set('test-key', testData as any);
+
+      const stored = localStorage.getItem(keyPrefix + 'test-key');
+      expect(stored).toBeTruthy();
+      expect(JSON.parse(stored!)).toEqual(testData);
+    });
+
+    it('should handle error when localStorage throws (quota exceeded)', () => {
+      const originalSetItem = Storage.prototype.setItem;
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      Storage.prototype.setItem = vi.fn(() => {
+        throw new Error('QuotaExceededError');
+      });
+
+      // Should not throw externally
+      expect(() => {
+        cacheBackend.set('test-key', { data: {}, timestamp: Date.now() } as any);
+      }).not.toThrow();
+
+      Storage.prototype.setItem = originalSetItem;
+      warnSpy.mockRestore();
+    });
+  });
+
+  // ==========================================================================
+  // delete() method branch coverage
+  // ==========================================================================
+
+  describe('delete() method', () => {
+    it('should remove key successfully', () => {
+      localStorage.setItem(keyPrefix + 'test-key', 'test-value');
+
+      cacheBackend.delete('test-key');
+
+      expect(localStorage.getItem(keyPrefix + 'test-key')).toBeNull();
+    });
+
+    it('should handle error when localStorage throws', () => {
+      const originalRemoveItem = Storage.prototype.removeItem;
+      Storage.prototype.removeItem = vi.fn(() => {
+        throw new Error('Storage error');
+      });
+
+      // Should not throw externally
+      expect(() => {
+        cacheBackend.delete('test-key');
+      }).not.toThrow();
+
+      Storage.prototype.removeItem = originalRemoveItem;
+    });
+
+    it('should handle deleting non-existent key', () => {
+      // Should not throw when key doesn't exist
+      expect(() => {
+        cacheBackend.delete('non-existent-key');
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // clear() method branch coverage
+  // ==========================================================================
+
+  describe('clear() method', () => {
+    it('should clear all keys with prefix', () => {
+      localStorage.setItem(keyPrefix + 'key1', 'value1');
+      localStorage.setItem(keyPrefix + 'key2', 'value2');
+      localStorage.setItem('other_key', 'other_value');
+
+      cacheBackend.clear();
+
+      expect(localStorage.getItem(keyPrefix + 'key1')).toBeNull();
+      expect(localStorage.getItem(keyPrefix + 'key2')).toBeNull();
+      // Other keys should remain
+      expect(localStorage.getItem('other_key')).toBe('other_value');
+    });
+
+    it('should handle when no keys have the prefix', () => {
+      localStorage.setItem('other_key1', 'value1');
+      localStorage.setItem('other_key2', 'value2');
+
+      // Should not throw when no matching keys
+      expect(() => {
+        cacheBackend.clear();
+      }).not.toThrow();
+
+      // Other keys should still exist
+      expect(localStorage.getItem('other_key1')).toBe('value1');
+    });
+
+    it('should skip keys when localStorage.key returns null', () => {
+      // This tests the key?.startsWith branch when key is null
+      // We add real items, then mock key() to return null for some iterations
+      localStorage.setItem(keyPrefix + 'key1', 'value1');
+      localStorage.setItem('other_key', 'value2');
+
+      const originalKey = Storage.prototype.key;
+      let callIndex = 0;
+      const mockKey = vi.fn((index: number) => {
+        // Return null for first call, then delegate to original for remaining
+        if (callIndex === 0) {
+          callIndex++;
+          return null;
+        }
+        return originalKey.call(localStorage, index);
+      });
+      Storage.prototype.key = mockKey;
+
+      // Should not throw - null keys are skipped
+      expect(() => {
+        cacheBackend.clear();
+      }).not.toThrow();
+
+      Storage.prototype.key = originalKey;
+    });
+
+    it('should handle error when localStorage throws during iteration', () => {
+      const originalKey = Storage.prototype.key;
+      Storage.prototype.key = vi.fn(() => {
+        throw new Error('Storage error');
+      });
+
+      // Should not throw externally
+      expect(() => {
+        cacheBackend.clear();
+      }).not.toThrow();
+
+      Storage.prototype.key = originalKey;
+    });
+  });
+
+  // ==========================================================================
+  // keys() method branch coverage
+  // ==========================================================================
+
+  describe('keys() method', () => {
+    beforeEach(() => {
+      // Ensure clean state and restore any mocked functions
+      localStorage.clear();
+      vi.restoreAllMocks();
+    });
+
+    it('should return all keys with prefix (without prefix)', () => {
+      localStorage.setItem(keyPrefix + 'key1', 'value1');
+      localStorage.setItem(keyPrefix + 'key2', 'value2');
+      localStorage.setItem('other_key', 'other_value');
+
+      const keys = cacheBackend.keys();
+
+      expect(keys).toContain('key1');
+      expect(keys).toContain('key2');
+      expect(keys).not.toContain('other_key');
+      expect(keys.length).toBe(2);
+    });
+
+    it('should return empty array when no keys have the prefix', () => {
+      localStorage.setItem('other_key1', 'value1');
+      localStorage.setItem('other_key2', 'value2');
+
+      const keys = cacheBackend.keys();
+
+      expect(keys).toEqual([]);
+    });
+
+    it('should skip null keys from localStorage.key', () => {
+      // This tests the key?.startsWith branch when key is null
+      // Add a real item first
+      localStorage.setItem(keyPrefix + 'realkey', 'value');
+
+      const originalKey = Storage.prototype.key;
+      let callCount = 0;
+      const mockKey = vi.fn((index: number) => {
+        callCount++;
+        // Return null for first call to test the null branch
+        if (callCount === 1) {
+          return null;
+        }
+        // Return real keys for remaining calls
+        return originalKey.call(localStorage, index);
+      });
+      Storage.prototype.key = mockKey;
+
+      const keys = cacheBackend.keys();
+
+      // Should still work and return whatever keys weren't null
+      expect(Array.isArray(keys)).toBe(true);
+
+      Storage.prototype.key = originalKey;
+    });
+
+    it('should return empty array when localStorage throws during iteration', () => {
+      const originalKey = Storage.prototype.key;
+      Storage.prototype.key = vi.fn(() => {
+        throw new Error('Storage error');
+      });
+
+      const keys = cacheBackend.keys();
+
+      expect(keys).toEqual([]);
+
+      Storage.prototype.key = originalKey;
+    });
+
+    it('should handle empty localStorage', () => {
+      localStorage.clear();
+
+      const keys = cacheBackend.keys();
+
+      expect(keys).toEqual([]);
+    });
   });
 });

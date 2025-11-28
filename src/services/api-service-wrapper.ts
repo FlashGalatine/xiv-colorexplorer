@@ -13,8 +13,9 @@ import { logger } from '@shared/logger';
 
 /**
  * LocalStorage Cache Backend for browser environment
+ * Exported for testing purposes
  */
-class LocalStorageCacheBackend implements ICacheBackend {
+export class LocalStorageCacheBackend implements ICacheBackend {
   private keyPrefix = 'xivdyetools_api_';
 
   get(key: string): CachedData<PriceData> | null {
