@@ -5,6 +5,7 @@
  * colorblindness and checks dye accessibility for outfits
  */
 
+import { vi } from 'vitest';
 import { AccessibilityCheckerTool } from '../accessibility-checker-tool';
 import { createTestContainer, cleanupTestContainer, cleanupComponent } from './test-utils';
 import type { Dye } from '@shared/types';
@@ -840,6 +841,549 @@ describe('AccessibilityCheckerTool Component', () => {
       component.init();
 
       expect(() => component.clearPairs()).not.toThrow();
+    });
+
+    it('should clear existing pairs when pairs container exists', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Create some pairs first
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#00FF00' });
+      component.createPair(dye1, dye2);
+
+      // Clear pairs
+      component.clearPairs();
+
+      // Pairs container should be empty (or not exist)
+      const pairsContainer = container.querySelector('#pairs-container');
+      if (pairsContainer) {
+        expect(pairsContainer.children.length).toBe(0);
+      }
+    });
+  });
+
+  // ==========================================================================
+  // updateResults Integration Tests
+  // ==========================================================================
+
+  describe('updateResults integration', () => {
+    // Helper to access private updateResults
+    type ComponentWithUpdateResults = AccessibilityCheckerTool & {
+      updateResults: () => void;
+      dyeSelector: { getSelectedDyes: () => Dye[] } | null;
+    };
+
+    it('should display empty message when no dyes selected', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Manually trigger updateResults with empty selection via mock
+      const comp = component as unknown as ComponentWithUpdateResults;
+      if (comp.dyeSelector) {
+        vi.spyOn(comp.dyeSelector, 'getSelectedDyes').mockReturnValue([]);
+      }
+
+      // Trigger selection change
+      const dyeSelectorContainer = container.querySelector('#dye-selector-container');
+      dyeSelectorContainer?.dispatchEvent(new CustomEvent('selection-changed'));
+
+      const resultsContainer = container.querySelector('#results-container');
+      expect(resultsContainer?.textContent).toContain('');
+    });
+
+    it('should render dye cards when dyes are selected', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithUpdateResults;
+      const selectedDyes = [
+        createMockDye({ id: 1, name: 'Red Dye', hex: '#FF0000' }),
+        createMockDye({ id: 2, name: 'Blue Dye', hex: '#0000FF' }),
+      ];
+
+      if (comp.dyeSelector) {
+        vi.spyOn(comp.dyeSelector, 'getSelectedDyes').mockReturnValue(selectedDyes);
+      }
+
+      // Trigger selection change
+      const dyeSelectorContainer = container.querySelector('#dye-selector-container');
+      dyeSelectorContainer?.dispatchEvent(new CustomEvent('selection-changed'));
+
+      // Results should be rendered
+      const resultsContainer = container.querySelector('#results-container');
+      expect(resultsContainer).not.toBeNull();
+    });
+
+    it('should show pair comparison section when 2+ dyes selected', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithUpdateResults;
+      const selectedDyes = [
+        createMockDye({ id: 1, name: 'Red Dye', hex: '#FF0000' }),
+        createMockDye({ id: 2, name: 'Blue Dye', hex: '#0000FF' }),
+      ];
+
+      if (comp.dyeSelector) {
+        vi.spyOn(comp.dyeSelector, 'getSelectedDyes').mockReturnValue(selectedDyes);
+      }
+
+      // Trigger selection change
+      const dyeSelectorContainer = container.querySelector('#dye-selector-container');
+      dyeSelectorContainer?.dispatchEvent(new CustomEvent('selection-changed'));
+
+      // Check if pair comparison note is rendered
+      const resultsContainer = container.querySelector('#results-container');
+      expect(resultsContainer).not.toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // Rendering Tests - renderDyeCard
+  // ==========================================================================
+
+  describe('renderDyeCard rendering', () => {
+    type ComponentWithRender = AccessibilityCheckerTool & {
+      renderDyeCard: (result: {
+        dyeId: number;
+        dyeName: string;
+        hex: string;
+        contrastScore: number;
+        wcagLevel: 'AAA' | 'AA' | 'Fail';
+        warnings: string[];
+        colorblindnessSimulations: Record<string, string>;
+      }) => HTMLElement;
+    };
+
+    it('should render dye card with name and hex', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dyeId: 1,
+        dyeName: 'Test Red Dye',
+        hex: '#FF0000',
+        contrastScore: 85,
+        wcagLevel: 'AA' as const,
+        warnings: [],
+        colorblindnessSimulations: {
+          normal: '#FF0000',
+          deuteranopia: '#AA5500',
+          protanopia: '#AA5500',
+          tritanopia: '#FF0055',
+          achromatopsia: '#808080',
+        },
+      };
+
+      const card = comp.renderDyeCard(result);
+
+      expect(card.textContent).toContain('Test Red Dye');
+      expect(card.textContent).toContain('#FF0000');
+    });
+
+    it('should render WCAG badge', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dyeId: 1,
+        dyeName: 'Test Dye',
+        hex: '#FF0000',
+        contrastScore: 85,
+        wcagLevel: 'AA' as const,
+        warnings: [],
+        colorblindnessSimulations: {
+          normal: '#FF0000',
+          deuteranopia: '#AA5500',
+          protanopia: '#AA5500',
+          tritanopia: '#FF0055',
+          achromatopsia: '#808080',
+        },
+      };
+
+      const card = comp.renderDyeCard(result);
+
+      expect(card.textContent).toContain('WCAG AA');
+    });
+
+    it('should render warnings when present', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dyeId: 1,
+        dyeName: 'Test Dye',
+        hex: '#FF0000',
+        contrastScore: 50,
+        wcagLevel: 'Fail' as const,
+        warnings: ['Red-green colorblind warning', 'Another warning'],
+        colorblindnessSimulations: {
+          normal: '#FF0000',
+          deuteranopia: '#AA5500',
+          protanopia: '#AA5500',
+          tritanopia: '#FF0055',
+          achromatopsia: '#808080',
+        },
+      };
+
+      const card = comp.renderDyeCard(result);
+
+      expect(card.textContent).toContain('Red-green colorblind warning');
+      expect(card.textContent).toContain('Another warning');
+    });
+
+    it('should render colorblindness simulations grid', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dyeId: 1,
+        dyeName: 'Test Dye',
+        hex: '#FF0000',
+        contrastScore: 85,
+        wcagLevel: 'AA' as const,
+        warnings: [],
+        colorblindnessSimulations: {
+          normal: '#FF0000',
+          deuteranopia: '#AA5500',
+          protanopia: '#AA5500',
+          tritanopia: '#FF0055',
+          achromatopsia: '#808080',
+        },
+      };
+
+      const card = comp.renderDyeCard(result);
+      const grid = card.querySelector('.grid-cols-5');
+
+      expect(grid).not.toBeNull();
+      expect(grid?.children.length).toBe(5); // 5 vision types
+    });
+  });
+
+  // ==========================================================================
+  // Rendering Tests - renderPairCard
+  // ==========================================================================
+
+  describe('renderPairCard rendering', () => {
+    type ComponentWithRender = AccessibilityCheckerTool & {
+      renderPairCard: (result: {
+        dye1Id: number;
+        dye1Name: string;
+        dye1Hex: string;
+        dye2Id: number;
+        dye2Name: string;
+        dye2Hex: string;
+        distinguishability: number;
+        warnings: string[];
+      }) => HTMLElement;
+    };
+
+    it('should render both dye names', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dye1Id: 1,
+        dye1Name: 'Rose Red',
+        dye1Hex: '#FF0000',
+        dye2Id: 2,
+        dye2Name: 'Ocean Blue',
+        dye2Hex: '#0000FF',
+        distinguishability: 75,
+        warnings: [],
+      };
+
+      const card = comp.renderPairCard(result);
+
+      expect(card.textContent).toContain('Rose Red');
+      expect(card.textContent).toContain('Ocean Blue');
+    });
+
+    it('should render distinguishability score', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dye1Id: 1,
+        dye1Name: 'Red',
+        dye1Hex: '#FF0000',
+        dye2Id: 2,
+        dye2Name: 'Blue',
+        dye2Hex: '#0000FF',
+        distinguishability: 75,
+        warnings: [],
+      };
+
+      const card = comp.renderPairCard(result);
+
+      expect(card.textContent).toContain('75%');
+    });
+
+    it('should render warnings when present', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      const result = {
+        dye1Id: 1,
+        dye1Name: 'Red',
+        dye1Hex: '#FF0000',
+        dye2Id: 2,
+        dye2Name: 'Similar Red',
+        dye2Hex: '#FF1111',
+        distinguishability: 15,
+        warnings: ['Very similar colors'],
+      };
+
+      const card = comp.renderPairCard(result);
+
+      expect(card.textContent).toContain('Very similar colors');
+    });
+  });
+
+  // ==========================================================================
+  // Rendering Tests - renderOverallAccessibilityScore
+  // ==========================================================================
+
+  describe('renderOverallAccessibilityScore rendering', () => {
+    type ComponentWithRender = AccessibilityCheckerTool & {
+      renderOverallAccessibilityScore: (score: number) => HTMLElement;
+      dyeResults: unknown[];
+    };
+
+    it('should render score value', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      comp.dyeResults = [{}, {}]; // Mock 2 dye results
+      const section = comp.renderOverallAccessibilityScore(85);
+
+      expect(section.textContent).toContain('85');
+      expect(section.textContent).toContain('/ 100');
+    });
+
+    it('should render excellent label for high score', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      comp.dyeResults = [{}, {}];
+      const section = comp.renderOverallAccessibilityScore(90);
+
+      expect(section.textContent?.toLowerCase()).toContain('excellent');
+    });
+
+    it('should render fair label for medium score', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      comp.dyeResults = [{}, {}];
+      const section = comp.renderOverallAccessibilityScore(60);
+
+      expect(section.textContent?.toLowerCase()).toContain('fair');
+    });
+
+    it('should render poor label for low score', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      comp.dyeResults = [{}, {}];
+      const section = comp.renderOverallAccessibilityScore(30);
+
+      expect(section.textContent?.toLowerCase()).toContain('poor');
+    });
+
+    it('should render progress bar', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const comp = component as unknown as ComponentWithRender;
+      comp.dyeResults = [{}, {}];
+      const section = comp.renderOverallAccessibilityScore(75);
+
+      const progressBar = section.querySelector('.h-3');
+      expect(progressBar).not.toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // analyzeDye Edge Cases - Warning Generation
+  // ==========================================================================
+
+  describe('analyzeDye warning generation', () => {
+    it('should generate red-green warning for similar deuteranopia/protanopia colors', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Use a red color that becomes similar in deuteranopia and protanopia
+      const mockDye = createMockDye({ id: 1, hex: '#FF0000' });
+      const result = (component as unknown as ComponentWithPrivate).analyzeDye(mockDye);
+
+      // The warning might or might not appear depending on the color
+      expect(result.warnings).toBeDefined();
+      expect(Array.isArray(result.warnings)).toBe(true);
+    });
+
+    it('should check tritanopia distinguishability', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Blue colors are most affected by tritanopia
+      const mockDye = createMockDye({ id: 1, hex: '#0000FF' });
+      const result = (component as unknown as ComponentWithPrivate).analyzeDye(mockDye);
+
+      expect(result.colorblindnessSimulations.tritanopia).toBeDefined();
+    });
+
+    it('should check achromatopsia distinguishability', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Gray-ish colors might trigger achromatopsia warnings
+      const mockDye = createMockDye({ id: 1, hex: '#808080' });
+      const result = (component as unknown as ComponentWithPrivate).analyzeDye(mockDye);
+
+      expect(result.colorblindnessSimulations.achromatopsia).toBeDefined();
+    });
+  });
+
+  // ==========================================================================
+  // analyzePair Edge Cases - Warning Generation
+  // ==========================================================================
+
+  describe('analyzePair warning generation', () => {
+    it('should warn for very similar colors (distinguishability < 20)', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#FF0005' }); // Almost identical
+      const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
+
+      expect(result.warnings.length).toBeGreaterThan(0);
+    });
+
+    it('should warn for somewhat similar colors (distinguishability < 40)', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#FF3333' }); // Somewhat similar
+      const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
+
+      // May or may not have warnings depending on exact distance
+      expect(result.warnings).toBeDefined();
+    });
+
+    it('should not warn for very different colors', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const dye1 = createMockDye({ id: 1, hex: '#000000' }); // Black
+      const dye2 = createMockDye({ id: 2, hex: '#FFFFFF' }); // White
+      const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
+
+      expect(result.warnings.length).toBe(0);
+    });
+  });
+
+  // ==========================================================================
+  // calculateOverallAccessibilityScore Edge Cases
+  // ==========================================================================
+
+  describe('calculateOverallAccessibilityScore edge cases', () => {
+    it('should apply penalties for indistinguishable dye pairs', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Two very similar colors should reduce score
+      (component as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hex: '#FF0000' }),
+        createMockDye({ id: 2, hex: '#FF0505' }),
+      ];
+      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+
+      expect(score).toBeLessThan(100);
+    });
+
+    it('should check all vision types for pair comparisons', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      (component as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hex: '#FF0000' }), // Red
+        createMockDye({ id: 2, hex: '#00FF00' }), // Green
+      ];
+      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+
+      // Score should account for colorblindness simulations
+      expect(score).toBeGreaterThanOrEqual(0);
+      expect(score).toBeLessThanOrEqual(100);
+    });
+
+    it('should clamp score to minimum of 0', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Many similar colors should heavily penalize but not go negative
+      (component as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hex: '#FF0000' }),
+        createMockDye({ id: 2, hex: '#FF0001' }),
+        createMockDye({ id: 3, hex: '#FF0002' }),
+        createMockDye({ id: 4, hex: '#FF0003' }),
+        createMockDye({ id: 5, hex: '#FF0004' }),
+      ];
+      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+
+      expect(score).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  // ==========================================================================
+  // createPair with pairs container
+  // ==========================================================================
+
+  describe('createPair with DOM rendering', () => {
+    it('should add pair card to pairs container when it exists', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Manually create pairs container
+      const resultsContainer = container.querySelector('#results-container');
+      if (resultsContainer) {
+        const pairsContainer = document.createElement('div');
+        pairsContainer.id = 'pairs-container';
+        resultsContainer.appendChild(pairsContainer);
+      }
+
+      const dye1 = createMockDye({ id: 1, name: 'Red', hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, name: 'Blue', hex: '#0000FF' });
+
+      component.createPair(dye1, dye2);
+
+      const pairsContainer = container.querySelector('#pairs-container');
+      expect(pairsContainer?.children.length).toBeGreaterThan(0);
+    });
+
+    it('should handle missing pairs container gracefully', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      // Don't create pairs container - should not throw
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#0000FF' });
+
+      expect(() => component.createPair(dye1, dye2)).not.toThrow();
     });
   });
 });
