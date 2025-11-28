@@ -134,7 +134,9 @@
     "zoomOut": "Zoom Arrière",
     "zoomFit": "Ajuster",
     "zoomWidth": "Largeur",
-    "zoomReset": "Réinitialiser"
+    "zoomReset": "Réinitialiser",
+    "copyHex": "Copier Hex",
+    "market": "marché"
   },
   "accessibility": {
     "selectDyes": "Sélectionner des Teintures",

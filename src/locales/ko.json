@@ -134,7 +134,9 @@
     "zoomOut": "축소",
     "zoomFit": "맞춤",
     "zoomWidth": "너비 맞춤",
-    "zoomReset": "초기화"
+    "zoomReset": "초기화",
+    "copyHex": "Hex 복사",
+    "market": "마켓"
   },
   "accessibility": {
     "selectDyes": "염료 선택",

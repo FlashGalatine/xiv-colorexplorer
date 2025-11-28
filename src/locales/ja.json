@@ -134,7 +134,9 @@
     "zoomOut": "縮小",
     "zoomFit": "フィット",
     "zoomWidth": "幅に合わせる",
-    "zoomReset": "リセット"
+    "zoomReset": "リセット",
+    "copyHex": "Hexをコピー",
+    "market": "マーケット"
   },
   "accessibility": {
     "selectDyes": "カララントを選択",

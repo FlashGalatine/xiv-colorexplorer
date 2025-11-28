@@ -134,7 +134,9 @@
     "zoomOut": "缩小",
     "zoomFit": "适应",
     "zoomWidth": "适应宽度",
-    "zoomReset": "重置"
+    "zoomReset": "重置",
+    "copyHex": "复制十六进制",
+    "market": "市场"
   },
   "accessibility": {
     "selectDyes": "选择染料",
