@@ -458,4 +458,209 @@ describe('ThemeSwitcher', () => {
       expect(state.isDropdownOpen).toBe(false);
     });
   });
+
+  // ==========================================================================
+  // Branch Coverage Tests - Click Outside and Close Events
+  // ==========================================================================
+
+  describe('Close Dropdown Behavior', () => {
+    it('should close dropdown when clicking outside component', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Create an element outside the component and click it
+      const outsideElement = document.createElement('div');
+      outsideElement.id = 'outside-element';
+      document.body.appendChild(outsideElement);
+
+      // Simulate click on outside element
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      outsideElement.dispatchEvent(clickEvent);
+
+      await waitForComponent(10);
+
+      // Dropdown should be closed
+      expectElement.toHaveClass(dropdown, 'hidden');
+
+      // Cleanup
+      outsideElement.remove();
+    });
+
+    it('should NOT close dropdown when clicking inside component', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Click inside the dropdown (not on a theme button)
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      dropdown.dispatchEvent(clickEvent);
+
+      await waitForComponent(10);
+
+      // Dropdown should still be open
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+    });
+
+    it('should close dropdown when receiving close-other-dropdowns event from non-theme source', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Dispatch close event from another source (e.g., tools dropdown)
+      const closeEvent = new CustomEvent('close-other-dropdowns', {
+        detail: { source: 'tools' },
+        bubbles: true,
+      });
+      document.dispatchEvent(closeEvent);
+
+      await waitForComponent(10);
+
+      // Dropdown should be closed
+      expectElement.toHaveClass(dropdown, 'hidden');
+    });
+
+    it('should NOT close dropdown when receiving close-other-dropdowns from theme source', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Open dropdown
+      button.click();
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+
+      // Dispatch close event from theme source (self)
+      const closeEvent = new CustomEvent('close-other-dropdowns', {
+        detail: { source: 'theme' },
+        bubbles: true,
+      });
+      document.dispatchEvent(closeEvent);
+
+      await waitForComponent(10);
+
+      // Dropdown should still be open (don't close own dropdown)
+      expectElement.toNotHaveClass(dropdown, 'hidden');
+    });
+
+    it('should NOT close dropdown when receiving close event while already closed', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const dropdown = container.querySelector('#theme-dropdown') as HTMLDivElement;
+
+      // Ensure dropdown is closed
+      expectElement.toHaveClass(dropdown, 'hidden');
+
+      // Dispatch close event - should have no effect
+      const closeEvent = new CustomEvent('close-other-dropdowns', {
+        detail: { source: 'tools' },
+        bubbles: true,
+      });
+      document.dispatchEvent(closeEvent);
+
+      await waitForComponent(10);
+
+      // Dropdown should still be closed
+      expectElement.toHaveClass(dropdown, 'hidden');
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - Language Service Integration
+  // ==========================================================================
+
+  describe('Language Service Integration', () => {
+    it('should update when language changes', async () => {
+      const { LanguageService } = await import('@services/language-service');
+
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      // Initial render should have text content
+      const initialButton = container.querySelector('#theme-switcher-btn');
+      expect(initialButton?.textContent).toBeDefined();
+
+      // Change language
+      await LanguageService.setLocale('ja');
+
+      await waitForComponent(100);
+
+      // Component should have updated (re-rendered)
+      const updatedButton = container.querySelector('#theme-switcher-btn');
+      expect(updatedButton).not.toBeNull();
+
+      // Restore English
+      await LanguageService.setLocale('en');
+    });
+
+    it('should subscribe to language changes on mount', async () => {
+      const { LanguageService } = await import('@services/language-service');
+      const subscribeSpy = vi.spyOn(LanguageService, 'subscribe');
+
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      expect(subscribeSpy).toHaveBeenCalled();
+      subscribeSpy.mockRestore();
+    });
+  });
+
+  // ==========================================================================
+  // Branch Coverage Tests - Dispatch close-other-dropdowns on open
+  // ==========================================================================
+
+  describe('Dropdown Coordination', () => {
+    it('should dispatch close-other-dropdowns event when opening dropdown', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const eventHandler = vi.fn();
+      document.addEventListener('close-other-dropdowns', eventHandler);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+
+      // Open dropdown - should dispatch event
+      button.click();
+
+      expect(eventHandler).toHaveBeenCalledTimes(1);
+      expect((eventHandler.mock.calls[0][0] as CustomEvent).detail.source).toBe('theme');
+
+      // Clean up listener
+      document.removeEventListener('close-other-dropdowns', eventHandler);
+    });
+
+    it('should NOT dispatch close-other-dropdowns event when closing dropdown', async () => {
+      [component, container] = renderComponent(ThemeSwitcher);
+
+      const button = container.querySelector('#theme-switcher-btn') as HTMLButtonElement;
+
+      // Open dropdown first
+      button.click();
+
+      // Set up listener after first click
+      const eventHandler = vi.fn();
+      document.addEventListener('close-other-dropdowns', eventHandler);
+
+      // Close dropdown - should NOT dispatch event
+      button.click();
+
+      // Event should not have been dispatched for close
+      expect(eventHandler).not.toHaveBeenCalled();
+
+      // Clean up listener
+      document.removeEventListener('close-other-dropdowns', eventHandler);
+    });
+  });
 });
