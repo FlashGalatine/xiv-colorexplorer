@@ -9,6 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
+import { LanguageSelector } from './language-selector';
 import { ThemeService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
@@ -19,6 +20,7 @@ import { clearContainer } from '@shared/utils';
  */
 export class AppLayout extends BaseComponent {
   private themeSwitcher: ThemeSwitcher | null = null;
+  private languageSelector: LanguageSelector | null = null;
   private contentContainer: HTMLElement | null = null;
 
   /**
@@ -141,7 +143,7 @@ export class AppLayout extends BaseComponent {
     titleDiv.appendChild(title);
     titleDiv.appendChild(version);
 
-    // Right side: Tools dropdown + Theme switcher
+    // Right side: Tools dropdown + Language selector + Theme switcher
     const rightContainer = this.createElement('div', {
       className: 'flex items-center gap-4',
     });
@@ -150,11 +152,16 @@ export class AppLayout extends BaseComponent {
       id: 'tools-dropdown-container',
     });
 
+    const languageSelectorContainer = this.createElement('div', {
+      id: 'language-selector-container',
+    });
+
     const themeSwitcherContainer = this.createElement('div', {
       id: 'theme-switcher-container',
     });
 
     rightContainer.appendChild(toolsDropdownContainer);
+    rightContainer.appendChild(languageSelectorContainer);
     rightContainer.appendChild(themeSwitcherContainer);
     nav.appendChild(titleDiv);
     nav.appendChild(rightContainer);
@@ -249,6 +256,13 @@ export class AppLayout extends BaseComponent {
    * Initialize the layout and all child components
    */
   onMount(): void {
+    // Initialize language selector
+    const languageSelectorContainer = this.querySelector<HTMLElement>('#language-selector-container');
+    if (languageSelectorContainer) {
+      this.languageSelector = new LanguageSelector(languageSelectorContainer);
+      this.languageSelector.init();
+    }
+
     // Initialize theme switcher
     const themeSwitcherContainer = this.querySelector<HTMLElement>('#theme-switcher-container');
     if (themeSwitcherContainer) {
@@ -316,6 +330,9 @@ export class AppLayout extends BaseComponent {
    * Destroy the layout and all child components
    */
   destroy(): void {
+    if (this.languageSelector) {
+      this.languageSelector.destroy();
+    }
     if (this.themeSwitcher) {
       this.themeSwitcher.destroy();
     }
