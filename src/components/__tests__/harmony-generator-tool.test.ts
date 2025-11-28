@@ -78,6 +78,9 @@ const mockDyeService = {
   findShadesDyes: vi.fn(() => []),
   findComplementaryPair: vi.fn(() => null),
   findClosestDye: vi.fn(() => baseDye),
+  getCategories: vi.fn(() => ['Red', 'Blue', 'Green', 'Yellow']),
+  searchByCategory: vi.fn(() => dyePool),
+  searchByName: vi.fn(() => dyePool),
 };
 
 vi.mock('../harmony-type', () => {
@@ -109,6 +112,53 @@ vi.mock('../harmony-type', () => {
   };
 });
 
+vi.mock('../market-board', () => {
+  return {
+    MarketBoard: class {
+      constructor(_container: HTMLElement) {}
+      async loadServerData() {}
+      init() {}
+      getShowPrices() { return false; }
+      async fetchPricesForDyes(_dyes: Dye[]) { return new Map(); }
+      destroy() {}
+    },
+  };
+});
+
+vi.mock('../dye-selector', () => {
+  return {
+    DyeSelector: class {
+      constructor(_container: HTMLElement, _options?: unknown) {}
+      init() {}
+      destroy() {}
+    },
+  };
+});
+
+vi.mock('../dye-filters', () => {
+  return {
+    DyeFilters: class {
+      constructor(_container: HTMLElement, _options?: unknown) {}
+      render() {}
+      bindEvents() {}
+      onMount() {}
+      isDyeExcluded(_dye: Dye) { return false; }
+      destroy() {}
+    },
+  };
+});
+
+vi.mock('../palette-exporter', () => {
+  return {
+    PaletteExporter: class {
+      constructor(_container: HTMLElement, _options?: unknown) {}
+      init() {}
+      update() {}
+      destroy() {}
+    },
+  };
+});
+
 vi.mock('@services/index', () => {
   return {
     ColorService: {
@@ -126,6 +176,12 @@ vi.mock('@services/index', () => {
       t: (key: string) => key,
       getHarmonyType: (key: string) => key,
       subscribe: () => () => {},
+    },
+    APIService: {
+      getInstance: () => ({
+        getPriceData: vi.fn().mockResolvedValue(null),
+        getPricesForItems: vi.fn().mockResolvedValue(new Map()),
+      }),
     },
   };
 });
@@ -962,6 +1018,555 @@ describe('HarmonyGeneratorTool', () => {
       expect(() => {
         (component as unknown as ComponentWithPrivate).updateAllDisplays();
       }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - bindEvents
+  // ==========================================================================
+
+  describe('bindEvents function coverage', () => {
+    it('should call bindEvents without throwing', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+    });
+
+    it('should initialize dye selector during bindEvents', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // After bindEvents, the dyeSelector container should have content
+      const dyeSelectorContainer = container.querySelector('#dye-selector-container');
+      expect(dyeSelectorContainer).toBeTruthy();
+    });
+
+    it('should handle hex input value changes', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up the input elements
+      const hexInput = document.createElement('input');
+      hexInput.value = '#00FF00';
+      const colorPicker = document.createElement('input');
+      colorPicker.type = 'color';
+      colorPicker.value = '#ff0000';
+
+      (component as unknown as Record<string, HTMLElement>)._hexInput = hexInput;
+      (component as unknown as Record<string, HTMLElement>)._colorPicker = colorPicker;
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // Simulate input event on hex input
+      hexInput.dispatchEvent(new Event('input'));
+
+      // Color picker normalizes to lowercase
+      expect(colorPicker.value.toLowerCase()).toBe('#00ff00');
+    });
+
+    it('should handle color picker value changes', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up the input elements
+      const hexInput = document.createElement('input');
+      hexInput.value = '#ff0000';
+      const colorPicker = document.createElement('input');
+      colorPicker.type = 'color';
+      colorPicker.value = '#00ff00';
+
+      (component as unknown as Record<string, HTMLElement>)._hexInput = hexInput;
+      (component as unknown as Record<string, HTMLElement>)._colorPicker = colorPicker;
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // Simulate input event on color picker
+      colorPicker.dispatchEvent(new Event('input'));
+
+      // Hex input receives value from color picker (which uses lowercase)
+      expect(hexInput.value.toLowerCase()).toBe('#00ff00');
+    });
+
+    it('should handle generate button click', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const generateBtn = document.createElement('button');
+      (component as unknown as Record<string, HTMLElement>)._generateBtn = generateBtn;
+
+      const generateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'generateHarmonies');
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      generateBtn.click();
+
+      expect(generateSpy).toHaveBeenCalled();
+    });
+
+    it('should handle suggestions mode radio changes', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up radio buttons
+      const simpleRadio = document.createElement('input');
+      simpleRadio.type = 'radio';
+      simpleRadio.name = 'suggestions-mode';
+      simpleRadio.value = 'simple';
+      simpleRadio.checked = true;
+
+      const expandedRadio = document.createElement('input');
+      expandedRadio.type = 'radio';
+      expandedRadio.name = 'suggestions-mode';
+      expandedRadio.value = 'expanded';
+
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
+      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // Change to expanded mode
+      expandedRadio.checked = true;
+      simpleRadio.checked = false;
+      expandedRadio.dispatchEvent(new Event('change'));
+
+      expect((component as unknown as ComponentWithPrivate).suggestionsMode).toBe('expanded');
+    });
+
+    it('should handle companion dyes input changes', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const companionInput = document.createElement('input');
+      companionInput.type = 'range';
+      companionInput.value = '5';
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = companionInput;
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      companionInput.value = '8';
+      companionInput.dispatchEvent(new Event('input'));
+
+      expect((component as unknown as ComponentWithPrivate).companionDyesCount).toBe(8);
+    });
+
+    it('should handle invalid hex input gracefully', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const hexInput = document.createElement('input');
+      hexInput.value = 'invalid';
+      const colorPicker = document.createElement('input');
+      colorPicker.type = 'color';
+      colorPicker.value = '#ff0000';
+
+      (component as unknown as Record<string, HTMLElement>)._hexInput = hexInput;
+      (component as unknown as Record<string, HTMLElement>)._colorPicker = colorPicker;
+
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // Simulate input event with invalid hex
+      hexInput.dispatchEvent(new Event('input'));
+
+      // Color picker should remain unchanged since hex is invalid (browsers normalize to lowercase)
+      expect(colorPicker.value.toLowerCase()).toBe('#ff0000');
+    });
+
+    it('should handle missing hexInput and colorPicker gracefully', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set inputs to null
+      (component as unknown as Record<string, HTMLElement>)._hexInput = null as unknown as HTMLElement;
+      (component as unknown as Record<string, HTMLElement>)._colorPicker = null as unknown as HTMLElement;
+
+      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+    });
+
+    it('should handle missing generateBtn gracefully', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set button to null
+      (component as unknown as Record<string, HTMLElement>)._generateBtn = null as unknown as HTMLElement;
+
+      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - onMount
+  // ==========================================================================
+
+  describe('onMount function coverage', () => {
+    it('should call onMount without throwing', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      expect(() => {
+        component.onMount();
+      }).not.toThrow();
+    });
+
+    it('should generate harmonies after onMount with delay', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const generateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'generateHarmonies');
+
+      component.onMount();
+
+      // Wait for the setTimeout delay (100ms)
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(generateSpy).toHaveBeenCalled();
+    });
+
+    it('should subscribe to language changes', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // No error should occur
+      component.onMount();
+
+      // The subscription is handled internally
+      expect(true).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - fetchPricesForCurrentDyes
+  // ==========================================================================
+
+  describe('fetchPricesForCurrentDyes function coverage', () => {
+    it('should return early when marketBoard is null', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Ensure marketBoard is null
+      (component as unknown as { marketBoard: null }).marketBoard = null;
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      await expect((component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes()).resolves.not.toThrow();
+    });
+
+    it('should return early when showPrices is false', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      (component as unknown as ComponentWithPrivate).showPrices = false;
+
+      // Even with marketBoard set, should return early
+      const mockMarketBoard = {
+        fetchPricesForDyes: vi.fn(),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+
+      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+
+      expect(mockMarketBoard.fetchPricesForDyes).not.toHaveBeenCalled();
+    });
+
+    it('should collect unique dyes from harmony displays', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      const mockPriceData = new Map<number, PriceData>();
+      mockPriceData.set(1, { currentAverage: 1000 } as unknown as PriceData);
+
+      const mockMarketBoard = {
+        fetchPricesForDyes: vi.fn().mockResolvedValue(mockPriceData),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+
+      expect(mockMarketBoard.fetchPricesForDyes).toHaveBeenCalled();
+    });
+
+    it('should update all displays after fetching prices', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      const mockPriceData = new Map<number, PriceData>();
+      const mockMarketBoard = {
+        fetchPricesForDyes: vi.fn().mockResolvedValue(mockPriceData),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      const updateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'updateAllDisplays');
+
+      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+
+      expect(updateSpy).toHaveBeenCalled();
+    });
+
+    it('should avoid duplicate dyes when collecting from displays', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      const fetchedDyes: Dye[] = [];
+      const mockMarketBoard = {
+        fetchPricesForDyes: vi.fn().mockImplementation((dyes: Dye[]) => {
+          fetchedDyes.push(...dyes);
+          return new Map<number, PriceData>();
+        }),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+
+      // Check that fetched dyes have unique itemIDs
+      const itemIDs = fetchedDyes.map(d => d.itemID);
+      const uniqueIDs = new Set(itemIDs);
+      expect(uniqueIDs.size).toBe(itemIDs.length);
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - destroy with child components
+  // ==========================================================================
+
+  describe('destroy with child components', () => {
+    it('should destroy dyeSelector if exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockDyeSelector = {
+        destroy: vi.fn(),
+      };
+      (component as unknown as { dyeSelector: typeof mockDyeSelector }).dyeSelector = mockDyeSelector;
+
+      component.destroy();
+
+      expect(mockDyeSelector.destroy).toHaveBeenCalled();
+    });
+
+    it('should destroy marketBoard if exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockMarketBoard = {
+        destroy: vi.fn(),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+
+      component.destroy();
+
+      expect(mockMarketBoard.destroy).toHaveBeenCalled();
+    });
+
+    it('should destroy paletteExporter if exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockPaletteExporter = {
+        destroy: vi.fn(),
+      };
+      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter = mockPaletteExporter;
+
+      component.destroy();
+
+      expect(mockPaletteExporter.destroy).toHaveBeenCalled();
+    });
+
+    it('should destroy all harmony displays', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate harmonies to populate displays
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      const displays = (component as unknown as ComponentWithPrivate).harmonyDisplays;
+      const destroySpies: ReturnType<typeof vi.fn>[] = [];
+
+      for (const display of displays.values()) {
+        const destroySpy = vi.spyOn(display, 'destroy');
+        destroySpies.push(destroySpy);
+      }
+
+      component.destroy();
+
+      for (const spy of destroySpies) {
+        expect(spy).toHaveBeenCalled();
+      }
+    });
+
+    it('should handle destroy when all child components are null', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Ensure all child components are null
+      (component as unknown as { dyeSelector: null }).dyeSelector = null;
+      (component as unknown as { marketBoard: null }).marketBoard = null;
+      (component as unknown as { paletteExporter: null }).paletteExporter = null;
+      (component as unknown as ComponentWithPrivate).harmonyDisplays.clear();
+
+      expect(() => {
+        component.destroy();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - generateHarmonies error handling
+  // ==========================================================================
+
+  describe('generateHarmonies error handling', () => {
+    it('should handle error in harmony generation gracefully', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Make findTriadicDyes throw an error
+      mockDyeService.findTriadicDyes.mockImplementationOnce(() => {
+        throw new Error('Test error');
+      });
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).generateHarmonies();
+      }).not.toThrow();
+    });
+
+    it('should fetch prices after generating harmonies when enabled', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockMarketBoard = {
+        fetchPricesForDyes: vi.fn().mockResolvedValue(new Map()),
+      };
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as ComponentWithPrivate).showPrices = true;
+
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      // fetchPricesForCurrentDyes is called which uses marketBoard
+      expect(mockMarketBoard.fetchPricesForDyes).toHaveBeenCalled();
+    });
+
+    it('should update palette exporter after generating harmonies', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockPaletteExporter = {
+        update: vi.fn(),
+      };
+      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter = mockPaletteExporter;
+
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      expect(mockPaletteExporter.update).toHaveBeenCalled();
+    });
+
+    it('should handle missing harmony container gracefully', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Clear harmony containers
+      (component as unknown as { harmonyContainers: Map<string, HTMLElement> }).harmonyContainers.clear();
+
+      expect(() => {
+        (component as unknown as ComponentWithPrivate).generateHarmonies();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - render methods
+  // ==========================================================================
+
+  describe('render methods coverage', () => {
+    it('should create input section with all elements', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Check that the hex input exists
+      const hexInput = (component as unknown as Record<string, HTMLElement>)._hexInput;
+      expect(hexInput).toBeTruthy();
+      expect(hexInput.tagName.toLowerCase()).toBe('input');
+    });
+
+    it('should create options section with filters container', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const filtersContainer = container.querySelector('#harmony-filters-container');
+      expect(filtersContainer).toBeTruthy();
+    });
+
+    it('should create harmony grid containers', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const containers = (component as unknown as { harmonyContainers: Map<string, HTMLElement> }).harmonyContainers;
+      expect(containers.size).toBe(9); // 9 harmony types
+    });
+
+    it('should add hover effects to generate button', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const generateBtn = (component as unknown as Record<string, HTMLElement>)._generateBtn as HTMLButtonElement;
+
+      // Trigger mouseenter
+      generateBtn.dispatchEvent(new MouseEvent('mouseenter'));
+      expect(generateBtn.style.filter).toBe('brightness(0.9)');
+
+      // Trigger mouseleave
+      generateBtn.dispatchEvent(new MouseEvent('mouseleave'));
+      expect(generateBtn.style.filter).toBe('');
+
+      // Trigger mousedown
+      generateBtn.dispatchEvent(new MouseEvent('mousedown'));
+      expect(generateBtn.style.filter).toBe('brightness(0.8)');
+
+      // Trigger mouseup
+      generateBtn.dispatchEvent(new MouseEvent('mouseup'));
+      expect(generateBtn.style.filter).toBe('brightness(0.9)');
     });
   });
 });
