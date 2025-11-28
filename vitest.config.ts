@@ -13,6 +13,8 @@ export default defineConfig({
         'node_modules/',
         'dist/',
         'src/__tests__/setup.ts',
+        'src/locales/**/*.json',
+        'src/services/index.ts',
       ],
       lines: 80,
       functions: 80,

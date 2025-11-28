@@ -11,24 +11,134 @@ import {
   cleanupTestContainer,
   cleanupComponent,
   setupResizeObserverMock,
+  setupMockLocalStorage,
 } from './test-utils';
+import type { Dye } from '@shared/types';
+
+// Create mock dye helper
+const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
+  id: 1,
+  itemID: 30001,
+  name: 'Test Dye',
+  hex: '#FF0000',
+  rgb: { r: 255, g: 0, b: 0 },
+  hsv: { h: 0, s: 100, v: 100 },
+  category: 'Red',
+  acquisition: 'Vendor',
+  cost: 100,
+  ...overrides,
+});
+
+// Type helper to access private methods
+type ComponentWithPrivate = DyeComparisonTool & {
+  selectedDyes: Dye[];
+  showPrices: boolean;
+  priceData: Map<number, { currentAverage: number }>;
+  updateAnalysis: () => void;
+  updateSummary: () => void;
+  updateMatrix: () => void;
+  updateCharts: () => void;
+  updateExport: () => void;
+  generateJsonExport: () => string;
+  generateCssExport: () => string;
+  renderStatCard: (label: string, value: string) => HTMLElement;
+  getState: () => Record<string, unknown>;
+};
+
+const mockFetchPrices = vi.fn().mockResolvedValue(new Map());
+const loadServerDataMock = vi.fn();
+
+vi.mock('../market-board', () => {
+  return {
+    MarketBoard: class {
+      container: HTMLElement;
+      constructor(container: HTMLElement) {
+        this.container = container;
+      }
+      async loadServerData(): Promise<void> {
+        loadServerDataMock();
+      }
+      init(): void {}
+      getShowPrices(): boolean {
+        return false;
+      }
+      fetchPricesForDyes = mockFetchPrices;
+      destroy(): void {}
+    },
+  };
+});
+
+const dyeSelectorInitMock = vi.fn();
+vi.mock('../dye-selector', () => {
+  return {
+    DyeSelector: class {
+      constructor(_container: HTMLElement, _options: unknown) {}
+      init(): void {
+        dyeSelectorInitMock();
+      }
+      destroy(): void {}
+    },
+  };
+});
+
+vi.mock('../color-distance-matrix', () => {
+  return {
+    ColorDistanceMatrix: class {
+      constructor(_container: HTMLElement, _dyes: Dye[]) {}
+      init(): void {}
+      updateDyes(_dyes: Dye[]): void {}
+      update(): void {}
+      destroy(): void {}
+    },
+  };
+});
+
+vi.mock('../dye-comparison-chart', () => {
+  return {
+    DyeComparisonChart: class {
+      constructor(_container: HTMLElement, _type: string, _dyes: Dye[]) {}
+      init(): void {}
+      updateDyes(_dyes: Dye[]): void {}
+      update(): void {}
+      destroy(): void {}
+    },
+  };
+});
 
 describe('DyeComparisonTool Component', () => {
   let container: HTMLElement;
   let component: DyeComparisonTool;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     setupResizeObserverMock();
+    setupMockLocalStorage();
     container = createTestContainer();
+    mockFetchPrices.mockReset();
+    mockFetchPrices.mockResolvedValue(new Map());
+    loadServerDataMock.mockReset();
+    dyeSelectorInitMock.mockReset();
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
     if (component) {
       cleanupComponent(component, container);
     } else {
       cleanupTestContainer(container);
     }
   });
+
+  const createComponent = async (): Promise<DyeComparisonTool> => {
+    const instance = new DyeComparisonTool(container);
+    instance.init();
+    await Promise.resolve();
+    // Advance past the onMount setTimeout (100ms)
+    vi.advanceTimersByTime(150);
+    component = instance;
+    return instance;
+  };
 
   describe('Initialization', () => {
     it('should create component successfully', () => {
@@ -400,6 +510,423 @@ describe('DyeComparisonTool Component', () => {
       component.init();
 
       expect(component).toBeDefined();
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - generateJsonExport
+  // ==========================================================================
+
+  describe('generateJsonExport method', () => {
+    it('should generate valid JSON string', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, name: 'Red Dye', hex: '#FF0000' }),
+      ];
+
+      const json = (instance as unknown as ComponentWithPrivate).generateJsonExport();
+      const parsed = JSON.parse(json);
+
+      expect(parsed).toHaveProperty('timestamp');
+      expect(parsed).toHaveProperty('dyes');
+      expect(parsed).toHaveProperty('statistics');
+    });
+
+    it('should include all dye properties', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, name: 'Test Dye', hex: '#AABBCC', category: 'Blue' }),
+      ];
+
+      const json = (instance as unknown as ComponentWithPrivate).generateJsonExport();
+      const parsed = JSON.parse(json);
+
+      expect(parsed.dyes[0]).toHaveProperty('id');
+      expect(parsed.dyes[0]).toHaveProperty('name');
+      expect(parsed.dyes[0]).toHaveProperty('hex');
+      expect(parsed.dyes[0]).toHaveProperty('rgb');
+      expect(parsed.dyes[0]).toHaveProperty('hsv');
+      expect(parsed.dyes[0]).toHaveProperty('category');
+    });
+
+    it('should calculate statistics for multiple dyes', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hsv: { h: 0, s: 80, v: 90 } }),
+        createMockDye({ id: 2, hsv: { h: 120, s: 60, v: 70 } }),
+      ];
+
+      const json = (instance as unknown as ComponentWithPrivate).generateJsonExport();
+      const parsed = JSON.parse(json);
+
+      expect(parsed.statistics.count).toBe(2);
+      expect(parsed.statistics.averageSaturation).toBe(70); // (80+60)/2
+      expect(parsed.statistics.averageBrightness).toBe(80); // (90+70)/2
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - generateCssExport
+  // ==========================================================================
+
+  describe('generateCssExport method', () => {
+    it('should generate valid CSS with :root', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, name: 'Red Dye', hex: '#FF0000' }),
+      ];
+
+      const css = (instance as unknown as ComponentWithPrivate).generateCssExport();
+
+      expect(css).toContain(':root {');
+      expect(css).toContain('}');
+    });
+
+    it('should include dye hex variables', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ hex: '#FF0000' }),
+        createMockDye({ id: 2, hex: '#00FF00' }),
+      ];
+
+      const css = (instance as unknown as ComponentWithPrivate).generateCssExport();
+
+      expect(css).toContain('--dye-1: #FF0000');
+      expect(css).toContain('--dye-2: #00FF00');
+    });
+
+    it('should include dye name variables', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ name: 'Crimson Red' }),
+      ];
+
+      const css = (instance as unknown as ComponentWithPrivate).generateCssExport();
+
+      expect(css).toContain("--dye-1-name: 'Crimson Red'");
+    });
+
+    it('should number dyes sequentially', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+        createMockDye({ id: 3 }),
+      ];
+
+      const css = (instance as unknown as ComponentWithPrivate).generateCssExport();
+
+      expect(css).toContain('--dye-1:');
+      expect(css).toContain('--dye-2:');
+      expect(css).toContain('--dye-3:');
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - renderStatCard
+  // ==========================================================================
+
+  describe('renderStatCard method', () => {
+    it('should create a card element', async () => {
+      const instance = await createComponent();
+
+      const card = (instance as unknown as ComponentWithPrivate).renderStatCard('Label', 'Value');
+
+      expect(card.tagName).toBe('DIV');
+    });
+
+    it('should include label text', async () => {
+      const instance = await createComponent();
+
+      const card = (instance as unknown as ComponentWithPrivate).renderStatCard('Saturation', '80%');
+
+      expect(card.textContent).toContain('Saturation');
+    });
+
+    it('should include value text', async () => {
+      const instance = await createComponent();
+
+      const card = (instance as unknown as ComponentWithPrivate).renderStatCard('Brightness', '90%');
+
+      expect(card.textContent).toContain('90%');
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - getState
+  // ==========================================================================
+
+  describe('getState method', () => {
+    it('should return selectedDyeCount', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+      ];
+
+      const state = (instance as unknown as ComponentWithPrivate).getState();
+
+      expect(state.selectedDyeCount).toBe(2);
+    });
+
+    it('should return selectedDyeNames array', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ name: 'Red Dye' }),
+        createMockDye({ name: 'Blue Dye' }),
+      ];
+
+      const state = (instance as unknown as ComponentWithPrivate).getState();
+
+      expect(state.selectedDyeNames).toEqual(['Red Dye', 'Blue Dye']);
+    });
+
+    it('should return empty array for no selection', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+
+      const state = (instance as unknown as ComponentWithPrivate).getState();
+
+      expect(state.selectedDyeCount).toBe(0);
+      expect(state.selectedDyeNames).toEqual([]);
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - updateSummary
+  // ==========================================================================
+
+  describe('updateSummary method', () => {
+    it('should show empty message when no dyes selected', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      expect(summaryContainer?.textContent).toContain('Select');
+    });
+
+    it('should display selected dye names', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ name: 'Crimson Red', hex: '#CC0000' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      expect(summaryContainer?.textContent).toContain('Crimson Red');
+    });
+
+    it('should show statistics for 2+ dyes', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1, hsv: { h: 0, s: 80, v: 90 } }),
+        createMockDye({ id: 2, hsv: { h: 120, s: 60, v: 70 } }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      // Should contain stats like average saturation
+      expect(summaryContainer?.textContent).toContain('70.0'); // avg saturation
+    });
+
+    it('should display prices when showPrices is true', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ itemID: 12345, name: 'Priced Dye' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).priceData = new Map([
+        [12345, { currentAverage: 5000 }],
+      ]);
+      (instance as unknown as ComponentWithPrivate).updateSummary();
+
+      const summaryContainer = container.querySelector('#summary-container');
+      expect(summaryContainer?.textContent).toContain('5,000');
+    });
+  });
+
+  // ==========================================================================
+  // Business Logic Tests - updateExport
+  // ==========================================================================
+
+  describe('updateExport method', () => {
+    it('should not render export section when no dyes', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const exportContainer = container.querySelector('#export-container');
+      expect(exportContainer?.children.length).toBe(0);
+    });
+
+    it('should render export buttons when dyes selected', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const jsonBtn = container.querySelector('[data-export="json"]');
+      const cssBtn = container.querySelector('[data-export="css"]');
+      const hexBtn = container.querySelector('[data-export="hex"]');
+
+      expect(jsonBtn).not.toBeNull();
+      expect(cssBtn).not.toBeNull();
+      expect(hexBtn).not.toBeNull();
+    });
+
+    it('should render export result textarea', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const textarea = container.querySelector('#export-result');
+      expect(textarea).not.toBeNull();
+      expect(textarea?.tagName).toBe('TEXTAREA');
+    });
+
+    it('should populate textarea when JSON button clicked', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ name: 'Export Test' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const jsonBtn = container.querySelector<HTMLButtonElement>('[data-export="json"]');
+      jsonBtn?.click();
+
+      const textarea = container.querySelector<HTMLTextAreaElement>('#export-result');
+      expect(textarea?.value).toContain('Export Test');
+    });
+
+    it('should populate textarea when CSS button clicked', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ hex: '#AABBCC' }),
+      ];
+      (instance as unknown as ComponentWithPrivate).updateExport();
+
+      const cssBtn = container.querySelector<HTMLButtonElement>('[data-export="css"]');
+      cssBtn?.click();
+
+      const textarea = container.querySelector<HTMLTextAreaElement>('#export-result');
+      expect(textarea?.value).toContain('#AABBCC');
+    });
+  });
+
+  // ==========================================================================
+  // Event Handling Tests
+  // ==========================================================================
+
+  describe('event handling', () => {
+    it('should update selectedDyes on selection-changed event', async () => {
+      const instance = await createComponent();
+      const selectorContainer = container.querySelector('#dye-selector-container');
+
+      const testDyes = [createMockDye({ id: 1 }), createMockDye({ id: 2 })];
+
+      selectorContainer?.dispatchEvent(
+        new CustomEvent('selection-changed', { detail: { selectedDyes: testDyes } })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).selectedDyes).toHaveLength(2);
+    });
+
+    it('should handle toggle-prices event', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+
+      marketContainer?.dispatchEvent(
+        new CustomEvent('toggle-prices', { detail: { showPrices: true } })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).showPrices).toBe(true);
+    });
+
+    it('should fetch prices on server-changed when showPrices is true', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      marketContainer?.dispatchEvent(new CustomEvent('server-changed'));
+
+      expect(mockFetchPrices).toHaveBeenCalled();
+    });
+
+    it('should fetch prices on refresh-requested', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+
+      (instance as unknown as ComponentWithPrivate).showPrices = true;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      marketContainer?.dispatchEvent(new CustomEvent('refresh-requested'));
+
+      expect(mockFetchPrices).toHaveBeenCalled();
+    });
+
+    it('should not fetch prices when showPrices is false', async () => {
+      const instance = await createComponent();
+      const marketContainer = container.querySelector('#market-board-container');
+      mockFetchPrices.mockClear();
+
+      (instance as unknown as ComponentWithPrivate).showPrices = false;
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
+
+      marketContainer?.dispatchEvent(new CustomEvent('server-changed'));
+
+      expect(mockFetchPrices).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Lifecycle Tests
+  // ==========================================================================
+
+  describe('lifecycle', () => {
+    it('should initialize child components', async () => {
+      await createComponent();
+
+      expect(dyeSelectorInitMock).toHaveBeenCalled();
+      expect(loadServerDataMock).toHaveBeenCalled();
+    });
+
+    it('should cleanup on destroy', async () => {
+      const instance = await createComponent();
+
+      instance.destroy();
+
+      expect(container.children.length).toBe(0);
+    });
+
+    it('should handle multiple update cycles', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        instance.update();
+        instance.update();
+        instance.update();
+      }).not.toThrow();
     });
   });
 });
