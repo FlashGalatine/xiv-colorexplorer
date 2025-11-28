@@ -12,7 +12,7 @@ import { ImageUploadDisplay } from './image-upload-display';
 import { ColorPickerDisplay } from './color-picker-display';
 import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
-import { ColorService, dyeService, APIService } from '@services/index';
+import { ColorService, dyeService, APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -47,7 +47,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const heading = this.createElement('h2', {
-      textContent: 'Color Matcher',
+      textContent: LanguageService.t('tools.matcher.title'),
       className: 'text-3xl font-bold',
       attributes: {
         style: 'color: var(--theme-text);',
@@ -55,8 +55,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const subtitle = this.createElement('p', {
-      textContent:
-        'Upload an image or select a color to find the closest matching FFXIV dyes. Use the eyedropper to sample colors directly from images.',
+      textContent: LanguageService.t('tools.matcher.subtitle'),
       attributes: {
         style: 'color: var(--theme-text-muted);',
       },
@@ -78,7 +77,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const uploadTitle = this.createElement('h3', {
-      textContent: 'Image Upload',
+      textContent: LanguageService.t('matcher.imageUpload'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     uploadContainer.appendChild(uploadTitle);
@@ -97,7 +96,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const pickerTitle = this.createElement('h3', {
-      textContent: 'Manual Color Input',
+      textContent: LanguageService.t('matcher.manualColorInput'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     pickerContainer.appendChild(pickerTitle);
@@ -118,7 +117,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const settingsTitle = this.createElement('h3', {
-      textContent: 'Sample Settings',
+      textContent: LanguageService.t('matcher.sampleSettings'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     settingsSection.appendChild(settingsTitle);
@@ -129,7 +128,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const sampleLabel = this.createElement('label', {
-      textContent: 'Sample Size (for image color averaging)',
+      textContent: LanguageService.t('matcher.sampleSize'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
 
@@ -324,6 +323,16 @@ export class ColorMatcherTool extends BaseComponent {
       // Get initial showPrices state
       this.showPrices = this.marketBoard.getShowPrices();
     }
+  }
+
+  /**
+   * Initialize the tool
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
   }
 
   /**

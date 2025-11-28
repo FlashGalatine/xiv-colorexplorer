@@ -13,7 +13,7 @@ import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { DyeFilters, type DyeFilterConfig } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
-import { ColorService, DyeService } from '@services/index';
+import { ColorService, DyeService, LanguageService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import {
   STORAGE_KEYS,
@@ -32,64 +32,31 @@ import { clearContainer } from '@shared/utils';
 type SuggestionsMode = 'simple' | 'expanded';
 
 /**
- * Harmony types with their descriptions
+ * Harmony type IDs with their icons
  */
-const HARMONY_TYPES: HarmonyTypeInfo[] = [
-  {
-    id: 'complementary',
-    name: 'Complementary',
-    description: 'Colors opposite on the color wheel (180°)',
-    icon: '🔄',
-  },
-  {
-    id: 'analogous',
-    name: 'Analogous',
-    description: 'Colors adjacent on the color wheel (±30°)',
-    icon: '➡️',
-  },
-  {
-    id: 'triadic',
-    name: 'Triadic',
-    description: 'Three colors equally spaced on the wheel (120°)',
-    icon: '🔺',
-  },
-  {
-    id: 'split-complementary',
-    name: 'Split-Complementary',
-    description: 'Base + two colors ±30° from complement',
-    icon: '⛓️',
-  },
-  {
-    id: 'tetradic',
-    name: 'Tetradic',
-    description: 'Four colors in two pairs (90° apart)',
-    icon: '🔶',
-  },
-  {
-    id: 'square',
-    name: 'Square',
-    description: 'Four colors evenly spaced (90° each)',
-    icon: '⬜',
-  },
-  {
-    id: 'monochromatic',
-    name: 'Monochromatic',
-    description: 'Single hue with varying saturation/brightness',
-    icon: '🔵',
-  },
-  {
-    id: 'compound',
-    name: 'Compound',
-    description: 'Analogous + Complementary (±30°, +180°)',
-    icon: '🔀',
-  },
-  {
-    id: 'shades',
-    name: 'Shades',
-    description: 'Similar tones closely grouped (±15°)',
-    icon: '🌑',
-  },
-];
+const HARMONY_TYPE_IDS = [
+  { id: 'complementary', icon: '🔄' },
+  { id: 'analogous', icon: '➡️' },
+  { id: 'triadic', icon: '🔺' },
+  { id: 'split-complementary', icon: '⛓️' },
+  { id: 'tetradic', icon: '🔶' },
+  { id: 'square', icon: '⬜' },
+  { id: 'monochromatic', icon: '🔵' },
+  { id: 'compound', icon: '🔀' },
+  { id: 'shades', icon: '🌑' },
+] as const;
+
+/**
+ * Get harmony types with localized names and descriptions
+ */
+function getHarmonyTypes(): HarmonyTypeInfo[] {
+  return HARMONY_TYPE_IDS.map(({ id, icon }) => ({
+    id,
+    name: LanguageService.getHarmonyType(id),
+    description: LanguageService.getHarmonyType(`${id}Desc`),
+    icon,
+  }));
+}
 
 /**
  * Harmony offsets (in degrees) for each harmony type
@@ -139,7 +106,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const heading = this.createElement('h2', {
-      textContent: 'Color Harmony Explorer',
+      textContent: LanguageService.t('tools.harmony.title'),
       className: 'text-3xl font-bold',
       attributes: {
         style: 'color: var(--theme-text);',
@@ -147,8 +114,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const subtitle = this.createElement('p', {
-      textContent:
-        'Discover harmonious color combinations using color theory. Select a base color to generate six classic harmony types.',
+      textContent: LanguageService.t('tools.harmony.subtitle'),
       attributes: {
         style: 'color: var(--theme-text-muted);',
       },
@@ -171,11 +137,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
       className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4',
     });
 
-    for (const harmony of HARMONY_TYPES) {
+    for (const { id } of HARMONY_TYPE_IDS) {
       const container = this.createElement('div', {
-        id: `harmony-${harmony.id}`,
+        id: `harmony-${id}`,
       });
-      this.harmonyContainers.set(harmony.id, container);
+      this.harmonyContainers.set(id, container);
       harmoniesGrid.appendChild(container);
     }
 
@@ -202,7 +168,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const label = this.createElement('label', {
-      textContent: 'Base Color',
+      textContent: LanguageService.t('harmony.baseColorSection'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3',
     });
     section.appendChild(label);
@@ -237,7 +203,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const generateBtn = this.createElement('button', {
-      textContent: 'Generate',
+      textContent: LanguageService.t('common.generate'),
       className:
         'px-6 py-2 rounded-lg transition-all duration-200 font-semibold w-full sm:w-auto',
       attributes: {
@@ -269,7 +235,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
       className: 'relative',
     });
     divider.innerHTML =
-      '<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or</span></div>';
+      `<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">${LanguageService.t('common.or')}</span></div>`;
     inputMethods.appendChild(divider);
 
     // Dye selector
@@ -326,7 +292,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const suggestionsLabel = this.createElement('label', {
-      textContent: 'Suggestion Mode',
+      textContent: LanguageService.t('harmony.suggestionMode'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
     suggestionsSection.appendChild(suggestionsLabel);
@@ -336,16 +302,16 @@ export class HarmonyGeneratorTool extends BaseComponent {
       className: 'space-y-2',
     });
 
-    const modes: Array<{ value: SuggestionsMode; label: string; description: string }> = [
+    const modes: Array<{ value: SuggestionsMode; labelKey: string; descKey: string }> = [
       {
         value: 'simple',
-        label: 'Simple Suggestions',
-        description: 'Strict harmony with precise dye matching',
+        labelKey: 'harmony.simple',
+        descKey: 'harmony.simpleDesc',
       },
       {
         value: 'expanded',
-        label: 'Expanded Suggestions',
-        description: 'Simple mode + additional similar dyes per harmony color',
+        labelKey: 'harmony.expanded',
+        descKey: 'harmony.expandedDesc',
       },
     ];
 
@@ -373,12 +339,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
 
       const labelText = this.createElement('div', {
-        textContent: mode.label,
+        textContent: LanguageService.t(mode.labelKey),
         className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
       });
 
       const descText = this.createElement('div', {
-        textContent: mode.description,
+        textContent: LanguageService.t(mode.descKey),
         className: 'text-xs text-gray-500 dark:text-gray-400',
       });
 
@@ -404,7 +370,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     });
 
     const companionLabel = this.createElement('label', {
-      textContent: 'Additional Dyes per Harmony Color',
+      textContent: LanguageService.t('harmony.companionDyes'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
       attributes: {
         for: 'companion-dyes-input',
@@ -413,7 +379,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     companionSection.appendChild(companionLabel);
 
     const companionDescription = this.createElement('p', {
-      textContent: 'Choose how many additional companion dyes to show for each harmony color',
+      textContent: LanguageService.t('harmony.companionDyesDesc'),
       className: 'text-xs text-gray-500 dark:text-gray-400',
     });
     companionSection.appendChild(companionDescription);
@@ -611,7 +577,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const exportContainer = this.querySelector<HTMLElement>('#harmony-export-container');
     if (exportContainer && !this.paletteExporter) {
       this.paletteExporter = new PaletteExporter(exportContainer, {
-        title: 'Export Palette',
+        title: LanguageService.t('export.title'),
         dataProvider: () => this.getPaletteData(),
         enabled: () => this.harmonyDisplays.size > 0,
       });
@@ -870,8 +836,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
    */
   private generateHarmonies(): void {
     const dyeService = DyeService.getInstance();
+    const harmonyTypes = getHarmonyTypes();
 
-    for (const harmony of HARMONY_TYPES) {
+    for (const harmony of harmonyTypes) {
       const container = this.harmonyContainers.get(harmony.id);
       if (!container) continue;
 
@@ -1025,6 +992,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
     setTimeout(() => {
       this.generateHarmonies();
     }, 100);
+
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
   }
 
   /**

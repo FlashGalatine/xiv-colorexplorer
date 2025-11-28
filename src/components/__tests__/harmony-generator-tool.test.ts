@@ -84,6 +84,11 @@ vi.mock('@services/index', () => {
     DyeService: {
       getInstance: () => mockDyeService,
     },
+    LanguageService: {
+      t: (key: string) => key,
+      getHarmonyType: (key: string) => key,
+      subscribe: () => () => {},
+    },
   };
 });
 

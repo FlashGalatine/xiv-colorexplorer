@@ -13,7 +13,7 @@ import { ColorInterpolationDisplay } from './color-interpolation-display';
 import type { InterpolationStep } from './color-interpolation-display';
 import { DyeFilters } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
-import { ColorService, dyeService } from '@services/index';
+import { ColorService, dyeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -46,7 +46,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const heading = this.createElement('h2', {
-      textContent: 'Dye Mixer Tool',
+      textContent: LanguageService.t('tools.mixer.title'),
       className: 'text-3xl font-bold',
       attributes: {
         style: 'color: var(--theme-text);',
@@ -54,8 +54,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const subtitle = this.createElement('p', {
-      textContent:
-        'Find intermediate dyes for smooth color transitions. Select two dyes and see all the steps needed to transition between them.',
+      textContent: LanguageService.t('tools.mixer.subtitle'),
       attributes: {
         style: 'color: var(--theme-text-muted);',
       },
@@ -72,7 +71,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const selectorLabel = this.createElement('h3', {
-      textContent: 'Select Start & End Dyes',
+      textContent: LanguageService.t('mixer.selectStartEnd'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     selectorSection.appendChild(selectorLabel);
@@ -105,7 +104,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const settingsLabel = this.createElement('h3', {
-      textContent: 'Interpolation Settings',
+      textContent: LanguageService.t('mixer.interpolationSettings'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     settingsSection.appendChild(settingsLabel);
@@ -116,7 +115,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const stepLabel = this.createElement('label', {
-      textContent: 'Interpolation Steps',
+      textContent: LanguageService.t('mixer.interpolationSteps'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
 
@@ -442,13 +441,14 @@ export class DyeMixerTool extends BaseComponent {
     const exportContainer = this.querySelector<HTMLElement>('#dyemixer-export-container');
     if (exportContainer && !this.paletteExporter) {
       this.paletteExporter = new PaletteExporter(exportContainer, {
-        title: 'Export Palette',
+        title: LanguageService.t('export.title'),
         dataProvider: () => this.getPaletteData(),
         enabled: () => this.selectedDyes.length >= 2 && this.currentSteps.length > 0,
       });
       this.paletteExporter.init();
     }
   }
+
 
   /**
    * Update interpolation display
@@ -462,7 +462,7 @@ export class DyeMixerTool extends BaseComponent {
     if (this.selectedDyes.length < 2) {
       const empty = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'Select 2 dyes to see interpolation',
+        textContent: LanguageService.t('mixer.selectTwoDyes'),
       });
       displayContainer.appendChild(empty);
       this.currentSteps = []; // Clear steps
@@ -586,6 +586,11 @@ export class DyeMixerTool extends BaseComponent {
     setTimeout(() => {
       this.updateInterpolation();
     }, 100);
+
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
   }
 
   /**

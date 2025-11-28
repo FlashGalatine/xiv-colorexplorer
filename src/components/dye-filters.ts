@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { LanguageService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import { EXPENSIVE_DYE_IDS } from '@shared/constants';
 import type { Dye } from '@shared/types';
@@ -86,7 +87,7 @@ export class DyeFilters extends BaseComponent {
     });
 
     const filtersLabel = this.createElement('label', {
-      textContent: 'Advanced Dye Filters',
+      textContent: LanguageService.t('filters.advancedFilters'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer',
     });
 
@@ -128,28 +129,28 @@ export class DyeFilters extends BaseComponent {
     const filterOptions = [
       {
         key: 'excludeMetallic',
-        label: 'Exclude Metallic Dyes',
-        description: 'Hide dyes with "Metallic" in the name',
+        label: LanguageService.t('filters.excludeMetallic'),
+        description: LanguageService.t('filters.excludeMetallicDesc'),
       },
       {
         key: 'excludePastel',
-        label: 'Exclude Pastel Dyes',
-        description: 'Hide dyes with "Pastel" in the name',
+        label: LanguageService.t('filters.excludePastel'),
+        description: LanguageService.t('filters.excludePastelDesc'),
       },
       {
         key: 'excludeDark',
-        label: 'Exclude Dark Dyes',
-        description: 'Hide dyes that begin with "Dark"',
+        label: LanguageService.t('filters.excludeDark'),
+        description: LanguageService.t('filters.excludeDarkDesc'),
       },
       {
         key: 'excludeCosmic',
-        label: 'Exclude Cosmic Dyes',
-        description: 'Hide dyes from Cosmic Exploration & Cosmic Fortunes',
+        label: LanguageService.t('filters.excludeCosmic'),
+        description: LanguageService.t('filters.excludeCosmicDesc'),
       },
       {
         key: 'excludeExpensive',
-        label: 'Exclude Expensive Dyes',
-        description: 'Hide Jet Black & Pure White',
+        label: LanguageService.t('filters.excludeExpensive'),
+        description: LanguageService.t('filters.excludeExpensiveDesc'),
       },
     ];
 
@@ -232,6 +233,11 @@ export class DyeFilters extends BaseComponent {
     // Load saved filter state
     this.loadFilterState();
     this.loadFiltersExpandedState();
+
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.init(); // Re-render to update localized text
+    });
   }
 
   /**

@@ -10,7 +10,7 @@
 import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import type { Dye } from '@shared/types';
-import { ColorService } from '@services/index';
+import { ColorService, LanguageService } from '@services/index';
 import { clearContainer } from '@shared/utils';
 
 /**
@@ -73,7 +73,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const heading = this.createElement('h2', {
-      textContent: 'Accessibility Checker',
+      textContent: LanguageService.t('tools.accessibility.title'),
       className: 'text-3xl font-bold',
       attributes: {
         style: 'color: var(--theme-text);',
@@ -81,8 +81,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const subtitle = this.createElement('p', {
-      textContent:
-        'Select up to 12 dyes to check how they appear to people with color vision deficiency. Includes analysis of individual dyes and optional pair comparisons.',
+      textContent: LanguageService.t('tools.accessibility.subtitle'),
       attributes: {
         style: 'color: var(--theme-text-muted);',
       },
@@ -99,7 +98,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const selectorLabel = this.createElement('h3', {
-      textContent: 'Select Dyes (up to 12)',
+      textContent: LanguageService.tInterpolate('accessibility.selectUpTo', { count: '12' }),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     selectorSection.appendChild(selectorLabel);
@@ -146,6 +145,16 @@ export class AccessibilityCheckerTool extends BaseComponent {
   }
 
   /**
+   * Initialize the tool
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  /**
    * Update results display
    */
   private updateResults(): void {
@@ -161,7 +170,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     if (this.selectedDyes.length === 0) {
       const empty = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'Select dyes to see accessibility analysis',
+        textContent: LanguageService.t('accessibility.selectDyesToSeeAnalysis'),
       });
       resultsContainer.appendChild(empty);
       return;
@@ -181,7 +190,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const dyesLabel = this.createElement('h3', {
-      textContent: 'Individual Dye Analysis',
+      textContent: LanguageService.t('accessibility.individualAnalysis'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     dyesSection.appendChild(dyesLabel);
@@ -205,13 +214,13 @@ export class AccessibilityCheckerTool extends BaseComponent {
       });
 
       const pairsLabel = this.createElement('h3', {
-        textContent: 'Dye Pair Comparisons (Optional)',
+        textContent: LanguageService.t('accessibility.pairComparisons'),
         className: 'text-lg font-semibold text-gray-900 dark:text-white',
       });
       pairsSection.appendChild(pairsLabel);
 
       const pairsNote = this.createElement('p', {
-        textContent: 'Click pairs of dyes above to compare distinguishability between them.',
+        textContent: LanguageService.t('accessibility.pairComparisonNote'),
         className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
       });
       pairsSection.appendChild(pairsNote);
@@ -353,7 +362,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const scoreLabel = this.createElement('div', {
-      textContent: 'Contrast Score',
+      textContent: LanguageService.t('accessibility.contrastScore'),
       className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
     });
     scoreSection.appendChild(scoreLabel);
@@ -394,7 +403,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       });
 
       const warningsLabel = this.createElement('div', {
-        textContent: '⚠️ Colorblindness Issues',
+        textContent: `⚠️ ${LanguageService.t('accessibility.colorblindnessIssues')}`,
         className: 'text-xs font-semibold text-orange-700 dark:text-orange-300',
       });
       warningsSection.appendChild(warningsLabel);
@@ -416,7 +425,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const colorblindLabel = this.createElement('div', {
-      textContent: '👁️ Vision Simulations',
+      textContent: `👁️ ${LanguageService.t('accessibility.visionSimulation')}`,
       className: 'text-xs font-semibold text-gray-700 dark:text-gray-300',
     });
     colorblindSection.appendChild(colorblindLabel);
@@ -426,16 +435,16 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'grid grid-cols-5 gap-2',
     });
 
-    // Vision types to display
+    // Vision types to display (using core localization for vision type names)
     const visionTypes: Array<{
       key: keyof typeof result.colorblindnessSimulations;
-      label: string;
+      localeKey: string;
     }> = [
-        { key: 'normal', label: 'Normal' },
-        { key: 'deuteranopia', label: 'Deuteranopia' },
-        { key: 'protanopia', label: 'Protanopia' },
-        { key: 'tritanopia', label: 'Tritanopia' },
-        { key: 'achromatopsia', label: 'Achromatopsia' },
+        { key: 'normal', localeKey: 'normal' },
+        { key: 'deuteranopia', localeKey: 'deuteranopia' },
+        { key: 'protanopia', localeKey: 'protanopia' },
+        { key: 'tritanopia', localeKey: 'tritanopia' },
+        { key: 'achromatopsia', localeKey: 'achromatopsia' },
       ];
 
     for (const visionType of visionTypes) {
@@ -451,7 +460,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       });
 
       const typeLabel = this.createElement('div', {
-        textContent: visionType.label,
+        textContent: LanguageService.getVisionType(visionType.localeKey),
         className: 'text-xs text-gray-600 dark:text-gray-400 text-center',
       });
 
@@ -546,7 +555,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'flex justify-between text-xs',
     });
     const scoreValue = this.createElement('span', {
-      textContent: `${result.distinguishability}% distinguishable`,
+      textContent: `${result.distinguishability}% ${LanguageService.t('accessibility.distinguishable')}`,
       className: 'font-semibold text-gray-900 dark:text-white',
     });
     scoreText.appendChild(scoreValue);
@@ -655,20 +664,20 @@ export class AccessibilityCheckerTool extends BaseComponent {
     if (score >= 80) {
       return {
         color: 'text-green-700 dark:text-green-300',
-        label: 'Excellent',
+        label: LanguageService.t('accessibility.excellent'),
         bgClass: 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700',
       };
     }
     if (score >= 50) {
       return {
         color: 'text-yellow-700 dark:text-yellow-300',
-        label: 'Fair',
+        label: LanguageService.t('accessibility.fair'),
         bgClass: 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700',
       };
     }
     return {
       color: 'text-red-700 dark:text-red-300',
-      label: 'Poor',
+      label: LanguageService.t('accessibility.poor'),
       bgClass: 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700',
     };
   }
@@ -693,11 +702,11 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     const titleSection = this.createElement('div');
     const title = this.createElement('h3', {
-      textContent: 'Overall Accessibility Score',
+      textContent: LanguageService.t('accessibility.overallScore'),
       className: 'text-xl font-bold text-gray-900 dark:text-white',
     });
     const description = this.createElement('p', {
-      textContent: `Average accessibility across ${this.dyeResults.length} selected dye${this.dyeResults.length === 1 ? '' : 's'}`,
+      textContent: LanguageService.tInterpolate('accessibility.overallScoreDesc', { count: this.dyeResults.length.toString() }),
       className: 'text-sm text-gray-600 dark:text-gray-400 mt-1',
     });
     titleSection.appendChild(title);

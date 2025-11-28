@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { APIService } from '@services/index';
+import { APIService, LanguageService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import { PRICE_CATEGORIES } from '@shared/constants';
 import type { Dye, PriceData, DataCenter, World } from '@shared/types';
@@ -107,7 +107,7 @@ export class MarketBoard extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: 'Market Board',
+      textContent: LanguageService.t('marketBoard.title'),
       className: 'text-sm font-semibold text-gray-900 dark:text-white mb-3',
     });
     wrapper.appendChild(title);
@@ -120,7 +120,7 @@ export class MarketBoard extends BaseComponent {
     const serverSection = this.createElement('div', {});
 
     const serverLabel = this.createElement('label', {
-      textContent: 'Server:',
+      textContent: LanguageService.t('marketBoard.server'),
       className: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
       attributes: {
         for: 'mb-server-select',
@@ -162,7 +162,7 @@ export class MarketBoard extends BaseComponent {
     });
 
     const toggleLabel = this.createElement('label', {
-      textContent: 'Show Prices',
+      textContent: LanguageService.t('marketBoard.showPrices'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
     toggleRow.appendChild(toggleLabel);
@@ -221,17 +221,17 @@ export class MarketBoard extends BaseComponent {
 
     // Add each price category checkbox
     const categories = [
-      { id: 'baseDyes', label: 'Base Dyes', key: 'baseDyes' as keyof PriceCategorySettings },
-      { id: 'craftDyes', label: 'Craft Dyes', key: 'craftDyes' as keyof PriceCategorySettings },
+      { id: 'baseDyes', label: LanguageService.t('marketBoard.baseDyes'), key: 'baseDyes' as keyof PriceCategorySettings },
+      { id: 'craftDyes', label: LanguageService.t('marketBoard.craftDyes'), key: 'craftDyes' as keyof PriceCategorySettings },
       {
         id: 'alliedSocietyDyes',
-        label: 'Allied Society Dyes',
+        label: LanguageService.t('marketBoard.alliedSocietyDyes'),
         key: 'alliedSocietyDyes' as keyof PriceCategorySettings,
       },
-      { id: 'cosmicDyes', label: 'Cosmic Dyes', key: 'cosmicDyes' as keyof PriceCategorySettings },
+      { id: 'cosmicDyes', label: LanguageService.t('marketBoard.cosmicDyes'), key: 'cosmicDyes' as keyof PriceCategorySettings },
       {
         id: 'specialDyes',
-        label: 'Special Dyes',
+        label: LanguageService.t('marketBoard.specialDyes'),
         key: 'specialDyes' as keyof PriceCategorySettings,
       },
     ];
@@ -270,7 +270,7 @@ export class MarketBoard extends BaseComponent {
 
     // Refresh Button
     const refreshBtn = this.createElement('button', {
-      textContent: 'Refresh Prices',
+      textContent: LanguageService.t('marketBoard.refresh'),
       className:
         'w-full px-3 py-2 text-xs disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-all duration-200 font-medium mt-3',
       attributes: {
@@ -336,7 +336,7 @@ export class MarketBoard extends BaseComponent {
       // Add the data center itself as an option
       const dcOption = document.createElement('option');
       dcOption.value = dc.name;
-      dcOption.textContent = `${dc.name} - All Worlds`;
+      dcOption.textContent = `${dc.name} - ${LanguageService.t('marketBoard.allWorlds')}`;
       if (dc.name === this.selectedServer) {
         dcOption.selected = true;
       }
@@ -427,11 +427,11 @@ export class MarketBoard extends BaseComponent {
 
     if (refreshBtn) {
       refreshBtn.disabled = true;
-      refreshBtn.textContent = 'Refreshing...';
+      refreshBtn.textContent = LanguageService.t('marketBoard.refreshing');
     }
 
     if (statusMsg) {
-      statusMsg.textContent = 'Clearing cache and fetching new prices...';
+      statusMsg.textContent = LanguageService.t('marketBoard.clearingCache');
     }
 
     try {
@@ -442,7 +442,7 @@ export class MarketBoard extends BaseComponent {
       this.emit('refresh-requested', {});
 
       if (statusMsg) {
-        statusMsg.textContent = 'Prices refreshed successfully!';
+        statusMsg.textContent = LanguageService.t('marketBoard.pricesRefreshed');
         setTimeout(() => {
           statusMsg.textContent = '';
         }, 3000);
@@ -450,13 +450,13 @@ export class MarketBoard extends BaseComponent {
     } catch (error) {
       logger.error('Error refreshing prices:', error);
       if (statusMsg) {
-        statusMsg.textContent = 'Error refreshing prices. Please try again.';
+        statusMsg.textContent = LanguageService.t('marketBoard.refreshError');
       }
     } finally {
       this.isRefreshing = false;
       if (refreshBtn) {
         refreshBtn.disabled = false;
-        refreshBtn.textContent = 'Refresh Prices';
+        refreshBtn.textContent = LanguageService.t('marketBoard.refresh');
       }
     }
   }
@@ -549,6 +549,16 @@ export class MarketBoard extends BaseComponent {
    */
   static formatPrice(price: number): string {
     return APIService.formatPrice(price);
+  }
+
+  /**
+   * Initialize the component
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.init(); // Re-render to update localized text
+    });
   }
 
   /**

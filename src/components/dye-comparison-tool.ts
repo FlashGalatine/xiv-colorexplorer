@@ -12,7 +12,7 @@ import { DyeSelector } from './dye-selector';
 import { ColorDistanceMatrix } from './color-distance-matrix';
 import { DyeComparisonChart } from './dye-comparison-chart';
 import { MarketBoard } from './market-board';
-import { ColorService, APIService } from '@services/index';
+import { ColorService, APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -44,7 +44,7 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     const heading = this.createElement('h2', {
-      textContent: 'Dye Comparison Tool',
+      textContent: LanguageService.t('tools.comparison.title'),
       className: 'text-3xl font-bold',
       attributes: {
         style: 'color: var(--theme-text);',
@@ -52,8 +52,7 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     const subtitle = this.createElement('p', {
-      textContent:
-        'Compare up to 4 dyes using color distance matrices and visualizations. Analyze hue, saturation, and brightness relationships.',
+      textContent: LanguageService.t('tools.comparison.subtitle'),
       attributes: {
         style: 'color: var(--theme-text-muted);',
       },
@@ -70,7 +69,7 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     const selectorLabel = this.createElement('h3', {
-      textContent: 'Select Dyes',
+      textContent: LanguageService.t('comparison.selectDyes'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     selectorSection.appendChild(selectorLabel);
@@ -207,6 +206,7 @@ export class DyeComparisonTool extends BaseComponent {
       this.showPrices = this.marketBoard.getShowPrices();
     }
   }
+
 
   /**
    * Fetch prices for selected dyes
@@ -608,6 +608,11 @@ export class DyeComparisonTool extends BaseComponent {
     setTimeout(() => {
       this.updateAnalysis();
     }, 100);
+
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
   }
 
   /**

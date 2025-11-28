@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { DyeService } from '@services/index';
+import { DyeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -72,20 +72,20 @@ export class DyeSelector extends BaseComponent {
     const searchInput = this.createElement('input', {
       attributes: {
         type: 'text',
-        placeholder: 'Search dyes by name...',
-        'aria-label': 'Search dyes',
+        placeholder: LanguageService.t('dyeSelector.searchPlaceholder'),
+        'aria-label': LanguageService.t('dyeSelector.searchAriaLabel'),
       },
       className:
         'flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500',
     });
 
     const clearBtn = this.createElement('button', {
-      textContent: 'Clear',
+      textContent: LanguageService.t('common.clear'),
       className:
         'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
       attributes: {
         id: 'dye-selector-clear-btn',
-        'aria-label': 'Clear all selections',
+        'aria-label': LanguageService.t('dyeSelector.clearAriaLabel'),
         style: 'background-color: var(--theme-background-secondary); color: var(--theme-text);',
       },
     });
@@ -114,7 +114,7 @@ export class DyeSelector extends BaseComponent {
     });
 
     const sortLabel = this.createElement('label', {
-      textContent: 'Sort by:',
+      textContent: LanguageService.t('dyeSelector.sortBy'),
       className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
       attributes: {
         for: 'dye-selector-sort',
@@ -124,19 +124,19 @@ export class DyeSelector extends BaseComponent {
     const sortSelect = this.createElement('select', {
       attributes: {
         id: 'dye-selector-sort',
-        'aria-label': 'Sort dyes',
+        'aria-label': LanguageService.t('dyeSelector.sortAriaLabel'),
       },
       className:
         'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm',
     });
 
     const sortOptions: Array<{ value: SortOption; label: string }> = [
-      { value: 'alphabetical', label: 'Alphabetically' },
-      { value: 'brightness-asc', label: 'Brightness (Dark → Light)' },
-      { value: 'brightness-desc', label: 'Brightness (Light → Dark)' },
-      { value: 'hue', label: 'Hue (Color Wheel)' },
-      { value: 'saturation', label: 'Saturation (Muted → Vivid)' },
-      { value: 'category', label: 'Category then Name' },
+      { value: 'alphabetical', label: LanguageService.t('dyeSelector.sortAlphabetical') },
+      { value: 'brightness-asc', label: LanguageService.t('dyeSelector.sortBrightnessAsc') },
+      { value: 'brightness-desc', label: LanguageService.t('dyeSelector.sortBrightnessDesc') },
+      { value: 'hue', label: LanguageService.t('dyeSelector.sortHue') },
+      { value: 'saturation', label: LanguageService.t('dyeSelector.sortSaturation') },
+      { value: 'category', label: LanguageService.t('dyeSelector.sortCategory') },
     ];
 
     for (const option of sortOptions) {
@@ -163,7 +163,7 @@ export class DyeSelector extends BaseComponent {
       });
 
       const allBtn = this.createElement('button', {
-        textContent: 'All',
+        textContent: LanguageService.t('dyeSelector.allCategories'),
         className:
           'px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
         attributes: {
@@ -217,7 +217,10 @@ export class DyeSelector extends BaseComponent {
 
       const selectedLabel = this.createElement('div', {
         id: 'selected-dyes-label',
-        textContent: `Selected: ${this.selectedDyes.length}/${this.options.maxSelections}`,
+        textContent: LanguageService.tInterpolate('dyeSelector.selected', {
+          current: String(this.selectedDyes.length),
+          max: String(this.options.maxSelections),
+        }),
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2',
       });
       selectedContainer.appendChild(selectedLabel);
@@ -493,7 +496,10 @@ export class DyeSelector extends BaseComponent {
         // Update the counter label
         const selectedLabel = this.querySelector<HTMLElement>('#selected-dyes-label');
         if (selectedLabel) {
-          selectedLabel.textContent = `Selected: ${this.selectedDyes.length}/${this.options.maxSelections}`;
+          selectedLabel.textContent = LanguageService.tInterpolate('dyeSelector.selected', {
+            current: String(this.selectedDyes.length),
+            max: String(this.options.maxSelections),
+          });
         }
 
         clearContainer(selectedList);
@@ -733,6 +739,16 @@ export class DyeSelector extends BaseComponent {
       default:
         return a.name.localeCompare(b.name);
     }
+  }
+
+  /**
+   * Initialize the component
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.update();
+    });
   }
 
   /**

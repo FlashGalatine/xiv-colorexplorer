@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -76,7 +77,7 @@ export class PaletteExporter extends BaseComponent {
 
     // JSON export button - using theme primary color
     this.jsonBtn = this.createElement('button', {
-      textContent: 'Export as JSON',
+      textContent: LanguageService.t('export.exportAsJson'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'json',
@@ -93,7 +94,7 @@ export class PaletteExporter extends BaseComponent {
 
     // CSS export button - using theme primary color
     this.cssBtn = this.createElement('button', {
-      textContent: 'Export as CSS',
+      textContent: LanguageService.t('export.exportAsCss'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'css',
@@ -110,7 +111,7 @@ export class PaletteExporter extends BaseComponent {
 
     // SCSS export button - using theme primary color
     this.scssBtn = this.createElement('button', {
-      textContent: 'Export as SCSS',
+      textContent: LanguageService.t('export.exportAsScss'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'scss',
@@ -127,7 +128,7 @@ export class PaletteExporter extends BaseComponent {
 
     // Copy hex codes button - using theme primary color
     this.copyBtn = this.createElement('button', {
-      textContent: 'Copy All Hex Codes',
+      textContent: LanguageService.t('export.copyAllHexCodes'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold min-h-[44px]',
       attributes: {
         'data-export': 'hex',
@@ -432,6 +433,16 @@ export class PaletteExporter extends BaseComponent {
 
     // Emit event for potential toast notifications
     this.emit('export-downloaded', { type: mimeType, filename });
+  }
+
+  /**
+   * Initialize the component
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    LanguageService.subscribe(() => {
+      this.init(); // Re-render to update localized text
+    });
   }
 
   /**
