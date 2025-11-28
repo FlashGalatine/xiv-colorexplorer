@@ -8,6 +8,7 @@
  */
 
 import type { ThemeName, VisionType, ColorblindMatrices } from './types';
+import type { LocaleCode, LocaleDisplay } from './i18n-types';
 
 // ============================================================================
 // Application Metadata
@@ -101,6 +102,37 @@ export const THEME_DISPLAY_NAMES: Record<ThemeName, string> = {
 };
 
 // ============================================================================
+// Localization Configuration
+// ============================================================================
+
+/**
+ * Supported locale codes
+ * Matches the locales available in xivdyetools-core v1.2.0
+ */
+export const SUPPORTED_LOCALES: readonly LocaleCode[] = [
+  'en',
+  'ja',
+  'de',
+  'fr',
+  'ko',
+  'zh',
+] as const;
+
+export const DEFAULT_LOCALE: LocaleCode = 'en';
+
+/**
+ * Locale display information with flags and native names
+ */
+export const LOCALE_DISPLAY_INFO: readonly LocaleDisplay[] = [
+  { code: 'en', name: 'English', englishName: 'English', flag: '🇬🇧' },
+  { code: 'ja', name: '日本語', englishName: 'Japanese', flag: '🇯🇵' },
+  { code: 'de', name: 'Deutsch', englishName: 'German', flag: '🇩🇪' },
+  { code: 'fr', name: 'Français', englishName: 'French', flag: '🇫🇷' },
+  { code: 'ko', name: '한국어', englishName: 'Korean', flag: '🇰🇷' },
+  { code: 'zh', name: '中文', englishName: 'Chinese', flag: '🇨🇳' },
+] as const;
+
+// ============================================================================
 // Vision Type Configuration
 // ============================================================================
 
@@ -159,6 +191,7 @@ export const STORAGE_PREFIX = 'xivdyetools';
 
 export const STORAGE_KEYS = {
   THEME: `${STORAGE_PREFIX}_theme`,
+  LOCALE: `${STORAGE_PREFIX}_locale`,
   DARK_MODE: `${STORAGE_PREFIX}_dark_mode`,
   DUAL_DYES: `${STORAGE_PREFIX}_dual_dyes`,
   SHOW_PRICES: `${STORAGE_PREFIX}_show_prices`,

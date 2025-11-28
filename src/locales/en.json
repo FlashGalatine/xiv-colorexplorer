@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "en",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "XIV Dye Tools",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "reload": "Reload Page"
+  },
+  "header": {
+    "tools": "Tools",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "footer": {
+    "version": "Version",
+    "createdBy": "Created by Flash Galatine (Balmung) for the FFXIV community",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. All Rights Reserved.",
+    "notAffiliated": "XIV Dye Tools is a fan-made application and is not affiliated with or endorsed by Square Enix."
+  },
+  "tools": {
+    "harmony": {
+      "title": "Color Harmony Explorer",
+      "shortName": "Harmony",
+      "description": "Generate harmonious color palettes",
+      "subtitle": "Discover harmonious color combinations using color theory. Select a base color to generate classic harmony types."
+    },
+    "matcher": {
+      "title": "Color Matcher",
+      "shortName": "Matcher",
+      "description": "Match colors from images",
+      "subtitle": "Upload an image or select a color to find the closest matching FFXIV dyes."
+    },
+    "accessibility": {
+      "title": "Accessibility Checker",
+      "shortName": "Vision",
+      "description": "Simulate colorblindness",
+      "subtitle": "Check how dye combinations appear to players with different types of color vision."
+    },
+    "comparison": {
+      "title": "Dye Comparison",
+      "shortName": "Compare",
+      "description": "Compare up to 4 dyes",
+      "subtitle": "Compare dyes side-by-side to see color differences and find the perfect match."
+    },
+    "mixer": {
+      "title": "Dye Mixer",
+      "shortName": "Mixer",
+      "description": "Find intermediate dyes",
+      "subtitle": "Create smooth color gradients between two dyes and discover intermediate options."
+    }
+  },
+  "common": {
+    "generate": "Generate",
+    "select": "Select",
+    "copy": "Copy",
+    "export": "Export",
+    "clear": "Clear",
+    "reset": "Reset",
+    "save": "Save",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "or": "or",
+    "baseColor": "Base Color",
+    "targetColor": "Target Color",
+    "hexColor": "Hex Color",
+    "enterHex": "Enter a hex color",
+    "noResults": "No results found",
+    "loading": "Loading...",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "selectDye": "Select a dye",
+    "noDyeSelected": "No dye selected"
+  },
+  "harmony": {
+    "suggestionMode": "Suggestion Mode",
+    "simple": "Simple Suggestions",
+    "simpleDesc": "Strict harmony with precise dye matching",
+    "expanded": "Expanded Suggestions",
+    "expandedDesc": "Additional similar dyes per harmony color",
+    "companionDyes": "Additional Dyes per Harmony Color",
+    "companionDyesDesc": "Choose how many additional companion dyes to show",
+    "baseColorSection": "Base Color",
+    "harmonyResults": "Harmony Results",
+    "selectBaseColor": "Select a base color to generate harmonies",
+    "generatingHarmonies": "Generating harmonies..."
+  },
+  "matcher": {
+    "uploadImage": "Upload Image",
+    "dragDrop": "Drag and drop an image here",
+    "orClickBrowse": "or click to browse",
+    "supportedFormats": "Supported formats: PNG, JPG, GIF, WebP",
+    "privacyNote": "Images never leave your browser",
+    "pickFromImage": "Pick from Image",
+    "sampleSize": "Sample Size",
+    "sampleSizeDesc": "Larger sizes produce more accurate color matching",
+    "matchedDyes": "Matched Dyes",
+    "bestMatch": "Best Match",
+    "similarDyes": "Similar Dyes",
+    "distance": "Distance",
+    "clickToSample": "Click on the image to sample a color",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "zoomFit": "Fit",
+    "zoomWidth": "Width",
+    "zoomReset": "Reset"
+  },
+  "accessibility": {
+    "selectDyes": "Select Dyes",
+    "selectUpTo": "Select up to {count} dyes to check accessibility",
+    "visionSimulation": "Vision Simulation",
+    "individualAnalysis": "Individual Dye Analysis",
+    "pairComparisons": "Dye Pair Comparisons",
+    "overallScore": "Overall Accessibility Score",
+    "contrastScore": "Contrast Score",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "Pass",
+    "fail": "Fail",
+    "warning": "Warning",
+    "issuesFound": "{count} issues found",
+    "noIssues": "No accessibility issues"
+  },
+  "comparison": {
+    "selectDyes": "Select Dyes to Compare",
+    "selectUpTo": "Select up to {count} dyes",
+    "sideBySide": "Side-by-Side Comparison",
+    "colorValues": "Color Values",
+    "rgbValues": "RGB Values",
+    "hsvValues": "HSV Values",
+    "hexValue": "Hex Value"
+  },
+  "mixer": {
+    "startColor": "Start Color",
+    "endColor": "End Color",
+    "interpolationSteps": "Interpolation Steps",
+    "colorSpace": "Color Space",
+    "gradient": "Gradient",
+    "intermediateDyes": "Intermediate Dyes",
+    "selectTwoDyes": "Select two dyes to see interpolation",
+    "savedGradients": "Saved Gradients",
+    "saveGradient": "Save Gradient",
+    "noSavedGradients": "No saved gradients",
+    "gradientSaved": "Gradient saved!"
+  },
+  "filters": {
+    "title": "Dye Filters",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "excludeExpensive": "Exclude Expensive Dyes",
+    "excludeMetallic": "Exclude Metallic Dyes",
+    "excludeCosmic": "Exclude Cosmic Dyes",
+    "excludeSpecial": "Exclude Special Dyes",
+    "showOnlyMetallic": "Show Only Metallic",
+    "resetFilters": "Reset Filters"
+  },
+  "marketBoard": {
+    "title": "Market Board Prices",
+    "dataCenter": "Data Center",
+    "world": "World",
+    "selectWorld": "Select a world",
+    "priceCategories": "Price Categories",
+    "baseDyes": "Base Dyes",
+    "craftDyes": "Craft Dyes",
+    "alliedSocietyDyes": "Allied Society Dyes",
+    "cosmicDyes": "Cosmic Dyes",
+    "specialDyes": "Special Dyes",
+    "refresh": "Refresh Prices",
+    "lastUpdated": "Last updated: {time}",
+    "priceUnavailable": "Price unavailable",
+    "fetchingPrices": "Fetching prices..."
+  },
+  "export": {
+    "title": "Export Palette",
+    "format": "Format",
+    "json": "JSON",
+    "css": "CSS Variables",
+    "text": "Plain Text",
+    "copyToClipboard": "Copy to Clipboard",
+    "download": "Download",
+    "preview": "Preview"
+  },
+  "errors": {
+    "invalidHex": "Invalid hexadecimal color format. Use #RRGGBB.",
+    "invalidRgb": "RGB values must be between 0 and 255.",
+    "dyeNotFound": "Dye not found in database.",
+    "databaseLoadFailed": "Failed to load dye database. Please refresh the page.",
+    "apiFailed": "Failed to fetch data from market board.",
+    "networkError": "Network connection error. Please check your internet connection.",
+    "imageLoadFailed": "Failed to load image. Please ensure it is a valid image file.",
+    "imageTooLarge": "Image file is too large. Maximum size is 10MB.",
+    "unsupportedFormat": "Unsupported file format.",
+    "clipboardFailed": "Failed to copy to clipboard.",
+    "storageFailed": "Failed to save settings. Storage may be full."
+  },
+  "success": {
+    "copiedToClipboard": "Copied to clipboard!",
+    "exported": "Data exported successfully!",
+    "settingsSaved": "Settings saved!",
+    "gradientSaved": "Gradient saved!"
+  },
+  "themes": {
+    "standardLight": "Standard (Light)",
+    "standardDark": "Standard (Dark)",
+    "hydaelynLight": "Hydaelyn",
+    "ogClassicDark": "OG Classic",
+    "parchmentLight": "Parchment",
+    "cottonCandy": "Cotton Candy",
+    "sugarRiot": "Sugar Riot",
+    "grayscaleLight": "Grayscale (Light)",
+    "grayscaleDark": "Grayscale (Dark)"
+  }
+}

@@ -11,6 +11,7 @@
 // ColorService now from xivdyetools-core;
 import { StorageService } from './storage-service';
 import { ThemeService } from './theme-service';
+import { LanguageService } from './language-service';
 import { APIService } from './api-service-wrapper';
 // APIService now from wrapper;
 
@@ -19,6 +20,7 @@ export { ColorService } from 'xivdyetools-core';
 export { DyeService, dyeService } from './dye-service-wrapper';
 export { StorageService, appStorage, NamespacedStorage, SecureStorage } from './storage-service';
 export { ThemeService };
+export { LanguageService };
 export { APIService, apiService } from './api-service-wrapper';
 
 // Re-export commonly used types
@@ -31,12 +33,16 @@ import { logger } from '@shared/logger';
 /**
  * Initialize all services
  */
-export function initializeServices(): void {
+export async function initializeServices(): Promise<void> {
   logger.info('🔧 Initializing all services...');
 
   try {
     // Theme service auto-initializes on module load
     logger.info('✅ ThemeService ready');
+
+    // Initialize LanguageService (async - loads translations)
+    await LanguageService.initialize();
+    logger.info('✅ LanguageService ready');
 
     // DyeService initializes on first getInstance
     logger.info('✅ DyeService ready');
