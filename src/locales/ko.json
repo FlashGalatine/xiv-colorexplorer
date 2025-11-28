@@ -288,7 +288,7 @@
     "resetFilters": "필터 초기화"
   },
   "marketBoard": {
-    "title": "시장 게시판",
+    "title": "마켓보드",
     "server": "서버:",
     "allWorlds": "전체 월드",
     "showPrices": "가격 표시",
@@ -329,7 +329,7 @@
     "invalidRgb": "RGB 값은 0에서 255 사이여야 합니다.",
     "dyeNotFound": "데이터베이스에서 염료를 찾을 수 없습니다.",
     "databaseLoadFailed": "염료 데이터베이스를 로드하지 못했습니다. 페이지를 새로고침하세요.",
-    "apiFailed": "시장 게시판에서 데이터를 가져오지 못했습니다.",
+    "apiFailed": "마켓보드에서 데이터를 가져오지 못했습니다.",
     "networkError": "네트워크 연결 오류. 인터넷 연결을 확인하세요.",
     "imageLoadFailed": "이미지를 로드하지 못했습니다. 유효한 이미지 파일인지 확인하세요.",
     "imageTooLarge": "이미지 파일이 너무 큽니다. 최대 크기는 10MB입니다.",

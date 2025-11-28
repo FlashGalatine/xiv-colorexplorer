@@ -288,7 +288,7 @@
     "resetFilters": "Réinitialiser les Filtres"
   },
   "marketBoard": {
-    "title": "Tableau des Marchés",
+    "title": "Tableau des ventes",
     "server": "Serveur :",
     "allWorlds": "Tous les Mondes",
     "showPrices": "Afficher les Prix",
@@ -329,7 +329,7 @@
     "invalidRgb": "Les valeurs RVB doivent être comprises entre 0 et 255.",
     "dyeNotFound": "Teinture non trouvée dans la base de données.",
     "databaseLoadFailed": "Échec du chargement de la base de données des teintures. Veuillez actualiser la page.",
-    "apiFailed": "Échec de la récupération des données du tableau des marchés.",
+    "apiFailed": "Échec de la récupération des données du tableau des ventes.",
     "networkError": "Erreur de connexion réseau. Veuillez vérifier votre connexion Internet.",
     "imageLoadFailed": "Échec du chargement de l'image. Assurez-vous qu'il s'agit d'un fichier image valide.",
     "imageTooLarge": "Le fichier image est trop volumineux. Taille maximale : 10 Mo.",
