@@ -15,9 +15,40 @@
 // ============================================================================
 
 /**
+ * Test environment override (for unit testing only)
+ * When set, overrides the actual import.meta.env checks
+ */
+let testEnvironmentOverride: { isDev: boolean; isProd: boolean } | null = null;
+
+/**
+ * Set test environment override (for unit testing only)
+ * Call with null to restore normal environment detection
+ *
+ * @example
+ * // In test file:
+ * import { __setTestEnvironment } from '@shared/logger';
+ *
+ * beforeEach(() => {
+ *   __setTestEnvironment({ isDev: false, isProd: true });
+ * });
+ *
+ * afterEach(() => {
+ *   __setTestEnvironment(null);
+ * });
+ */
+export function __setTestEnvironment(override: { isDev: boolean; isProd: boolean } | null): void {
+  testEnvironmentOverride = override;
+}
+
+/**
  * Check if we're in development mode
  */
 const isDev = (): boolean => {
+  // Allow test override
+  if (testEnvironmentOverride !== null) {
+    return testEnvironmentOverride.isDev;
+  }
+
   if (typeof import.meta === 'undefined') {
     return false;
   }
@@ -30,6 +61,11 @@ const isDev = (): boolean => {
  * Check if we're in production mode
  */
 const isProd = (): boolean => {
+  // Allow test override
+  if (testEnvironmentOverride !== null) {
+    return testEnvironmentOverride.isProd;
+  }
+
   if (typeof import.meta === 'undefined') {
     return true; // Default to production for safety
   }
