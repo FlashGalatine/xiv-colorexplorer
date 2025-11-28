@@ -9,6 +9,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './node_modules/.cache/vitest-coverage',
+      clean: true,
       exclude: [
         'node_modules/',
         'dist/',
