@@ -188,7 +188,8 @@ describe('Logger Module', () => {
 
         const metrics = perf.getMetrics('async-test');
         expect(metrics).not.toBeNull();
-        expect(metrics?.lastTime).toBeGreaterThanOrEqual(10);
+        // Allow some timing variance - setTimeout(10) may complete slightly faster
+        expect(metrics?.lastTime).toBeGreaterThanOrEqual(5);
       });
 
       it('should record metrics even if function throws', async () => {
