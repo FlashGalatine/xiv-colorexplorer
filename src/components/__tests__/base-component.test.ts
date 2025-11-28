@@ -74,10 +74,14 @@ class TestComponent extends BaseComponent {
   public testQuerySelector = this.querySelector.bind(this);
   public testQuerySelectorAll = this.querySelectorAll.bind(this);
   public testOn = this.on.bind(this);
+  public testOff = this.off.bind(this);
+  public testOnCustom = this.onCustom.bind(this);
   public testEmit = this.emit.bind(this);
+  public testSetContent = this.setContent.bind(this);
   public getRenderCount = () => this.renderCount;
   public getBindCount = () => this.bindCount;
   public getButtonClickCount = () => this.buttonClickCount;
+  public getListeners = () => this.listeners;
 }
 
 // ============================================================================
@@ -588,6 +592,305 @@ describe('BaseComponent', () => {
 
       cleanupComponent(brokenComponent, container);
       container = createTestContainer(); // Reset for afterEach
+    });
+  });
+
+  // ==========================================================================
+  // Event Listener Removal (off method)
+  // ==========================================================================
+
+  describe('Event Listener Removal (off)', () => {
+    beforeEach(() => {
+      component = new TestComponent(container);
+      component.init();
+    });
+
+    it('should remove specific event listener using off()', () => {
+      const button = component.testQuerySelector<HTMLButtonElement>('[data-testid="test-button"]');
+      expect(button).not.toBeNull();
+
+      const handler = vi.fn();
+      const boundHandler = handler as EventListener;
+
+      // Add custom event listener
+      button!.addEventListener('click', boundHandler);
+
+      // Trigger click - handler should be called
+      button!.click();
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      // Remove using off() - note: this won't remove unless it was added via on()
+      // So let's test the internal path more directly
+      component.testOff(button!, 'click', boundHandler);
+
+      // Handler should still be removed via native removeEventListener
+      button!.click();
+      // Since we removed it, handler should only have been called once
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove event listener from stored listeners map', () => {
+      const testButton = document.createElement('button');
+      container.appendChild(testButton);
+
+      const handler = vi.fn();
+
+      // Add listener via on()
+      component.testOn(testButton, 'click', handler);
+
+      const listenersBeforeOff = component.getListeners().size;
+      expect(listenersBeforeOff).toBeGreaterThan(1); // Has the existing button listener + our new one
+
+      // Find the handler in the listeners map
+      let storedHandler: EventListener | null = null;
+      for (const listener of component.getListeners().values()) {
+        if (listener.target === testButton && listener.event === 'click') {
+          storedHandler = listener.handler;
+          break;
+        }
+      }
+
+      expect(storedHandler).not.toBeNull();
+
+      // Remove using off()
+      component.testOff(testButton, 'click', storedHandler!);
+
+      // Listener should be removed from map
+      let foundAfterOff = false;
+      for (const listener of component.getListeners().values()) {
+        if (listener.target === testButton && listener.event === 'click') {
+          foundAfterOff = true;
+          break;
+        }
+      }
+      expect(foundAfterOff).toBe(false);
+    });
+
+    it('should handle off() with non-matching handler', () => {
+      const testButton = document.createElement('button');
+      container.appendChild(testButton);
+
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+
+      // Add listener via on()
+      component.testOn(testButton, 'click', handler1);
+      const listenersCountBefore = component.getListeners().size;
+
+      // Try to remove with different handler - should not remove from stored listeners
+      component.testOff(testButton, 'click', handler2 as EventListener);
+
+      // Listener count should be the same (the off() tries to find matching handler)
+      expect(component.getListeners().size).toBe(listenersCountBefore);
+    });
+  });
+
+  // ==========================================================================
+  // Custom Event Handling (onCustom method)
+  // ==========================================================================
+
+  describe('Custom Event Handling (onCustom)', () => {
+    beforeEach(() => {
+      component = new TestComponent(container);
+      component.init();
+    });
+
+    it('should listen for custom events via onCustom()', () => {
+      const customHandler = vi.fn();
+
+      component.testOnCustom('my-custom-event', customHandler);
+
+      // Dispatch custom event
+      const event = new CustomEvent('my-custom-event', { detail: { data: 'test' } });
+      component['element']!.dispatchEvent(event);
+
+      expect(customHandler).toHaveBeenCalledTimes(1);
+      expect(customHandler).toHaveBeenCalledWith(expect.any(CustomEvent));
+    });
+
+    it('should pass event detail to custom handler', () => {
+      const customHandler = vi.fn();
+
+      component.testOnCustom('data-event', customHandler);
+
+      const eventDetail = { value: 123, name: 'test' };
+      const event = new CustomEvent('data-event', { detail: eventDetail, bubbles: true });
+      component['element']!.dispatchEvent(event);
+
+      expect(customHandler).toHaveBeenCalledTimes(1);
+      const calledEvent = customHandler.mock.calls[0][0] as CustomEvent;
+      expect(calledEvent.detail).toEqual(eventDetail);
+    });
+
+    it('should not call handler for non-CustomEvent events', () => {
+      const customHandler = vi.fn();
+
+      component.testOnCustom('mixed-event', customHandler);
+
+      // Dispatch a regular Event (not CustomEvent) - handler should NOT be called
+      const regularEvent = new Event('mixed-event', { bubbles: true });
+      component['element']!.dispatchEvent(regularEvent);
+
+      // Handler checks instanceof CustomEvent, so should not be called for regular Event
+      expect(customHandler).not.toHaveBeenCalled();
+    });
+
+    it('should store custom event listener in listeners map', () => {
+      const customHandler = vi.fn();
+      const initialListenerCount = component.getListeners().size;
+
+      component.testOnCustom('stored-event', customHandler);
+
+      // Should have added one more listener
+      expect(component.getListeners().size).toBe(initialListenerCount + 1);
+
+      // Should be stored with custom_ prefix
+      expect(component.getListeners().has('custom_stored-event')).toBe(true);
+    });
+
+    it('should clean up custom event listeners on destroy', () => {
+      const customHandler = vi.fn();
+
+      component.testOnCustom('cleanup-event', customHandler);
+
+      // Verify listener is added
+      expect(component.getListeners().has('custom_cleanup-event')).toBe(true);
+
+      // Destroy component
+      component.destroy();
+
+      // Dispatch event after destroy - should not be called
+      const event = new CustomEvent('cleanup-event', { detail: {} });
+      container.dispatchEvent(event);
+
+      expect(customHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // setContent Method Tests
+  // ==========================================================================
+
+  describe('setContent', () => {
+    beforeEach(() => {
+      component = new TestComponent(container);
+      component.init();
+    });
+
+    it('should set string content', () => {
+      const testDiv = document.createElement('div');
+      testDiv.innerHTML = '<span>Old Content</span>';
+
+      component.testSetContent(testDiv, 'New Text Content');
+
+      expect(testDiv.textContent).toBe('New Text Content');
+      expect(testDiv.innerHTML).toBe('New Text Content');
+    });
+
+    it('should set HTMLElement content', () => {
+      const testDiv = document.createElement('div');
+      testDiv.textContent = 'Old Content';
+
+      const newElement = document.createElement('span');
+      newElement.textContent = 'New Element';
+
+      component.testSetContent(testDiv, newElement);
+
+      expect(testDiv.children.length).toBe(1);
+      expect(testDiv.firstChild).toBe(newElement);
+      expect(testDiv.textContent).toBe('New Element');
+    });
+
+    it('should clear existing content before setting new content', () => {
+      const testDiv = document.createElement('div');
+      testDiv.innerHTML = '<p>First</p><p>Second</p><p>Third</p>';
+
+      expect(testDiv.children.length).toBe(3);
+
+      component.testSetContent(testDiv, 'Replaced');
+
+      expect(testDiv.children.length).toBe(0);
+      expect(testDiv.textContent).toBe('Replaced');
+    });
+  });
+
+  // ==========================================================================
+  // Edge Cases for Visibility Methods
+  // ==========================================================================
+
+  describe('Visibility Edge Cases', () => {
+    it('should handle show/hide when element is null', () => {
+      component = new TestComponent(container);
+      // Don't init - element is null
+
+      // Should not throw
+      expect(() => {
+        component.show();
+        component.hide();
+      }).not.toThrow();
+    });
+
+    it('should return false for isVisible when element is null', () => {
+      component = new TestComponent(container);
+      // Don't init - element is null
+
+      expect(component.isVisible()).toBe(false);
+    });
+
+    it('should handle setStyle when element is null', () => {
+      component = new TestComponent(container);
+      // Don't init - element is null
+
+      // Should not throw
+      expect(() => {
+        component.setStyle({ color: 'red' });
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Event Handling with Document and Window
+  // ==========================================================================
+
+  describe('Event Handling with Document and Window', () => {
+    beforeEach(() => {
+      component = new TestComponent(container);
+      component.init();
+    });
+
+    it('should attach events to document', () => {
+      const handler = vi.fn();
+
+      component.testOn(document, 'keydown', handler);
+
+      const keyEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+      document.dispatchEvent(keyEvent);
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should store window event listeners in map', () => {
+      // jsdom has limited window event support, so we test that listeners are stored
+      const handler = vi.fn();
+      const initialCount = component.getListeners().size;
+
+      component.testOn(window, 'resize', handler);
+
+      // Listener should be stored
+      expect(component.getListeners().size).toBe(initialCount + 1);
+    });
+
+    it('should clean up document events on destroy', () => {
+      const docHandler = vi.fn();
+
+      component.testOn(document, 'keydown', docHandler);
+
+      component.destroy();
+
+      // Document events should no longer trigger handlers
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(docHandler).not.toHaveBeenCalled();
     });
   });
 });
