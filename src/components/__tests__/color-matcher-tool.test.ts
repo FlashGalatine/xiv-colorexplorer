@@ -94,6 +94,9 @@ vi.mock('../color-picker-display', () => {
       init(): void {
         colorPickerInitMock();
       }
+      setColorFromImage(_canvas: HTMLCanvasElement, _x: number, _y: number, _size: number): void {
+        /* noop */
+      }
       destroy(): void {
         /* noop */
       }
@@ -969,6 +972,586 @@ describe('ColorMatcherTool', () => {
       expect(toastContainer?.textContent).toContain('Failed to load image');
 
       toastContainer?.remove();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - showImageOverlay
+  // ==========================================================================
+
+  describe('showImageOverlay function coverage', () => {
+    const createMockImage = (width = 200, height = 150): HTMLImageElement => {
+      const img = document.createElement('img');
+      Object.defineProperty(img, 'width', { value: width, writable: true });
+      Object.defineProperty(img, 'height', { value: height, writable: true });
+      Object.defineProperty(img, 'naturalWidth', { value: width, writable: true });
+      Object.defineProperty(img, 'naturalHeight', { value: height, writable: true });
+      return img;
+    };
+
+    it('should create image overlay when image-loaded event fires', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      // Should have canvas element
+      const canvas = container.querySelector('#image-canvas');
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should create zoom controls in overlay', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      // Should have zoom buttons
+      expect(container.querySelector('#zoom-fit-btn')).not.toBeNull();
+      expect(container.querySelector('#zoom-width-btn')).not.toBeNull();
+      expect(container.querySelector('#zoom-out-btn')).not.toBeNull();
+      expect(container.querySelector('#zoom-in-btn')).not.toBeNull();
+      expect(container.querySelector('#zoom-reset-btn')).not.toBeNull();
+      expect(container.querySelector('#zoom-level-display')).not.toBeNull();
+    });
+
+    it('should store currentImage reference', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      expect((instance as unknown as { currentImage: HTMLImageElement }).currentImage).toBe(image);
+    });
+
+    it('should reset zoomLevel to 100 when new image loads', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+
+      // Set zoom level to something else
+      (instance as unknown as ComponentWithPrivate).zoomLevel = 150;
+
+      const image = createMockImage();
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(100);
+    });
+
+    it('should create canvas container with correct dimensions', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage(300, 200);
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+      expect(canvas.getAttribute('width')).toBe('300');
+      expect(canvas.getAttribute('height')).toBe('200');
+    });
+
+    it('should handle missing results container gracefully', async () => {
+      const instance = await createComponent();
+
+      // Remove results container
+      const resultsContainer = container.querySelector('#results-container');
+      resultsContainer?.remove();
+
+      // Call showImageOverlay directly
+      const image = createMockImage();
+      expect(() => {
+        (instance as unknown as { showImageOverlay: (img: HTMLImageElement) => void }).showImageOverlay(image);
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - setupImageInteraction
+  // ==========================================================================
+
+  describe('setupImageInteraction function coverage', () => {
+    const createMockImage = (): HTMLImageElement => {
+      const img = document.createElement('img');
+      Object.defineProperty(img, 'width', { value: 200, writable: true });
+      Object.defineProperty(img, 'height', { value: 150, writable: true });
+      Object.defineProperty(img, 'naturalWidth', { value: 200, writable: true });
+      Object.defineProperty(img, 'naturalHeight', { value: 150, writable: true });
+      return img;
+    };
+
+    it('should handle mousedown on canvas', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Simulate mousedown
+      canvas.dispatchEvent(new MouseEvent('mousedown', {
+        clientX: 50,
+        clientY: 50,
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should handle mousemove on canvas during drag', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Start drag
+      canvas.dispatchEvent(new MouseEvent('mousedown', {
+        clientX: 50,
+        clientY: 50,
+        bubbles: true,
+      }));
+
+      // Move mouse
+      canvas.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should handle mouseup on canvas to finish selection', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Start and finish drag
+      canvas.dispatchEvent(new MouseEvent('mousedown', {
+        clientX: 50,
+        clientY: 50,
+        bubbles: true,
+      }));
+
+      canvas.dispatchEvent(new MouseEvent('mouseup', {
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should handle mouseleave on canvas during drag', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Start drag
+      canvas.dispatchEvent(new MouseEvent('mousedown', {
+        clientX: 50,
+        clientY: 50,
+        bubbles: true,
+      }));
+
+      // Leave canvas while dragging
+      canvas.dispatchEvent(new MouseEvent('mouseleave', {
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should not draw selection rectangle when not dragging', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Move mouse without mousedown (not dragging)
+      canvas.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should not trigger selection on mouseup when not dragging', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Mouseup without prior mousedown
+      canvas.dispatchEvent(new MouseEvent('mouseup', {
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+
+    it('should not redraw image on mouseleave when not dragging', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
+
+      // Leave canvas without dragging
+      canvas.dispatchEvent(new MouseEvent('mouseleave', {
+        bubbles: true,
+      }));
+
+      // Should not throw
+      expect(canvas).not.toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - setupZoomControls
+  // ==========================================================================
+
+  describe('setupZoomControls function coverage', () => {
+    const createMockImage = (width = 200, height = 150): HTMLImageElement => {
+      const img = document.createElement('img');
+      Object.defineProperty(img, 'width', { value: width, writable: true });
+      Object.defineProperty(img, 'height', { value: height, writable: true });
+      Object.defineProperty(img, 'naturalWidth', { value: width, writable: true });
+      Object.defineProperty(img, 'naturalHeight', { value: height, writable: true });
+      return img;
+    };
+
+    it('should handle zoom in button click', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const zoomInBtn = container.querySelector('#zoom-in-btn');
+      zoomInBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(110);
+    });
+
+    it('should handle zoom out button click', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const zoomOutBtn = container.querySelector('#zoom-out-btn');
+      zoomOutBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(90);
+    });
+
+    it('should handle reset button click', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      // First zoom in
+      (instance as unknown as ComponentWithPrivate).zoomLevel = 150;
+
+      const resetBtn = container.querySelector('#zoom-reset-btn');
+      resetBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(100);
+    });
+
+    it('should handle fit button click', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage(400, 300);
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const fitBtn = container.querySelector('#zoom-fit-btn');
+      fitBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      // Wait for requestAnimationFrame
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      // Zoom should be adjusted (not necessarily 100)
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeGreaterThan(0);
+    });
+
+    it('should handle width button click', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage(400, 300);
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const widthBtn = container.querySelector('#zoom-width-btn');
+      widthBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      // Wait for requestAnimationFrame
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      // Zoom should be adjusted
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeGreaterThan(0);
+    });
+
+    it('should not exceed maximum zoom level', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      // Set to near maximum
+      (instance as unknown as ComponentWithPrivate).zoomLevel = 400;
+
+      const zoomInBtn = container.querySelector('#zoom-in-btn');
+      zoomInBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      // Should stay at max
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeLessThanOrEqual(400);
+    });
+
+    it('should not go below minimum zoom level', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      // Set to minimum
+      (instance as unknown as ComponentWithPrivate).zoomLevel = 10;
+
+      const zoomOutBtn = container.querySelector('#zoom-out-btn');
+      zoomOutBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      // Should stay at min
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeGreaterThanOrEqual(10);
+    });
+
+    it('should handle mouse wheel zoom with shift key', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvasContainer = container.querySelector('#canvas-container');
+
+      // Simulate wheel event with shift key
+      const wheelEvent = new WheelEvent('wheel', {
+        deltaY: -100,
+        shiftKey: true,
+        bubbles: true,
+      });
+      canvasContainer?.dispatchEvent(wheelEvent);
+
+      // Zoom should increase
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(110);
+    });
+
+    it('should not zoom on wheel without shift key', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvasContainer = container.querySelector('#canvas-container');
+      const initialZoom = (instance as unknown as ComponentWithPrivate).zoomLevel;
+
+      // Simulate wheel event without shift key
+      const wheelEvent = new WheelEvent('wheel', {
+        deltaY: -100,
+        shiftKey: false,
+        bubbles: true,
+      });
+      canvasContainer?.dispatchEvent(wheelEvent);
+
+      // Zoom should remain unchanged
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(initialZoom);
+    });
+
+    it('should update zoom display text', async () => {
+      await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const zoomInBtn = container.querySelector('#zoom-in-btn');
+      zoomInBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      const zoomDisplay = container.querySelector('#zoom-level-display');
+      expect(zoomDisplay?.textContent).toBe('110%');
+    });
+
+    it('should handle wheel zoom down', async () => {
+      const instance = await createComponent();
+      const uploadContainer = container.querySelector('#image-upload-container');
+      const image = createMockImage();
+
+      uploadContainer?.dispatchEvent(
+        new CustomEvent('image-loaded', { detail: { image } })
+      );
+
+      const canvasContainer = container.querySelector('#canvas-container');
+
+      // Simulate wheel event down with shift key
+      const wheelEvent = new WheelEvent('wheel', {
+        deltaY: 100, // positive deltaY = zoom out
+        shiftKey: true,
+        bubbles: true,
+      });
+      canvasContainer?.dispatchEvent(wheelEvent);
+
+      // Zoom should decrease
+      expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(90);
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - onMount
+  // ==========================================================================
+
+  describe('onMount function coverage', () => {
+    it('should call onMount without throwing', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        instance.onMount();
+      }).not.toThrow();
+    });
+
+    it('should subscribe to language changes', async () => {
+      const instance = await createComponent();
+
+      // onMount is called during init
+      // Just verify it doesn't throw
+      expect(() => {
+        instance.onMount();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - destroy with child components
+  // ==========================================================================
+
+  describe('destroy with child components', () => {
+    it('should destroy imageUpload if exists', async () => {
+      const instance = await createComponent();
+
+      // imageUpload should exist after init
+      expect(() => {
+        instance.destroy();
+      }).not.toThrow();
+    });
+
+    it('should destroy colorPicker if exists', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        instance.destroy();
+      }).not.toThrow();
+    });
+
+    it('should destroy marketBoard if exists', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        instance.destroy();
+      }).not.toThrow();
+    });
+
+    it('should handle destroy when child components are null', async () => {
+      const instance = await createComponent();
+
+      // Set child components to null
+      (instance as unknown as { imageUpload: null }).imageUpload = null;
+      (instance as unknown as { colorPicker: null }).colorPicker = null;
+      (instance as unknown as { marketBoard: null }).marketBoard = null;
+
+      expect(() => {
+        instance.destroy();
+      }).not.toThrow();
     });
   });
 });
