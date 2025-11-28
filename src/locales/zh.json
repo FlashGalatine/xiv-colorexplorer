@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "zh",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "XIV 染色工具",
+    "loading": "加载中...",
+    "error": "发生错误",
+    "retry": "重试",
+    "reload": "刷新页面"
+  },
+  "header": {
+    "tools": "工具",
+    "theme": "主题",
+    "language": "语言"
+  },
+  "footer": {
+    "version": "版本",
+    "createdBy": "由 Flash Galatine (Balmung) 为 FFXIV 社区创建",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. 保留所有权利。",
+    "notAffiliated": "XIV 染色工具是粉丝制作的应用程序，与 Square Enix 无关，也未获得其认可。"
+  },
+  "tools": {
+    "harmony": {
+      "title": "色彩和谐探索器",
+      "shortName": "和谐",
+      "description": "生成和谐的色彩调色板",
+      "subtitle": "使用色彩理论发现和谐的颜色组合。选择一个基础颜色来生成经典的和谐类型。"
+    },
+    "matcher": {
+      "title": "颜色匹配器",
+      "shortName": "匹配",
+      "description": "从图像匹配颜色",
+      "subtitle": "上传图像或选择颜色，找到最接近的 FFXIV 染料。"
+    },
+    "accessibility": {
+      "title": "无障碍检查器",
+      "shortName": "视觉",
+      "description": "模拟色盲",
+      "subtitle": "检查染料组合对不同类型色觉的玩家如何显示。"
+    },
+    "comparison": {
+      "title": "染料比较",
+      "shortName": "比较",
+      "description": "比较最多4种染料",
+      "subtitle": "并排比较染料，查看颜色差异并找到完美匹配。"
+    },
+    "mixer": {
+      "title": "染料混合器",
+      "shortName": "混合",
+      "description": "寻找中间染料",
+      "subtitle": "在两种染料之间创建平滑的颜色渐变，发现中间选项。"
+    }
+  },
+  "common": {
+    "generate": "生成",
+    "select": "选择",
+    "copy": "复制",
+    "export": "导出",
+    "clear": "清除",
+    "reset": "重置",
+    "save": "保存",
+    "delete": "删除",
+    "cancel": "取消",
+    "close": "关闭",
+    "search": "搜索",
+    "filter": "筛选",
+    "or": "或",
+    "baseColor": "基础颜色",
+    "targetColor": "目标颜色",
+    "hexColor": "十六进制颜色",
+    "enterHex": "输入十六进制颜色",
+    "noResults": "未找到结果",
+    "loading": "加载中...",
+    "showMore": "显示更多",
+    "showLess": "收起",
+    "selectDye": "选择染料",
+    "noDyeSelected": "未选择染料"
+  },
+  "harmony": {
+    "suggestionMode": "建议模式",
+    "simple": "简单建议",
+    "simpleDesc": "严格的和谐配色与精确的染料匹配",
+    "expanded": "扩展建议",
+    "expandedDesc": "每个和谐颜色额外的相似染料",
+    "companionDyes": "每个和谐颜色的额外染料",
+    "companionDyesDesc": "选择每个和谐颜色显示多少额外的伴侣染料",
+    "baseColorSection": "基础颜色",
+    "harmonyResults": "和谐结果",
+    "selectBaseColor": "选择基础颜色以生成和谐配色",
+    "generatingHarmonies": "正在生成和谐配色..."
+  },
+  "matcher": {
+    "uploadImage": "上传图像",
+    "dragDrop": "将图像拖放到此处",
+    "orClickBrowse": "或点击浏览",
+    "supportedFormats": "支持格式：PNG、JPG、GIF、WebP",
+    "privacyNote": "图像不会离开您的浏览器",
+    "pickFromImage": "从图像选取",
+    "sampleSize": "采样大小",
+    "sampleSizeDesc": "更大的采样产生更准确的颜色匹配",
+    "matchedDyes": "匹配的染料",
+    "bestMatch": "最佳匹配",
+    "similarDyes": "相似染料",
+    "distance": "距离",
+    "clickToSample": "点击图像采样颜色",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "zoomFit": "适应",
+    "zoomWidth": "适应宽度",
+    "zoomReset": "重置"
+  },
+  "accessibility": {
+    "selectDyes": "选择染料",
+    "selectUpTo": "选择最多 {count} 种染料检查无障碍性",
+    "visionSimulation": "视觉模拟",
+    "individualAnalysis": "单独染料分析",
+    "pairComparisons": "染料对比较",
+    "overallScore": "总体无障碍评分",
+    "contrastScore": "对比度评分",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "通过",
+    "fail": "未通过",
+    "warning": "警告",
+    "issuesFound": "发现 {count} 个问题",
+    "noIssues": "无无障碍问题"
+  },
+  "comparison": {
+    "selectDyes": "选择要比较的染料",
+    "selectUpTo": "选择最多 {count} 种染料",
+    "sideBySide": "并排比较",
+    "colorValues": "颜色值",
+    "rgbValues": "RGB 值",
+    "hsvValues": "HSV 值",
+    "hexValue": "十六进制值"
+  },
+  "mixer": {
+    "startColor": "起始颜色",
+    "endColor": "结束颜色",
+    "interpolationSteps": "插值步骤",
+    "colorSpace": "色彩空间",
+    "gradient": "渐变",
+    "intermediateDyes": "中间染料",
+    "selectTwoDyes": "选择两种染料查看插值",
+    "savedGradients": "已保存的渐变",
+    "saveGradient": "保存渐变",
+    "noSavedGradients": "无已保存的渐变",
+    "gradientSaved": "渐变已保存！"
+  },
+  "filters": {
+    "title": "染料筛选",
+    "category": "分类",
+    "allCategories": "所有分类",
+    "excludeExpensive": "排除昂贵染料",
+    "excludeMetallic": "排除金属染料",
+    "excludeCosmic": "排除宇宙染料",
+    "excludeSpecial": "排除特殊染料",
+    "showOnlyMetallic": "仅显示金属染料",
+    "resetFilters": "重置筛选"
+  },
+  "marketBoard": {
+    "title": "市场价格",
+    "dataCenter": "数据中心",
+    "world": "服务器",
+    "selectWorld": "选择服务器",
+    "priceCategories": "价格分类",
+    "baseDyes": "基础染料",
+    "craftDyes": "制作染料",
+    "alliedSocietyDyes": "蛮族商人染料",
+    "cosmicDyes": "宇宙染料",
+    "specialDyes": "特殊染料",
+    "refresh": "刷新价格",
+    "lastUpdated": "最后更新：{time}",
+    "priceUnavailable": "价格不可用",
+    "fetchingPrices": "正在获取价格..."
+  },
+  "export": {
+    "title": "导出调色板",
+    "format": "格式",
+    "json": "JSON",
+    "css": "CSS 变量",
+    "text": "纯文本",
+    "copyToClipboard": "复制到剪贴板",
+    "download": "下载",
+    "preview": "预览"
+  },
+  "errors": {
+    "invalidHex": "无效的十六进制颜色格式。请使用 #RRGGBB。",
+    "invalidRgb": "RGB 值必须在 0 到 255 之间。",
+    "dyeNotFound": "数据库中未找到染料。",
+    "databaseLoadFailed": "加载染料数据库失败。请刷新页面。",
+    "apiFailed": "从市场获取数据失败。",
+    "networkError": "网络连接错误。请检查您的网络连接。",
+    "imageLoadFailed": "加载图像失败。请确保它是有效的图像文件。",
+    "imageTooLarge": "图像文件太大。最大大小为 10MB。",
+    "unsupportedFormat": "不支持的文件格式。",
+    "clipboardFailed": "复制到剪贴板失败。",
+    "storageFailed": "保存设置失败。存储空间可能已满。"
+  },
+  "success": {
+    "copiedToClipboard": "已复制到剪贴板！",
+    "exported": "数据导出成功！",
+    "settingsSaved": "设置已保存！",
+    "gradientSaved": "渐变已保存！"
+  },
+  "themes": {
+    "standardLight": "标准（浅色）",
+    "standardDark": "标准（深色）",
+    "hydaelynLight": "海德林",
+    "ogClassicDark": "OG 经典",
+    "parchmentLight": "羊皮纸",
+    "cottonCandy": "棉花糖",
+    "sugarRiot": "Sugar Riot",
+    "grayscaleLight": "灰度（浅色）",
+    "grayscaleDark": "灰度（深色）"
+  }
+}

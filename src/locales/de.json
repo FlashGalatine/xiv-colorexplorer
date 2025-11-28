@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "de",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "XIV Farbwerkzeuge",
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "reload": "Seite neu laden"
+  },
+  "header": {
+    "tools": "Werkzeuge",
+    "theme": "Design",
+    "language": "Sprache"
+  },
+  "footer": {
+    "version": "Version",
+    "createdBy": "Erstellt von Flash Galatine (Balmung) für die FFXIV-Community",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. Alle Rechte vorbehalten.",
+    "notAffiliated": "XIV Farbwerkzeuge ist eine Fan-Anwendung und steht in keiner Verbindung zu Square Enix und wird von diesem nicht unterstützt."
+  },
+  "tools": {
+    "harmony": {
+      "title": "Farbharmonie-Explorer",
+      "shortName": "Harmonie",
+      "description": "Harmonische Farbpaletten erstellen",
+      "subtitle": "Entdecke harmonische Farbkombinationen mit Farbtheorie. Wähle eine Grundfarbe, um klassische Harmonietypen zu generieren."
+    },
+    "matcher": {
+      "title": "Farbabgleich",
+      "shortName": "Abgleich",
+      "description": "Farben aus Bildern abgleichen",
+      "subtitle": "Lade ein Bild hoch oder wähle eine Farbe, um die am besten passenden FFXIV-Farbmittel zu finden."
+    },
+    "accessibility": {
+      "title": "Barrierefreiheitsprüfung",
+      "shortName": "Sehtest",
+      "description": "Farbenblindheit simulieren",
+      "subtitle": "Prüfe, wie Farbmittelkombinationen für Spieler mit verschiedenen Arten von Farbsehschwächen aussehen."
+    },
+    "comparison": {
+      "title": "Farbmittelvergleich",
+      "shortName": "Vergleich",
+      "description": "Bis zu 4 Farbmittel vergleichen",
+      "subtitle": "Vergleiche Farbmittel nebeneinander, um Farbunterschiede zu sehen und das perfekte Match zu finden."
+    },
+    "mixer": {
+      "title": "Farbmittelmixer",
+      "shortName": "Mixer",
+      "description": "Zwischenfarben finden",
+      "subtitle": "Erstelle sanfte Farbverläufe zwischen zwei Farbmitteln und entdecke Zwischenoptionen."
+    }
+  },
+  "common": {
+    "generate": "Generieren",
+    "select": "Auswählen",
+    "copy": "Kopieren",
+    "export": "Exportieren",
+    "clear": "Leeren",
+    "reset": "Zurücksetzen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "or": "oder",
+    "baseColor": "Grundfarbe",
+    "targetColor": "Zielfarbe",
+    "hexColor": "Hex-Farbe",
+    "enterHex": "Hex-Farbe eingeben",
+    "noResults": "Keine Ergebnisse gefunden",
+    "loading": "Wird geladen...",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "selectDye": "Farbmittel auswählen",
+    "noDyeSelected": "Kein Farbmittel ausgewählt"
+  },
+  "harmony": {
+    "suggestionMode": "Vorschlagsmodus",
+    "simple": "Einfache Vorschläge",
+    "simpleDesc": "Strikte Harmonie mit präzisem Farbmittelabgleich",
+    "expanded": "Erweiterte Vorschläge",
+    "expandedDesc": "Zusätzliche ähnliche Farbmittel pro Harmoniefarbe",
+    "companionDyes": "Zusätzliche Farbmittel pro Harmoniefarbe",
+    "companionDyesDesc": "Wähle, wie viele zusätzliche Begleitfarbmittel angezeigt werden sollen",
+    "baseColorSection": "Grundfarbe",
+    "harmonyResults": "Harmonieergebnisse",
+    "selectBaseColor": "Wähle eine Grundfarbe, um Harmonien zu generieren",
+    "generatingHarmonies": "Harmonien werden generiert..."
+  },
+  "matcher": {
+    "uploadImage": "Bild hochladen",
+    "dragDrop": "Bild hierher ziehen",
+    "orClickBrowse": "oder klicken zum Durchsuchen",
+    "supportedFormats": "Unterstützte Formate: PNG, JPG, GIF, WebP",
+    "privacyNote": "Bilder verlassen niemals deinen Browser",
+    "pickFromImage": "Aus Bild auswählen",
+    "sampleSize": "Abtastgröße",
+    "sampleSizeDesc": "Größere Abtastwerte ergeben genauere Farbabgleiche",
+    "matchedDyes": "Passende Farbmittel",
+    "bestMatch": "Beste Übereinstimmung",
+    "similarDyes": "Ähnliche Farbmittel",
+    "distance": "Abstand",
+    "clickToSample": "Klicke auf das Bild, um eine Farbe aufzunehmen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "zoomFit": "Einpassen",
+    "zoomWidth": "Breite",
+    "zoomReset": "Zurücksetzen"
+  },
+  "accessibility": {
+    "selectDyes": "Farbmittel auswählen",
+    "selectUpTo": "Wähle bis zu {count} Farbmittel zur Barrierefreiheitsprüfung",
+    "visionSimulation": "Sehsimulation",
+    "individualAnalysis": "Einzelanalyse der Farbmittel",
+    "pairComparisons": "Farbmittelpaar-Vergleiche",
+    "overallScore": "Gesamtbewertung der Barrierefreiheit",
+    "contrastScore": "Kontrastwert",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "Bestanden",
+    "fail": "Nicht bestanden",
+    "warning": "Warnung",
+    "issuesFound": "{count} Probleme gefunden",
+    "noIssues": "Keine Barrierefreiheitsprobleme"
+  },
+  "comparison": {
+    "selectDyes": "Farbmittel zum Vergleichen auswählen",
+    "selectUpTo": "Wähle bis zu {count} Farbmittel",
+    "sideBySide": "Nebeneinander-Vergleich",
+    "colorValues": "Farbwerte",
+    "rgbValues": "RGB-Werte",
+    "hsvValues": "HSV-Werte",
+    "hexValue": "Hex-Wert"
+  },
+  "mixer": {
+    "startColor": "Startfarbe",
+    "endColor": "Endfarbe",
+    "interpolationSteps": "Interpolationsschritte",
+    "colorSpace": "Farbraum",
+    "gradient": "Verlauf",
+    "intermediateDyes": "Zwischenfarbmittel",
+    "selectTwoDyes": "Wähle zwei Farbmittel, um die Interpolation zu sehen",
+    "savedGradients": "Gespeicherte Verläufe",
+    "saveGradient": "Verlauf speichern",
+    "noSavedGradients": "Keine gespeicherten Verläufe",
+    "gradientSaved": "Verlauf gespeichert!"
+  },
+  "filters": {
+    "title": "Farbmittelfilter",
+    "category": "Kategorie",
+    "allCategories": "Alle Kategorien",
+    "excludeExpensive": "Teure Farbmittel ausschließen",
+    "excludeMetallic": "Metallische Farbmittel ausschließen",
+    "excludeCosmic": "Kosmische Farbmittel ausschließen",
+    "excludeSpecial": "Spezielle Farbmittel ausschließen",
+    "showOnlyMetallic": "Nur metallische anzeigen",
+    "resetFilters": "Filter zurücksetzen"
+  },
+  "marketBoard": {
+    "title": "Marktbrett-Preise",
+    "dataCenter": "Datenzentrum",
+    "world": "Welt",
+    "selectWorld": "Welt auswählen",
+    "priceCategories": "Preiskategorien",
+    "baseDyes": "Basis-Farbmittel",
+    "craftDyes": "Handwerks-Farbmittel",
+    "alliedSocietyDyes": "Stammesgesellschafts-Farbmittel",
+    "cosmicDyes": "Kosmische Farbmittel",
+    "specialDyes": "Spezielle Farbmittel",
+    "refresh": "Preise aktualisieren",
+    "lastUpdated": "Zuletzt aktualisiert: {time}",
+    "priceUnavailable": "Preis nicht verfügbar",
+    "fetchingPrices": "Preise werden abgerufen..."
+  },
+  "export": {
+    "title": "Palette exportieren",
+    "format": "Format",
+    "json": "JSON",
+    "css": "CSS-Variablen",
+    "text": "Reintext",
+    "copyToClipboard": "In Zwischenablage kopieren",
+    "download": "Herunterladen",
+    "preview": "Vorschau"
+  },
+  "errors": {
+    "invalidHex": "Ungültiges Hexadezimal-Farbformat. Verwende #RRGGBB.",
+    "invalidRgb": "RGB-Werte müssen zwischen 0 und 255 liegen.",
+    "dyeNotFound": "Farbmittel nicht in der Datenbank gefunden.",
+    "databaseLoadFailed": "Farbmitteldatenbank konnte nicht geladen werden. Bitte Seite aktualisieren.",
+    "apiFailed": "Daten konnten nicht vom Marktbrett abgerufen werden.",
+    "networkError": "Netzwerkverbindungsfehler. Bitte Internetverbindung prüfen.",
+    "imageLoadFailed": "Bild konnte nicht geladen werden. Bitte stelle sicher, dass es eine gültige Bilddatei ist.",
+    "imageTooLarge": "Bilddatei ist zu groß. Maximale Größe ist 10MB.",
+    "unsupportedFormat": "Nicht unterstütztes Dateiformat.",
+    "clipboardFailed": "Kopieren in die Zwischenablage fehlgeschlagen.",
+    "storageFailed": "Einstellungen konnten nicht gespeichert werden. Der Speicher ist möglicherweise voll."
+  },
+  "success": {
+    "copiedToClipboard": "In Zwischenablage kopiert!",
+    "exported": "Daten erfolgreich exportiert!",
+    "settingsSaved": "Einstellungen gespeichert!",
+    "gradientSaved": "Verlauf gespeichert!"
+  },
+  "themes": {
+    "standardLight": "Standard (Hell)",
+    "standardDark": "Standard (Dunkel)",
+    "hydaelynLight": "Hydaelyn",
+    "ogClassicDark": "OG Klassisch",
+    "parchmentLight": "Pergament",
+    "cottonCandy": "Zuckerwatte",
+    "sugarRiot": "Sugar Riot",
+    "grayscaleLight": "Graustufen (Hell)",
+    "grayscaleDark": "Graustufen (Dunkel)"
+  }
+}

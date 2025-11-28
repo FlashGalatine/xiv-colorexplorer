@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "ko",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "XIV 염색 도구",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "retry": "다시 시도",
+    "reload": "페이지 새로고침"
+  },
+  "header": {
+    "tools": "도구",
+    "theme": "테마",
+    "language": "언어"
+  },
+  "footer": {
+    "version": "버전",
+    "createdBy": "Flash Galatine (Balmung)이 FFXIV 커뮤니티를 위해 제작",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. All Rights Reserved.",
+    "notAffiliated": "XIV 염색 도구는 팬이 만든 애플리케이션이며 Square Enix와 제휴하거나 승인받지 않았습니다."
+  },
+  "tools": {
+    "harmony": {
+      "title": "색상 조화 탐색기",
+      "shortName": "조화",
+      "description": "조화로운 색상 팔레트 생성",
+      "subtitle": "색채 이론을 사용하여 조화로운 색상 조합을 발견하세요. 기본 색상을 선택하여 클래식 조화 유형을 생성합니다."
+    },
+    "matcher": {
+      "title": "색상 매칭",
+      "shortName": "매칭",
+      "description": "이미지에서 색상 매칭",
+      "subtitle": "이미지를 업로드하거나 색상을 선택하여 가장 가까운 FFXIV 염료를 찾으세요."
+    },
+    "accessibility": {
+      "title": "접근성 검사기",
+      "shortName": "시각",
+      "description": "색맹 시뮬레이션",
+      "subtitle": "다양한 유형의 색각을 가진 플레이어에게 염료 조합이 어떻게 보이는지 확인하세요."
+    },
+    "comparison": {
+      "title": "염료 비교",
+      "shortName": "비교",
+      "description": "최대 4개 염료 비교",
+      "subtitle": "염료를 나란히 비교하여 색상 차이를 확인하고 완벽한 매치를 찾으세요."
+    },
+    "mixer": {
+      "title": "염료 믹서",
+      "shortName": "믹서",
+      "description": "중간 염료 찾기",
+      "subtitle": "두 염료 사이의 부드러운 색상 그라데이션을 만들고 중간 옵션을 발견하세요."
+    }
+  },
+  "common": {
+    "generate": "생성",
+    "select": "선택",
+    "copy": "복사",
+    "export": "내보내기",
+    "clear": "지우기",
+    "reset": "초기화",
+    "save": "저장",
+    "delete": "삭제",
+    "cancel": "취소",
+    "close": "닫기",
+    "search": "검색",
+    "filter": "필터",
+    "or": "또는",
+    "baseColor": "기본 색상",
+    "targetColor": "대상 색상",
+    "hexColor": "Hex 색상",
+    "enterHex": "Hex 색상 입력",
+    "noResults": "결과를 찾을 수 없습니다",
+    "loading": "로딩 중...",
+    "showMore": "더 보기",
+    "showLess": "접기",
+    "selectDye": "염료 선택",
+    "noDyeSelected": "선택된 염료 없음"
+  },
+  "harmony": {
+    "suggestionMode": "제안 모드",
+    "simple": "단순 제안",
+    "simpleDesc": "정확한 염료 매칭으로 엄격한 조화",
+    "expanded": "확장 제안",
+    "expandedDesc": "조화 색상별 추가 유사 염료",
+    "companionDyes": "조화 색상별 추가 염료",
+    "companionDyesDesc": "각 조화 색상에 표시할 추가 동반 염료 수 선택",
+    "baseColorSection": "기본 색상",
+    "harmonyResults": "조화 결과",
+    "selectBaseColor": "조화를 생성할 기본 색상을 선택하세요",
+    "generatingHarmonies": "조화 생성 중..."
+  },
+  "matcher": {
+    "uploadImage": "이미지 업로드",
+    "dragDrop": "여기에 이미지를 드래그 앤 드롭",
+    "orClickBrowse": "또는 클릭하여 찾아보기",
+    "supportedFormats": "지원 형식: PNG, JPG, GIF, WebP",
+    "privacyNote": "이미지는 브라우저를 떠나지 않습니다",
+    "pickFromImage": "이미지에서 선택",
+    "sampleSize": "샘플 크기",
+    "sampleSizeDesc": "크기가 클수록 더 정확한 색상 매칭이 가능합니다",
+    "matchedDyes": "매칭된 염료",
+    "bestMatch": "최적 매치",
+    "similarDyes": "유사 염료",
+    "distance": "거리",
+    "clickToSample": "이미지를 클릭하여 색상 샘플링",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "zoomFit": "맞춤",
+    "zoomWidth": "너비 맞춤",
+    "zoomReset": "초기화"
+  },
+  "accessibility": {
+    "selectDyes": "염료 선택",
+    "selectUpTo": "접근성을 확인할 염료를 최대 {count}개 선택하세요",
+    "visionSimulation": "시각 시뮬레이션",
+    "individualAnalysis": "개별 염료 분석",
+    "pairComparisons": "염료 쌍 비교",
+    "overallScore": "전체 접근성 점수",
+    "contrastScore": "대비 점수",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "통과",
+    "fail": "실패",
+    "warning": "경고",
+    "issuesFound": "{count}개 문제 발견",
+    "noIssues": "접근성 문제 없음"
+  },
+  "comparison": {
+    "selectDyes": "비교할 염료 선택",
+    "selectUpTo": "최대 {count}개 염료 선택",
+    "sideBySide": "나란히 비교",
+    "colorValues": "색상 값",
+    "rgbValues": "RGB 값",
+    "hsvValues": "HSV 값",
+    "hexValue": "Hex 값"
+  },
+  "mixer": {
+    "startColor": "시작 색상",
+    "endColor": "끝 색상",
+    "interpolationSteps": "보간 단계",
+    "colorSpace": "색 공간",
+    "gradient": "그라데이션",
+    "intermediateDyes": "중간 염료",
+    "selectTwoDyes": "보간을 보려면 두 개의 염료를 선택하세요",
+    "savedGradients": "저장된 그라데이션",
+    "saveGradient": "그라데이션 저장",
+    "noSavedGradients": "저장된 그라데이션 없음",
+    "gradientSaved": "그라데이션이 저장되었습니다!"
+  },
+  "filters": {
+    "title": "염료 필터",
+    "category": "카테고리",
+    "allCategories": "모든 카테고리",
+    "excludeExpensive": "고가 염료 제외",
+    "excludeMetallic": "메탈릭 염료 제외",
+    "excludeCosmic": "코스믹 염료 제외",
+    "excludeSpecial": "특수 염료 제외",
+    "showOnlyMetallic": "메탈릭만 표시",
+    "resetFilters": "필터 초기화"
+  },
+  "marketBoard": {
+    "title": "시장 게시판 가격",
+    "dataCenter": "데이터 센터",
+    "world": "월드",
+    "selectWorld": "월드 선택",
+    "priceCategories": "가격 카테고리",
+    "baseDyes": "기본 염료",
+    "craftDyes": "제작 염료",
+    "alliedSocietyDyes": "만물상 염료",
+    "cosmicDyes": "코스믹 염료",
+    "specialDyes": "특수 염료",
+    "refresh": "가격 새로고침",
+    "lastUpdated": "마지막 업데이트: {time}",
+    "priceUnavailable": "가격 정보 없음",
+    "fetchingPrices": "가격 가져오는 중..."
+  },
+  "export": {
+    "title": "팔레트 내보내기",
+    "format": "형식",
+    "json": "JSON",
+    "css": "CSS 변수",
+    "text": "일반 텍스트",
+    "copyToClipboard": "클립보드에 복사",
+    "download": "다운로드",
+    "preview": "미리보기"
+  },
+  "errors": {
+    "invalidHex": "잘못된 16진수 색상 형식입니다. #RRGGBB를 사용하세요.",
+    "invalidRgb": "RGB 값은 0에서 255 사이여야 합니다.",
+    "dyeNotFound": "데이터베이스에서 염료를 찾을 수 없습니다.",
+    "databaseLoadFailed": "염료 데이터베이스를 로드하지 못했습니다. 페이지를 새로고침하세요.",
+    "apiFailed": "시장 게시판에서 데이터를 가져오지 못했습니다.",
+    "networkError": "네트워크 연결 오류. 인터넷 연결을 확인하세요.",
+    "imageLoadFailed": "이미지를 로드하지 못했습니다. 유효한 이미지 파일인지 확인하세요.",
+    "imageTooLarge": "이미지 파일이 너무 큽니다. 최대 크기는 10MB입니다.",
+    "unsupportedFormat": "지원되지 않는 파일 형식입니다.",
+    "clipboardFailed": "클립보드에 복사하지 못했습니다.",
+    "storageFailed": "설정을 저장하지 못했습니다. 저장 공간이 가득 찼을 수 있습니다."
+  },
+  "success": {
+    "copiedToClipboard": "클립보드에 복사되었습니다!",
+    "exported": "데이터를 성공적으로 내보냈습니다!",
+    "settingsSaved": "설정이 저장되었습니다!",
+    "gradientSaved": "그라데이션이 저장되었습니다!"
+  },
+  "themes": {
+    "standardLight": "스탠다드 (라이트)",
+    "standardDark": "스탠다드 (다크)",
+    "hydaelynLight": "하이델린",
+    "ogClassicDark": "OG 클래식",
+    "parchmentLight": "파치먼트",
+    "cottonCandy": "코튼 캔디",
+    "sugarRiot": "슈가 라이엇",
+    "grayscaleLight": "그레이스케일 (라이트)",
+    "grayscaleDark": "그레이스케일 (다크)"
+  }
+}

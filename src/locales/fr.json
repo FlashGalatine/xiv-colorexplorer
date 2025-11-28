@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "fr",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "Outils de Teinture XIV",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "reload": "Recharger la page"
+  },
+  "header": {
+    "tools": "Outils",
+    "theme": "Thème",
+    "language": "Langue"
+  },
+  "footer": {
+    "version": "Version",
+    "createdBy": "Créé par Flash Galatine (Balmung) pour la communauté FFXIV",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. Tous droits réservés.",
+    "notAffiliated": "Outils de Teinture XIV est une application créée par des fans et n'est pas affiliée à Square Enix ni approuvée par eux."
+  },
+  "tools": {
+    "harmony": {
+      "title": "Explorateur d'Harmonies de Couleurs",
+      "shortName": "Harmonie",
+      "description": "Générer des palettes harmonieuses",
+      "subtitle": "Découvrez des combinaisons de couleurs harmonieuses grâce à la théorie des couleurs. Sélectionnez une couleur de base pour générer des types d'harmonie classiques."
+    },
+    "matcher": {
+      "title": "Correspondance de Couleurs",
+      "shortName": "Corresp.",
+      "description": "Faire correspondre les couleurs des images",
+      "subtitle": "Téléchargez une image ou sélectionnez une couleur pour trouver les teintures FFXIV les plus proches."
+    },
+    "accessibility": {
+      "title": "Vérification d'Accessibilité",
+      "shortName": "Vision",
+      "description": "Simuler le daltonisme",
+      "subtitle": "Vérifiez comment les combinaisons de teintures apparaissent aux joueurs ayant différents types de vision des couleurs."
+    },
+    "comparison": {
+      "title": "Comparaison de Teintures",
+      "shortName": "Comparer",
+      "description": "Comparer jusqu'à 4 teintures",
+      "subtitle": "Comparez les teintures côte à côte pour voir les différences de couleur et trouver la correspondance parfaite."
+    },
+    "mixer": {
+      "title": "Mélangeur de Teintures",
+      "shortName": "Mélangeur",
+      "description": "Trouver des teintures intermédiaires",
+      "subtitle": "Créez des dégradés de couleurs fluides entre deux teintures et découvrez des options intermédiaires."
+    }
+  },
+  "common": {
+    "generate": "Générer",
+    "select": "Sélectionner",
+    "copy": "Copier",
+    "export": "Exporter",
+    "clear": "Effacer",
+    "reset": "Réinitialiser",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "or": "ou",
+    "baseColor": "Couleur de Base",
+    "targetColor": "Couleur Cible",
+    "hexColor": "Couleur Hex",
+    "enterHex": "Entrer une couleur hex",
+    "noResults": "Aucun résultat trouvé",
+    "loading": "Chargement...",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "selectDye": "Sélectionner une teinture",
+    "noDyeSelected": "Aucune teinture sélectionnée"
+  },
+  "harmony": {
+    "suggestionMode": "Mode de Suggestion",
+    "simple": "Suggestions Simples",
+    "simpleDesc": "Harmonie stricte avec correspondance précise des teintures",
+    "expanded": "Suggestions Étendues",
+    "expandedDesc": "Teintures similaires supplémentaires par couleur d'harmonie",
+    "companionDyes": "Teintures Supplémentaires par Couleur d'Harmonie",
+    "companionDyesDesc": "Choisissez combien de teintures compagnons supplémentaires afficher",
+    "baseColorSection": "Couleur de Base",
+    "harmonyResults": "Résultats d'Harmonie",
+    "selectBaseColor": "Sélectionnez une couleur de base pour générer des harmonies",
+    "generatingHarmonies": "Génération des harmonies..."
+  },
+  "matcher": {
+    "uploadImage": "Télécharger une Image",
+    "dragDrop": "Glissez-déposez une image ici",
+    "orClickBrowse": "ou cliquez pour parcourir",
+    "supportedFormats": "Formats supportés : PNG, JPG, GIF, WebP",
+    "privacyNote": "Les images ne quittent jamais votre navigateur",
+    "pickFromImage": "Choisir depuis l'Image",
+    "sampleSize": "Taille d'Échantillon",
+    "sampleSizeDesc": "Des tailles plus grandes produisent une correspondance de couleur plus précise",
+    "matchedDyes": "Teintures Correspondantes",
+    "bestMatch": "Meilleure Correspondance",
+    "similarDyes": "Teintures Similaires",
+    "distance": "Distance",
+    "clickToSample": "Cliquez sur l'image pour échantillonner une couleur",
+    "zoomIn": "Zoom Avant",
+    "zoomOut": "Zoom Arrière",
+    "zoomFit": "Ajuster",
+    "zoomWidth": "Largeur",
+    "zoomReset": "Réinitialiser"
+  },
+  "accessibility": {
+    "selectDyes": "Sélectionner des Teintures",
+    "selectUpTo": "Sélectionnez jusqu'à {count} teintures pour vérifier l'accessibilité",
+    "visionSimulation": "Simulation de Vision",
+    "individualAnalysis": "Analyse Individuelle des Teintures",
+    "pairComparisons": "Comparaisons de Paires de Teintures",
+    "overallScore": "Score Global d'Accessibilité",
+    "contrastScore": "Score de Contraste",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "Réussi",
+    "fail": "Échoué",
+    "warning": "Avertissement",
+    "issuesFound": "{count} problèmes trouvés",
+    "noIssues": "Aucun problème d'accessibilité"
+  },
+  "comparison": {
+    "selectDyes": "Sélectionner des Teintures à Comparer",
+    "selectUpTo": "Sélectionnez jusqu'à {count} teintures",
+    "sideBySide": "Comparaison Côte à Côte",
+    "colorValues": "Valeurs de Couleur",
+    "rgbValues": "Valeurs RVB",
+    "hsvValues": "Valeurs TSV",
+    "hexValue": "Valeur Hex"
+  },
+  "mixer": {
+    "startColor": "Couleur de Départ",
+    "endColor": "Couleur de Fin",
+    "interpolationSteps": "Étapes d'Interpolation",
+    "colorSpace": "Espace Colorimétrique",
+    "gradient": "Dégradé",
+    "intermediateDyes": "Teintures Intermédiaires",
+    "selectTwoDyes": "Sélectionnez deux teintures pour voir l'interpolation",
+    "savedGradients": "Dégradés Enregistrés",
+    "saveGradient": "Enregistrer le Dégradé",
+    "noSavedGradients": "Aucun dégradé enregistré",
+    "gradientSaved": "Dégradé enregistré !"
+  },
+  "filters": {
+    "title": "Filtres de Teintures",
+    "category": "Catégorie",
+    "allCategories": "Toutes les Catégories",
+    "excludeExpensive": "Exclure les Teintures Chères",
+    "excludeMetallic": "Exclure les Teintures Métalliques",
+    "excludeCosmic": "Exclure les Teintures Cosmiques",
+    "excludeSpecial": "Exclure les Teintures Spéciales",
+    "showOnlyMetallic": "Afficher Uniquement les Métalliques",
+    "resetFilters": "Réinitialiser les Filtres"
+  },
+  "marketBoard": {
+    "title": "Prix du Tableau des Marchés",
+    "dataCenter": "Centre de Données",
+    "world": "Monde",
+    "selectWorld": "Sélectionner un monde",
+    "priceCategories": "Catégories de Prix",
+    "baseDyes": "Teintures de Base",
+    "craftDyes": "Teintures Artisanales",
+    "alliedSocietyDyes": "Teintures des Sociétés Alliées",
+    "cosmicDyes": "Teintures Cosmiques",
+    "specialDyes": "Teintures Spéciales",
+    "refresh": "Actualiser les Prix",
+    "lastUpdated": "Dernière mise à jour : {time}",
+    "priceUnavailable": "Prix indisponible",
+    "fetchingPrices": "Récupération des prix..."
+  },
+  "export": {
+    "title": "Exporter la Palette",
+    "format": "Format",
+    "json": "JSON",
+    "css": "Variables CSS",
+    "text": "Texte Brut",
+    "copyToClipboard": "Copier dans le Presse-papiers",
+    "download": "Télécharger",
+    "preview": "Aperçu"
+  },
+  "errors": {
+    "invalidHex": "Format de couleur hexadécimal invalide. Utilisez #RRVVBB.",
+    "invalidRgb": "Les valeurs RVB doivent être comprises entre 0 et 255.",
+    "dyeNotFound": "Teinture non trouvée dans la base de données.",
+    "databaseLoadFailed": "Échec du chargement de la base de données des teintures. Veuillez actualiser la page.",
+    "apiFailed": "Échec de la récupération des données du tableau des marchés.",
+    "networkError": "Erreur de connexion réseau. Veuillez vérifier votre connexion Internet.",
+    "imageLoadFailed": "Échec du chargement de l'image. Assurez-vous qu'il s'agit d'un fichier image valide.",
+    "imageTooLarge": "Le fichier image est trop volumineux. Taille maximale : 10 Mo.",
+    "unsupportedFormat": "Format de fichier non supporté.",
+    "clipboardFailed": "Échec de la copie dans le presse-papiers.",
+    "storageFailed": "Échec de l'enregistrement des paramètres. Le stockage est peut-être plein."
+  },
+  "success": {
+    "copiedToClipboard": "Copié dans le presse-papiers !",
+    "exported": "Données exportées avec succès !",
+    "settingsSaved": "Paramètres enregistrés !",
+    "gradientSaved": "Dégradé enregistré !"
+  },
+  "themes": {
+    "standardLight": "Standard (Clair)",
+    "standardDark": "Standard (Sombre)",
+    "hydaelynLight": "Hydaelyn",
+    "ogClassicDark": "OG Classique",
+    "parchmentLight": "Parchemin",
+    "cottonCandy": "Barbe à Papa",
+    "sugarRiot": "Sugar Riot",
+    "grayscaleLight": "Niveaux de Gris (Clair)",
+    "grayscaleDark": "Niveaux de Gris (Sombre)"
+  }
+}

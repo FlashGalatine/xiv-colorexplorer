@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "locale": "ja",
+    "version": "1.0.0"
+  },
+  "app": {
+    "title": "XIV 染色ツール",
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "reload": "ページを再読み込み"
+  },
+  "header": {
+    "tools": "ツール",
+    "theme": "テーマ",
+    "language": "言語"
+  },
+  "footer": {
+    "version": "バージョン",
+    "createdBy": "Flash Galatine (Balmung) がFFXIVコミュニティのために作成",
+    "disclaimer": "FINAL FANTASY XIV © 2010-2025 SQUARE ENIX CO., LTD. All Rights Reserved.",
+    "notAffiliated": "XIV 染色ツールはファンメイドのアプリケーションであり、スクウェア・エニックスとは提携または承認されていません。"
+  },
+  "tools": {
+    "harmony": {
+      "title": "カラーハーモニーエクスプローラー",
+      "shortName": "ハーモニー",
+      "description": "調和のとれたカラーパレットを生成",
+      "subtitle": "色彩理論を使用して調和のとれた色の組み合わせを発見。ベースカラーを選択して、クラシックなハーモニータイプを生成します。"
+    },
+    "matcher": {
+      "title": "カラーマッチャー",
+      "shortName": "マッチャー",
+      "description": "画像から色をマッチング",
+      "subtitle": "画像をアップロードするか色を選択して、最も近いFFXIVカララントを見つけます。"
+    },
+    "accessibility": {
+      "title": "アクセシビリティチェッカー",
+      "shortName": "色覚",
+      "description": "色覚シミュレーション",
+      "subtitle": "異なる色覚タイプを持つプレイヤーにカララントの組み合わせがどのように見えるかをチェックします。"
+    },
+    "comparison": {
+      "title": "カララント比較",
+      "shortName": "比較",
+      "description": "最大4つのカララントを比較",
+      "subtitle": "カララントを並べて比較し、色の違いを確認して最適なマッチを見つけます。"
+    },
+    "mixer": {
+      "title": "カララントミキサー",
+      "shortName": "ミキサー",
+      "description": "中間カララントを探す",
+      "subtitle": "2つのカララント間の滑らかな色のグラデーションを作成し、中間オプションを発見します。"
+    }
+  },
+  "common": {
+    "generate": "生成",
+    "select": "選択",
+    "copy": "コピー",
+    "export": "エクスポート",
+    "clear": "クリア",
+    "reset": "リセット",
+    "save": "保存",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "search": "検索",
+    "filter": "フィルター",
+    "or": "または",
+    "baseColor": "ベースカラー",
+    "targetColor": "ターゲットカラー",
+    "hexColor": "16進カラー",
+    "enterHex": "16進カラーを入力",
+    "noResults": "結果が見つかりません",
+    "loading": "読み込み中...",
+    "showMore": "もっと見る",
+    "showLess": "折りたたむ",
+    "selectDye": "カララントを選択",
+    "noDyeSelected": "カララント未選択"
+  },
+  "harmony": {
+    "suggestionMode": "提案モード",
+    "simple": "シンプル提案",
+    "simpleDesc": "厳密なハーモニーと正確なカララントマッチング",
+    "expanded": "拡張提案",
+    "expandedDesc": "ハーモニーカラーごとに追加の類似カララント",
+    "companionDyes": "ハーモニーカラーごとの追加カララント",
+    "companionDyesDesc": "各ハーモニーカラーに表示する追加コンパニオンカララントの数を選択",
+    "baseColorSection": "ベースカラー",
+    "harmonyResults": "ハーモニー結果",
+    "selectBaseColor": "ハーモニーを生成するベースカラーを選択",
+    "generatingHarmonies": "ハーモニーを生成中..."
+  },
+  "matcher": {
+    "uploadImage": "画像をアップロード",
+    "dragDrop": "ここに画像をドラッグ＆ドロップ",
+    "orClickBrowse": "またはクリックして参照",
+    "supportedFormats": "対応形式: PNG, JPG, GIF, WebP",
+    "privacyNote": "画像はブラウザから外に出ません",
+    "pickFromImage": "画像から選択",
+    "sampleSize": "サンプルサイズ",
+    "sampleSizeDesc": "大きいサイズほど正確なカラーマッチングが可能",
+    "matchedDyes": "マッチしたカララント",
+    "bestMatch": "ベストマッチ",
+    "similarDyes": "類似カララント",
+    "distance": "距離",
+    "clickToSample": "画像をクリックして色をサンプリング",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "zoomFit": "フィット",
+    "zoomWidth": "幅に合わせる",
+    "zoomReset": "リセット"
+  },
+  "accessibility": {
+    "selectDyes": "カララントを選択",
+    "selectUpTo": "アクセシビリティをチェックするカララントを最大{count}個選択",
+    "visionSimulation": "色覚シミュレーション",
+    "individualAnalysis": "個別カララント分析",
+    "pairComparisons": "カララントペア比較",
+    "overallScore": "総合アクセシビリティスコア",
+    "contrastScore": "コントラストスコア",
+    "wcagAA": "WCAG AA",
+    "wcagAAA": "WCAG AAA",
+    "pass": "合格",
+    "fail": "不合格",
+    "warning": "警告",
+    "issuesFound": "{count}件の問題が見つかりました",
+    "noIssues": "アクセシビリティの問題なし"
+  },
+  "comparison": {
+    "selectDyes": "比較するカララントを選択",
+    "selectUpTo": "最大{count}個のカララントを選択",
+    "sideBySide": "サイドバイサイド比較",
+    "colorValues": "カラー値",
+    "rgbValues": "RGB値",
+    "hsvValues": "HSV値",
+    "hexValue": "16進値"
+  },
+  "mixer": {
+    "startColor": "開始カラー",
+    "endColor": "終了カラー",
+    "interpolationSteps": "補間ステップ",
+    "colorSpace": "色空間",
+    "gradient": "グラデーション",
+    "intermediateDyes": "中間カララント",
+    "selectTwoDyes": "補間を見るために2つのカララントを選択",
+    "savedGradients": "保存済みグラデーション",
+    "saveGradient": "グラデーションを保存",
+    "noSavedGradients": "保存済みグラデーションなし",
+    "gradientSaved": "グラデーションを保存しました！"
+  },
+  "filters": {
+    "title": "カララントフィルター",
+    "category": "カテゴリ",
+    "allCategories": "すべてのカテゴリ",
+    "excludeExpensive": "高価なカララントを除外",
+    "excludeMetallic": "メタリックカララントを除外",
+    "excludeCosmic": "コスミックカララントを除外",
+    "excludeSpecial": "特殊カララントを除外",
+    "showOnlyMetallic": "メタリックのみ表示",
+    "resetFilters": "フィルターをリセット"
+  },
+  "marketBoard": {
+    "title": "マーケットボード価格",
+    "dataCenter": "データセンター",
+    "world": "ワールド",
+    "selectWorld": "ワールドを選択",
+    "priceCategories": "価格カテゴリ",
+    "baseDyes": "基本カララント",
+    "craftDyes": "製作カララント",
+    "alliedSocietyDyes": "蛮族カララント",
+    "cosmicDyes": "コスミックカララント",
+    "specialDyes": "特殊カララント",
+    "refresh": "価格を更新",
+    "lastUpdated": "最終更新: {time}",
+    "priceUnavailable": "価格不明",
+    "fetchingPrices": "価格を取得中..."
+  },
+  "export": {
+    "title": "パレットをエクスポート",
+    "format": "形式",
+    "json": "JSON",
+    "css": "CSS変数",
+    "text": "プレーンテキスト",
+    "copyToClipboard": "クリップボードにコピー",
+    "download": "ダウンロード",
+    "preview": "プレビュー"
+  },
+  "errors": {
+    "invalidHex": "無効な16進カラー形式です。#RRGGBBを使用してください。",
+    "invalidRgb": "RGB値は0から255の間である必要があります。",
+    "dyeNotFound": "データベースにカララントが見つかりません。",
+    "databaseLoadFailed": "カララントデータベースの読み込みに失敗しました。ページを更新してください。",
+    "apiFailed": "マーケットボードからのデータ取得に失敗しました。",
+    "networkError": "ネットワーク接続エラー。インターネット接続を確認してください。",
+    "imageLoadFailed": "画像の読み込みに失敗しました。有効な画像ファイルであることを確認してください。",
+    "imageTooLarge": "画像ファイルが大きすぎます。最大サイズは10MBです。",
+    "unsupportedFormat": "サポートされていないファイル形式です。",
+    "clipboardFailed": "クリップボードへのコピーに失敗しました。",
+    "storageFailed": "設定の保存に失敗しました。ストレージがいっぱいの可能性があります。"
+  },
+  "success": {
+    "copiedToClipboard": "クリップボードにコピーしました！",
+    "exported": "データのエクスポートに成功しました！",
+    "settingsSaved": "設定を保存しました！",
+    "gradientSaved": "グラデーションを保存しました！"
+  },
+  "themes": {
+    "standardLight": "スタンダード（ライト）",
+    "standardDark": "スタンダード（ダーク）",
+    "hydaelynLight": "ハイデリン",
+    "ogClassicDark": "OGクラシック",
+    "parchmentLight": "パーチメント",
+    "cottonCandy": "コットンキャンディ",
+    "sugarRiot": "シュガーライオット",
+    "grayscaleLight": "グレースケール（ライト）",
+    "grayscaleDark": "グレースケール（ダーク）"
+  }
+}
