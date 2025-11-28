@@ -10,7 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { LanguageSelector } from './language-selector';
-import { ThemeService } from '@services/index';
+import { ThemeService, LanguageService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
 
@@ -123,7 +123,7 @@ export class AppLayout extends BaseComponent {
 
     // Use --theme-text-header for header text
     const title = this.createElement('h1', {
-      textContent: 'XIV Dye Tools',
+      textContent: LanguageService.t('app.title'),
       className: 'text-2xl font-bold',
       attributes: {
         style: 'color: var(--theme-text-header);',
@@ -189,7 +189,7 @@ export class AppLayout extends BaseComponent {
     const copyright = this.createElement('div', {
       className: 'text-center text-sm text-gray-600 dark:text-gray-400 mb-6',
       innerHTML:
-        `XIV Dye Tools v${APP_VERSION} • Phase 12 Architecture Refactor<br>Built with TypeScript, Vite, and Tailwind CSS`,
+        `${LanguageService.t('app.title')} v${APP_VERSION} • ${LanguageService.t('footer.version')} ${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`,
     });
     footerContent.appendChild(copyright);
 
@@ -227,7 +227,7 @@ export class AppLayout extends BaseComponent {
     // Creator info
     const creator = this.createElement('div', {
       className: 'text-center text-xs text-gray-500 dark:text-gray-500',
-      innerHTML: 'Created by Flash Galatine (Balmung) for the FFXIV community ✨',
+      innerHTML: `${LanguageService.t('footer.createdBy')} ✨`,
     });
     footerContent.appendChild(creator);
 
@@ -236,7 +236,7 @@ export class AppLayout extends BaseComponent {
       className:
         'text-center text-xs text-gray-500 dark:text-gray-500 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700',
       innerHTML:
-        'FINAL FANTASY XIV © 2013-2025 SQUARE ENIX. XIV Dye Tools is a fan-made application and is not affiliated with or endorsed by Square Enix.',
+        `${LanguageService.t('footer.disclaimer')}<br>${LanguageService.t('footer.notAffiliated')}`,
     });
     footerContent.appendChild(disclaimer);
 
@@ -274,6 +274,38 @@ export class AppLayout extends BaseComponent {
     ThemeService.subscribe(() => {
       this.updateHeaderColors();
     });
+
+    // Subscribe to language changes to update text
+    LanguageService.subscribe(() => {
+      this.updateLocalizedText();
+    });
+  }
+
+  /**
+   * Update localized text when language changes (without re-rendering)
+   */
+  private updateLocalizedText(): void {
+    // Update title text
+    const title = this.querySelector<HTMLElement>('header h1');
+    if (title) {
+      title.textContent = LanguageService.t('app.title');
+    }
+
+    // Update footer text
+    const footerCopyright = this.querySelector<HTMLElement>('footer .text-sm');
+    if (footerCopyright) {
+      footerCopyright.innerHTML = `${LanguageService.t('app.title')} v${APP_VERSION} • ${LanguageService.t('footer.version')} ${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`;
+    }
+
+    const footerCreator = this.querySelector<HTMLElement>('footer .text-xs:not(.border-t)');
+    if (footerCreator) {
+      footerCreator.innerHTML = `${LanguageService.t('footer.createdBy')} ✨`;
+    }
+
+    const footerDisclaimer = this.querySelector<HTMLElement>('footer .border-t');
+    if (footerDisclaimer) {
+      footerDisclaimer.innerHTML = `${LanguageService.t('footer.disclaimer')}<br>${LanguageService.t('footer.notAffiliated')}`;
+    }
   }
 
   /**

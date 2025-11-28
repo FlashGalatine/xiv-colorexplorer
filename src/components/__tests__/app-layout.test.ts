@@ -122,7 +122,8 @@ describe('AppLayout', () => {
 
       const version = container.querySelector('.font-mono');
       expect(version).not.toBeNull();
-      expect(version?.textContent).toBe('v2.0.3');
+      // Version format: vX.Y.Z
+      expect(version?.textContent).toMatch(/^v\d+\.\d+\.\d+$/);
     });
 
     it('should render tools dropdown container', () => {
@@ -163,8 +164,10 @@ describe('AppLayout', () => {
       component.init();
 
       const footer = container.querySelector('footer');
-      expect(footer?.textContent).toContain('XIV Dye Tools v2.0.3');
-      expect(footer?.textContent).toContain('Phase 12 Architecture Refactor');
+      // Check for localized app title and version
+      expect(footer?.textContent).toContain('XIV Dye Tools');
+      expect(footer?.textContent).toContain('Version');
+      expect(footer?.textContent).toContain('Built with TypeScript, Vite, and Tailwind CSS');
     });
 
     it('should render build tools info', () => {

@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ThemeService } from '@services/index';
+import { ThemeService, LanguageService } from '@services/index';
 import { ColorService } from '@services/index';
 import { clearContainer } from '@shared/utils';
 
@@ -60,7 +60,7 @@ export class ToolsDropdown extends BaseComponent {
       },
     });
 
-    button.innerHTML = '🛠️ Tools';
+    button.innerHTML = `🛠️ ${LanguageService.t('header.tools')}`;
     
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {

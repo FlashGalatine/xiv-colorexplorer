@@ -8,10 +8,9 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ThemeService } from '@services/index';
+import { ThemeService, LanguageService } from '@services/index';
 import { ColorService } from '@services/index';
 import type { ThemeName } from '@shared/types';
-import { THEME_DISPLAY_NAMES } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
 
 /**
@@ -46,7 +45,7 @@ export class ThemeSwitcher extends BaseComponent {
     });
 
     // Add theme icon
-    button.innerHTML = '🎨 Theme';
+    button.innerHTML = `🎨 ${LanguageService.t('header.theme')}`;
     
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
@@ -125,8 +124,10 @@ export class ThemeSwitcher extends BaseComponent {
 
       themeBtn.appendChild(swatch);
 
-      // Use the official display name from constants
-      const displayName = THEME_DISPLAY_NAMES[theme.name] || theme.name;
+      // Convert theme name (kebab-case) to locale key (camelCase)
+      // e.g., "standard-light" -> "standardLight", "og-classic-dark" -> "ogClassicDark"
+      const localeKey = theme.name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+      const displayName = LanguageService.t(`themes.${localeKey}`);
       themeBtn.appendChild(this.createElement('span', { textContent: displayName }));
 
       // Mark current theme
@@ -253,6 +254,11 @@ export class ThemeSwitcher extends BaseComponent {
     // Subscribe to theme changes
     ThemeService.subscribe((theme) => {
       this.currentTheme = theme;
+      this.update();
+    });
+
+    // Subscribe to language changes
+    LanguageService.subscribe(() => {
       this.update();
     });
   }

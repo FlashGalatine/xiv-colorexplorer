@@ -12,7 +12,7 @@ import '@/styles/themes.css';
 import '@/styles/tailwind.css';
 
 // Import services
-import { initializeServices, getServicesStatus } from '@services/index';
+import { initializeServices, getServicesStatus, LanguageService } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
 import { APP_VERSION } from '@shared/constants';
 import { logger } from '@shared/logger';
@@ -49,7 +49,11 @@ async function initializeApp(): Promise<void> {
 
     // Initialize all services
     logger.info('🔧 Initializing services...');
-    initializeServices();
+    await initializeServices();
+
+    // Initialize language service (must be done before rendering components)
+    logger.info('🌐 Initializing language service...');
+    await LanguageService.initialize();
 
     // Log service status
     const status = await getServicesStatus();
@@ -86,13 +90,14 @@ async function initializeApp(): Promise<void> {
       loadComponent: () => Promise<new (container: HTMLElement) => BaseComponent>;
     }
 
-    const tools: ToolDefinition[] = [
+    // Helper function to get localized tool definitions
+    const getLocalizedTools = (): ToolDefinition[] => [
       {
         id: 'harmony',
-        name: 'Color Harmony',
-        shortName: 'Harmony',
+        name: LanguageService.t('tools.harmony.title'),
+        shortName: LanguageService.t('tools.harmony.shortName'),
         icon: '🎨',
-        description: 'Generate harmonious color palettes',
+        description: LanguageService.t('tools.harmony.description'),
         loadComponent: async () => {
           const { HarmonyGeneratorTool } = await import('@components/harmony-generator-tool');
           return HarmonyGeneratorTool;
@@ -100,10 +105,10 @@ async function initializeApp(): Promise<void> {
       },
       {
         id: 'matcher',
-        name: 'Color Matcher',
-        shortName: 'Matcher',
+        name: LanguageService.t('tools.matcher.title'),
+        shortName: LanguageService.t('tools.matcher.shortName'),
         icon: '🎯',
-        description: 'Match colors from images',
+        description: LanguageService.t('tools.matcher.description'),
         loadComponent: async () => {
           const { ColorMatcherTool } = await import('@components/color-matcher-tool');
           return ColorMatcherTool;
@@ -111,10 +116,10 @@ async function initializeApp(): Promise<void> {
       },
       {
         id: 'accessibility',
-        name: 'Accessibility',
-        shortName: 'Vision',
+        name: LanguageService.t('tools.accessibility.title'),
+        shortName: LanguageService.t('tools.accessibility.shortName'),
         icon: '👁️',
-        description: 'Simulate colorblindness',
+        description: LanguageService.t('tools.accessibility.description'),
         loadComponent: async () => {
           const { AccessibilityCheckerTool } = await import(
             '@components/accessibility-checker-tool'
@@ -124,10 +129,10 @@ async function initializeApp(): Promise<void> {
       },
       {
         id: 'comparison',
-        name: 'Dye Comparison',
-        shortName: 'Compare',
+        name: LanguageService.t('tools.comparison.title'),
+        shortName: LanguageService.t('tools.comparison.shortName'),
         icon: '📊',
-        description: 'Compare up to 4 dyes',
+        description: LanguageService.t('tools.comparison.description'),
         loadComponent: async () => {
           const { DyeComparisonTool } = await import('@components/dye-comparison-tool');
           return DyeComparisonTool;
@@ -135,16 +140,18 @@ async function initializeApp(): Promise<void> {
       },
       {
         id: 'mixer',
-        name: 'Dye Mixer',
-        shortName: 'Mixer',
+        name: LanguageService.t('tools.mixer.title'),
+        shortName: LanguageService.t('tools.mixer.shortName'),
         icon: '🎭',
-        description: 'Find intermediate dyes',
+        description: LanguageService.t('tools.mixer.description'),
         loadComponent: async () => {
           const { DyeMixerTool } = await import('@components/dye-mixer-tool');
           return DyeMixerTool;
         },
       },
     ];
+
+    let tools = getLocalizedTools();
 
     // Create tools dropdown for header (desktop only)
     const toolsDropdownDefs: ToolDef[] = tools.map((t) => ({
@@ -207,7 +214,7 @@ async function initializeApp(): Promise<void> {
           <div class="flex items-center justify-center py-12">
             <div class="text-center">
               <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mb-4"></div>
-              <p class="text-gray-600 dark:text-gray-400">Loading ${toolDef.name}...</p>
+              <p class="text-gray-600 dark:text-gray-400">${LanguageService.t('app.loading')}</p>
             </div>
           </div>
         `;
@@ -253,10 +260,10 @@ async function initializeApp(): Promise<void> {
             <div class="flex items-center justify-center py-12">
               <div class="text-center">
                 <div class="text-red-600 dark:text-red-400 text-4xl mb-4">⚠️</div>
-                <p class="text-red-600 dark:text-red-400 font-medium mb-2">Failed to load tool</p>
-                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Please try again or refresh the page</p>
+                <p class="text-red-600 dark:text-red-400 font-medium mb-2">${LanguageService.t('app.error')}</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${LanguageService.t('app.retry')}</p>
                 <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Reload Page
+                  ${LanguageService.t('app.reload')}
                 </button>
               </div>
             </div>
@@ -340,6 +347,51 @@ async function initializeApp(): Promise<void> {
 
     updateContentPadding();
     window.addEventListener('resize', updateContentPadding);
+
+    // Subscribe to language changes to update tool names
+    LanguageService.subscribe(() => {
+      // Update tools array with new localized strings
+      tools = getLocalizedTools();
+
+      // Update tool buttons in content area
+      const toolButtons = document.querySelectorAll<HTMLButtonElement>('[data-tool-id]');
+      toolButtons.forEach((btn) => {
+        const toolId = btn.getAttribute('data-tool-id');
+        const tool = tools.find((t) => t.id === toolId);
+        if (tool) {
+          btn.innerHTML = `${tool.icon} ${tool.name}`;
+          btn.title = tool.description;
+        }
+      });
+
+      // Recreate tools dropdown with new localized strings
+      if (toolsDropdownInstance) {
+        toolsDropdownInstance.destroy();
+      }
+      const newToolsDropdownDefs: ToolDef[] = tools.map((t) => ({
+        id: t.id,
+        name: t.name,
+        icon: t.icon,
+        description: t.description,
+      }));
+      toolsDropdownInstance = new ToolsDropdown(toolsDropdownContainer, newToolsDropdownDefs);
+      toolsDropdownInstance.init();
+
+      // Recreate mobile nav with new localized strings
+      if (mobileNav) {
+        mobileNav.destroy();
+      }
+      const newMobileNavTools: MobileToolDef[] = tools.map((t) => ({
+        id: t.id,
+        name: t.shortName,
+        icon: t.icon,
+        description: t.description,
+      }));
+      mobileNav = new MobileBottomNav(mobileNavContainer, newMobileNavTools);
+      mobileNav.init();
+
+      logger.info('🌐 UI updated for language change');
+    });
 
     // Load the default tool (harmony)
     void loadTool('harmony');
