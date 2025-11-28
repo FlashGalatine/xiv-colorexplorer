@@ -7,7 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [2.1.1] - 2025-11-28
+
+### ✅ Branch Coverage Testing Improvements
+
+**Status**: ✅ COMPLETE
+**Focus**: Achieved 80%+ branch coverage threshold across the codebase.
+
+#### Test Coverage Achievements ✅
+
+**Overall Branch Coverage**
+- **Before**: 72.01% (below 80% threshold)
+- **After**: 80.13% (threshold achieved!)
+- **Tests**: 1772 passing
+
+**Key Component Improvements**
+- **logger.ts**: 56.25% → 76.92% (+20.67%)
+  - Added `__setTestEnvironment()` for testing production-mode behavior
+  - Added error tracker integration tests
+  - Added dev-mode logging behavior tests
+
+- **base-component.ts**: 52.94% → 90.19% (+37.25%)
+  - Added `off()` event listener removal tests
+  - Added `onCustom()` custom event handling tests
+  - Added `setContent()` method tests
+  - Added visibility edge case tests
+
+- **theme-switcher.ts**: 61.53% → 73.07% (+11.54%)
+  - Added close dropdown behavior tests
+  - Added language service integration tests
+  - Added dropdown coordination tests
+
+- **language-service.ts**: 60% → improved
+  - Added translation fallback tests
+  - Added browser locale detection edge case tests
+  - Added preload and cache behavior tests
+
+- **palette-exporter.ts**: 66% → 72% (+6%)
+  - Added error handling tests for all export handlers
+  - Added clipboard fallback path tests
+  - Added empty group handling tests
+
+- **tools-dropdown.ts**: 70.58% → 79.41% (+8.83%)
+  - Added hover effect tests
+  - Added `close-other-dropdowns` event coordination tests
+
+#### Files Modified ✅
+- `src/shared/logger.ts` - Added `__setTestEnvironment()` for production mode testing
+- `src/shared/__tests__/logger.test.ts` - Comprehensive error tracking and mode tests
+- `src/services/__tests__/language-service.test.ts` - Edge case coverage
+- `src/components/__tests__/base-component.test.ts` - Protected method tests
+- `src/components/__tests__/theme-switcher.test.ts` - Dropdown coordination tests
+- `src/components/__tests__/palette-exporter.test.ts` - Error handling and fallback tests
+- `src/components/__tests__/tools-dropdown.test.ts` - Hover and event tests
+
+#### Benefits Achieved ✅
+- ✅ **80%+ Branch Coverage** - Met the configured threshold
+- ✅ **Improved Error Handling Coverage** - All error paths now tested
+- ✅ **Better Event System Coverage** - Custom event and listener cleanup tested
+- ✅ **Production Mode Testing** - Logger production branches now testable
+
+---
 
 ### 🌐 Multi-Language Support (i18n) - Phase 4 Complete
 

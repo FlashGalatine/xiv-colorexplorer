@@ -114,5 +114,5 @@ See **[CURRENT_ISSUES.md](./CURRENT_ISSUES.md)** for known issues and workaround
 ---
 
 **Last Updated**: November 28, 2025
-**Version**: v2.1.0
+**Version**: v2.1.1
 **Status**: Production Ready ✅
