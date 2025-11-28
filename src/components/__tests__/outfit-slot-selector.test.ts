@@ -328,4 +328,345 @@ describe('OutfitSlotSelector', () => {
       expect(container.textContent).toContain('Secondary Dye');
     });
   });
+
+  // ==========================================================================
+  // Dual Dyes Toggle Event
+  // ==========================================================================
+
+  describe('dual dyes toggle change event', () => {
+    it('should update enableDualDyes when toggle is changed', () => {
+      component = new OutfitSlotSelector(container, false);
+      component.init();
+
+      const toggle = container.querySelector('#dual-dyes-toggle') as HTMLInputElement;
+      expect(toggle.checked).toBe(false);
+
+      // Simulate toggle change
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change', { bubbles: true }));
+
+      // Component should re-render with dual dyes enabled
+      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      expect(state.dualDyesEnabled).toBe(true);
+    });
+
+    it('should re-render secondary selectors after toggle enabled', () => {
+      component = new OutfitSlotSelector(container, false);
+      component.init();
+
+      // Initially no secondary containers
+      let secondaryContainer = container.querySelector('#dye-selector-head-secondary');
+      expect(secondaryContainer).toBeNull();
+
+      // Enable dual dyes
+      const toggle = container.querySelector('#dual-dyes-toggle') as HTMLInputElement;
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change', { bubbles: true }));
+
+      // Now secondary containers should exist
+      secondaryContainer = container.querySelector('#dye-selector-head-secondary');
+      expect(secondaryContainer).not.toBeNull();
+    });
+  });
+
+  // ==========================================================================
+  // Primary Dye Selection Events
+  // ==========================================================================
+
+  describe('primary dye selection events', () => {
+    it('should handle selection-changed event on primary container', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      const emitSpy = vi.spyOn(component, 'emit');
+
+      const primaryContainer = container.querySelector('#dye-selector-head-primary');
+      const mockDye = {
+        id: 1,
+        itemID: 30001,
+        name: 'Test Dye',
+        hex: '#FF0000',
+        rgb: { r: 255, g: 0, b: 0 },
+        hsv: { h: 0, s: 100, v: 100 },
+        category: 'Red',
+        acquisition: 'Vendor',
+      };
+
+      // Dispatch selection-changed event with mock dye
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [mockDye] },
+        bubbles: true,
+      });
+      primaryContainer?.dispatchEvent(event);
+
+      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
+        slotId: 'head',
+        primary: mockDye,
+      }));
+    });
+
+    it('should handle empty selection on primary container', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      const emitSpy = vi.spyOn(component, 'emit');
+
+      const primaryContainer = container.querySelector('#dye-selector-head-primary');
+
+      // Dispatch selection-changed event with empty selection
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [] },
+        bubbles: true,
+      });
+      primaryContainer?.dispatchEvent(event);
+
+      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
+        slotId: 'head',
+        primary: null,
+      }));
+    });
+
+    it('should handle selection-changed without detail', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      const emitSpy = vi.spyOn(component, 'emit');
+
+      const primaryContainer = container.querySelector('#dye-selector-head-primary');
+
+      // Dispatch selection-changed event without detail
+      const event = new CustomEvent('selection-changed', { bubbles: true });
+      primaryContainer?.dispatchEvent(event);
+
+      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
+        slotId: 'head',
+        primary: null,
+      }));
+    });
+  });
+
+  // ==========================================================================
+  // Secondary Dye Selection Events
+  // ==========================================================================
+
+  describe('secondary dye selection events', () => {
+    it('should handle selection-changed event on secondary container', () => {
+      component = new OutfitSlotSelector(container, true);
+      component.init();
+
+      const emitSpy = vi.spyOn(component, 'emit');
+
+      const secondaryContainer = container.querySelector('#dye-selector-head-secondary');
+      const mockDye = {
+        id: 2,
+        itemID: 30002,
+        name: 'Secondary Dye',
+        hex: '#0000FF',
+        rgb: { r: 0, g: 0, b: 255 },
+        hsv: { h: 240, s: 100, v: 100 },
+        category: 'Blue',
+        acquisition: 'Vendor',
+      };
+
+      // Dispatch selection-changed event with mock dye
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [mockDye] },
+        bubbles: true,
+      });
+      secondaryContainer?.dispatchEvent(event);
+
+      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
+        slotId: 'head',
+        secondary: mockDye,
+      }));
+    });
+
+    it('should handle empty selection on secondary container', () => {
+      component = new OutfitSlotSelector(container, true);
+      component.init();
+
+      const emitSpy = vi.spyOn(component, 'emit');
+
+      const secondaryContainer = container.querySelector('#dye-selector-head-secondary');
+
+      // Dispatch selection-changed event with empty selection
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [] },
+        bubbles: true,
+      });
+      secondaryContainer?.dispatchEvent(event);
+
+      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
+        slotId: 'head',
+        secondary: null,
+      }));
+    });
+  });
+
+  // ==========================================================================
+  // Color Getters with Selected Dyes
+  // ==========================================================================
+
+  describe('getPrimaryColors with selected dyes', () => {
+    it('should return primary colors when dyes are selected', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      const mockDye = {
+        id: 1,
+        itemID: 30001,
+        name: 'Red Dye',
+        hex: '#FF0000',
+        rgb: { r: 255, g: 0, b: 0 },
+        hsv: { h: 0, s: 100, v: 100 },
+        category: 'Red',
+        acquisition: 'Vendor',
+      };
+
+      // Simulate dye selection via event
+      const primaryContainer = container.querySelector('#dye-selector-head-primary');
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [mockDye] },
+        bubbles: true,
+      });
+      primaryContainer?.dispatchEvent(event);
+
+      const colors = component.getPrimaryColors();
+      expect(colors.head).toBe('#FF0000');
+    });
+  });
+
+  describe('getSecondaryColors with selected dyes', () => {
+    it('should return secondary colors when dyes are selected', () => {
+      component = new OutfitSlotSelector(container, true);
+      component.init();
+
+      const mockDye = {
+        id: 2,
+        itemID: 30002,
+        name: 'Blue Dye',
+        hex: '#0000FF',
+        rgb: { r: 0, g: 0, b: 255 },
+        hsv: { h: 240, s: 100, v: 100 },
+        category: 'Blue',
+        acquisition: 'Vendor',
+      };
+
+      // Simulate dye selection via event
+      const secondaryContainer = container.querySelector('#dye-selector-head-secondary');
+      const event = new CustomEvent('selection-changed', {
+        detail: { selectedDyes: [mockDye] },
+        bubbles: true,
+      });
+      secondaryContainer?.dispatchEvent(event);
+
+      const colors = component.getSecondaryColors();
+      expect(colors.head).toBe('#0000FF');
+    });
+  });
+
+  // ==========================================================================
+  // Slot Card Display with Selected Dyes
+  // ==========================================================================
+
+  describe('slot card display with selected dyes', () => {
+    type ComponentWithSlots = OutfitSlotSelector & {
+      slots: Array<{
+        id: string;
+        name: string;
+        icon: string;
+        primary: { id: number; name: string; hex: string } | null;
+        secondary: { id: number; name: string; hex: string } | null;
+      }>;
+    };
+
+    it('should render primary dye display when primary is set', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      // Access private slots and set a primary dye
+      const comp = component as unknown as ComponentWithSlots;
+      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as { id: number; name: string; hex: string };
+
+      // Re-render
+      component.update();
+
+      // Check if the dye display is rendered
+      const text = container.textContent || '';
+      expect(text).toContain('Red Dye');
+    });
+
+    it('should render secondary dye display when secondary is set and dual dyes enabled', () => {
+      component = new OutfitSlotSelector(container, true);
+      component.init();
+
+      // Access private slots and set a secondary dye
+      const comp = component as unknown as ComponentWithSlots;
+      comp.slots[0].secondary = { id: 2, name: 'Blue Dye', hex: '#0000FF' } as unknown as { id: number; name: string; hex: string };
+
+      // Re-render
+      component.update();
+
+      // Check if the dye display is rendered
+      const text = container.textContent || '';
+      expect(text).toContain('Blue Dye');
+    });
+
+    it('should render color swatch with correct background color', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      // Access private slots and set a primary dye
+      const comp = component as unknown as ComponentWithSlots;
+      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as { id: number; name: string; hex: string };
+
+      // Re-render
+      component.update();
+
+      // Check for element with the background color style
+      const swatches = container.querySelectorAll('[style*="background-color"]');
+      const swatchStyles = Array.from(swatches).map(s => s.getAttribute('style'));
+      const hasRedSwatch = swatchStyles.some(s => s?.includes('#FF0000'));
+      expect(hasRedSwatch).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // getSelectedSlots with selected dyes
+  // ==========================================================================
+
+  describe('getSelectedSlots with selected dyes', () => {
+    type ComponentWithSlots = OutfitSlotSelector & {
+      slots: Array<{
+        id: string;
+        name: string;
+        icon: string;
+        primary: { id: number; itemID: number; name: string; hex: string } | null;
+        secondary: { id: number; itemID: number; name: string; hex: string } | null;
+      }>;
+    };
+
+    it('should return copies of dye objects', () => {
+      component = new OutfitSlotSelector(container);
+      component.init();
+
+      const mockDye = {
+        id: 1,
+        itemID: 30001,
+        name: 'Test Dye',
+        hex: '#FF0000',
+      };
+
+      // Set primary dye directly
+      const comp = component as unknown as ComponentWithSlots;
+      comp.slots[0].primary = mockDye as unknown as { id: number; itemID: number; name: string; hex: string };
+
+      const slots = component.getSelectedSlots();
+      const headSlot = slots.find(s => s.id === 'head');
+
+      // Should be a copy, not the same object reference
+      expect(headSlot?.primary).not.toBe(mockDye);
+      expect(headSlot?.primary?.name).toBe('Test Dye');
+    });
+  });
 });
