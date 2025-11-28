@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
+import { ColorService, LanguageService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 
@@ -36,7 +36,7 @@ export class ColorPickerDisplay extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: 'Select Color',
+      textContent: LanguageService.t('matcher.selectColor'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     wrapper.appendChild(title);
@@ -62,7 +62,7 @@ export class ColorPickerDisplay extends BaseComponent {
     });
 
     const hexLabel = this.createElement('label', {
-      textContent: 'Hex Color',
+      textContent: LanguageService.t('common.hexColor'),
       className: 'text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide',
     });
 
@@ -88,7 +88,7 @@ export class ColorPickerDisplay extends BaseComponent {
     });
 
     const pickerLabel = this.createElement('label', {
-      textContent: 'Color Picker',
+      textContent: LanguageService.t('matcher.colorPicker'),
       className: 'text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide',
     });
 
@@ -139,7 +139,7 @@ export class ColorPickerDisplay extends BaseComponent {
     // Eyedropper button (if supported)
     if ('EyeDropper' in window) {
       const eyedropperBtn = this.createElement('button', {
-        textContent: '🎨 Use Eyedropper',
+        textContent: `🎨 ${LanguageService.t('matcher.useEyedropper')}`,
         className:
           'w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-500 text-white rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
         attributes: {

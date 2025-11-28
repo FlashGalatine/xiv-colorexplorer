@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ThemeService } from '@services/index';
+import { ThemeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -88,7 +88,9 @@ export class DyeComparisonChart extends BaseComponent {
    * Get chart title
    */
   private getChartTitle(): string {
-    return this.chartType === 'hue-saturation' ? 'Hue-Saturation Chart' : 'Brightness Chart';
+    return this.chartType === 'hue-saturation'
+      ? LanguageService.t('comparison.chart.hueSaturationTitle')
+      : LanguageService.t('comparison.chart.brightnessTitle');
   }
 
   /**
@@ -96,9 +98,9 @@ export class DyeComparisonChart extends BaseComponent {
    */
   private getChartDescription(): string {
     if (this.chartType === 'hue-saturation') {
-      return 'X-axis: Hue (0-360°), Y-axis: Saturation (0-100%)';
+      return LanguageService.t('comparison.chart.hueSaturationDesc');
     }
-    return 'X-axis: Hue (0-360°), Y-axis: Brightness (0-100%)';
+    return LanguageService.t('comparison.chart.brightnessDesc');
   }
 
   /**
@@ -193,11 +195,11 @@ export class DyeComparisonChart extends BaseComponent {
 
     // Draw axis names
     ctx.textAlign = 'center';
-    ctx.fillText('Hue (°)', this.chartWidth / 2, this.chartHeight - 5);
+    ctx.fillText(LanguageService.t('comparison.chart.hueAxis'), this.chartWidth / 2, this.chartHeight - 5);
     ctx.save();
     ctx.translate(15, this.chartHeight / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Saturation (%)', 0, 0);
+    ctx.fillText(LanguageService.t('comparison.chart.saturationAxis'), 0, 0);
     ctx.restore();
 
     // Plot dyes using actual dye colors
@@ -291,11 +293,11 @@ export class DyeComparisonChart extends BaseComponent {
 
     // Draw axis names
     ctx.textAlign = 'center';
-    ctx.fillText('Hue (°)', this.chartWidth / 2, this.chartHeight - 5);
+    ctx.fillText(LanguageService.t('comparison.chart.hueAxis'), this.chartWidth / 2, this.chartHeight - 5);
     ctx.save();
     ctx.translate(15, this.chartHeight / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Brightness (%)', 0, 0);
+    ctx.fillText(LanguageService.t('comparison.chart.brightnessAxis'), 0, 0);
     ctx.restore();
 
     // Plot dyes using actual dye colors

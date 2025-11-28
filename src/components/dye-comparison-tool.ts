@@ -248,7 +248,7 @@ export class DyeComparisonTool extends BaseComponent {
     if (this.selectedDyes.length === 0) {
       const empty = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'Select 2 or more dyes to see analysis',
+        textContent: LanguageService.t('comparison.selectToSeeAnalysis'),
       });
       summaryContainer.appendChild(empty);
       return;
@@ -265,7 +265,7 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     const selectedLabel = this.createElement('span', {
-      textContent: 'Selected:',
+      textContent: LanguageService.t('comparison.selected'),
       className: 'font-semibold text-gray-700 dark:text-gray-300',
     });
     selectedDiv.appendChild(selectedLabel);
@@ -284,7 +284,7 @@ export class DyeComparisonTool extends BaseComponent {
       });
 
       const name = this.createElement('span', {
-        textContent: dye.name,
+        textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
         className: 'text-sm text-blue-900 dark:text-blue-100',
       });
 
@@ -320,19 +320,19 @@ export class DyeComparisonTool extends BaseComponent {
       // Average saturation
       const avgSat =
         this.selectedDyes.reduce((sum, d) => sum + d.hsv.s, 0) / this.selectedDyes.length;
-      const satCard = this.renderStatCard('Avg Saturation', `${avgSat.toFixed(1)}%`);
+      const satCard = this.renderStatCard(LanguageService.t('comparison.avgSaturation'), `${avgSat.toFixed(1)}%`);
       stats.appendChild(satCard);
 
       // Average brightness
       const avgBright =
         this.selectedDyes.reduce((sum, d) => sum + d.hsv.v, 0) / this.selectedDyes.length;
-      const brightCard = this.renderStatCard('Avg Brightness', `${avgBright.toFixed(1)}%`);
+      const brightCard = this.renderStatCard(LanguageService.t('comparison.avgBrightness'), `${avgBright.toFixed(1)}%`);
       stats.appendChild(brightCard);
 
       // Hue range
       const hues = this.selectedDyes.map((d) => d.hsv.h);
       const hueRange = Math.max(...hues) - Math.min(...hues);
-      const hueCard = this.renderStatCard('Hue Range', `${hueRange.toFixed(0)}°`);
+      const hueCard = this.renderStatCard(LanguageService.t('comparison.hueRange'), `${hueRange.toFixed(0)}°`);
       stats.appendChild(hueCard);
 
       // Average distance
@@ -348,7 +348,7 @@ export class DyeComparisonTool extends BaseComponent {
         }
       }
       const avgDistance = count > 0 ? totalDistance / count : 0;
-      const distCard = this.renderStatCard('Avg Distance', avgDistance.toFixed(1));
+      const distCard = this.renderStatCard(LanguageService.t('comparison.avgDistance'), avgDistance.toFixed(1));
       stats.appendChild(distCard);
 
       summary.appendChild(stats);
@@ -452,7 +452,7 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     const title = this.createElement('h3', {
-      textContent: 'Export Comparison',
+      textContent: LanguageService.t('comparison.exportComparison'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     exportSection.appendChild(title);
@@ -463,7 +463,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     // JSON export
     const jsonBtn = this.createElement('button', {
-      textContent: 'Export as JSON',
+      textContent: LanguageService.t('comparison.exportAsJson'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'json',
@@ -480,7 +480,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     // CSS export
     const cssBtn = this.createElement('button', {
-      textContent: 'Export as CSS',
+      textContent: LanguageService.t('comparison.exportAsCss'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'css',
@@ -497,7 +497,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     // Copy hex codes
     const copyBtn = this.createElement('button', {
-      textContent: 'Copy Hex Codes',
+      textContent: LanguageService.t('comparison.copyHexCodes'),
       className: 'px-4 py-2 rounded-lg transition-colors font-semibold',
       attributes: {
         'data-export': 'hex',

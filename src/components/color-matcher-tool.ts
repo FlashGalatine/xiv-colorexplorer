@@ -32,6 +32,7 @@ export class ColorMatcherTool extends BaseComponent {
   private sampleSize: number = 5;
   private zoomLevel: number = 100;
   private currentImage: HTMLImageElement | null = null;
+  private lastSampledColor: string = '';
 
   /**
    * Render the tool component
@@ -161,7 +162,7 @@ export class ColorMatcherTool extends BaseComponent {
     sampleContainer.appendChild(sampleValue);
 
     const sampleHint = this.createElement('p', {
-      textContent: 'Larger sizes produce more accurate color matching but ignore fine details',
+      textContent: LanguageService.t('matcher.sampleSizeDesc'),
       className: 'text-xs text-gray-600 dark:text-gray-400',
     });
 
@@ -354,21 +355,20 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const sectionTitle = this.createElement('h3', {
-      textContent: 'Image Color Picker',
+      textContent: LanguageService.t('matcher.imageColorPicker'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-2',
     });
     section.appendChild(sectionTitle);
 
     const hint = this.createElement('p', {
-      textContent:
-        'Click on the image to sample a color. Drag to sample a region. Use the zoom controls or hold Shift + scroll to adjust view.',
+      textContent: LanguageService.t('matcher.clickToSample'),
       className: 'text-sm text-gray-600 dark:text-gray-400',
     });
     section.appendChild(hint);
 
     const privacyNotice = this.createElement('p', {
       innerHTML:
-        '🔒 <strong>Privacy:</strong> Images never leave your browser. All processing happens locally (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).',
+        `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
       className: 'text-xs text-gray-500 dark:text-gray-400 mb-4',
     });
     section.appendChild(privacyNotice);
@@ -383,9 +383,9 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: '📐 Fit',
+      textContent: `📐 ${LanguageService.t('matcher.zoomFit')}`,
       attributes: {
-        title: 'Fit image to container',
+        title: LanguageService.t('matcher.zoomFit'),
         id: 'zoom-fit-btn',
       },
     });
@@ -396,9 +396,9 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: '↔️ Width',
+      textContent: `↔️ ${LanguageService.t('matcher.zoomWidth')}`,
       attributes: {
-        title: 'Zoom to width',
+        title: LanguageService.t('matcher.zoomWidth'),
         id: 'zoom-width-btn',
       },
     });
@@ -447,9 +447,9 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: '↺ Reset',
+      textContent: `↺ ${LanguageService.t('matcher.zoomReset')}`,
       attributes: {
-        title: 'Reset zoom to 100%',
+        title: LanguageService.t('matcher.zoomReset'),
         id: 'zoom-reset-btn',
       },
     });
@@ -802,7 +802,7 @@ export class ColorMatcherTool extends BaseComponent {
     section.setAttribute('data-results-section', 'true');
 
     const title = this.createElement('h3', {
-      textContent: 'Matched Dyes',
+      textContent: LanguageService.t('matcher.matchedDyes'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     section.appendChild(title);
@@ -814,12 +814,13 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const bestMatchLabel = this.createElement('div', {
-      textContent: '🎯 Best Match',
+      textContent: `🎯 ${LanguageService.t('matcher.bestMatch')}`,
       className: 'text-sm font-bold text-blue-900 dark:text-blue-100 uppercase tracking-wide',
     });
     bestMatchSection.appendChild(bestMatchLabel);
 
-    const bestMatchCard = this.renderDyeCard(closestDye, closestDye.hex);
+    // Use stored sampled color for distance calculation
+    const bestMatchCard = this.renderDyeCard(closestDye, this.lastSampledColor || closestDye.hex);
     bestMatchSection.appendChild(bestMatchCard);
 
     section.appendChild(bestMatchSection);
@@ -831,7 +832,7 @@ export class ColorMatcherTool extends BaseComponent {
       });
 
       const otherLabel = this.createElement('div', {
-        textContent: `Similar Dyes (${otherDyes.length} matches)`,
+        textContent: `${LanguageService.t('matcher.similarDyes')} (${otherDyes.length})`,
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
       });
       otherMatchesSection.appendChild(otherLabel);
@@ -841,7 +842,8 @@ export class ColorMatcherTool extends BaseComponent {
       });
 
       for (const dye of otherDyes) {
-        const dyeCard = this.renderDyeCard(dye, dye.hex);
+        // Use stored sampled color for distance calculation
+        const dyeCard = this.renderDyeCard(dye, this.lastSampledColor || dye.hex);
         matchesList.appendChild(dyeCard);
       }
 
@@ -858,6 +860,9 @@ export class ColorMatcherTool extends BaseComponent {
   private matchColor(hex: string): void {
     const resultsContainer = this.querySelector<HTMLElement>('#results-container');
     if (!resultsContainer) return;
+
+    // Store the sampled color for refreshResults()
+    this.lastSampledColor = hex;
 
     // Clear any existing match results, but preserve the image
     const existingResults = resultsContainer.querySelector('[data-results-section]');
@@ -892,7 +897,7 @@ export class ColorMatcherTool extends BaseComponent {
     if (!closestDye) {
       const empty = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'No matching dyes found',
+        textContent: LanguageService.t('matcher.noMatchingDyes'),
       });
       resultsContainer.appendChild(empty);
       return;
@@ -906,7 +911,7 @@ export class ColorMatcherTool extends BaseComponent {
     section.setAttribute('data-results-section', 'true');
 
     const title = this.createElement('h3', {
-      textContent: 'Matched Dyes',
+      textContent: LanguageService.t('matcher.matchedDyes'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     section.appendChild(title);
@@ -918,7 +923,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const bestMatchLabel = this.createElement('div', {
-      textContent: '🎯 Best Match',
+      textContent: `🎯 ${LanguageService.t('matcher.bestMatch')}`,
       className: 'text-sm font-bold text-blue-900 dark:text-blue-100 uppercase tracking-wide',
     });
     bestMatchSection.appendChild(bestMatchLabel);
@@ -935,7 +940,7 @@ export class ColorMatcherTool extends BaseComponent {
       });
 
       const otherLabel = this.createElement('div', {
-        textContent: `Similar Dyes (${withinDistance.length} matches within distance 100)`,
+        textContent: LanguageService.tInterpolate('matcher.similarDyesCount', { count: String(withinDistance.length) }),
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
       });
       otherMatchesSection.appendChild(otherLabel);
@@ -1003,13 +1008,13 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const name = this.createElement('div', {
-      textContent: dye.name,
+      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
       className: 'font-semibold text-gray-900 dark:text-white truncate',
     });
 
     const distance = ColorService.getColorDistance(sampledColor, dye.hex);
     const distanceText = this.createElement('div', {
-      textContent: `Distance: ${distance.toFixed(1)}`,
+      textContent: `${LanguageService.t('matcher.distance')}: ${distance.toFixed(1)}`,
       className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
     });
 
@@ -1019,7 +1024,7 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Category badge
     const category = this.createElement('div', {
-      textContent: dye.category,
+      textContent: LanguageService.getCategory(dye.category),
       className:
         'text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-medium',
     });
@@ -1027,7 +1032,7 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Copy Hex button
     const copyButton = this.createElement('button', {
-      textContent: 'Copy Hex',
+      textContent: LanguageService.t('matcher.copyHex'),
       className:
         'px-2 py-1 text-xs font-medium rounded transition-colors border cursor-pointer',
       attributes: {
@@ -1087,7 +1092,7 @@ export class ColorMatcherTool extends BaseComponent {
         });
         priceValue.textContent = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
-          textContent: 'market',
+          textContent: LanguageService.t('matcher.market'),
           className: 'text-xs',
           attributes: {
             style: 'color: var(--theme-text-muted);',

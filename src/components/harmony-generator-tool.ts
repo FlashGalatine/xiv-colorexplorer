@@ -50,12 +50,16 @@ const HARMONY_TYPE_IDS = [
  * Get harmony types with localized names and descriptions
  */
 function getHarmonyTypes(): HarmonyTypeInfo[] {
-  return HARMONY_TYPE_IDS.map(({ id, icon }) => ({
-    id,
-    name: LanguageService.getHarmonyType(id),
-    description: LanguageService.getHarmonyType(`${id}Desc`),
-    icon,
-  }));
+  return HARMONY_TYPE_IDS.map(({ id, icon }) => {
+    // Convert id with hyphen to camelCase for core library lookups
+    const camelCaseKey = id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    return {
+      id,
+      name: LanguageService.getHarmonyType(camelCaseKey),
+      description: LanguageService.t(`harmony.types.${camelCaseKey}Desc`),
+      icon,
+    };
+  });
 }
 
 /**

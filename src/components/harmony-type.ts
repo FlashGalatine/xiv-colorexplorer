@@ -9,7 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
-import { APIService } from '@services/index';
+import { APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -69,7 +69,7 @@ export class HarmonyType extends BaseComponent {
     if (this.matchedDyes.length === 0) {
       const emptyState = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'No matching dyes found',
+        textContent: LanguageService.t('harmony.noMatchingDyes'),
       });
       content.appendChild(emptyState);
     } else {
@@ -152,7 +152,7 @@ export class HarmonyType extends BaseComponent {
         this.matchedDyes.reduce((sum, { deviance }) => sum + deviance, 0) / this.matchedDyes.length;
       const devianceDiv = this.createElement('div', {
         className: 'text-xs mt-2 harmony-deviance-info',
-        textContent: `Avg Hue Diff: ${avgDeviance.toFixed(1)}°`,
+        textContent: `${LanguageService.t('harmony.avgHueDiff')}: ${avgDeviance.toFixed(1)}°`,
         attributes: {
           style: 'color: var(--theme-text-header);',
         },
@@ -188,12 +188,12 @@ export class HarmonyType extends BaseComponent {
     });
 
     const nameDiv = this.createElement('div', {
-      textContent: dye.name,
+      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
       className: 'font-semibold text-sm text-gray-900 dark:text-white truncate',
     });
 
     const categoryDiv = this.createElement('div', {
-      textContent: dye.category,
+      textContent: LanguageService.getCategory(dye.category),
       className: 'text-xs text-gray-600 dark:text-gray-400 truncate',
     });
 
@@ -215,7 +215,7 @@ export class HarmonyType extends BaseComponent {
     });
 
     const devianceLabel = this.createElement('div', {
-      textContent: 'hue diff',
+      textContent: LanguageService.t('harmony.hueDiff'),
       className: 'text-xs text-gray-500 dark:text-gray-400',
     });
 
@@ -239,7 +239,7 @@ export class HarmonyType extends BaseComponent {
         });
         priceValue.textContent = APIService.formatPrice(price.currentAverage);
         const priceLabel = this.createElement('div', {
-          textContent: 'market',
+          textContent: LanguageService.t('matcher.market'),
           className: 'text-xs',
           attributes: {
             style: 'color: var(--theme-text-muted);',

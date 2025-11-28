@@ -148,7 +148,7 @@ export class DyeMixerTool extends BaseComponent {
     stepContainer.appendChild(stepValue);
 
     const stepHint = this.createElement('p', {
-      textContent: 'More steps provide a smoother transition but may result in more repeated dyes',
+      textContent: LanguageService.t('mixer.stepsHint'),
       className: 'text-xs text-gray-600 dark:text-gray-400',
     });
 
@@ -163,7 +163,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const colorSpaceLabel = this.createElement('label', {
-      textContent: 'Color Space',
+      textContent: LanguageService.t('mixer.colorSpace'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
 
@@ -186,7 +186,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const rgbText = this.createElement('span', {
-      textContent: 'RGB (Linear)',
+      textContent: LanguageService.t('mixer.colorSpaceRgb'),
       className: 'text-sm text-gray-700 dark:text-gray-300',
     });
 
@@ -209,7 +209,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const hsvText = this.createElement('span', {
-      textContent: 'HSV (Perceptual)',
+      textContent: LanguageService.t('mixer.colorSpaceHsv'),
       className: 'text-sm text-gray-700 dark:text-gray-300',
     });
 
@@ -220,8 +220,7 @@ export class DyeMixerTool extends BaseComponent {
     colorSpaceContainer.appendChild(hsvLabel);
 
     const colorSpaceHint = this.createElement('p', {
-      textContent:
-        'HSV typically produces more natural-looking transitions. RGB is linear but more mathematically straightforward.',
+      textContent: LanguageService.t('mixer.colorSpaceHint'),
       className: 'text-xs text-gray-600 dark:text-gray-400',
     });
 
@@ -250,7 +249,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const actionsTitle = this.createElement('h3', {
-      textContent: 'Quick Actions',
+      textContent: LanguageService.t('mixer.quickActions'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     actionsSection.appendChild(actionsTitle);
@@ -261,14 +260,14 @@ export class DyeMixerTool extends BaseComponent {
 
     const saveBtn = this.createElement('button', {
       id: 'save-gradient-btn',
-      textContent: '💾 Save Gradient',
+      textContent: `💾 ${LanguageService.t('mixer.saveGradient')}`,
       className:
         'px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
     });
 
     const shareBtn = this.createElement('button', {
       id: 'copy-url-btn',
-      textContent: '🔗 Copy Share URL',
+      textContent: `🔗 ${LanguageService.t('mixer.copyShareUrl')}`,
       className:
         'px-4 py-3 rounded-lg transition-all duration-200 text-sm font-semibold flex-1 min-h-[44px]',
       attributes: {
@@ -305,7 +304,7 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     const savedTitle = this.createElement('h3', {
-      textContent: 'Saved Gradients',
+      textContent: LanguageService.t('mixer.savedGradients'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
 
@@ -331,7 +330,7 @@ export class DyeMixerTool extends BaseComponent {
 
     const noSavedText = this.createElement('p', {
       id: 'no-saved-gradients-text',
-      textContent: 'No saved gradients yet. Click "Save Gradient" to create one!',
+      textContent: LanguageService.t('mixer.noSavedGradientsHint'),
       className: 'text-sm text-gray-500 dark:text-gray-400',
     });
     savedSection.appendChild(noSavedText);
@@ -651,11 +650,11 @@ export class DyeMixerTool extends BaseComponent {
    */
   private saveGradient(): void {
     if (this.selectedDyes.length < 2) {
-      this.showToast('Please select 2 dyes to save gradient', 'error');
+      this.showToast(LanguageService.t('mixer.selectDyesToSave'), 'error');
       return;
     }
 
-    const gradientName = prompt('Name your gradient (e.g., "Sunset Fade"):');
+    const gradientName = prompt(LanguageService.t('mixer.nameYourGradient'));
     if (!gradientName) return;
 
     const gradient = {
@@ -675,11 +674,11 @@ export class DyeMixerTool extends BaseComponent {
       ) as (typeof gradient)[];
       savedGradients.push(gradient);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(`✓ Gradient "${gradientName}" saved!`, 'success');
+      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.gradientSavedSuccess', { name: gradientName })}`, 'success');
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error saving gradient:', error);
-      this.showToast('Failed to save gradient', 'error');
+      this.showToast(LanguageService.t('mixer.saveFailed'), 'error');
     }
   }
 
@@ -710,7 +709,7 @@ export class DyeMixerTool extends BaseComponent {
       const dye2 = dyeService.getDyeById(gradient.dye2Id);
 
       if (!dye1 || !dye2) {
-        this.showToast('One or more dyes not found in database', 'error');
+        this.showToast(LanguageService.t('mixer.dyeNotFoundInDb'), 'error');
         return;
       }
 
@@ -738,10 +737,10 @@ export class DyeMixerTool extends BaseComponent {
       }
 
       this.updateInterpolation();
-      this.showToast(`✓ Loaded gradient "${gradient.name}"`, 'success');
+      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.loadedGradient', { name: gradient.name })}`, 'success');
     } catch (error) {
       logger.error('Error loading gradient:', error);
-      this.showToast('Failed to load gradient', 'error');
+      this.showToast(LanguageService.t('mixer.loadFailed'), 'error');
     }
   }
 
@@ -755,18 +754,18 @@ export class DyeMixerTool extends BaseComponent {
       ) as Array<{ name: string }>;
 
       if (!savedGradients[index]) {
-        this.showToast('Gradient not found', 'error');
+        this.showToast(LanguageService.t('mixer.gradientNotFound'), 'error');
         return;
       }
 
       const gradientName = savedGradients[index].name;
       savedGradients.splice(index, 1);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(`✓ Gradient "${gradientName}" deleted`, 'success');
+      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.gradientDeleted', { name: gradientName })}`, 'success');
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error deleting gradient:', error);
-      this.showToast('Failed to delete gradient', 'error');
+      this.showToast(LanguageService.t('mixer.deleteFailed'), 'error');
     }
   }
 
@@ -818,14 +817,14 @@ export class DyeMixerTool extends BaseComponent {
         });
 
         const loadBtn = this.createElement('button', {
-          textContent: '📂 Load',
+          textContent: `📂 ${LanguageService.t('mixer.load')}`,
           className:
             'px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded transition',
         });
         loadBtn.addEventListener('click', () => this.loadSavedGradient(i));
 
         const deleteBtn = this.createElement('button', {
-          textContent: '🗑️ Delete',
+          textContent: `🗑️ ${LanguageService.t('mixer.delete')}`,
           className: 'px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition',
         });
         deleteBtn.addEventListener('click', () => this.deleteSavedGradient(i));
@@ -864,7 +863,7 @@ export class DyeMixerTool extends BaseComponent {
    */
   private copyShareUrl(): void {
     if (this.selectedDyes.length < 2) {
-      this.showToast('Please select 2 dyes to share', 'error');
+      this.showToast(LanguageService.t('mixer.selectDyesToShare'), 'error');
       return;
     }
 
@@ -880,12 +879,12 @@ export class DyeMixerTool extends BaseComponent {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        this.showToast('✓ Share URL copied to clipboard!', 'success');
+        this.showToast(`✓ ${LanguageService.t('mixer.urlCopied')}`, 'success');
         logger.info('Share URL copied:', url);
       })
       .catch((error: Error) => {
         logger.error('Failed to copy URL:', error);
-        this.showToast('Failed to copy URL. Please try again.', 'error');
+        this.showToast(LanguageService.t('mixer.copyUrlFailed'), 'error');
       });
   }
 

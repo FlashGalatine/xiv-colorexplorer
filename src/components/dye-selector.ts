@@ -181,7 +181,7 @@ export class DyeSelector extends BaseComponent {
 
       for (const category of categories) {
         const categoryBtn = this.createElement('button', {
-          textContent: category,
+          textContent: LanguageService.getCategory(category),
           className:
             'px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
           attributes: {
@@ -244,7 +244,7 @@ export class DyeSelector extends BaseComponent {
         });
 
         const dyeName = this.createElement('span', {
-          textContent: dye.name,
+          textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
           className: 'text-gray-900 dark:text-white',
         });
 
@@ -306,7 +306,7 @@ export class DyeSelector extends BaseComponent {
       });
 
       const nameDiv = this.createElement('div', {
-        textContent: dye.name,
+        textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
         className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
       });
 
@@ -316,7 +316,7 @@ export class DyeSelector extends BaseComponent {
       });
 
       const categoryDiv = this.createElement('div', {
-        textContent: dye.category,
+        textContent: LanguageService.getCategory(dye.category),
         className: 'text-xs text-gray-500 dark:text-gray-500',
       });
 
@@ -518,7 +518,7 @@ export class DyeSelector extends BaseComponent {
           });
 
           const dyeName = this.createElement('span', {
-            textContent: dye.name,
+            textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
             className: 'text-gray-900 dark:text-white',
           });
 
@@ -580,7 +580,7 @@ export class DyeSelector extends BaseComponent {
           });
 
           const nameDiv = this.createElement('div', {
-            textContent: dye.name,
+            textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
             className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
           });
 
@@ -590,7 +590,7 @@ export class DyeSelector extends BaseComponent {
           });
 
           const categoryDiv = this.createElement('div', {
-            textContent: dye.category,
+            textContent: LanguageService.getCategory(dye.category),
             className: 'text-xs text-gray-500 dark:text-gray-500',
           });
 

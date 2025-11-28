@@ -113,6 +113,6 @@ See **[CURRENT_ISSUES.md](./CURRENT_ISSUES.md)** for known issues and workaround
 
 ---
 
-**Last Updated**: December 26, 2025
-**Version**: v2.0.7
+**Last Updated**: November 28, 2025
+**Version**: v2.1.0
 **Status**: Production Ready ✅

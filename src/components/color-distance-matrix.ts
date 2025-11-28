@@ -8,9 +8,11 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
+import { ColorService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
+
+// Locale keys for this component are under 'comparison.matrix.*'
 
 /**
  * Color Distance Matrix Component
@@ -35,7 +37,7 @@ export class ColorDistanceMatrix extends BaseComponent {
     if (this.dyes.length === 0) {
       const emptyState = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'Select dyes to compare distances',
+        textContent: LanguageService.t('comparison.matrix.selectDyes'),
       });
       wrapper.appendChild(emptyState);
       clearContainer(this.container);
@@ -46,15 +48,14 @@ export class ColorDistanceMatrix extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: 'Color Distance Matrix',
+      textContent: LanguageService.t('comparison.matrix.title'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     wrapper.appendChild(title);
 
     // Description
     const description = this.createElement('p', {
-      textContent:
-        'Lower values indicate more similar colors. Green = very close, Yellow = moderate, Red = very different',
+      textContent: LanguageService.t('comparison.matrix.description'),
       className: 'text-sm text-gray-600 dark:text-gray-400',
     });
     wrapper.appendChild(description);
@@ -107,7 +108,7 @@ export class ColorDistanceMatrix extends BaseComponent {
       });
 
       const name = this.createElement('span', {
-        textContent: dye.name.substring(0, 12),
+        textContent: (LanguageService.getDyeName(dye.itemID) || dye.name).substring(0, 12),
         className: 'text-xs truncate',
       });
 
@@ -143,7 +144,7 @@ export class ColorDistanceMatrix extends BaseComponent {
       });
 
       const name = this.createElement('span', {
-        textContent: this.dyes[i].name.substring(0, 8),
+        textContent: (LanguageService.getDyeName(this.dyes[i].itemID) || this.dyes[i].name).substring(0, 12),
         className: 'truncate',
       });
 

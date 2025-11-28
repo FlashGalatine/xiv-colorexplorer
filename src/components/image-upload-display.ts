@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { LanguageService } from '@services/index';
 import { clearContainer } from '@shared/utils';
 
 /**
@@ -33,7 +34,7 @@ export class ImageUploadDisplay extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: 'Upload Image',
+      textContent: LanguageService.t('matcher.uploadImage'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     wrapper.appendChild(title);
@@ -59,12 +60,12 @@ export class ImageUploadDisplay extends BaseComponent {
     });
 
     const mainText = this.createElement('div', {
-      textContent: 'Drag and drop an image here',
+      textContent: LanguageService.t('matcher.dragDrop'),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
 
     const subText = this.createElement('div', {
-      textContent: 'or click to select a file',
+      textContent: LanguageService.t('matcher.orClickSelect'),
       className: 'text-sm text-gray-600 dark:text-gray-400',
     });
 
@@ -91,11 +92,11 @@ export class ImageUploadDisplay extends BaseComponent {
     });
 
     const cameraBtn = this.createElement('button', {
-      textContent: '📷 Take Photo',
+      textContent: `📷 ${LanguageService.t('matcher.takePhoto')}`,
       className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
       attributes: {
         type: 'button',
-        'aria-label': 'Take photo from camera',
+        'aria-label': LanguageService.t('matcher.takePhoto'),
       },
     });
 
@@ -123,21 +124,20 @@ export class ImageUploadDisplay extends BaseComponent {
           color: var(--theme-text);
         `,
       },
-      innerHTML:
-        '🔒 <strong>Privacy Protected:</strong> Photos and images are processed locally in your browser and never uploaded to any server. <a href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer" class="underline font-semibold">Learn more</a>',
+      innerHTML: LanguageService.t('matcher.privacyNoticeHtml'),
     });
     wrapper.appendChild(privacyNotice);
 
     // Info text
     const info = this.createElement('p', {
-      textContent: 'Supported formats: PNG, JPG, WebP, GIF. Maximum size: 20MB',
+      textContent: LanguageService.t('matcher.supportedFormatsWithSize'),
       className: 'text-xs text-gray-500 dark:text-gray-400 text-center',
     });
     wrapper.appendChild(info);
 
     // Keyboard shortcut hint (theme-aware)
     const shortcut = this.createElement('div', {
-      textContent: '💡 Tip: Paste an image using Ctrl+V (Cmd+V on Mac)',
+      textContent: `💡 ${LanguageService.t('matcher.pasteHint')}`,
       className: 'p-2 rounded text-xs border',
       attributes: {
         style: `

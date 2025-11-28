@@ -178,6 +178,7 @@ async function initializeApp(): Promise<void> {
 
     let currentTool: InstanceType<typeof BaseComponent> | null = null;
     let currentToolContainer: HTMLElement | null = null;
+    let currentToolId: string = 'harmony';
     let isLoadingTool = false;
 
     const loadTool = async (toolId: string): Promise<void> => {
@@ -186,6 +187,9 @@ async function initializeApp(): Promise<void> {
         logger.warn(`⚠️ Tool loading in progress, ignoring request for: ${toolId}`);
         return;
       }
+
+      // Track the current tool ID
+      currentToolId = toolId;
 
       try {
         isLoadingTool = true;
@@ -389,6 +393,11 @@ async function initializeApp(): Promise<void> {
       }));
       mobileNav = new MobileBottomNav(mobileNavContainer, newMobileNavTools);
       mobileNav.init();
+
+      // Reload the current tool to update its localized content
+      if (currentToolId) {
+        void loadTool(currentToolId);
+      }
 
       logger.info('🌐 UI updated for language change');
     });

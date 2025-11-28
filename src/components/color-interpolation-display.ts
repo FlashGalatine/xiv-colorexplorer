@@ -8,6 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
+import { LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -55,7 +56,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: `Color Transition (${this.colorSpace.toUpperCase()} Space)`,
+      textContent: LanguageService.tInterpolate('mixer.colorTransition', { space: this.colorSpace.toUpperCase() }),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     wrapper.appendChild(title);
@@ -63,7 +64,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     if (this.steps.length === 0) {
       const emptyState = this.createElement('div', {
         className: 'text-center py-8 text-gray-500 dark:text-gray-400',
-        textContent: 'No interpolation data available',
+        textContent: LanguageService.t('mixer.noInterpolationData'),
       });
       wrapper.appendChild(emptyState);
       clearContainer(this.container);
@@ -113,7 +114,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const titleText = this.createElement('span', {
-      textContent: 'Understanding Distance',
+      textContent: LanguageService.t('mixer.understandingDistance'),
     });
 
     title.appendChild(icon);
@@ -126,14 +127,13 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const p1 = this.createElement('p', {
-      textContent:
-        "Distance measures how closely the matched dye's color compares to the theoretical color at that transition point.",
+      textContent: LanguageService.t('mixer.distanceExplanation'),
       className: 'leading-relaxed',
     });
     explanation.appendChild(p1);
 
     const p2 = this.createElement('p', {
-      textContent: 'Lower distance = better match. A distance of 0 means a perfect match.',
+      textContent: LanguageService.t('mixer.distanceHint'),
       className: 'leading-relaxed font-semibold',
     });
     explanation.appendChild(p2);
@@ -142,7 +142,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Color scale legend
     const scaleLabel = this.createElement('div', {
-      textContent: 'Quality Scale:',
+      textContent: LanguageService.t('mixer.qualityScale'),
       className: 'text-xs font-semibold text-blue-900 dark:text-blue-200 mt-2',
     });
     container.appendChild(scaleLabel);
@@ -151,19 +151,19 @@ export class ColorInterpolationDisplay extends BaseComponent {
       {
         range: '≤30',
         color: 'text-green-600 dark:text-green-400 font-semibold',
-        label: 'Excellent match',
+        label: LanguageService.t('mixer.excellentMatch'),
       },
       {
         range: '31-60',
         color: 'text-blue-600 dark:text-blue-400 font-semibold',
-        label: 'Good match',
+        label: LanguageService.t('mixer.goodMatch'),
       },
       {
         range: '61-100',
         color: 'text-yellow-600 dark:text-yellow-400 font-semibold',
-        label: 'Fair match',
+        label: LanguageService.t('mixer.fairMatch'),
       },
-      { range: '>100', color: 'text-red-600 dark:text-red-400 font-semibold', label: 'Poor match' },
+      { range: '>100', color: 'text-red-600 dark:text-red-400 font-semibold', label: LanguageService.t('mixer.poorMatch') },
     ];
 
     for (const item of scaleItems) {
@@ -199,7 +199,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Gradient display
     const label = this.createElement('div', {
-      textContent: 'Color Gradient',
+      textContent: LanguageService.t('mixer.colorGradient'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
 
@@ -228,7 +228,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
         style: `background-color: ${this.startColor}`,
       },
     });
-    const startText = this.createElement('span', { textContent: 'Start' });
+    const startText = this.createElement('span', { textContent: LanguageService.t('mixer.start') });
     startLabel.appendChild(startSwatch);
     startLabel.appendChild(startText);
 
@@ -241,7 +241,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
         style: `background-color: ${this.endColor}`,
       },
     });
-    const endText = this.createElement('span', { textContent: 'End' });
+    const endText = this.createElement('span', { textContent: LanguageService.t('mixer.end') });
     endLabel.appendChild(endSwatch);
     endLabel.appendChild(endText);
 
@@ -264,7 +264,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const label = this.createElement('div', {
-      textContent: 'Intermediate Dyes',
+      textContent: LanguageService.t('mixer.intermediateDyes'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
     container.appendChild(label);
@@ -334,12 +334,12 @@ export class ColorInterpolationDisplay extends BaseComponent {
       });
 
       const name = this.createElement('div', {
-        textContent: step.matchedDye.name,
+        textContent: LanguageService.getDyeName(step.matchedDye.itemID) || step.matchedDye.name,
         className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
       });
 
       const distance = this.createElement('div', {
-        textContent: `Distance: ${step.distance.toFixed(1)}`,
+        textContent: `${LanguageService.t('mixer.distance')} ${step.distance.toFixed(1)}`,
         className: `text-xs ${this.getDistanceColor(step.distance)} font-mono`,
       });
 
@@ -349,7 +349,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     } else {
       // No match found
       const noMatch = this.createElement('div', {
-        textContent: 'No close match',
+        textContent: LanguageService.t('mixer.noCloseMatch'),
         className: 'text-xs text-gray-500 dark:text-gray-400 italic flex-1',
       });
       item.appendChild(noMatch);
@@ -384,7 +384,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const title = this.createElement('div', {
-      textContent: 'Transition Quality',
+      textContent: LanguageService.t('mixer.transitionQuality'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2',
     });
     container.appendChild(title);
@@ -411,7 +411,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const coverageLabel = this.createElement('div', {
-      textContent: `Coverage: ${coverage.toFixed(0)}% (${matchedCount}/${this.steps.length} matched)`,
+      textContent: `${LanguageService.t('mixer.coverage')} ${coverage.toFixed(0)}% (${matchedCount}/${this.steps.length} ${LanguageService.t('mixer.matched')})`,
       className: 'text-xs text-gray-700 dark:text-gray-300',
     });
 
@@ -437,7 +437,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const avgLabel = this.createElement('span', {
-      textContent: 'Average Distance:',
+      textContent: LanguageService.t('mixer.avgDistance'),
     });
 
     const avgValue = this.createElement('span', {
@@ -455,7 +455,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
     });
 
     const maxLabel = this.createElement('span', {
-      textContent: 'Max Distance:',
+      textContent: LanguageService.t('mixer.maxDistance'),
     });
 
     const maxValue = this.createElement('span', {

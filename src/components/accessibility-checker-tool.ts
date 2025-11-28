@@ -264,20 +264,20 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     // Generate warnings for distinguishability issues
     if (deuterColor === protanColor) {
-      warnings.push('Red-green colorblind users may see this as a different color');
+      warnings.push(LanguageService.t('accessibility.redGreenWarning'));
     }
 
     if (ColorService.getColorDistance(primaryHex, tritanColor) < 30) {
-      warnings.push('May be hard to see for tritanopia (blue-yellow colorblindness)');
+      warnings.push(LanguageService.t('accessibility.tritanopiaWarning'));
     }
 
     if (ColorService.getColorDistance(primaryHex, achromColor) < 30) {
-      warnings.push('May be hard to see for total colorblindness');
+      warnings.push(LanguageService.t('accessibility.achromatopsiaWarning'));
     }
 
     return {
       dyeId: dye.id,
-      dyeName: dye.name,
+      dyeName: LanguageService.getDyeName(dye.itemID) || dye.name,
       hex: primaryHex,
       contrastScore,
       wcagLevel,
@@ -303,17 +303,17 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const warnings: string[] = [];
 
     if (distinguishability < 20) {
-      warnings.push('Very similar - may be hard to distinguish');
+      warnings.push(LanguageService.t('accessibility.verySimular'));
     } else if (distinguishability < 40) {
-      warnings.push('Similar - some users may have difficulty distinguishing');
+      warnings.push(LanguageService.t('accessibility.somewhatSimilar'));
     }
 
     return {
       dye1Id: dye1.id,
-      dye1Name: dye1.name,
+      dye1Name: LanguageService.getDyeName(dye1.itemID) || dye1.name,
       dye1Hex: dye1.hex,
       dye2Id: dye2.id,
-      dye2Name: dye2.name,
+      dye2Name: LanguageService.getDyeName(dye2.itemID) || dye2.name,
       dye2Hex: dye2.hex,
       distinguishability,
       warnings,

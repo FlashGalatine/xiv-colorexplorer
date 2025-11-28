@@ -9,7 +9,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService, ThemeService } from '@services/index';
+import { ColorService, ThemeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -208,7 +208,7 @@ export class ColorWheelDisplay extends BaseComponent {
 
       // Add tooltip
       const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `${dye.name} (${dye.hex})`;
+      title.textContent = `${LanguageService.getDyeName(dye.itemID) || dye.name} (${dye.hex})`;
       circle.appendChild(title);
 
       // Hover effect to enlarge glow and dot

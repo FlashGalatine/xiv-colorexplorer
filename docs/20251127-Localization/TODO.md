@@ -102,7 +102,7 @@
 
 ---
 
-## Phase 4: Component Refactoring 🔄 IN PROGRESS
+## Phase 4: Component Refactoring ✅ COMPLETE
 
 ### 4.1 Core Components ✅
 - [x] Update `src/main.ts`
@@ -130,43 +130,62 @@
 
 **Git Commit:** `feat(i18n): refactor core components to use localization` ✅
 
-### 4.4 Tool Components ⏳ PENDING
-- [ ] Update `src/components/harmony-generator-tool.ts`
-  - [ ] Localize title, subtitle
-  - [ ] Localize harmony type names (use core `getHarmonyType()`)
-  - [ ] Localize all UI labels
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/color-matcher-tool.ts`
-  - [ ] Localize all UI text
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/accessibility-checker-tool.ts`
-  - [ ] Localize vision type labels (use core `getVisionType()`)
-  - [ ] Localize all UI text
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/dye-comparison-tool.ts`
-  - [ ] Localize all UI text
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/dye-mixer-tool.ts`
-  - [ ] Localize all UI text
-  - [ ] Subscribe to language changes
+### 4.4 Tool Components ✅
+- [x] Update `src/components/harmony-generator-tool.ts`
+  - [x] Localize title, subtitle
+  - [x] Localize harmony type names (use core `getHarmonyType()`)
+  - [x] Localize all UI labels
+  - [x] Subscribe to language changes
+  - [x] Fixed hyphenated ID to camelCase conversion for harmony type lookups
+- [x] Update `src/components/color-matcher-tool.ts`
+  - [x] Localize all UI text
+  - [x] Subscribe to language changes
+- [x] Update `src/components/accessibility-checker-tool.ts`
+  - [x] Localize vision type labels (use core `getVisionType()`)
+  - [x] Localize all UI text
+  - [x] Subscribe to language changes
+- [x] Update `src/components/dye-comparison-tool.ts`
+  - [x] Localize all UI text
+  - [x] Subscribe to language changes
+- [x] Update `src/components/dye-mixer-tool.ts`
+  - [x] Localize all UI text
+  - [x] Subscribe to language changes
 
-### 4.5 Supporting Components ⏳ PENDING
-- [ ] Update `src/components/dye-selector.ts`
-  - [ ] Localize dye names (use core `getDyeName()`)
-  - [ ] Localize category names (use core `getCategory()`)
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/dye-filters.ts`
-  - [ ] Localize filter labels
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/market-board.ts`
-  - [ ] Localize category labels
-  - [ ] Localize UI text
-  - [ ] Subscribe to language changes
-- [ ] Update `src/components/palette-exporter.ts`
-  - [ ] Localize export options
-  - [ ] Subscribe to language changes
+### 4.5 Supporting Components ✅
+- [x] Update `src/components/dye-selector.ts`
+  - [x] Localize dye names (use core `getDyeName()`)
+  - [x] Localize category names (use core `getCategory()`)
+  - [x] Subscribe to language changes
+- [x] Update `src/components/dye-filters.ts`
+  - [x] Localize filter labels
+  - [x] Subscribe to language changes
+- [x] Update `src/components/market-board.ts`
+  - [x] Localize category labels
+  - [x] Localize UI text
+  - [x] Subscribe to language changes
+- [x] Update `src/components/palette-exporter.ts`
+  - [x] Localize export options
+  - [x] Subscribe to language changes
 
-**Next Git Commit:** `feat(i18n): refactor tool components to use localized strings`
+### 4.6 Display Components ✅
+- [x] Update `src/components/image-upload-display.ts`
+  - [x] Localize upload prompts, privacy notice, supported formats
+- [x] Update `src/components/color-picker-display.ts`
+  - [x] Localize color picker labels and buttons
+- [x] Update `src/components/harmony-type.ts`
+  - [x] Localize deviance labels and dye card content
+- [x] Update `src/components/color-wheel-display.ts`
+  - [x] Localize wheel labels
+- [x] Update `src/components/color-display.ts`
+  - [x] Localize color information labels
+- [x] Update `src/components/color-interpolation-display.ts`
+  - [x] Localize step labels
+- [x] Update `src/components/color-distance-matrix.ts`
+  - [x] Localize matrix headers
+- [x] Update `src/components/dye-comparison-chart.ts`
+  - [x] Localize chart title and labels
+
+**Git Commit:** `feat(i18n): complete Phase 4 - all components localized` ✅
 
 ---
 
@@ -225,7 +244,7 @@
 | Phase 1: Foundation | ✅ Complete | `feat(i18n): add LanguageService foundation and English translations` |
 | Phase 2: UI Component | ✅ Complete | `feat(i18n): add LanguageSelector component to header` |
 | Phase 3: Translation Files | ✅ Complete | `feat(i18n): add translation files for all 6 languages` |
-| Phase 4: Component Refactoring | 🔄 Partial | `feat(i18n): refactor core components to use localization` |
+| Phase 4: Component Refactoring | ✅ Complete | `feat(i18n): complete Phase 4 - all components localized` |
 | Phase 5: Testing & Documentation | ⏳ Pending | |
 
-**Current State:** Core infrastructure complete. Navigation, header, footer, and theme switcher localized. Tool components (harmony, matcher, accessibility, comparison, mixer) and supporting components (dye-selector, dye-filters, market-board, palette-exporter) still need refactoring.
+**Current State:** All UI components fully localized! 21 components refactored with proper i18n support. All 5 tools, supporting components, and display components now use `LanguageService.t()` for UI strings and core library methods (`getDyeName()`, `getCategory()`, `getHarmonyType()`, `getVisionType()`) for FFXIV terminology. Remaining: unit tests and documentation updates.

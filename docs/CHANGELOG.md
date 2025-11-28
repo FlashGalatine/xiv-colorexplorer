@@ -9,9 +9,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🌐 Multi-Language Support (i18n) - Phase 4 Complete
+
+**Status**: ✅ COMPLETE (Phase 4 of 5)
+**Focus**: Full internationalization support for 6 languages across all UI components.
+
+#### Supported Languages ✅
+- 🇬🇧 English (en)
+- 🇯🇵 Japanese (ja) - 日本語
+- 🇩🇪 German (de) - Deutsch
+- 🇫🇷 French (fr) - Français
+- 🇰🇷 Korean (ko) - 한국어
+- 🇨🇳 Chinese (zh) - 中文
+
+#### Infrastructure ✅
+- **LanguageService** - Central service for locale management and translations
+  - Browser language auto-detection on first visit
+  - Locale preference persisted to localStorage
+  - Subscription-based component re-rendering on language change
+- **LanguageSelector** - Header dropdown for language switching with flag icons
+- **Core Library Integration** - Uses `xivdyetools-core` v1.2.0 LocalizationService for official FFXIV translations
+
+#### Components Localized (21 total) ✅
+
+**Tool Components**
+- `harmony-generator-tool.ts` - All labels, harmony type names, descriptions
+- `color-matcher-tool.ts` - Section headers, instructions, tips
+- `accessibility-checker-tool.ts` - Vision type names, scoring labels
+- `dye-comparison-tool.ts` - Table headers, chart labels, export buttons
+- `dye-mixer-tool.ts` - Interpolation labels, step names
+
+**Supporting Components**
+- `dye-selector.ts` - Dye names, category names, sort options, search placeholder
+- `dye-filters.ts` - Filter labels and descriptions
+- `market-board.ts` - Server selection, price labels, category toggles
+- `palette-exporter.ts` - Export format names and buttons
+
+**Display Components**
+- `image-upload-display.ts` - Upload prompts, drag-drop hints, privacy notice
+- `color-picker-display.ts` - Color input labels, eyedropper button
+- `harmony-type.ts` - Deviance labels, dye card information
+- `color-wheel-display.ts` - Wheel labels and legend
+- `color-display.ts` - Color format labels (Hex, RGB, HSV)
+- `color-interpolation-display.ts` - Step labels
+- `color-distance-matrix.ts` - Matrix headers
+- `dye-comparison-chart.ts` - Chart title and axis labels
+
+**Navigation & Layout**
+- `app-layout.ts` - Header title, footer text, version info
+- `tools-dropdown.ts` - Tool names
+- `mobile-bottom-nav.ts` - Short tool names
+- `theme-switcher.ts` - Theme display names
+
+#### Translation Files ✅
+- Created `src/locales/` directory with 6 JSON files (~250 strings each)
+- Hierarchical key structure for easy maintenance
+- Official FFXIV terminology from core library for dye names, categories, etc.
+
+#### Bug Fixes ✅
+- **Harmony Type Names**: Fixed hyphenated ID to camelCase conversion for `getHarmonyType()` lookups
+  - `split-complementary` → `splitComplementary` for core library compatibility
+- **Missing Section Headers**: Added missing `imageUpload`, `manualColorInput`, `sampleSettings` keys to non-English locales
+
+#### Files Modified ✅
+- 21 component files - Added `LanguageService` imports and localized all hardcoded strings
+- 6 locale files - Added/updated translation keys
+- `src/services/index.ts` - Exported LanguageService
+
+#### Documentation ✅
+- `docs/20251127-Localization/TODO.md` - Updated to reflect Phase 4 completion
+- `docs/20251127-Localization/IMPLEMENTATION-PLAN.md` - Architecture and design decisions
+- `docs/20251127-Localization/TRANSLATION-KEYS.md` - Key reference documentation
+
+---
+
 ### 🎨 Dye Comparison Tool Export Button Fixes
 
-**Status**: ✅ COMPLETE  
+**Status**: ✅ COMPLETE
 **Focus**: Fixed export buttons to use theme colors and center alignment for consistency with other tools.
 
 #### UI Consistency Improvements ✅

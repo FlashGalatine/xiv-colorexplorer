@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { ColorService } from '@services/index';
+import { ColorService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -139,7 +139,7 @@ export class ColorDisplay extends BaseComponent {
 
     // Dye name
     const nameDiv = this.createElement('div', {
-      textContent: dye.name,
+      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
       className: 'text-lg font-bold text-gray-900 dark:text-white',
     });
     card.appendChild(nameDiv);
