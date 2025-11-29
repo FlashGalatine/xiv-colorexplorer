@@ -167,7 +167,7 @@ describe('AppLayout', () => {
       const footer = container.querySelector('footer');
       // Check for localized app title and version
       expect(footer?.textContent).toContain('XIV Dye Tools');
-      expect(footer?.textContent).toContain('Version');
+      expect(footer?.textContent).toContain('v0.0.0'); // APP_VERSION defaults to '0.0.0' in test environment
       expect(footer?.textContent).toContain('Built with TypeScript, Vite, and Tailwind CSS');
     });
 
