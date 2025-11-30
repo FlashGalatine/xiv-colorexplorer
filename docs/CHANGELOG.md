@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.2] - 2025-11-30
+
+### 🌍 Localization Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Corrected specific terminology in French, Korean, and Chinese to match official FFXIV localization.
+
+#### Bug Fixes ✅
+
+**French Localization**
+- Corrected "Cosmic Fortunes" to "Roue de la fortune cosmique" (was "Fortune Cosmique")
+- Corrected "Dark" dye filter to "foncé" (was "Sombre")
+
+**Korean Localization**
+- Corrected "Dark" dye filter to "짙은" (was "다크")
+
+**Chinese Localization**
+- Corrected "Dark" dye filter to "黑暗" (was "深")
+- Corrected "Pastel" dye filter to "柔彩" (was "粉彩")
+
+---
+
 ## [2.1.1] - 2025-11-28
 
 ### ✅ Branch Coverage Testing Improvements
