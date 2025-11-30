@@ -253,31 +253,27 @@
 
 ---
 
-### 9. Custom
-*User-defined colors (paint bucket icon)*
+### 9. Shades
+*Variations of same hue at different brightness levels (gradient stripes)*
 
 ```svg
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-  <title>Custom Harmony</title>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <title>Shades Harmony</title>
   <!-- Outer wheel -->
   <circle cx="12" cy="12" r="10" opacity="0.3" />
-  <!-- Paint bucket body -->
-  <path d="M 6 9 L 7 18 L 15 18 L 16 9 Z" fill="none" />
-  <!-- Bucket rim -->
-  <ellipse cx="11" cy="9" rx="5" ry="2" fill="none" />
-  <!-- Handle -->
-  <path d="M 8 7 Q 11 4 14 7" fill="none" />
-  <!-- Paint pour/drip -->
-  <path d="M 16 11 Q 19 13 18 17 Q 17 20 19 21" fill="none" />
+  <!-- Gradient stripes representing different shades -->
+  <rect x="5" y="4" width="4" height="16" rx="1" fill="currentColor" opacity="1" stroke="none" />
+  <rect x="10" y="4" width="4" height="16" rx="1" fill="currentColor" opacity="0.6" stroke="none" />
+  <rect x="15" y="4" width="4" height="16" rx="1" fill="currentColor" opacity="0.3" stroke="none" />
 </svg>
 ```
 
 **Visual representation**:
 ```
-      ╭───╮
-     ┌─────┐ ~
-     │     │  ~  ← Paint bucket with pour
-     └─────┘   ~
+     ┌─┐ ┌─┐ ┌─┐
+     │█│ │▓│ │░│  ← Dark to light shades
+     │█│ │▓│ │░│
+     └─┘ └─┘ └─┘
 ```
 
 ---
@@ -325,7 +321,7 @@ type HarmonyType =
   | 'square'
   | 'compound'
   | 'monochromatic'
-  | 'custom';
+  | 'shades';
 
 @customElement('harmony-icon')
 export class HarmonyIcon extends LitElement {
@@ -400,22 +396,27 @@ export class HarmonyIcon extends LitElement {
 ## File Organization
 
 ```
+public/
+└── assets/
+    └── icons/
+        └── harmony/
+            ├── analogous.svg
+            ├── complementary.svg
+            ├── compound.svg
+            ├── monochromatic.svg
+            ├── shades.svg
+            ├── split-complementary.svg
+            ├── square.svg
+            ├── tetradic.svg
+            └── triadic.svg
+
 src/
-├── assets/
-│   └── icons/
-│       └── harmony/
-│           ├── complementary.svg
-│           ├── analogous.svg
-│           ├── triadic.svg
-│           ├── split-complementary.svg
-│           ├── tetradic.svg
-│           ├── square.svg
-│           ├── compound.svg
-│           ├── monochromatic.svg
-│           └── custom.svg
 └── components/
-    └── harmony-icon.ts  (Lit component wrapping all icons)
+    └── harmony-type.ts  (renders icons via <img> tag)
 ```
+
+> **Note**: Icons are in `public/` (not `src/`) because Vite's `publicDir` is configured
+> as `../public` relative to the `src` root. Static assets in `public/` are served at `/`.
 
 ---
 
@@ -426,9 +427,9 @@ When all icons are displayed together:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│  ◯●◯   ●●●   △    ⅄    ▭    ◇    ●:●   ●◐○   🪣           │
+│  ◯●◯   ●●●   △    ⅄    ▭    ◇    ●:●   ●◐○   ▥            │
 │                                                             │
-│  Comp  Anal  Tri  Splt Tetr Sqr  Cmpd Mono Cust            │
+│  Comp  Anal  Tri  Splt Tetr Sqr  Cmpd Mono Shds            │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```

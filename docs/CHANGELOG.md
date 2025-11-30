@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added ✅
 
 **SVG Harmony Icons**
-- Created 9 custom SVG icons for harmony types at `src/public/assets/icons/harmony/`
+- Created 9 custom SVG icons for harmony types at `public/assets/icons/harmony/`
 - Each icon visually represents the color relationship on a color wheel:
   - `complementary.svg` - Two dots opposite (180°)
   - `analogous.svg` - Three adjacent dots with arc
