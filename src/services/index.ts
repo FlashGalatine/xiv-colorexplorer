@@ -22,6 +22,8 @@ export { StorageService, appStorage, NamespacedStorage, SecureStorage } from './
 export { ThemeService };
 export { LanguageService };
 export { APIService, apiService } from './api-service-wrapper';
+export { ToastService } from './toast-service';
+export type { Toast, ToastType, ToastOptions } from './toast-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
@@ -54,6 +56,9 @@ export async function initializeServices(): Promise<void> {
 
     // APIService initializes on first getInstance
     logger.info('✅ APIService ready');
+
+    // ToastService is static singleton, always ready
+    logger.info('✅ ToastService ready');
 
     logger.info('🚀 All services initialized successfully');
   } catch (error) {

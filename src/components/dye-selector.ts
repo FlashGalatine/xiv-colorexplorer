@@ -12,6 +12,7 @@ import { DyeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
+import { getEmptyStateHTML } from './empty-state';
 
 /**
  * Sort options for dye list
@@ -42,6 +43,10 @@ export class DyeSelector extends BaseComponent {
   private sortOption: SortOption = 'alphabetical';
   private options: DyeSelectorOptions;
   private allowDuplicates: boolean = false;
+  /** Index of focused dye card for keyboard navigation (-1 = none) */
+  private focusedIndex: number = -1;
+  /** Number of columns in the grid (for keyboard navigation) */
+  private gridColumns: number = 4;
 
   constructor(container: HTMLElement, options: DyeSelectorOptions = {}) {
     super(container);
@@ -268,21 +273,64 @@ export class DyeSelector extends BaseComponent {
       wrapper.appendChild(selectedContainer);
     }
 
-    // Dye list
+    // Dye list with ARIA grid role for keyboard navigation
     const dyeListContainer = this.createElement('div', {
       className:
         'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-96 overflow-y-auto',
+      attributes: {
+        role: 'grid',
+        'aria-label': LanguageService.t('dyeSelector.gridAriaLabel') || 'Dye color selection',
+      },
     });
 
     this.filteredDyes = this.getFilteredDyes();
 
-    for (const dye of this.filteredDyes) {
+    // Show empty state if no dyes match
+    if (this.filteredDyes.length === 0) {
+      const emptyHtml = this.searchQuery.trim()
+        ? getEmptyStateHTML({
+            icon: '🔍',
+            title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
+              `No dyes match "${this.searchQuery}"`,
+            description: LanguageService.t('dyeSelector.noResultsHint') ||
+              'Try checking your spelling or search for a category like "purple".',
+          })
+        : getEmptyStateHTML({
+            icon: '🎨',
+            title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
+            description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
+          });
+
+      dyeListContainer.innerHTML = emptyHtml;
+      wrapper.appendChild(dyeListContainer);
+
+      // Clear existing content and add new
+      clearContainer(this.container);
+      this.element = wrapper;
+      this.container.appendChild(this.element);
+      return;
+    }
+
+    // Reset focused index if out of bounds
+    if (this.focusedIndex >= this.filteredDyes.length) {
+      this.focusedIndex = this.filteredDyes.length - 1;
+    }
+
+    for (let i = 0; i < this.filteredDyes.length; i++) {
+      const dye = this.filteredDyes[i];
+      // Roving tabindex: only the focused item is tabbable
+      const isFocused = i === this.focusedIndex || (this.focusedIndex === -1 && i === 0);
+
       const dyeCard = this.createElement('button', {
         className:
-          'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left',
+          'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
         attributes: {
           'data-dye-id': String(dye.id),
+          'data-dye-index': String(i),
           type: 'button',
+          role: 'gridcell',
+          tabindex: isFocused ? '0' : '-1',
+          'aria-selected': this.selectedDyes.some((d) => d.id === dye.id) ? 'true' : 'false',
         },
       });
 
@@ -413,6 +461,9 @@ export class DyeSelector extends BaseComponent {
     const dyeListContainer = this.querySelector<HTMLElement>('div.grid');
 
     if (dyeListContainer) {
+      // Keyboard navigation for dye grid
+      this.on(dyeListContainer, 'keydown', this.handleGridKeydown);
+
       // Use event delegation to handle dye button clicks
       this.on(dyeListContainer, 'click', (event: Event) => {
         const mouseEvent = event as MouseEvent;
@@ -469,6 +520,193 @@ export class DyeSelector extends BaseComponent {
         this.emit('selection-changed', { selectedDyes: this.selectedDyes });
       });
     }
+
+    // Keyboard shortcut: "/" or Ctrl+F to focus search
+    this.on(document, 'keydown', this.handleGlobalKeydown);
+  }
+
+  /**
+   * Handle keyboard navigation for the dye grid
+   */
+  private handleGridKeydown(event: KeyboardEvent): void {
+    const dyeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
+    if (dyeButtons.length === 0) return;
+
+    // Calculate grid columns based on visible layout
+    this.updateGridColumns();
+
+    const key = event.key;
+    let newIndex = this.focusedIndex;
+
+    switch (key) {
+      case 'ArrowRight':
+        event.preventDefault();
+        newIndex = Math.min(this.focusedIndex + 1, this.filteredDyes.length - 1);
+        break;
+
+      case 'ArrowLeft':
+        event.preventDefault();
+        newIndex = Math.max(this.focusedIndex - 1, 0);
+        break;
+
+      case 'ArrowDown':
+        event.preventDefault();
+        newIndex = Math.min(this.focusedIndex + this.gridColumns, this.filteredDyes.length - 1);
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        newIndex = Math.max(this.focusedIndex - this.gridColumns, 0);
+        break;
+
+      case 'Home':
+        event.preventDefault();
+        newIndex = 0;
+        break;
+
+      case 'End':
+        event.preventDefault();
+        newIndex = this.filteredDyes.length - 1;
+        break;
+
+      case 'PageDown':
+        event.preventDefault();
+        // Move down by one "page" (multiple rows)
+        newIndex = Math.min(this.focusedIndex + this.gridColumns * 3, this.filteredDyes.length - 1);
+        break;
+
+      case 'PageUp':
+        event.preventDefault();
+        // Move up by one "page" (multiple rows)
+        newIndex = Math.max(this.focusedIndex - this.gridColumns * 3, 0);
+        break;
+
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        // Select the currently focused dye
+        this.selectDyeAtIndex(this.focusedIndex);
+        return;
+
+      case 'Escape':
+        event.preventDefault();
+        // Clear selection or blur
+        if (this.selectedDyes.length > 0) {
+          this.selectedDyes = [];
+          this.update();
+          this.emit('selection-changed', { selectedDyes: this.selectedDyes });
+        } else {
+          // Blur the grid
+          (document.activeElement as HTMLElement)?.blur();
+        }
+        return;
+
+      default:
+        return;
+    }
+
+    // Update focus if index changed
+    if (newIndex !== this.focusedIndex) {
+      this.setFocusedIndex(newIndex);
+    }
+  }
+
+  /**
+   * Handle global keyboard shortcuts (search focus)
+   */
+  private handleGlobalKeydown(event: KeyboardEvent): void {
+    // "/" or Ctrl+F to focus search
+    if (event.key === '/' || (event.ctrlKey && event.key === 'f')) {
+      // Only handle if not already in an input
+      if (document.activeElement?.tagName !== 'INPUT') {
+        event.preventDefault();
+        const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
+        searchInput?.focus();
+      }
+    }
+  }
+
+  /**
+   * Update grid columns based on viewport width
+   */
+  private updateGridColumns(): void {
+    const gridContainer = this.querySelector<HTMLElement>('div.grid');
+    if (!gridContainer) return;
+
+    // Get computed grid columns from the element's style
+    const computedStyle = window.getComputedStyle(gridContainer);
+    const gridTemplateColumns = computedStyle.gridTemplateColumns;
+
+    // Count the number of columns from the grid template
+    if (gridTemplateColumns && gridTemplateColumns !== 'none') {
+      const columns = gridTemplateColumns.split(' ').length;
+      this.gridColumns = columns;
+    } else {
+      // Fallback based on common breakpoints
+      const width = window.innerWidth;
+      if (width >= 1024) this.gridColumns = 4;      // lg
+      else if (width >= 768) this.gridColumns = 3;  // md
+      else if (width >= 640) this.gridColumns = 2;  // sm
+      else this.gridColumns = 1;                     // mobile
+    }
+  }
+
+  /**
+   * Set the focused index and update tabindex/focus
+   */
+  private setFocusedIndex(index: number): void {
+    const dyeButtons = this.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
+    if (index < 0 || index >= dyeButtons.length) return;
+
+    // Update previous focused button
+    if (this.focusedIndex >= 0 && this.focusedIndex < dyeButtons.length) {
+      dyeButtons[this.focusedIndex].setAttribute('tabindex', '-1');
+    }
+
+    // Update new focused button
+    this.focusedIndex = index;
+    const newFocusedBtn = dyeButtons[this.focusedIndex];
+    newFocusedBtn.setAttribute('tabindex', '0');
+    newFocusedBtn.focus();
+
+    // Scroll into view if needed
+    newFocusedBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  /**
+   * Select the dye at the given index
+   */
+  private selectDyeAtIndex(index: number): void {
+    if (index < 0 || index >= this.filteredDyes.length) return;
+
+    const dye = this.filteredDyes[index];
+    if (!dye) return;
+
+    if (this.options.allowMultiple) {
+      if (this.allowDuplicates) {
+        if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+          this.selectedDyes.push(dye);
+        }
+      } else {
+        // Toggle selection
+        const existingIndex = this.selectedDyes.findIndex((d) => d.id === dye.id);
+        if (existingIndex >= 0) {
+          this.selectedDyes.splice(existingIndex, 1);
+        } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
+          this.selectedDyes.push(dye);
+        }
+      }
+    } else {
+      this.selectedDyes = [dye];
+    }
+
+    this.update();
+    this.emit('selection-changed', { selectedDyes: this.selectedDyes });
+
+    // Restore focus after update
+    requestAnimationFrame(() => {
+      this.setFocusedIndex(index);
+    });
   }
 
   /**
@@ -558,51 +796,83 @@ export class DyeSelector extends BaseComponent {
 
         this.filteredDyes = this.getFilteredDyes();
 
-        for (const dye of this.filteredDyes) {
-          const dyeCard = this.createElement('button', {
-            className:
-              'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left',
-            attributes: {
-              'data-dye-id': String(dye.id),
-              type: 'button',
-            },
-          });
+        // Show empty state if no dyes match
+        if (this.filteredDyes.length === 0) {
+          const emptyHtml = this.searchQuery.trim()
+            ? getEmptyStateHTML({
+                icon: '🔍',
+                title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
+                  `No dyes match "${this.searchQuery}"`,
+                description: LanguageService.t('dyeSelector.noResultsHint') ||
+                  'Try checking your spelling or search for a category like "purple".',
+              })
+            : getEmptyStateHTML({
+                icon: '🎨',
+                title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
+                description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
+              });
 
-          const dyeCardContent = this.createElement('div', {
-            className: 'space-y-1',
-          });
-
-          const colorDiv = this.createElement('div', {
-            className: 'w-full h-12 rounded border border-gray-300 dark:border-gray-600',
-            attributes: {
-              style: `background-color: ${dye.hex}`,
-            },
-          });
-
-          const nameDiv = this.createElement('div', {
-            textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
-            className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
-          });
-
-          const hexDiv = this.createElement('div', {
-            textContent: dye.hex,
-            className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
-          });
-
-          const categoryDiv = this.createElement('div', {
-            textContent: LanguageService.getCategory(dye.category),
-            className: 'text-xs text-gray-500 dark:text-gray-500',
-          });
-
-          dyeCardContent.appendChild(colorDiv);
-          dyeCardContent.appendChild(nameDiv);
-          dyeCardContent.appendChild(hexDiv);
-          if (this.options.showCategories) {
-            dyeCardContent.appendChild(categoryDiv);
+          dyeListContainer.innerHTML = emptyHtml;
+        } else {
+          // Reset focused index if out of bounds
+          if (this.focusedIndex >= this.filteredDyes.length) {
+            this.focusedIndex = this.filteredDyes.length - 1;
           }
 
-          dyeCard.appendChild(dyeCardContent);
-          dyeListContainer.appendChild(dyeCard);
+          for (let i = 0; i < this.filteredDyes.length; i++) {
+            const dye = this.filteredDyes[i];
+            // Roving tabindex: only the focused item is tabbable
+            const isFocused = i === this.focusedIndex || (this.focusedIndex === -1 && i === 0);
+
+            const dyeCard = this.createElement('button', {
+              className:
+                'dye-select-btn p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
+              attributes: {
+                'data-dye-id': String(dye.id),
+                'data-dye-index': String(i),
+                type: 'button',
+                role: 'gridcell',
+                tabindex: isFocused ? '0' : '-1',
+                'aria-selected': this.selectedDyes.some((d) => d.id === dye.id) ? 'true' : 'false',
+              },
+            });
+
+            const dyeCardContent = this.createElement('div', {
+              className: 'space-y-1',
+            });
+
+            const colorDiv = this.createElement('div', {
+              className: 'w-full h-12 rounded border border-gray-300 dark:border-gray-600',
+              attributes: {
+                style: `background-color: ${dye.hex}`,
+              },
+            });
+
+            const nameDiv = this.createElement('div', {
+              textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
+              className: 'text-sm font-semibold text-gray-900 dark:text-white truncate',
+            });
+
+            const hexDiv = this.createElement('div', {
+              textContent: dye.hex,
+              className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
+            });
+
+            const categoryDiv = this.createElement('div', {
+              textContent: LanguageService.getCategory(dye.category),
+              className: 'text-xs text-gray-500 dark:text-gray-500',
+            });
+
+            dyeCardContent.appendChild(colorDiv);
+            dyeCardContent.appendChild(nameDiv);
+            dyeCardContent.appendChild(hexDiv);
+            if (this.options.showCategories) {
+              dyeCardContent.appendChild(categoryDiv);
+            }
+
+            dyeCard.appendChild(dyeCardContent);
+            dyeListContainer.appendChild(dyeCard);
+          }
         }
         // NOTE: Event delegation for dye selection is set up in bindEvents()
         // Do NOT re-bind here as it causes exponential event stacking

@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { LanguageSelector } from './language-selector';
+import { ToastContainer } from './toast-container';
 import { ThemeService, LanguageService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
@@ -21,6 +22,7 @@ import { clearContainer } from '@shared/utils';
 export class AppLayout extends BaseComponent {
   private themeSwitcher: ThemeSwitcher | null = null;
   private languageSelector: LanguageSelector | null = null;
+  private toastContainer: ToastContainer | null = null;
   private contentContainer: HTMLElement | null = null;
 
   /**
@@ -47,6 +49,12 @@ export class AppLayout extends BaseComponent {
     // Footer
     const footer = this.renderFooter();
     app.appendChild(footer);
+
+    // Toast container (for notifications)
+    const toastContainerEl = this.createElement('div', {
+      id: 'toast-root',
+    });
+    app.appendChild(toastContainerEl);
 
     clearContainer(this.container);
     this.element = app;
@@ -270,6 +278,13 @@ export class AppLayout extends BaseComponent {
       this.themeSwitcher.init();
     }
 
+    // Initialize toast container (for notifications)
+    const toastRoot = this.querySelector<HTMLElement>('#toast-root');
+    if (toastRoot) {
+      this.toastContainer = new ToastContainer(toastRoot);
+      this.toastContainer.init();
+    }
+
     // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
     ThemeService.subscribe(() => {
       this.updateHeaderColors();
@@ -367,6 +382,9 @@ export class AppLayout extends BaseComponent {
     }
     if (this.themeSwitcher) {
       this.themeSwitcher.destroy();
+    }
+    if (this.toastContainer) {
+      this.toastContainer.destroy();
     }
     super.destroy();
   }

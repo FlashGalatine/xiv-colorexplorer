@@ -266,7 +266,10 @@
     "sortSaturation": "Sättigung (Gedämpft → Leuchtend)",
     "sortCategory": "Kategorie, dann Name",
     "allCategories": "Alle",
-    "selected": "Ausgewählt: {current}/{max}"
+    "selected": "Ausgewählt: {current}/{max}",
+    "gridAriaLabel": "Farbstoff-Auswahlraster. Verwenden Sie Pfeiltasten zum Navigieren, Enter oder Leertaste zum Auswählen.",
+    "noResults": "Keine Farbstoffe entsprechen Ihrer Suche",
+    "noResultsHint": "Versuchen Sie einen anderen Suchbegriff oder eine andere Kategorie"
   },
   "filters": {
     "title": "Farbstofffilter",

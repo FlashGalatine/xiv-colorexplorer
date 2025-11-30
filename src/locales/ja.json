@@ -266,7 +266,10 @@
     "sortSaturation": "彩度（淡→鮮）",
     "sortCategory": "カテゴリ順",
     "allCategories": "すべて",
-    "selected": "選択: {current}/{max}"
+    "selected": "選択: {current}/{max}",
+    "gridAriaLabel": "カララント選択グリッド。矢印キーで移動、EnterまたはSpaceで選択。",
+    "noResults": "検索に一致するカララントがありません",
+    "noResultsHint": "別の検索語またはカテゴリをお試しください"
   },
   "filters": {
     "title": "カララントフィルター",

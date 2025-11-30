@@ -266,7 +266,10 @@
     "sortSaturation": "채도 (흐림 → 선명)",
     "sortCategory": "카테고리별",
     "allCategories": "전체",
-    "selected": "선택됨: {current}/{max}"
+    "selected": "선택됨: {current}/{max}",
+    "gridAriaLabel": "염료 선택 그리드. 화살표 키로 이동, Enter 또는 스페이스로 선택.",
+    "noResults": "검색과 일치하는 염료가 없습니다",
+    "noResultsHint": "다른 검색어나 카테고리를 시도해 보세요"
   },
   "filters": {
     "title": "염료 필터",

@@ -1,0 +1,226 @@
+/**
+ * XIV Dye Tools v2.1.0 - Empty State Component
+ *
+ * Reusable empty state display for zero-result scenarios
+ * Provides friendly messaging with optional action buttons
+ *
+ * @module components/empty-state
+ */
+
+import { BaseComponent } from './base-component';
+import { clearContainer } from '@shared/utils';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface EmptyStateOptions {
+  /** Icon to display (emoji or text) */
+  icon: string;
+  /** Main title text */
+  title: string;
+  /** Description/explanation text */
+  description?: string;
+  /** Action button label */
+  actionLabel?: string;
+  /** Action button callback */
+  onAction?: () => void;
+  /** Secondary action button label */
+  secondaryActionLabel?: string;
+  /** Secondary action button callback */
+  onSecondaryAction?: () => void;
+}
+
+// ============================================================================
+// Preset Empty States
+// ============================================================================
+
+export const EMPTY_STATE_PRESETS = {
+  noSearchResults: (query: string, onClear?: () => void): EmptyStateOptions => ({
+    icon: '🔍',
+    title: `No dyes match "${query}"`,
+    description: 'Try checking your spelling or search for a category like "purple" or "red".',
+    actionLabel: 'Clear search',
+    onAction: onClear,
+  }),
+
+  allFilteredOut: (onReset?: () => void): EmptyStateOptions => ({
+    icon: '🎨',
+    title: 'All suggestions were filtered out',
+    description: 'Your current filters are hiding all matching dyes. Try adjusting your filter settings.',
+    actionLabel: 'Reset filters',
+    onAction: onReset,
+  }),
+
+  noPriceData: (onTryAnother?: () => void): EmptyStateOptions => ({
+    icon: '💰',
+    title: 'No price data available',
+    description: 'This dye may not be tradeable or Universalis doesn\'t have recent data for this server.',
+    actionLabel: 'Try different server',
+    onAction: onTryAnother,
+  }),
+
+  noHarmonyResults: (onSelectDye?: () => void): EmptyStateOptions => ({
+    icon: '🎵',
+    title: 'No harmony suggestions',
+    description: 'Select a base dye to generate color harmony suggestions.',
+    actionLabel: 'Select a dye',
+    onAction: onSelectDye,
+  }),
+
+  noImage: (onUpload?: () => void): EmptyStateOptions => ({
+    icon: '🖼️',
+    title: 'No image loaded',
+    description: 'Upload an image to start matching colors from it.',
+    actionLabel: 'Upload image',
+    onAction: onUpload,
+  }),
+
+  error: (message: string, onRetry?: () => void): EmptyStateOptions => ({
+    icon: '⚠️',
+    title: 'Something went wrong',
+    description: message,
+    actionLabel: 'Try again',
+    onAction: onRetry,
+  }),
+
+  loading: (): EmptyStateOptions => ({
+    icon: '⏳',
+    title: 'Loading...',
+    description: 'Please wait while we fetch the data.',
+  }),
+} as const;
+
+// ============================================================================
+// Empty State Component
+// ============================================================================
+
+export class EmptyState extends BaseComponent {
+  private options: EmptyStateOptions;
+
+  constructor(container: HTMLElement, options: EmptyStateOptions) {
+    super(container);
+    this.options = options;
+  }
+
+  /**
+   * Render the empty state
+   */
+  render(): void {
+    clearContainer(this.container);
+
+    // Main wrapper with styling from globals.css
+    const wrapper = this.createElement('div', {
+      className: 'empty-state',
+    });
+
+    // Icon
+    const icon = this.createElement('div', {
+      className: 'empty-state-icon',
+      textContent: this.options.icon,
+      attributes: {
+        'aria-hidden': 'true',
+      },
+    });
+    wrapper.appendChild(icon);
+
+    // Title
+    const title = this.createElement('h3', {
+      className: 'empty-state-title',
+      textContent: this.options.title,
+    });
+    wrapper.appendChild(title);
+
+    // Description
+    if (this.options.description) {
+      const description = this.createElement('p', {
+        className: 'empty-state-description',
+        textContent: this.options.description,
+      });
+      wrapper.appendChild(description);
+    }
+
+    // Actions container
+    if (this.options.actionLabel || this.options.secondaryActionLabel) {
+      const actions = this.createElement('div', {
+        className: 'empty-state-action flex gap-3',
+      });
+
+      // Primary action button
+      if (this.options.actionLabel && this.options.onAction) {
+        const primaryBtn = this.createElement('button', {
+          className:
+            'px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors',
+          textContent: this.options.actionLabel,
+          attributes: {
+            type: 'button',
+          },
+        });
+        primaryBtn.addEventListener('click', this.options.onAction);
+        actions.appendChild(primaryBtn);
+      }
+
+      // Secondary action button
+      if (this.options.secondaryActionLabel && this.options.onSecondaryAction) {
+        const secondaryBtn = this.createElement('button', {
+          className:
+            'px-4 py-2 text-sm font-medium rounded-lg border border-current text-current hover:bg-black/5 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2 transition-colors',
+          textContent: this.options.secondaryActionLabel,
+          attributes: {
+            type: 'button',
+          },
+        });
+        secondaryBtn.addEventListener('click', this.options.onSecondaryAction);
+        actions.appendChild(secondaryBtn);
+      }
+
+      wrapper.appendChild(actions);
+    }
+
+    this.element = wrapper;
+    this.container.appendChild(this.element);
+  }
+
+  /**
+   * Bind events
+   */
+  bindEvents(): void {
+    // Events are bound in render() for action buttons
+  }
+
+  /**
+   * Update the empty state options
+   */
+  setOptions(options: Partial<EmptyStateOptions>): void {
+    this.options = { ...this.options, ...options };
+    this.update();
+  }
+}
+
+// ============================================================================
+// Factory Functions
+// ============================================================================
+
+/**
+ * Create an empty state from a preset
+ */
+export function createEmptyState(
+  container: HTMLElement,
+  preset: EmptyStateOptions
+): EmptyState {
+  const emptyState = new EmptyState(container, preset);
+  return emptyState.init();
+}
+
+/**
+ * Create empty state HTML string for use in innerHTML
+ */
+export function getEmptyStateHTML(options: EmptyStateOptions): string {
+  return `
+    <div class="empty-state">
+      <div class="empty-state-icon" aria-hidden="true">${options.icon}</div>
+      <h3 class="empty-state-title">${options.title}</h3>
+      ${options.description ? `<p class="empty-state-description">${options.description}</p>` : ''}
+    </div>
+  `.trim();
+}

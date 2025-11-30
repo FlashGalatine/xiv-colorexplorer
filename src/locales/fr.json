@@ -266,7 +266,10 @@
     "sortSaturation": "Saturation (Terne → Vif)",
     "sortCategory": "Catégorie puis Nom",
     "allCategories": "Toutes",
-    "selected": "Sélectionné : {current}/{max}"
+    "selected": "Sélectionné : {current}/{max}",
+    "gridAriaLabel": "Grille de sélection des teintures. Utilisez les touches fléchées pour naviguer, Entrée ou Espace pour sélectionner.",
+    "noResults": "Aucune teinture ne correspond à votre recherche",
+    "noResultsHint": "Essayez un autre terme de recherche ou une autre catégorie"
   },
   "filters": {
     "title": "Filtres de Teintures",

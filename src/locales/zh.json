@@ -266,7 +266,10 @@
     "sortSaturation": "饱和度（淡→艳）",
     "sortCategory": "按分类",
     "allCategories": "全部",
-    "selected": "已选择：{current}/{max}"
+    "selected": "已选择：{current}/{max}",
+    "gridAriaLabel": "染料选择网格。使用方向键导航，按Enter或空格键选择。",
+    "noResults": "没有匹配的染料",
+    "noResultsHint": "尝试其他搜索词或类别"
   },
   "filters": {
     "title": "染剂筛选",

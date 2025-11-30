@@ -270,7 +270,10 @@
     "sortSaturation": "Saturation (Muted → Vivid)",
     "sortCategory": "Category then Name",
     "allCategories": "All",
-    "selected": "Selected: {current}/{max}"
+    "selected": "Selected: {current}/{max}",
+    "gridAriaLabel": "Dye selection grid. Use arrow keys to navigate, Enter or Space to select.",
+    "noResults": "No dyes match your search",
+    "noResultsHint": "Try a different search term or category"
   },
   "filters": {
     "title": "Dye Filters",
