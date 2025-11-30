@@ -122,9 +122,14 @@ export class HarmonyType extends BaseComponent {
       className: 'flex items-center gap-2 mb-2',
     });
 
-    const icon = this.createElement('span', {
-      textContent: this.harmonyInfo.icon,
-      className: 'text-2xl',
+    const icon = this.createElement('img', {
+      attributes: {
+        src: `/assets/icons/harmony/${this.harmonyInfo.icon}.svg`,
+        alt: `${this.harmonyInfo.name} icon`,
+        width: '28',
+        height: '28',
+      },
+      className: 'harmony-icon',
     });
 
     const name = this.createElement('h3', {

@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.3] - 2025-11-30
+
+### 🎨 UI Improvements: SVG Harmony Icons
+
+**Status**: ✅ COMPLETE
+**Focus**: Replaced emoji harmony type indicators with custom SVG icons for consistent cross-platform display.
+
+#### Added ✅
+
+**SVG Harmony Icons**
+- Created 9 custom SVG icons for harmony types at `src/public/assets/icons/harmony/`
+- Each icon visually represents the color relationship on a color wheel:
+  - `complementary.svg` - Two dots opposite (180°)
+  - `analogous.svg` - Three adjacent dots with arc
+  - `triadic.svg` - Triangle inscribed in wheel
+  - `split-complementary.svg` - Y-shape fork
+  - `tetradic.svg` - Rectangle in wheel
+  - `square.svg` - Diamond/rotated square
+  - `compound.svg` - Base + grouped dots
+  - `monochromatic.svg` - Stacked opacity gradient
+  - `shades.svg` - Light to dark progression
+
+**Technical Details**
+- Icons use `currentColor` for theme compatibility
+- CSS filter applied (brightness/invert) to match header text color
+- Icons include `<title>` elements for screen reader accessibility
+- 28x28px display size, optimized for small screens
+
+#### Changed ✅
+
+- Updated `harmony-generator-tool.ts` to use SVG icon names instead of emojis
+- Updated `harmony-type.ts` to render `<img>` elements for icons
+- Added `.harmony-icon` CSS class in `themes.css` for icon styling
+- Updated test mocks to use new icon format
+
+---
+
 ## [2.1.2] - 2025-11-30
 
 ### 🌍 Localization Fixes

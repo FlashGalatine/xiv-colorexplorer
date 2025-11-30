@@ -274,6 +274,13 @@ a:hover {
   color: var(--theme-text-header) !important;
 }
 
+/* Harmony SVG icons - filter to match header text color */
+.harmony-icon {
+  /* Convert black stroke SVG to white for visibility on colored backgrounds */
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
 /* Form elements */
 input,
 textarea,

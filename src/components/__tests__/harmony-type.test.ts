@@ -15,7 +15,7 @@ const mockHarmonyInfo: HarmonyTypeInfo = {
   id: 'complementary',
   name: 'Complementary',
   description: 'Colors opposite on the color wheel',
-  icon: '🎨',
+  icon: 'complementary',
 };
 
 const mockDye1: Dye = {
@@ -180,7 +180,7 @@ describe('HarmonyType Component', () => {
         id: 'analogous',
         name: 'Analogous',
         description: 'Adjacent colors on the color wheel',
-        icon: '🎨',
+        icon: 'analogous',
       };
 
       component = new HarmonyType(container, analogousInfo, '#FF0000', []);
@@ -659,7 +659,10 @@ describe('HarmonyType Component', () => {
       component = new HarmonyType(container, mockHarmonyInfo, '#FF0000', []);
       component.init();
 
-      expect(container.textContent).toContain(mockHarmonyInfo.icon);
+      // Icon is now rendered as an img element with SVG source
+      const iconImg = container.querySelector('img.harmony-icon');
+      expect(iconImg).toBeDefined();
+      expect(iconImg?.getAttribute('src')).toContain(mockHarmonyInfo.icon);
     });
 
     it('should display harmony name', () => {

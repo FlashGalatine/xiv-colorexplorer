@@ -32,18 +32,19 @@ import { clearContainer } from '@shared/utils';
 type SuggestionsMode = 'simple' | 'expanded';
 
 /**
- * Harmony type IDs with their icons
+ * Harmony type IDs with their SVG icon names
+ * Icons are located at /assets/icons/harmony/{name}.svg
  */
 const HARMONY_TYPE_IDS = [
-  { id: 'complementary', icon: '🔄' },
-  { id: 'analogous', icon: '➡️' },
-  { id: 'triadic', icon: '🔺' },
-  { id: 'split-complementary', icon: '⛓️' },
-  { id: 'tetradic', icon: '🔶' },
-  { id: 'square', icon: '⬜' },
-  { id: 'monochromatic', icon: '🔵' },
-  { id: 'compound', icon: '🔀' },
-  { id: 'shades', icon: '🌑' },
+  { id: 'complementary', icon: 'complementary' },
+  { id: 'analogous', icon: 'analogous' },
+  { id: 'triadic', icon: 'triadic' },
+  { id: 'split-complementary', icon: 'split-complementary' },
+  { id: 'tetradic', icon: 'tetradic' },
+  { id: 'square', icon: 'square' },
+  { id: 'monochromatic', icon: 'monochromatic' },
+  { id: 'compound', icon: 'compound' },
+  { id: 'shades', icon: 'shades' },
 ] as const;
 
 /**
