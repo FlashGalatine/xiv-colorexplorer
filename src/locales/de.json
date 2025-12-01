@@ -453,5 +453,101 @@
   "offline": {
     "banner": "Sie sind offline. Einige Funktionen sind möglicherweise eingeschränkt.",
     "pricesUnavailable": "Marktpreise sind offline nicht verfügbar"
+  },
+  "tutorial": {
+    "step": "Schritt",
+    "of": "von",
+    "skip": "Überspringen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "finish": "Fertig",
+    "prompt": {
+      "title": "Schnelltour",
+      "message": "Möchten Sie eine kurze Tour durch dieses Tool?",
+      "skip": "Überspringen",
+      "start": "Tour starten"
+    },
+    "harmony": {
+      "baseColor": {
+        "title": "Basisfarbe wählen",
+        "description": "Wählen Sie eine Farbe als Basisfarbe. Der Harmonie-Generator erstellt passende Farbpaletten basierend auf dieser Auswahl."
+      },
+      "types": {
+        "title": "Harmonieart wählen",
+        "description": "Wählen Sie ein Farbharmonie-Muster. Jeder Typ erstellt unterschiedliche Farbbeziehungen."
+      },
+      "filters": {
+        "title": "Ergebnisse filtern",
+        "description": "Verwenden Sie Filter, um bestimmte Farbstofftypen wie Metallic oder Pastell auszuschließen."
+      },
+      "market": {
+        "title": "Marktpreise prüfen",
+        "description": "Sehen Sie aktuelle Marktpreise von Universalis für jede Farbe in Ihrer Palette."
+      },
+      "export": {
+        "title": "Palette exportieren",
+        "description": "Exportieren Sie Ihre Farbpalette in verschiedenen Formaten: JSON, CSS oder Klartext."
+      }
+    },
+    "matcher": {
+      "upload": {
+        "title": "Bild hochladen",
+        "description": "Laden Sie ein Bild von Ihrem Gerät hoch oder fügen Sie es aus der Zwischenablage ein."
+      },
+      "picker": {
+        "title": "Farbe auswählen",
+        "description": "Klicken Sie auf das Bild, um eine Farbe zu erfassen, oder verwenden Sie den Farbwähler."
+      },
+      "sample": {
+        "title": "Abtastgröße anpassen",
+        "description": "Größere Abtastgrößen mitteln mehr Pixel für bessere Genauigkeit bei texturierten Bereichen."
+      },
+      "results": {
+        "title": "Passende Farben anzeigen",
+        "description": "Sehen Sie die am besten passenden FFXIV-Farben für Ihre ausgewählte Farbe."
+      }
+    },
+    "comparison": {
+      "select": {
+        "title": "Farben zum Vergleichen wählen",
+        "description": "Wählen Sie bis zu 4 Farben zum Vergleichen aus."
+      },
+      "display": {
+        "title": "Eigenschaften vergleichen",
+        "description": "Sehen Sie detaillierte Farbwerte, RGB, HSV und visuelle Vergleiche."
+      },
+      "matrix": {
+        "title": "Abstandsmatrix",
+        "description": "Sehen Sie, wie ähnlich oder unterschiedlich jede Farbe zu den anderen ist."
+      }
+    },
+    "mixer": {
+      "endpoints": {
+        "title": "Start und Ende wählen",
+        "description": "Wählen Sie zwei Farben, um einen Verlauf zu erstellen."
+      },
+      "gradient": {
+        "title": "Verlauf anzeigen",
+        "description": "Sehen Sie den sanften Farbübergang und die passenden Farben bei jedem Schritt."
+      },
+      "settings": {
+        "title": "Interpolationseinstellungen",
+        "description": "Passen Sie die Anzahl der Schritte und den Farbraum an."
+      }
+    },
+    "accessibility": {
+      "select": {
+        "title": "Outfit-Farben wählen",
+        "description": "Wählen Sie bis zu 6 Farben für Ihre Outfit-Slots zur Barrierefreiheitsprüfung."
+      },
+      "simulations": {
+        "title": "Sehsimulationen",
+        "description": "Sehen Sie, wie Ihre Farbwahl für Menschen mit verschiedenen Farbsehschwächen aussieht."
+      },
+      "scores": {
+        "title": "Barrierefreiheitswerte",
+        "description": "Sehen Sie WCAG-Kontrastwerte und Farbblindheitskompatibilität."
+      }
+    }
   }
 }

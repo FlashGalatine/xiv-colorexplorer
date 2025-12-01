@@ -453,5 +453,101 @@
   "offline": {
     "banner": "오프라인 상태입니다. 일부 기능이 제한될 수 있습니다.",
     "pricesUnavailable": "오프라인 상태에서는 시장 가격을 이용할 수 없습니다"
+  },
+  "tutorial": {
+    "step": "단계",
+    "of": "중",
+    "skip": "건너뛰기",
+    "previous": "이전",
+    "next": "다음",
+    "finish": "완료",
+    "prompt": {
+      "title": "퀵 투어",
+      "message": "이 도구에 대한 간단한 투어를 시작하시겠습니까?",
+      "skip": "건너뛰기",
+      "start": "투어 시작"
+    },
+    "harmony": {
+      "baseColor": {
+        "title": "기본 염료 선택",
+        "description": "기본 색상으로 사용할 염료를 선택하세요. 하모니 생성기가 이 선택을 기반으로 보색 팔레트를 만듭니다."
+      },
+      "types": {
+        "title": "하모니 유형 선택",
+        "description": "색상 조화 패턴을 선택하세요. 각 유형은 색상 이론 원칙에 따라 다른 색상 관계를 만듭니다."
+      },
+      "filters": {
+        "title": "결과 필터링",
+        "description": "메탈릭이나 파스텔과 같은 특정 염료 유형을 제외하는 필터를 사용하세요."
+      },
+      "market": {
+        "title": "시장 가격 확인",
+        "description": "팔레트의 각 염료에 대한 Universalis의 현재 시장 가격을 확인하세요."
+      },
+      "export": {
+        "title": "팔레트 내보내기",
+        "description": "색상 팔레트를 다양한 형식으로 내보내기: JSON, CSS 또는 일반 텍스트."
+      }
+    },
+    "matcher": {
+      "upload": {
+        "title": "이미지 업로드",
+        "description": "기기에서 이미지를 업로드하거나 클립보드에서 붙여넣으세요. 클릭하거나 드래그하세요."
+      },
+      "picker": {
+        "title": "색상 선택",
+        "description": "이미지의 아무 곳이나 클릭하여 색상을 샘플링하거나 색상 선택기를 사용하세요."
+      },
+      "sample": {
+        "title": "샘플 크기 조정",
+        "description": "샘플 크기가 클수록 텍스처가 있는 영역에서 더 정확한 색상을 얻을 수 있습니다."
+      },
+      "results": {
+        "title": "매칭된 염료 보기",
+        "description": "선택한 색상과 가장 잘 맞는 FFXIV 염료를 색상 거리 순으로 확인하세요."
+      }
+    },
+    "comparison": {
+      "select": {
+        "title": "비교할 염료 선택",
+        "description": "최대 4개의 염료를 선택하여 나란히 비교하세요."
+      },
+      "display": {
+        "title": "속성 비교",
+        "description": "선택한 염료 간의 상세한 색상 값, RGB, HSV 및 시각적 비교를 확인하세요."
+      },
+      "matrix": {
+        "title": "거리 매트릭스",
+        "description": "각 염료가 다른 염료와 얼마나 비슷하거나 다른지 확인하세요."
+      }
+    },
+    "mixer": {
+      "endpoints": {
+        "title": "시작과 끝 선택",
+        "description": "그라데이션을 만들 두 개의 염료를 선택하세요. 믹서가 중간 염료를 찾습니다."
+      },
+      "gradient": {
+        "title": "그라데이션 보기",
+        "description": "부드러운 색상 전환과 각 단계에서 가장 일치하는 염료를 확인하세요."
+      },
+      "settings": {
+        "title": "보간 설정",
+        "description": "단계 수와 색상 공간을 조정하여 그라데이션을 사용자 지정하세요."
+      }
+    },
+    "accessibility": {
+      "select": {
+        "title": "의상 염료 선택",
+        "description": "접근성을 확인하기 위해 의상 슬롯을 나타내는 최대 6개의 염료를 선택하세요."
+      },
+      "simulations": {
+        "title": "시각 시뮬레이션",
+        "description": "다양한 색각을 가진 사람들에게 염료가 어떻게 보이는지 확인하세요."
+      },
+      "scores": {
+        "title": "접근성 점수",
+        "description": "WCAG 대비 등급과 색맹 호환성을 확인하세요."
+      }
+    }
   }
 }

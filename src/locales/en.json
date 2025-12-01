@@ -455,5 +455,101 @@
   "offline": {
     "banner": "You are offline. Some features may be limited.",
     "pricesUnavailable": "Market prices unavailable while offline"
+  },
+  "tutorial": {
+    "step": "Step",
+    "of": "of",
+    "skip": "Skip",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish",
+    "prompt": {
+      "title": "Quick Tour",
+      "message": "Would you like a quick tour of this tool?",
+      "skip": "Skip",
+      "start": "Start Tour"
+    },
+    "harmony": {
+      "baseColor": {
+        "title": "Select a Base Dye",
+        "description": "Choose a dye to use as your base color. The harmony generator will create complementary color palettes based on this selection."
+      },
+      "types": {
+        "title": "Choose Harmony Type",
+        "description": "Select a color harmony pattern. Each type creates different color relationships based on color theory principles."
+      },
+      "filters": {
+        "title": "Filter Your Results",
+        "description": "Use filters to exclude certain dye types like metallic or pastel dyes, helping you find exactly what you need."
+      },
+      "market": {
+        "title": "Check Market Prices",
+        "description": "View current market prices from Universalis for each dye in your palette. Prices update in real-time."
+      },
+      "export": {
+        "title": "Export Your Palette",
+        "description": "Export your color palette in various formats: JSON for developers, CSS for web projects, or plain text for sharing."
+      }
+    },
+    "matcher": {
+      "upload": {
+        "title": "Upload an Image",
+        "description": "Upload an image from your device or paste from clipboard. Click or drag to upload."
+      },
+      "picker": {
+        "title": "Pick a Color",
+        "description": "Click anywhere on the image to sample a color, or use the color picker for manual selection."
+      },
+      "sample": {
+        "title": "Adjust Sample Size",
+        "description": "Larger sample sizes average more pixels for better accuracy on textured areas."
+      },
+      "results": {
+        "title": "View Matched Dyes",
+        "description": "See the best matching FFXIV dyes for your selected color, sorted by color distance."
+      }
+    },
+    "comparison": {
+      "select": {
+        "title": "Select Dyes to Compare",
+        "description": "Choose up to 4 dyes to compare side-by-side. Click dyes to select them."
+      },
+      "display": {
+        "title": "Compare Properties",
+        "description": "View detailed color values, RGB, HSV, and visual comparisons between your selected dyes."
+      },
+      "matrix": {
+        "title": "Distance Matrix",
+        "description": "See how similar or different each dye is from the others. Lower numbers mean more similar colors."
+      }
+    },
+    "mixer": {
+      "endpoints": {
+        "title": "Select Start and End",
+        "description": "Choose two dyes to create a gradient between. The mixer will find intermediate dyes."
+      },
+      "gradient": {
+        "title": "View Gradient",
+        "description": "See the smooth color transition and the best matching dyes at each step."
+      },
+      "settings": {
+        "title": "Interpolation Settings",
+        "description": "Adjust the number of steps and color space to customize your gradient."
+      }
+    },
+    "accessibility": {
+      "select": {
+        "title": "Select Outfit Dyes",
+        "description": "Choose up to 6 dyes representing your outfit slots to check their accessibility."
+      },
+      "simulations": {
+        "title": "Vision Simulations",
+        "description": "See how your dye choices appear to people with different types of color vision."
+      },
+      "scores": {
+        "title": "Accessibility Scores",
+        "description": "View WCAG contrast ratings and colorblindness compatibility for your color choices."
+      }
+    }
   }
 }

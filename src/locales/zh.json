@@ -453,5 +453,101 @@
   "offline": {
     "banner": "您处于离线状态。部分功能可能受限。",
     "pricesUnavailable": "离线时无法获取市场价格"
+  },
+  "tutorial": {
+    "step": "步骤",
+    "of": "/",
+    "skip": "跳过",
+    "previous": "上一步",
+    "next": "下一步",
+    "finish": "完成",
+    "prompt": {
+      "title": "快速导览",
+      "message": "是否需要此工具的快速导览？",
+      "skip": "跳过",
+      "start": "开始导览"
+    },
+    "harmony": {
+      "baseColor": {
+        "title": "选择基础染料",
+        "description": "选择一个染料作为基础颜色。协调生成器将根据此选择创建互补色调色板。"
+      },
+      "types": {
+        "title": "选择协调类型",
+        "description": "选择颜色协调模式。每种类型根据色彩理论原则创建不同的颜色关系。"
+      },
+      "filters": {
+        "title": "过滤结果",
+        "description": "使用过滤器排除某些染料类型，如金属色或柔和色。"
+      },
+      "market": {
+        "title": "查看市场价格",
+        "description": "查看调色板中每种染料的Universalis当前市场价格。价格实时更新。"
+      },
+      "export": {
+        "title": "导出调色板",
+        "description": "以多种格式导出您的调色板：JSON、CSS或纯文本。"
+      }
+    },
+    "matcher": {
+      "upload": {
+        "title": "上传图片",
+        "description": "从您的设备上传图片或从剪贴板粘贴。点击或拖动上传。"
+      },
+      "picker": {
+        "title": "选择颜色",
+        "description": "点击图片的任何位置采样颜色，或使用颜色选择器手动选择。"
+      },
+      "sample": {
+        "title": "调整采样大小",
+        "description": "较大的采样尺寸可以平均更多像素，在纹理区域获得更准确的颜色。"
+      },
+      "results": {
+        "title": "查看匹配的染料",
+        "description": "查看与您选择的颜色最匹配的FFXIV染料，按颜色距离排序。"
+      }
+    },
+    "comparison": {
+      "select": {
+        "title": "选择要比较的染料",
+        "description": "选择最多4种染料进行并排比较。点击染料以选择它们。"
+      },
+      "display": {
+        "title": "比较属性",
+        "description": "查看所选染料之间的详细颜色值、RGB、HSV和视觉比较。"
+      },
+      "matrix": {
+        "title": "距离矩阵",
+        "description": "查看每种染料与其他染料的相似程度或差异程度。"
+      }
+    },
+    "mixer": {
+      "endpoints": {
+        "title": "选择起点和终点",
+        "description": "选择两种染料来创建它们之间的渐变。混合器将找到中间染料。"
+      },
+      "gradient": {
+        "title": "查看渐变",
+        "description": "查看平滑的颜色过渡以及每个步骤中最匹配的染料。"
+      },
+      "settings": {
+        "title": "插值设置",
+        "description": "调整步骤数和色彩空间以自定义您的渐变。"
+      }
+    },
+    "accessibility": {
+      "select": {
+        "title": "选择服装染料",
+        "description": "选择最多6种代表您装备槽位的染料来检查可访问性。"
+      },
+      "simulations": {
+        "title": "视觉模拟",
+        "description": "查看具有不同色觉类型的人如何看到您的染料选择。"
+      },
+      "scores": {
+        "title": "可访问性评分",
+        "description": "查看WCAG对比度评级和色盲兼容性。"
+      }
+    }
   }
 }
