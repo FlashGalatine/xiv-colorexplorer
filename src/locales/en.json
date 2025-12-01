@@ -451,5 +451,9 @@
     "permissionDenied": "Camera access denied",
     "checkPermissions": "Please check your browser permissions",
     "error": "Camera error"
+  },
+  "offline": {
+    "banner": "You are offline. Some features may be limited.",
+    "pricesUnavailable": "Market prices unavailable while offline"
   }
 }

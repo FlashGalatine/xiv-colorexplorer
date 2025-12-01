@@ -449,5 +449,9 @@
     "permissionDenied": "カメラへのアクセスが拒否されました",
     "checkPermissions": "ブラウザの権限設定を確認してください",
     "error": "カメラエラー"
+  },
+  "offline": {
+    "banner": "オフラインです。一部の機能が制限される場合があります。",
+    "pricesUnavailable": "オフライン時は市場価格を取得できません"
   }
 }

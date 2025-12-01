@@ -449,5 +449,9 @@
     "permissionDenied": "Kamerazugriff verweigert",
     "checkPermissions": "Bitte überprüfen Sie Ihre Browserberechtigungen",
     "error": "Kamerafehler"
+  },
+  "offline": {
+    "banner": "Sie sind offline. Einige Funktionen sind möglicherweise eingeschränkt.",
+    "pricesUnavailable": "Marktpreise sind offline nicht verfügbar"
   }
 }

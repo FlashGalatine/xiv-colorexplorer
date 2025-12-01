@@ -449,5 +449,9 @@
     "permissionDenied": "카메라 접근이 거부되었습니다",
     "checkPermissions": "브라우저 권한 설정을 확인해주세요",
     "error": "카메라 오류"
+  },
+  "offline": {
+    "banner": "오프라인 상태입니다. 일부 기능이 제한될 수 있습니다.",
+    "pricesUnavailable": "오프라인 상태에서는 시장 가격을 이용할 수 없습니다"
   }
 }

@@ -35,6 +35,8 @@ export { PaletteService } from './palette-service';
 export type { SavedPalette, PaletteExportData } from './palette-service';
 export { CameraService, cameraService } from './camera-service';
 export type { CameraDevice, CaptureResult } from './camera-service';
+export { IndexedDBService, indexedDBService, STORES } from './indexeddb-service';
+export type { StoreName } from './indexeddb-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';

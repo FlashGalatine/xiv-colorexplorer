@@ -1,6 +1,6 @@
 /**
  * API Service Singleton Wrapper
- * Wraps xivdyetools-core APIService with singleton pattern and localStorage cache
+ * Wraps xivdyetools-core APIService with IndexedDB cache (F4)
  */
 
 import {
@@ -9,11 +9,91 @@ import {
   type PriceData,
   type CachedData
 } from 'xivdyetools-core';
+import { indexedDBService, STORES } from './indexeddb-service';
 import { logger } from '@shared/logger';
 
 /**
- * LocalStorage Cache Backend for browser environment
- * Exported for testing purposes
+ * IndexedDB Cache Backend for browser environment (F4)
+ * Uses IndexedDB for larger storage capacity and better performance
+ * Falls back to memory-only if IndexedDB is unavailable
+ */
+export class IndexedDBCacheBackend implements ICacheBackend {
+  private memoryCache: Map<string, CachedData<PriceData>> = new Map();
+  private initPromise: Promise<void> | null = null;
+
+  /**
+   * Initialize the backend asynchronously
+   */
+  async initialize(): Promise<void> {
+    if (this.initPromise) return this.initPromise;
+
+    this.initPromise = (async () => {
+      const success = await indexedDBService.initialize();
+      if (success) {
+        await this.loadFromStorage();
+      }
+    })();
+
+    return this.initPromise;
+  }
+
+  get(key: string): CachedData<PriceData> | null {
+    // Return from memory cache for sync operation
+    return this.memoryCache.get(key) ?? null;
+  }
+
+  set(key: string, value: CachedData<PriceData>): void {
+    // Update memory cache immediately
+    this.memoryCache.set(key, value);
+
+    // Persist to IndexedDB asynchronously
+    indexedDBService.set(STORES.PRICE_CACHE, key, value).catch((error) => {
+      logger.warn('Failed to persist price data to IndexedDB:', error);
+    });
+  }
+
+  delete(key: string): void {
+    this.memoryCache.delete(key);
+    indexedDBService.delete(STORES.PRICE_CACHE, key).catch((error) => {
+      logger.warn('Failed to delete from IndexedDB:', error);
+    });
+  }
+
+  clear(): void {
+    this.memoryCache.clear();
+    indexedDBService.clear(STORES.PRICE_CACHE).catch((error) => {
+      logger.warn('Failed to clear IndexedDB cache:', error);
+    });
+  }
+
+  keys(): string[] {
+    return Array.from(this.memoryCache.keys());
+  }
+
+  /**
+   * Load all cached data from IndexedDB into memory
+   */
+  private async loadFromStorage(): Promise<void> {
+    try {
+      const keys = await indexedDBService.keys(STORES.PRICE_CACHE);
+      for (const key of keys) {
+        const data = await indexedDBService.get<CachedData<PriceData>>(STORES.PRICE_CACHE, key);
+        if (data) {
+          this.memoryCache.set(key, data);
+        }
+      }
+      if (keys.length > 0) {
+        logger.debug(`Loaded ${keys.length} price cache entries from IndexedDB`);
+      }
+    } catch (error) {
+      logger.warn('Failed to load price cache from IndexedDB:', error);
+    }
+  }
+}
+
+/**
+ * LocalStorage Cache Backend (fallback when IndexedDB unavailable)
+ * @deprecated Use IndexedDBCacheBackend instead
  */
 export class LocalStorageCacheBackend implements ICacheBackend {
   private keyPrefix = 'xivdyetools_api_';
@@ -80,17 +160,33 @@ export class LocalStorageCacheBackend implements ICacheBackend {
  */
 export class APIService {
   private static instance: CoreAPIService | null = null;
+  private static cacheBackend: IndexedDBCacheBackend | null = null;
+  private static initialized: boolean = false;
 
   /**
    * Get singleton instance of APIService
    */
   static getInstance(): CoreAPIService {
     if (!APIService.instance) {
-      const cacheBackend = new LocalStorageCacheBackend();
-      APIService.instance = new CoreAPIService(cacheBackend);
-      logger.info('✅ APIService initialized from xivdyetools-core with localStorage cache');
+      // Use IndexedDB cache backend (F4)
+      APIService.cacheBackend = new IndexedDBCacheBackend();
+      APIService.instance = new CoreAPIService(APIService.cacheBackend);
+      logger.info('✅ APIService initialized from xivdyetools-core with IndexedDB cache');
+
+      // Initialize cache backend asynchronously (won't block)
+      APIService.cacheBackend.initialize().then(() => {
+        APIService.initialized = true;
+        logger.debug('IndexedDB cache backend initialized');
+      });
     }
     return APIService.instance;
+  }
+
+  /**
+   * Check if the cache backend is fully initialized
+   */
+  static isInitialized(): boolean {
+    return APIService.initialized;
   }
 
   /**

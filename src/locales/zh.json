@@ -449,5 +449,9 @@
     "permissionDenied": "摄像头访问被拒绝",
     "checkPermissions": "请检查您的浏览器权限设置",
     "error": "摄像头错误"
+  },
+  "offline": {
+    "banner": "您处于离线状态。部分功能可能受限。",
+    "pricesUnavailable": "离线时无法获取市场价格"
   }
 }
