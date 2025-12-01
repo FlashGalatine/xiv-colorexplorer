@@ -194,6 +194,11 @@ export class LanguageSelector extends BaseComponent {
       });
     }
 
+    // Remove old listener before adding new one (update() calls bindEvents)
+    if (this.closeOtherDropdownsHandler) {
+      document.removeEventListener('close-other-dropdowns', this.closeOtherDropdownsHandler);
+    }
+
     // Listen for close requests from other dropdowns
     this.closeOtherDropdownsHandler = ((e: CustomEvent<{ source: string }>) => {
       if (e.detail.source !== 'language' && this.isDropdownOpen) {
