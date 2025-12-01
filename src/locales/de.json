@@ -93,6 +93,12 @@
     "noMatchingDyes": "Keine passenden Farbstoffe gefunden",
     "avgHueDiff": "Durchschn. Farbtonabweichung",
     "hueDiff": "Farbtonabw.",
+    "actions": "Farbstoff-Aktionen",
+    "addToComparison": "Zum Vergleich hinzufügen",
+    "addToMixer": "Zum Mixer hinzufügen",
+    "copyHex": "Hex-Code kopieren",
+    "copiedHex": "Kopiert",
+    "copyFailed": "Kopieren fehlgeschlagen",
     "types": {
       "complementaryDesc": "Farben, die sich im Farbkreis direkt gegenüberliegen, für maximalen Kontrast",
       "analogousDesc": "Benachbarte Farben im Farbkreis für ein harmonisches, einheitliches Erscheinungsbild",
@@ -136,7 +142,12 @@
     "zoomWidth": "Breite",
     "zoomReset": "Zurücksetzen",
     "copyHex": "Hex kopieren",
-    "market": "Markt"
+    "market": "Markt",
+    "sampled": "Aufgenommen",
+    "sampledColor": "Aufgenommene Farbe",
+    "imageColorPicker": "Bild-Farbwähler",
+    "privacyNoteFull": "Datenschutz: Bilder verlassen niemals Ihren Browser. Die gesamte Verarbeitung erfolgt lokal.",
+    "samplePreview": "Abtastpunkt-Vorschau"
   },
   "accessibility": {
     "selectDyes": "Farbstoffe auswählen",
@@ -356,5 +367,22 @@
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Graustufen (Hell)",
     "grayscaleDark": "Graustufen (Dunkel)"
+  },
+  "welcome": {
+    "title": "Willkommen bei XIV Farbwerkzeuge",
+    "intro": "Finde die perfekten Farbstoffe für deine FFXIV-Glamours! Entdecke unsere Werkzeuge unten:",
+    "dontShowAgain": "Nicht mehr anzeigen",
+    "getStarted": "Los geht's",
+    "quickTips": "Schnelltipps",
+    "tip1": "Klicke auf Werkzeugnamen im Header, um zwischen Werkzeugen zu wechseln",
+    "tip2": "Preise stammen von Universalis (Live-Marktdaten)",
+    "tip3": "Deine Einstellungen werden lokal im Browser gespeichert",
+    "tools": {
+      "harmony": "Generiere harmonische Farbpaletten basierend auf Farbtheorie",
+      "matcher": "Finde den am besten passenden FFXIV-Farbstoff zu jeder Farbe",
+      "comparison": "Vergleiche Farbstoffe nebeneinander mit detaillierten Statistiken",
+      "mixer": "Experimentiere mit Farbstoffkombinationen und Verläufen",
+      "accessibility": "Prüfe Farbzugänglichkeit und simuliere Farbenblindheit"
+    }
   }
 }

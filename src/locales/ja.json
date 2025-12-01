@@ -93,6 +93,12 @@
     "noMatchingDyes": "マッチするカララントが見つかりません",
     "avgHueDiff": "平均色相差",
     "hueDiff": "色相差",
+    "actions": "カララント操作",
+    "addToComparison": "比較に追加",
+    "addToMixer": "ミキサーに追加",
+    "copyHex": "Hexコードをコピー",
+    "copiedHex": "コピーしました",
+    "copyFailed": "コピーに失敗しました",
     "types": {
       "complementaryDesc": "カラーホイールで正反対の色、最大コントラストを実現",
       "analogousDesc": "カラーホイール上で隣接する色、調和のとれた統一感",
@@ -136,7 +142,12 @@
     "zoomWidth": "幅に合わせる",
     "zoomReset": "リセット",
     "copyHex": "Hexをコピー",
-    "market": "マーケット"
+    "market": "マーケット",
+    "sampled": "サンプル済み",
+    "sampledColor": "サンプルした色",
+    "imageColorPicker": "画像カラーピッカー",
+    "privacyNoteFull": "プライバシー保護: 画像はブラウザから外に出ません。すべての処理はローカルで行われます。",
+    "samplePreview": "サンプルポイントプレビュー"
   },
   "accessibility": {
     "selectDyes": "カララントを選択",
@@ -356,5 +367,22 @@
     "sugarRiot": "シュガーライオット",
     "grayscaleLight": "グレースケール（ライト）",
     "grayscaleDark": "グレースケール（ダーク）"
+  },
+  "welcome": {
+    "title": "XIV 染色ツールへようこそ",
+    "intro": "FFXIVのグラマーに最適なカララントを見つけましょう！以下のツールをご覧ください：",
+    "dontShowAgain": "今後表示しない",
+    "getStarted": "始める",
+    "quickTips": "クイックヒント",
+    "tip1": "ヘッダーのツール名をクリックしてツールを切り替え",
+    "tip2": "価格はUniversalisからのリアルタイムマーケットデータです",
+    "tip3": "設定はブラウザにローカル保存されます",
+    "tools": {
+      "harmony": "色彩理論に基づいた調和のとれたカラーパレットを生成",
+      "matcher": "任意の色に最も近いFFXIVカララントを見つける",
+      "comparison": "カララントを並べて詳細な統計情報と比較",
+      "mixer": "カララントの組み合わせとグラデーションを試す",
+      "accessibility": "色のアクセシビリティをチェックし、色覚異常をシミュレート"
+    }
   }
 }

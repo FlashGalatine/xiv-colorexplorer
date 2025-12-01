@@ -38,15 +38,16 @@ export function createDyeActionDropdown(
   // Dropdown button
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = `
-    flex items-center justify-center
-    w-8 h-8 rounded-lg
-    text-gray-500 dark:text-gray-400
-    hover:text-gray-700 dark:hover:text-gray-200
-    hover:bg-gray-100 dark:hover:bg-gray-600
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
-    transition-colors
-  `.replace(/\s+/g, ' ').trim();
+  button.className = 'flex items-center justify-center w-8 h-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors';
+  button.style.color = 'var(--theme-text-muted)';
+  button.addEventListener('mouseenter', () => {
+    button.style.color = 'var(--theme-text)';
+    button.style.backgroundColor = 'var(--theme-card-hover)';
+  });
+  button.addEventListener('mouseleave', () => {
+    button.style.color = 'var(--theme-text-muted)';
+    button.style.backgroundColor = '';
+  });
   button.setAttribute('aria-label', LanguageService.t('harmony.actions') || 'Actions');
   button.setAttribute('aria-haspopup', 'true');
   button.setAttribute('aria-expanded', 'false');
@@ -60,18 +61,14 @@ export function createDyeActionDropdown(
 
   // Dropdown menu
   const menu = document.createElement('div');
-  menu.className = `
-    absolute right-0 top-full mt-1 z-50
-    min-w-[160px] py-1
-    bg-white dark:bg-gray-800
-    border border-gray-200 dark:border-gray-700
-    rounded-lg shadow-lg
-    opacity-0 invisible
-    transform scale-95 origin-top-right
-    transition-all duration-150
-  `.replace(/\s+/g, ' ').trim();
+  menu.className = 'absolute right-0 top-full mt-1 z-50 min-w-[160px] py-1 rounded-lg shadow-lg opacity-0 invisible transform scale-95 origin-top-right transition-all duration-150';
+  menu.style.backgroundColor = 'var(--theme-card-background)';
+  menu.style.borderWidth = '1px';
+  menu.style.borderStyle = 'solid';
+  menu.style.borderColor = 'var(--theme-border)';
   menu.setAttribute('role', 'menu');
-  menu.setAttribute('aria-hidden', 'true');
+  // Use inert for better accessibility - prevents focus while hidden
+  menu.setAttribute('inert', '');
 
   // Menu items
   const actions: Array<{ action: DyeAction; icon: string; labelKey: string; defaultLabel: string }> = [
@@ -98,13 +95,14 @@ export function createDyeActionDropdown(
   actions.forEach(({ action, icon, labelKey, defaultLabel }) => {
     const menuItem = document.createElement('button');
     menuItem.type = 'button';
-    menuItem.className = `
-      w-full flex items-center gap-2 px-3 py-2
-      text-sm text-left
-      text-gray-700 dark:text-gray-200
-      hover:bg-gray-100 dark:hover:bg-gray-700
-      transition-colors
-    `.replace(/\s+/g, ' ').trim();
+    menuItem.className = 'w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors';
+    menuItem.style.color = 'var(--theme-text)';
+    menuItem.addEventListener('mouseenter', () => {
+      menuItem.style.backgroundColor = 'var(--theme-card-hover)';
+    });
+    menuItem.addEventListener('mouseleave', () => {
+      menuItem.style.backgroundColor = '';
+    });
     menuItem.setAttribute('role', 'menuitem');
 
     const iconSpan = document.createElement('span');
@@ -136,11 +134,15 @@ export function createDyeActionDropdown(
   let isOpen = false;
 
   function openMenu(): void {
+    // Close any other open dropdowns first by dispatching a global event
+    document.dispatchEvent(new CustomEvent('dye-dropdown-close-all', { detail: { except: container } }));
+
     isOpen = true;
     menu.classList.remove('opacity-0', 'invisible', 'scale-95');
     menu.classList.add('opacity-100', 'visible', 'scale-100');
     button.setAttribute('aria-expanded', 'true');
-    menu.setAttribute('aria-hidden', 'false');
+    // Remove inert to allow focus on menu items
+    menu.removeAttribute('inert');
 
     // Add click outside listener
     setTimeout(() => {
@@ -150,10 +152,11 @@ export function createDyeActionDropdown(
 
   function closeMenu(): void {
     isOpen = false;
+    // Set inert before hiding to prevent focus issues
+    menu.setAttribute('inert', '');
     menu.classList.add('opacity-0', 'invisible', 'scale-95');
     menu.classList.remove('opacity-100', 'visible', 'scale-100');
     button.setAttribute('aria-expanded', 'false');
-    menu.setAttribute('aria-hidden', 'true');
     document.removeEventListener('click', handleClickOutside);
   }
 
@@ -179,6 +182,18 @@ export function createDyeActionDropdown(
       button.focus();
     }
   });
+
+  // Listen for global close event (fired when another dropdown opens)
+  function handleCloseAll(e: Event): void {
+    const customEvent = e as CustomEvent<{ except: HTMLElement }>;
+    // Close this dropdown unless it's the one that triggered the event
+    // Also check if container is still in DOM to handle cleanup
+    if (isOpen && customEvent.detail?.except !== container && document.body.contains(container)) {
+      closeMenu();
+    }
+  }
+
+  document.addEventListener('dye-dropdown-close-all', handleCloseAll);
 
   return container;
 }

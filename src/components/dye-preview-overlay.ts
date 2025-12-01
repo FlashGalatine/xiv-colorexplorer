@@ -53,16 +53,25 @@ export class DyePreviewOverlay extends BaseComponent {
 
     if (!this.canvasContainer || !this.canvas) return;
 
-    // Get canvas position and scale
-    const containerRect = this.canvasContainer.getBoundingClientRect();
+    // Get canvas bounding rect - this already accounts for CSS transforms (scale)
+    // and scroll position within any parent containers
     const canvasRect = this.canvas.getBoundingClientRect();
 
-    // Calculate screen position from canvas coordinates
+    // Calculate scale factor from CSS transform: scale()
+    // canvasRect.width = visual size after transform
+    // canvas.width = native canvas pixel size
     const scaleX = canvasRect.width / this.canvas.width;
     const scaleY = canvasRect.height / this.canvas.height;
 
-    const screenX = containerRect.left + (config.sampledPosition.x * scaleX);
-    const screenY = containerRect.top + (config.sampledPosition.y * scaleY);
+    // Convert canvas coordinates to visual offset from canvas top-left
+    const visualOffsetX = config.sampledPosition.x * scaleX;
+    const visualOffsetY = config.sampledPosition.y * scaleY;
+
+    // Calculate screen position:
+    // canvasRect.left/top is already the canvas's position on screen (accounting for scroll)
+    // Add the visual offset to get the sample point's screen position
+    const screenX = canvasRect.left + visualOffsetX;
+    const screenY = canvasRect.top + visualOffsetY;
 
     // Create overlay element
     this.overlayElement = document.createElement('div');
@@ -149,6 +158,17 @@ export class DyePreviewOverlay extends BaseComponent {
       p-3 min-w-[150px]
     `.replace(/\s+/g, ' ').trim();
 
+    // Header with magnifying glass icon and description
+    const header = document.createElement('div');
+    header.className = 'flex items-center gap-1.5 mb-2 pb-2 border-b border-gray-200 dark:border-gray-600';
+    header.innerHTML = `
+      <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <span class="text-xs font-medium text-gray-600 dark:text-gray-300">${LanguageService.t('matcher.samplePreview') || 'Sample Point Preview'}</span>
+    `;
+    container.appendChild(header);
+
     // Color comparison swatches
     const swatchRow = document.createElement('div');
     swatchRow.className = 'flex items-center gap-2 mb-2';
@@ -167,13 +187,14 @@ export class DyePreviewOverlay extends BaseComponent {
     arrow.className = 'text-gray-400 dark:text-gray-500';
     arrow.textContent = '→';
 
-    // Dye color
+    // Dye color - use localized name
+    const localizedDyeName = LanguageService.getDyeName(config.dye.itemID) || config.dye.name;
     const dyeSwatch = document.createElement('div');
     dyeSwatch.className = 'flex-1 text-center';
     dyeSwatch.innerHTML = `
       <div class="w-10 h-10 mx-auto rounded border-2 border-gray-400 dark:border-gray-500 shadow-inner"
            style="background-color: ${config.dye.hex}"></div>
-      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title="${config.dye.name}">${config.dye.name}</div>
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title="${localizedDyeName}">${localizedDyeName}</div>
     `;
 
     swatchRow.appendChild(sampledSwatch);

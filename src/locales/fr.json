@@ -93,6 +93,12 @@
     "noMatchingDyes": "Aucune teinture correspondante trouvée",
     "avgHueDiff": "Écart de teinte moyen",
     "hueDiff": "écart teinte",
+    "actions": "Actions de teinture",
+    "addToComparison": "Ajouter à la comparaison",
+    "addToMixer": "Ajouter au mélangeur",
+    "copyHex": "Copier le code Hex",
+    "copiedHex": "Copié",
+    "copyFailed": "Échec de la copie",
     "types": {
       "complementaryDesc": "Couleurs directement opposées sur le cercle chromatique pour un contraste maximal",
       "analogousDesc": "Couleurs adjacentes sur le cercle pour un aspect harmonieux et unifié",
@@ -136,7 +142,12 @@
     "zoomWidth": "Largeur",
     "zoomReset": "Réinitialiser",
     "copyHex": "Copier Hex",
-    "market": "marché"
+    "market": "marché",
+    "sampled": "Échantillonné",
+    "sampledColor": "Couleur échantillonnée",
+    "imageColorPicker": "Sélecteur de couleur d'image",
+    "privacyNoteFull": "Confidentialité : Les images ne quittent jamais votre navigateur. Tout le traitement est effectué localement.",
+    "samplePreview": "Aperçu du point d'échantillonnage"
   },
   "accessibility": {
     "selectDyes": "Sélectionner des Teintures",
@@ -356,5 +367,22 @@
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Niveaux de Gris (Clair)",
     "grayscaleDark": "Niveaux de Gris (Sombre)"
+  },
+  "welcome": {
+    "title": "Bienvenue sur Outils de Teinture XIV",
+    "intro": "Trouvez les teintures parfaites pour vos glamours FFXIV ! Explorez nos outils ci-dessous :",
+    "dontShowAgain": "Ne plus afficher",
+    "getStarted": "Commencer",
+    "quickTips": "Astuces rapides",
+    "tip1": "Cliquez sur les noms des outils dans l'en-tête pour changer d'outil",
+    "tip2": "Les prix proviennent d'Universalis (données de marché en direct)",
+    "tip3": "Vos paramètres sont enregistrés localement dans votre navigateur",
+    "tools": {
+      "harmony": "Générez des palettes de couleurs harmonieuses basées sur la théorie des couleurs",
+      "matcher": "Trouvez la teinture FFXIV la plus proche de n'importe quelle couleur",
+      "comparison": "Comparez les teintures côte à côte avec des statistiques détaillées",
+      "mixer": "Expérimentez avec des combinaisons et des dégradés de teintures",
+      "accessibility": "Vérifiez l'accessibilité des couleurs et simulez le daltonisme"
+    }
   }
 }

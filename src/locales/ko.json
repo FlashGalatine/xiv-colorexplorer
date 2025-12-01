@@ -93,6 +93,12 @@
     "noMatchingDyes": "매칭되는 염료를 찾을 수 없습니다",
     "avgHueDiff": "평균 색상 차이",
     "hueDiff": "색상 차이",
+    "actions": "염료 작업",
+    "addToComparison": "비교에 추가",
+    "addToMixer": "믹서에 추가",
+    "copyHex": "Hex 코드 복사",
+    "copiedHex": "복사됨",
+    "copyFailed": "복사 실패",
     "types": {
       "complementaryDesc": "색상환에서 정반대에 위치한 색상으로 최대 대비 효과",
       "analogousDesc": "색상환에서 인접한 색상으로 조화롭고 통일된 느낌",
@@ -136,7 +142,12 @@
     "zoomWidth": "너비 맞춤",
     "zoomReset": "초기화",
     "copyHex": "Hex 복사",
-    "market": "마켓"
+    "market": "마켓",
+    "sampled": "샘플링됨",
+    "sampledColor": "샘플링된 색상",
+    "imageColorPicker": "이미지 색상 선택기",
+    "privacyNoteFull": "개인정보 보호: 이미지는 브라우저를 떠나지 않습니다. 모든 처리는 로컬에서 이루어집니다.",
+    "samplePreview": "샘플 포인트 미리보기"
   },
   "accessibility": {
     "selectDyes": "염료 선택",
@@ -356,5 +367,22 @@
     "sugarRiot": "슈가 라이엇",
     "grayscaleLight": "그레이스케일 (라이트)",
     "grayscaleDark": "그레이스케일 (다크)"
+  },
+  "welcome": {
+    "title": "XIV 염색 도구에 오신 것을 환영합니다",
+    "intro": "FFXIV 글래머에 완벽한 염료를 찾아보세요! 아래 도구를 살펴보세요:",
+    "dontShowAgain": "다시 표시하지 않기",
+    "getStarted": "시작하기",
+    "quickTips": "빠른 팁",
+    "tip1": "헤더의 도구 이름을 클릭하여 도구 간 전환",
+    "tip2": "가격은 Universalis에서 제공되는 실시간 마켓 데이터입니다",
+    "tip3": "설정은 브라우저에 로컬로 저장됩니다",
+    "tools": {
+      "harmony": "색채 이론에 기반한 조화로운 색상 팔레트 생성",
+      "matcher": "어떤 색상이든 가장 가까운 FFXIV 염료 찾기",
+      "comparison": "상세 정보와 함께 염료를 나란히 비교",
+      "mixer": "염료 조합과 그라데이션 실험",
+      "accessibility": "색상 접근성 확인 및 색맹 시뮬레이션"
+    }
   }
 }

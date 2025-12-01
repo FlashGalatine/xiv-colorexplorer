@@ -588,6 +588,19 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
       this.paletteExporter.init();
     }
+
+    // Listen for dye action events from harmony type components (Add to Comparison/Mixer)
+    this.container.addEventListener('dyeAction', ((event: CustomEvent) => {
+      const { action, dye } = event.detail as { action: 'comparison' | 'mixer'; dye: Dye };
+      if (action && dye) {
+        // Dispatch event to main app to navigate to the appropriate tool with the dye
+        window.dispatchEvent(
+          new CustomEvent('navigateToTool', {
+            detail: { tool: action, dye },
+          })
+        );
+      }
+    }) as EventListener);
   }
 
 

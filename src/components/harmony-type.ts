@@ -54,9 +54,10 @@ export class HarmonyType extends BaseComponent {
    * Render the harmony type display
    */
   render(): void {
+    // Note: overflow-visible is required to allow dropdown menus to extend beyond card boundaries
     const card = this.createElement('div', {
       className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-md hover:shadow-lg transition-shadow',
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-shadow overflow-visible',
     });
 
     // Header

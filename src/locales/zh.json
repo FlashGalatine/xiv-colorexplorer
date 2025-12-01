@@ -93,6 +93,12 @@
     "noMatchingDyes": "未找到匹配的染剂",
     "avgHueDiff": "平均色相差",
     "hueDiff": "色相差",
+    "actions": "染剂操作",
+    "addToComparison": "添加到比较",
+    "addToMixer": "添加到混合器",
+    "copyHex": "复制十六进制代码",
+    "copiedHex": "已复制",
+    "copyFailed": "复制失败",
     "types": {
       "complementaryDesc": "色轮上正对面的颜色，实现最大对比度",
       "analogousDesc": "色轮上相邻的颜色，营造和谐统一的外观",
@@ -136,7 +142,12 @@
     "zoomWidth": "适应宽度",
     "zoomReset": "重置",
     "copyHex": "复制十六进制",
-    "market": "市场布告板"
+    "market": "市场布告板",
+    "sampled": "已采样",
+    "sampledColor": "采样颜色",
+    "imageColorPicker": "图像取色器",
+    "privacyNoteFull": "隐私保护：图像永远不会离开您的浏览器。所有处理均在本地进行。",
+    "samplePreview": "采样点预览"
   },
   "accessibility": {
     "selectDyes": "选择染剂",
@@ -356,5 +367,22 @@
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "灰度（浅色）",
     "grayscaleDark": "灰度（深色）"
+  },
+  "welcome": {
+    "title": "欢迎使用 XIV 染色工具",
+    "intro": "为您的 FFXIV 幻化找到完美的染剂！探索我们的工具：",
+    "dontShowAgain": "不再显示",
+    "getStarted": "开始使用",
+    "quickTips": "快速提示",
+    "tip1": "点击标题栏中的工具名称可切换工具",
+    "tip2": "价格来自 Universalis（实时市场数据）",
+    "tip3": "您的设置将保存在浏览器本地",
+    "tools": {
+      "harmony": "基于色彩理论生成和谐的颜色调色板",
+      "matcher": "找到与任何颜色最接近的 FFXIV 染剂",
+      "comparison": "并排比较染剂，查看详细统计信息",
+      "mixer": "尝试染剂组合和渐变效果",
+      "accessibility": "检查颜色无障碍性并模拟色盲"
+    }
   }
 }

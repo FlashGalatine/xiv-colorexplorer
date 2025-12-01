@@ -341,6 +341,17 @@ async function initializeApp(): Promise<void> {
       void loadTool(customEvent.detail.toolId);
     });
 
+    // Listen for navigateToTool events (from Harmony "Add to Comparison/Mixer" actions)
+    window.addEventListener('navigateToTool', ((e: CustomEvent) => {
+      const { tool, dye } = e.detail as { tool: string; dye: unknown };
+      if (tool && dye) {
+        // Store the pending dye in sessionStorage for the target tool to pick up
+        sessionStorage.setItem('pendingDye', JSON.stringify(dye));
+        void loadTool(tool);
+        logger.info(`🔄 Navigating to ${tool} tool with pre-selected dye`);
+      }
+    }) as EventListener);
+
     // Add bottom padding to content on mobile to account for fixed bottom nav
     const updateContentPadding = (): void => {
       const isMobile = window.innerWidth <= 768;

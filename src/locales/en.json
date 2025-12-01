@@ -93,6 +93,12 @@
     "noMatchingDyes": "No matching dyes found",
     "avgHueDiff": "Avg Hue Diff",
     "hueDiff": "hue diff",
+    "actions": "Dye Actions",
+    "addToComparison": "Add to Comparison",
+    "addToMixer": "Add to Mixer",
+    "copyHex": "Copy Hex Code",
+    "copiedHex": "Copied",
+    "copyFailed": "Failed to copy",
     "types": {
       "complementaryDesc": "Colors directly opposite on the color wheel for maximum contrast",
       "analogousDesc": "Colors adjacent on the wheel for a harmonious, unified look",
@@ -140,7 +146,10 @@
     "zoomOut": "Zoom Out",
     "zoomFit": "Fit",
     "zoomWidth": "Width",
-    "zoomReset": "Reset"
+    "zoomReset": "Reset",
+    "sampled": "Sampled",
+    "sampledColor": "Sampled Color",
+    "samplePreview": "Sample Point Preview"
   },
   "accessibility": {
     "selectDyes": "Select Dyes",
@@ -360,5 +369,22 @@
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Grayscale (Light)",
     "grayscaleDark": "Grayscale (Dark)"
+  },
+  "welcome": {
+    "title": "Welcome to XIV Dye Tools",
+    "intro": "Find the perfect dyes for your FFXIV glamours! Explore our tools below:",
+    "dontShowAgain": "Don't show this again",
+    "getStarted": "Get Started",
+    "quickTips": "Quick Tips",
+    "tip1": "Click tool names in the header to switch between tools",
+    "tip2": "Prices are from Universalis (live market data)",
+    "tip3": "Your settings are saved locally in your browser",
+    "tools": {
+      "harmony": "Generate harmonious color palettes based on color theory",
+      "matcher": "Find the closest FFXIV dye to any color",
+      "comparison": "Compare dyes side-by-side with detailed stats",
+      "mixer": "Experiment with dye combinations and gradients",
+      "accessibility": "Check color accessibility and simulate color blindness"
+    }
   }
 }

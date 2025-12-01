@@ -609,10 +609,41 @@ export class DyeComparisonTool extends BaseComponent {
       this.updateAnalysis();
     }, 100);
 
+    // Check for pending dye from navigation (e.g., "Add to Comparison" from Harmony tool)
+    this.checkPendingDye();
+
     // Subscribe to language changes to update localized text
     LanguageService.subscribe(() => {
       this.update();
     });
+  }
+
+  /**
+   * Check for and process pending dye from sessionStorage
+   * This handles navigation from other tools (e.g., Harmony "Add to Comparison")
+   */
+  private checkPendingDye(): void {
+    try {
+      const pendingDyeJson = sessionStorage.getItem('pendingDye');
+      if (!pendingDyeJson) return;
+
+      // Clear immediately to prevent duplicate processing
+      sessionStorage.removeItem('pendingDye');
+
+      const pendingDye = JSON.parse(pendingDyeJson) as Dye;
+      if (!pendingDye || !pendingDye.id) return;
+
+      // Wait for dyeSelector to be initialized, then add the pending dye
+      setTimeout(() => {
+        if (this.dyeSelector) {
+          this.selectedDyes = [pendingDye];
+          this.dyeSelector.setSelectedDyes([pendingDye]);
+          this.updateAnalysis();
+        }
+      }, 150);
+    } catch (error) {
+      // Silently ignore parsing errors
+    }
   }
 
   /**
