@@ -35,6 +35,11 @@ interface TooltipState {
   element: HTMLElement | null;
   showTimeout: ReturnType<typeof setTimeout> | null;
   hideTimeout: ReturnType<typeof setTimeout> | null;
+  // Store handlers for cleanup
+  mouseEnterHandler: (() => void) | null;
+  mouseLeaveHandler: (() => void) | null;
+  focusHandler: (() => void) | null;
+  blurHandler: (() => void) | null;
 }
 
 // ============================================================================
@@ -90,17 +95,27 @@ export class TooltipService {
       element: null,
       showTimeout: null,
       hideTimeout: null,
+      mouseEnterHandler: null,
+      mouseLeaveHandler: null,
+      focusHandler: null,
+      blurHandler: null,
     };
 
     this.tooltips.set(target, state);
 
+    // Store handler references for cleanup
+    state.mouseEnterHandler = () => this.handleMouseEnter(target);
+    state.mouseLeaveHandler = () => this.handleMouseLeave(target);
+
     // Add event listeners
-    target.addEventListener('mouseenter', () => this.handleMouseEnter(target));
-    target.addEventListener('mouseleave', () => this.handleMouseLeave(target));
+    target.addEventListener('mouseenter', state.mouseEnterHandler);
+    target.addEventListener('mouseleave', state.mouseLeaveHandler);
 
     if (state.config.showOnFocus) {
-      target.addEventListener('focus', () => this.handleFocus(target));
-      target.addEventListener('blur', () => this.handleBlur(target));
+      state.focusHandler = () => this.handleFocus(target);
+      state.blurHandler = () => this.handleBlur(target);
+      target.addEventListener('focus', state.focusHandler);
+      target.addEventListener('blur', state.blurHandler);
     }
 
     // Set aria-describedby for accessibility
@@ -118,6 +133,20 @@ export class TooltipService {
     // Clear any pending timeouts
     if (state.showTimeout) clearTimeout(state.showTimeout);
     if (state.hideTimeout) clearTimeout(state.hideTimeout);
+
+    // Remove event listeners
+    if (state.mouseEnterHandler) {
+      target.removeEventListener('mouseenter', state.mouseEnterHandler);
+    }
+    if (state.mouseLeaveHandler) {
+      target.removeEventListener('mouseleave', state.mouseLeaveHandler);
+    }
+    if (state.focusHandler) {
+      target.removeEventListener('focus', state.focusHandler);
+    }
+    if (state.blurHandler) {
+      target.removeEventListener('blur', state.blurHandler);
+    }
 
     // Remove tooltip element
     if (state.element) {
