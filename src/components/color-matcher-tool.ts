@@ -728,9 +728,9 @@ export class ColorMatcherTool extends BaseComponent {
       // Update display
       zoomDisplay.textContent = `${this.zoomLevel}%`;
 
-      // Update button states
-      zoomOutBtn.setAttribute('disabled', this.zoomLevel <= MIN_ZOOM ? 'true' : 'false');
-      zoomInBtn.setAttribute('disabled', this.zoomLevel >= MAX_ZOOM ? 'true' : 'false');
+      // Update button states - use boolean property, not string attribute
+      (zoomOutBtn as HTMLButtonElement).disabled = this.zoomLevel <= MIN_ZOOM;
+      (zoomInBtn as HTMLButtonElement).disabled = this.zoomLevel >= MAX_ZOOM;
 
       // Update button styling based on disabled state
       if (this.zoomLevel <= MIN_ZOOM) {
