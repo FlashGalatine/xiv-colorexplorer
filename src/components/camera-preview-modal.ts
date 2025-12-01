@@ -125,6 +125,37 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   // Track if modal is still open
   let isModalOpen = true;
 
+  // Store event handler references for cleanup
+  let videoLoadedHandler: (() => void) | null = null;
+  let videoPlayingHandler: (() => void) | null = null;
+  let captureClickHandler: (() => Promise<void>) | null = null;
+  let cancelClickHandler: (() => void) | null = null;
+  let selectorChangeHandler: (() => void) | null = null;
+
+  // Cleanup function to remove all event listeners
+  const cleanup = (): void => {
+    if (videoLoadedHandler) {
+      video.removeEventListener('loadedmetadata', videoLoadedHandler);
+      videoLoadedHandler = null;
+    }
+    if (videoPlayingHandler) {
+      video.removeEventListener('playing', videoPlayingHandler);
+      videoPlayingHandler = null;
+    }
+    if (captureClickHandler) {
+      captureBtn.removeEventListener('click', captureClickHandler as EventListener);
+      captureClickHandler = null;
+    }
+    if (cancelClickHandler) {
+      cancelBtn.removeEventListener('click', cancelClickHandler);
+      cancelClickHandler = null;
+    }
+    if (selectorChangeHandler && selector) {
+      selector.removeEventListener('change', selectorChangeHandler);
+      selectorChangeHandler = null;
+    }
+  };
+
   // Start the camera
   const startCamera = async (deviceId?: string): Promise<void> => {
     try {
@@ -138,14 +169,23 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
       cameraService.attachStreamToVideo(video, stream);
 
+      // Clean up existing handlers before adding new ones
+      if (videoLoadedHandler) {
+        video.removeEventListener('loadedmetadata', videoLoadedHandler);
+      }
+      if (videoPlayingHandler) {
+        video.removeEventListener('playing', videoPlayingHandler);
+      }
+
       // Wait for video to be ready
-      video.onloadedmetadata = () => {
+      videoLoadedHandler = () => {
         video.play().catch((err) => {
           logger.warn('Video play failed:', err);
         });
       };
+      video.addEventListener('loadedmetadata', videoLoadedHandler);
 
-      video.onplaying = () => {
+      videoPlayingHandler = () => {
         // Hide loading overlay
         loadingOverlay.style.display = 'none';
 
@@ -160,6 +200,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
           statusText.textContent = LanguageService.t('camera.ready') || 'Camera ready';
         }
       };
+      video.addEventListener('playing', videoPlayingHandler);
     } catch (error) {
       logger.error('Failed to start camera:', error);
 
@@ -177,7 +218,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   };
 
   // Handle capture
-  captureBtn.addEventListener('click', async () => {
+  captureClickHandler = async () => {
     try {
       captureBtn.disabled = true;
       captureBtn.textContent = LanguageService.t('camera.capturing') || 'Capturing...';
@@ -186,6 +227,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
       // Stop stream and close modal
       cameraService.stopStream();
+      cleanup();
       ModalService.dismissTop();
       isModalOpen = false;
 
@@ -199,19 +241,22 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
       captureBtn.disabled = false;
       captureBtn.innerHTML = `<span class="w-5 h-5" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.capture') || 'Capture'}`;
     }
-  });
+  };
+  captureBtn.addEventListener('click', captureClickHandler as EventListener);
 
   // Handle cancel
-  cancelBtn.addEventListener('click', () => {
+  cancelClickHandler = () => {
     cameraService.stopStream();
+    cleanup();
     ModalService.dismissTop();
     isModalOpen = false;
-  });
+  };
+  cancelBtn.addEventListener('click', cancelClickHandler);
 
   // Handle camera selector change
   const selector = content.querySelector('#camera-selector') as HTMLSelectElement | null;
   if (selector) {
-    selector.addEventListener('change', () => {
+    selectorChangeHandler = () => {
       // Reset UI
       loadingOverlay.style.display = 'flex';
       loadingOverlay.innerHTML = '';
@@ -226,7 +271,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
       // Switch camera
       cameraService.stopStream();
       void startCamera(selector.value);
-    });
+    };
+    selector.addEventListener('change', selectorChangeHandler);
   }
 
   // Show modal
@@ -237,6 +283,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
     size: 'lg',
     onClose: () => {
       // Cleanup on modal close
+      cleanup();
       cameraService.stopStream();
       isModalOpen = false;
     },
