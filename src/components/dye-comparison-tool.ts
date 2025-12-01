@@ -175,9 +175,10 @@ export class DyeComparisonTool extends BaseComponent {
       // Listen for Market Board events
       marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
         const customEvent = event as CustomEvent;
+        void this.showTutorial();
         this.showPrices = customEvent.detail?.showPrices ?? false;
         if (this.showPrices && this.selectedDyes.length > 0) {
-          this.fetchPricesForSelectedDyes();
+          void this.fetchPricesForSelectedDyes();
         } else {
           this.priceData.clear();
           this.updateSummary();
@@ -186,19 +187,19 @@ export class DyeComparisonTool extends BaseComponent {
 
       marketBoardContainer.addEventListener('server-changed', () => {
         if (this.showPrices && this.selectedDyes.length > 0) {
-          this.fetchPricesForSelectedDyes();
+          void this.fetchPricesForSelectedDyes();
         }
       });
 
       marketBoardContainer.addEventListener('categories-changed', () => {
         if (this.showPrices && this.selectedDyes.length > 0) {
-          this.fetchPricesForSelectedDyes();
+          void this.fetchPricesForSelectedDyes();
         }
       });
 
       marketBoardContainer.addEventListener('refresh-requested', () => {
         if (this.showPrices && this.selectedDyes.length > 0) {
-          this.fetchPricesForSelectedDyes();
+          void this.fetchPricesForSelectedDyes();
         }
       });
 
@@ -206,7 +207,6 @@ export class DyeComparisonTool extends BaseComponent {
       this.showPrices = this.marketBoard.getShowPrices();
     }
   }
-
 
   /**
    * Fetch prices for selected dyes
@@ -232,7 +232,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard && this.selectedDyes.length > 0) {
-      this.fetchPricesForSelectedDyes();
+      void this.fetchPricesForSelectedDyes();
     }
   }
 
@@ -320,19 +320,28 @@ export class DyeComparisonTool extends BaseComponent {
       // Average saturation
       const avgSat =
         this.selectedDyes.reduce((sum, d) => sum + d.hsv.s, 0) / this.selectedDyes.length;
-      const satCard = this.renderStatCard(LanguageService.t('comparison.avgSaturation'), `${avgSat.toFixed(1)}%`);
+      const satCard = this.renderStatCard(
+        LanguageService.t('comparison.avgSaturation'),
+        `${avgSat.toFixed(1)}%`
+      );
       stats.appendChild(satCard);
 
       // Average brightness
       const avgBright =
         this.selectedDyes.reduce((sum, d) => sum + d.hsv.v, 0) / this.selectedDyes.length;
-      const brightCard = this.renderStatCard(LanguageService.t('comparison.avgBrightness'), `${avgBright.toFixed(1)}%`);
+      const brightCard = this.renderStatCard(
+        LanguageService.t('comparison.avgBrightness'),
+        `${avgBright.toFixed(1)}%`
+      );
       stats.appendChild(brightCard);
 
       // Hue range
       const hues = this.selectedDyes.map((d) => d.hsv.h);
       const hueRange = Math.max(...hues) - Math.min(...hues);
-      const hueCard = this.renderStatCard(LanguageService.t('comparison.hueRange'), `${hueRange.toFixed(0)}°`);
+      const hueCard = this.renderStatCard(
+        LanguageService.t('comparison.hueRange'),
+        `${hueRange.toFixed(0)}°`
+      );
       stats.appendChild(hueCard);
 
       // Average distance
@@ -348,7 +357,10 @@ export class DyeComparisonTool extends BaseComponent {
         }
       }
       const avgDistance = count > 0 ? totalDistance / count : 0;
-      const distCard = this.renderStatCard(LanguageService.t('comparison.avgDistance'), avgDistance.toFixed(1));
+      const distCard = this.renderStatCard(
+        LanguageService.t('comparison.avgDistance'),
+        avgDistance.toFixed(1)
+      );
       stats.appendChild(distCard);
 
       summary.appendChild(stats);
@@ -641,9 +653,31 @@ export class DyeComparisonTool extends BaseComponent {
           this.updateAnalysis();
         }
       }, 150);
-    } catch (error) {
+    } catch {
       // Silently ignore parsing errors
     }
+  }
+
+  /**
+   * Show tutorial for this tool
+   */
+  private showTutorial(): void {
+    // Import TutorialService dynamically to avoid circular dependencies if needed,
+    // or assume it's available via import.
+    // Since we can't easily change imports here without potential issues,
+    // and TutorialService is likely available globally or via window if not imported.
+    // But wait, we saw imports in outline.
+    // Let's check imports in dye-comparison-tool.ts.
+    // It imports BaseComponent.
+    // It likely imports TutorialService.
+    // I'll assume it's imported as TutorialService.
+    // Actually, I need to make sure TutorialService is imported.
+    // But for now, I'll just add the method stub or implementation.
+    // TutorialService.promptStart('comparison');
+    // I'll use a safe implementation.
+    void import('@services/tutorial-service').then(({ TutorialService }) => {
+      TutorialService.promptStart('comparison');
+    });
   }
 
   /**

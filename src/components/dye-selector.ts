@@ -18,7 +18,13 @@ import { ICON_SEARCH, ICON_PALETTE } from '@shared/empty-state-icons';
 /**
  * Sort options for dye list
  */
-type SortOption = 'alphabetical' | 'brightness-asc' | 'brightness-desc' | 'hue' | 'saturation' | 'category';
+type SortOption =
+  | 'alphabetical'
+  | 'brightness-asc'
+  | 'brightness-desc'
+  | 'hue'
+  | 'saturation'
+  | 'category';
 
 /**
  * Options for dye selector initialization
@@ -87,8 +93,7 @@ export class DyeSelector extends BaseComponent {
 
     const clearBtn = this.createElement('button', {
       textContent: LanguageService.t('common.clear'),
-      className:
-        'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
+      className: 'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
       attributes: {
         id: 'dye-selector-clear-btn',
         'aria-label': LanguageService.t('dyeSelector.clearAriaLabel'),
@@ -291,15 +296,19 @@ export class DyeSelector extends BaseComponent {
       const emptyHtml = this.searchQuery.trim()
         ? getEmptyStateHTML({
             icon: ICON_SEARCH,
-            title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
+            title:
+              LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
               `No dyes match "${this.searchQuery}"`,
-            description: LanguageService.t('dyeSelector.noResultsHint') ||
+            description:
+              LanguageService.t('dyeSelector.noResultsHint') ||
               'Try checking your spelling or search for a category like "purple".',
           })
         : getEmptyStateHTML({
             icon: ICON_PALETTE,
             title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
-            description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
+            description:
+              LanguageService.t('dyeSelector.tryCategoryHint') ||
+              'Try selecting a different category.',
           });
 
       dyeListContainer.innerHTML = emptyHtml;
@@ -651,10 +660,13 @@ export class DyeSelector extends BaseComponent {
     } else {
       // Fallback based on common breakpoints
       const width = window.innerWidth;
-      if (width >= 1024) this.gridColumns = 4;      // lg
-      else if (width >= 768) this.gridColumns = 3;  // md
-      else if (width >= 640) this.gridColumns = 2;  // sm
-      else this.gridColumns = 1;                     // mobile
+      if (width >= 1024)
+        this.gridColumns = 4; // lg
+      else if (width >= 768)
+        this.gridColumns = 3; // md
+      else if (width >= 640)
+        this.gridColumns = 2; // sm
+      else this.gridColumns = 1; // mobile
     }
   }
 
@@ -808,15 +820,21 @@ export class DyeSelector extends BaseComponent {
           const emptyHtml = this.searchQuery.trim()
             ? getEmptyStateHTML({
                 icon: ICON_SEARCH,
-                title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
-                  `No dyes match "${this.searchQuery}"`,
-                description: LanguageService.t('dyeSelector.noResultsHint') ||
+                title:
+                  LanguageService.tInterpolate('dyeSelector.noResults', {
+                    query: this.searchQuery,
+                  }) || `No dyes match "${this.searchQuery}"`,
+                description:
+                  LanguageService.t('dyeSelector.noResultsHint') ||
                   'Try checking your spelling or search for a category like "purple".',
               })
             : getEmptyStateHTML({
                 icon: ICON_PALETTE,
-                title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
-                description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
+                title:
+                  LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
+                description:
+                  LanguageService.t('dyeSelector.tryCategoryHint') ||
+                  'Try selecting a different category.',
               });
 
           dyeListContainer.innerHTML = emptyHtml;
@@ -982,7 +1000,7 @@ export class DyeSelector extends BaseComponent {
         // Light to Dark (descending brightness)
         return b.hsv.v - a.hsv.v;
 
-      case 'hue':
+      case 'hue': {
         // Sort by hue (color wheel order)
         // If hues are similar, sort by saturation, then brightness
         const hueDiff = a.hsv.h - b.hsv.h;
@@ -995,8 +1013,9 @@ export class DyeSelector extends BaseComponent {
           return satDiff;
         }
         return b.hsv.v - a.hsv.v; // Then by brightness
+      }
 
-      case 'saturation':
+      case 'saturation': {
         // Muted to Vivid (ascending saturation)
         // If saturation is similar, sort by brightness
         const saturationDiff = a.hsv.s - b.hsv.s;
@@ -1004,14 +1023,16 @@ export class DyeSelector extends BaseComponent {
           return saturationDiff;
         }
         return a.hsv.v - b.hsv.v;
+      }
 
-      case 'category':
+      case 'category': {
         // Sort by category first, then alphabetically within category
         const categoryDiff = a.category.localeCompare(b.category);
         if (categoryDiff !== 0) {
           return categoryDiff;
         }
         return a.name.localeCompare(b.name);
+      }
 
       default:
         return a.name.localeCompare(b.name);

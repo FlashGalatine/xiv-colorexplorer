@@ -99,7 +99,8 @@ export class ImageUploadDisplay extends BaseComponent {
 
     const cameraBtn = this.createElement('button', {
       innerHTML: `<span class="inline-block w-5 h-5 mr-1" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('matcher.takePhoto')}`,
-      className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
+      className:
+        'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
       attributes: {
         type: 'button',
         'aria-label': LanguageService.t('matcher.takePhoto'),
@@ -115,7 +116,8 @@ export class ImageUploadDisplay extends BaseComponent {
     // Desktop webcam button (T7) - visible when camera detected, hidden on mobile
     const desktopCameraBtn = this.createElement('button', {
       innerHTML: `<span class="inline-block w-5 h-5 mr-1" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.useWebcam') || 'Use Webcam'}`,
-      className: 'btn-theme-primary mt-3 px-4 py-2 rounded-lg transition-colors text-sm font-medium hidden md:inline-flex items-center',
+      className:
+        'btn-theme-primary mt-3 px-4 py-2 rounded-lg transition-colors text-sm font-medium hidden md:inline-flex items-center',
       attributes: {
         type: 'button',
         id: 'desktop-camera-btn',
@@ -447,7 +449,7 @@ export class ImageUploadDisplay extends BaseComponent {
    * Open camera preview modal for webcam capture (T7)
    */
   private openCameraPreview(): void {
-    showCameraPreviewModal((result) => {
+    void showCameraPreviewModal((result) => {
       // Convert capture result to same format as file upload
       this.uploadedImage = result.image;
       this.emit('image-loaded', { image: result.image, dataUrl: result.dataUrl });
