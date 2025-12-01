@@ -264,7 +264,7 @@ export class DyeMixerTool extends BaseComponent {
       id: 'save-gradient-btn',
       innerHTML: `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_SAVE}</span> ${LanguageService.t('mixer.saveGradient')}`,
       className:
-        'px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
+        'btn-theme-primary px-4 py-3 rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
     });
 
     // Share button - inline SVG for theme color inheritance

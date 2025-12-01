@@ -14,6 +14,7 @@ import type { Dye } from '@shared/types';
 import { ColorService, LanguageService } from '@services/index';
 import { clearContainer } from '@shared/utils';
 import { ICON_TOOL_ACCESSIBILITY } from '@shared/tool-icons';
+import { ICON_WARNING } from '@shared/ui-icons';
 
 /**
  * Individual dye accessibility analysis
@@ -406,7 +407,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       });
 
       const warningsLabel = this.createElement('div', {
-        textContent: `⚠️ ${LanguageService.t('accessibility.colorblindnessIssues')}`,
+        innerHTML: `<span class="inline-block w-4 h-4 align-middle mr-1">${ICON_WARNING}</span>${LanguageService.t('accessibility.colorblindnessIssues')}`,
         className: 'text-xs font-semibold text-orange-700 dark:text-orange-300',
       });
       warningsSection.appendChild(warningsLabel);
@@ -568,7 +569,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     if (result.warnings.length > 0) {
       for (const warning of result.warnings) {
         const warningText = this.createElement('div', {
-          textContent: `⚠️ ${warning}`,
+          innerHTML: `<span class="inline-block w-4 h-4 align-middle mr-1">${ICON_WARNING}</span>${warning}`,
           className: 'text-xs text-orange-700 dark:text-orange-300 mt-2',
         });
         scoreSection.appendChild(warningText);

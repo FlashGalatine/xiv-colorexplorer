@@ -142,7 +142,7 @@ export class ColorPickerDisplay extends BaseComponent {
       const eyedropperBtn = this.createElement('button', {
         innerHTML: `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_EYEDROPPER}</span> ${LanguageService.t('matcher.useEyedropper')}`,
         className:
-          'w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-500 text-white rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
+          'btn-theme-secondary w-full px-4 py-2 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2',
         attributes: {
           id: 'eyedropper-btn',
         },

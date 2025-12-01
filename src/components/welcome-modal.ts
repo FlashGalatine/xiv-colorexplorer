@@ -106,7 +106,7 @@ export class WelcomeModal {
     const content = this.createContent();
 
     this.modalId = ModalService.showWelcome({
-      title: `✨ ${LanguageService.t('welcome.title') || `Welcome to ${APP_NAME}`}`,
+      title: LanguageService.t('welcome.title') || `Welcome to ${APP_NAME}`,
       content,
       size: 'lg',
       closable: true,

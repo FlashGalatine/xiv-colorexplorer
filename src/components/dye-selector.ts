@@ -414,10 +414,16 @@ export class DyeSelector extends BaseComponent {
       });
     }
 
-    // Clear selections
+    // Clear selections and search
     if (clearBtn) {
       this.on(clearBtn, 'click', () => {
         this.selectedDyes = [];
+        this.searchQuery = '';
+        // Clear the input element before update() which would restore the previous value
+        const searchInput = this.querySelector<HTMLInputElement>('input[type="text"]');
+        if (searchInput) {
+          searchInput.value = '';
+        }
         this.update();
         this.emit('selection-changed', { selectedDyes: this.selectedDyes });
       });

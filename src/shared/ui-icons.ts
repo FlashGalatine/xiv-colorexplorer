@@ -88,16 +88,23 @@ export const ICON_ZOOM_WIDTH = `<svg viewBox="0 0 24 24" fill="none" stroke="cur
 </svg>`;
 
 /**
- * Crystal icon - FFXIV-style gem
+ * Crystal icon - FFXIV-style gem (from monorepo crystal.svg)
  */
-export const ICON_CRYSTAL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M 12 3 L 8 8 L 12 10 L 16 8 Z" fill="currentColor" opacity="0.3" />
-  <path d="M 8 8 L 6 14 L 12 10 Z" fill="currentColor" opacity="0.2" />
-  <path d="M 16 8 L 18 14 L 12 10 Z" fill="currentColor" opacity="0.2" />
-  <path d="M 6 14 L 12 21 L 12 10 Z" fill="currentColor" opacity="0.1" />
-  <path d="M 18 14 L 12 21 L 12 10 Z" fill="currentColor" opacity="0.1" />
-  <path d="M 12 3 L 8 8 L 6 14 L 12 21 L 18 14 L 16 8 Z" />
-  <line x1="12" y1="3" x2="12" y2="21" opacity="0.5" />
+export const ICON_CRYSTAL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 2L19 9L12 22L5 9L12 2Z" />
+  <path d="M12 2V22" opacity="0.5" />
+  <path d="M5 9L12 13L19 9" opacity="0.5" />
+  <path d="M19 4L21 4" opacity="0.4" />
+  <path d="M20 3V5" opacity="0.4" />
+</svg>`;
+
+/**
+ * Warning icon - Triangle with exclamation
+ */
+export const ICON_WARNING = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L2 21h20L12 3Z" />
+  <line x1="12" y1="9" x2="12" y2="13" />
+  <circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none" />
 </svg>`;
 
 /**
@@ -123,6 +130,7 @@ export const UI_ICONS: Record<string, string> = {
   'zoom-width': ICON_ZOOM_WIDTH,
   crystal: ICON_CRYSTAL,
   upload: ICON_UPLOAD,
+  warning: ICON_WARNING,
 };
 
 /**

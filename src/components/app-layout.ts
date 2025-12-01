@@ -353,7 +353,7 @@ export class AppLayout extends BaseComponent {
 
     const footerCreator = this.querySelector<HTMLElement>('footer .text-xs:not(.border-t)');
     if (footerCreator) {
-      footerCreator.innerHTML = `${LanguageService.t('footer.createdBy')} ✨`;
+      footerCreator.innerHTML = `${LanguageService.t('footer.createdBy')} <span class="inline-block w-4 h-4 align-text-bottom">${ICON_CRYSTAL}</span>`;
     }
 
     const footerDisclaimer = this.querySelector<HTMLElement>('footer .border-t');
