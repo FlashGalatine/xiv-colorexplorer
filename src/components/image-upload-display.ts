@@ -312,6 +312,9 @@ export class ImageUploadDisplay extends BaseComponent {
 
       if (!dataUrl) {
         this.emit('error', { message: 'Failed to read image' });
+        // BUG-016: Clear handler to release memory
+        reader.onload = null;
+        reader.onerror = null;
         return;
       }
 
@@ -321,10 +324,20 @@ export class ImageUploadDisplay extends BaseComponent {
       img.onload = () => {
         this.uploadedImage = img;
         this.emit('image-loaded', { image: img, dataUrl });
+        // BUG-016: Clear handlers after successful load
+        img.onload = null;
+        img.onerror = null;
+        reader.onload = null;
+        reader.onerror = null;
       };
 
       img.onerror = () => {
         this.emit('error', { message: 'Failed to load image' });
+        // BUG-016: Clear handlers on error
+        img.onload = null;
+        img.onerror = null;
+        reader.onload = null;
+        reader.onerror = null;
       };
 
       img.src = dataUrl;
@@ -332,6 +345,9 @@ export class ImageUploadDisplay extends BaseComponent {
 
     reader.onerror = () => {
       this.emit('error', { message: 'Failed to read file' });
+      // BUG-016: Clear handlers on error
+      reader.onload = null;
+      reader.onerror = null;
     };
 
     reader.readAsDataURL(file);

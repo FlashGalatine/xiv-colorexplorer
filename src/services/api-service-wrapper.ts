@@ -28,9 +28,15 @@ export class IndexedDBCacheBackend implements ICacheBackend {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
-      const success = await indexedDBService.initialize();
-      if (success) {
-        await this.loadFromStorage();
+      try {
+        const success = await indexedDBService.initialize();
+        if (success) {
+          await this.loadFromStorage();
+        }
+      } catch (error) {
+        // BUG-012: Clear failed promise so next call can retry
+        this.initPromise = null;
+        throw error;
       }
     })();
 
