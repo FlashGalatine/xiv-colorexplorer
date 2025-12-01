@@ -28,6 +28,8 @@ export { ModalService } from './modal-service';
 export type { Modal, ModalType, ModalConfig } from './modal-service';
 export { TooltipService } from './tooltip-service';
 export type { TooltipConfig, TooltipPosition } from './tooltip-service';
+export { AnnouncerService } from './announcer-service';
+export type { AnnouncementPriority } from './announcer-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';

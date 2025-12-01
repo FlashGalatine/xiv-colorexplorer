@@ -12,7 +12,7 @@ import { ThemeSwitcher } from './theme-switcher';
 import { LanguageSelector } from './language-selector';
 import { ToastContainer } from './toast-container';
 import { ModalContainer } from './modal-container';
-import { ThemeService, LanguageService } from '@services/index';
+import { ThemeService, LanguageService, AnnouncerService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
 
@@ -63,6 +63,12 @@ export class AppLayout extends BaseComponent {
       id: 'modal-root',
     });
     app.appendChild(modalContainerEl);
+
+    // Screen reader announcements container (A3 accessibility)
+    const announcerContainerEl = this.createElement('div', {
+      id: 'announcer-root',
+    });
+    app.appendChild(announcerContainerEl);
 
     clearContainer(this.container);
     this.element = app;
@@ -300,6 +306,12 @@ export class AppLayout extends BaseComponent {
       this.modalContainer.init();
     }
 
+    // Initialize screen reader announcer (A3 accessibility)
+    const announcerRoot = this.querySelector<HTMLElement>('#announcer-root');
+    if (announcerRoot) {
+      AnnouncerService.init(announcerRoot);
+    }
+
     // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
     ThemeService.subscribe(() => {
       this.updateHeaderColors();
@@ -404,6 +416,8 @@ export class AppLayout extends BaseComponent {
     if (this.modalContainer) {
       this.modalContainer.destroy();
     }
+    // Clean up announcer service
+    AnnouncerService.destroy();
     super.destroy();
   }
 }
