@@ -25,6 +25,8 @@ import {
   type MobileToolDef,
   ToolsDropdown,
   type ToolDef,
+  showWelcomeIfFirstVisit,
+  showChangelogIfUpdated,
 } from '@components/index';
 
 /**
@@ -407,6 +409,10 @@ async function initializeApp(): Promise<void> {
 
     logger.info('✅ Application initialized successfully');
     logger.info('📦 Phase 12: All 5 tools integrated and ready');
+
+    // Show welcome modal for first-time visitors, or changelog for returning users
+    showWelcomeIfFirstVisit();
+    showChangelogIfUpdated();
   } catch (error) {
     const appError = ErrorHandler.log(error);
     logger.error('❌ Failed to initialize application:', appError);

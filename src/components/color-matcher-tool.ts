@@ -12,6 +12,8 @@ import { ImageUploadDisplay } from './image-upload-display';
 import { ColorPickerDisplay } from './color-picker-display';
 import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
+import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
+import { DyePreviewOverlay } from './dye-preview-overlay';
 import { ColorService, dyeService, APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { logger } from '@shared/logger';
@@ -33,6 +35,10 @@ export class ColorMatcherTool extends BaseComponent {
   private zoomLevel: number = 100;
   private currentImage: HTMLImageElement | null = null;
   private lastSampledColor: string = '';
+  private previewOverlay: DyePreviewOverlay | null = null;
+  private samplePosition: { x: number; y: number } = { x: 0, y: 0 };
+  private canvasContainerRef: HTMLElement | null = null;
+  private canvasRef: HTMLCanvasElement | null = null;
 
   /**
    * Render the tool component
@@ -132,6 +138,7 @@ export class ColorMatcherTool extends BaseComponent {
       textContent: LanguageService.t('matcher.sampleSize'),
       className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
+    addInfoIconTo(sampleLabel, TOOLTIP_CONTENT.sampleSize);
 
     const sampleContainer = this.createElement('div', {
       className: 'flex items-center gap-4',
@@ -484,8 +491,20 @@ export class ColorMatcherTool extends BaseComponent {
     canvasContainer.appendChild(canvas);
     section.appendChild(canvasContainer);
 
+    // Store references for preview overlay
+    this.canvasContainerRef = canvasContainer;
+    this.canvasRef = canvas as HTMLCanvasElement;
+
+    // Initialize preview overlay
+    if (!this.previewOverlay) {
+      const overlayContainer = document.createElement('div');
+      this.previewOverlay = new DyePreviewOverlay(overlayContainer);
+      this.previewOverlay.init();
+    }
+    this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
+
     // Image interaction
-    this.setupImageInteraction(canvas, image);
+    this.setupImageInteraction(canvas as HTMLCanvasElement, image);
 
     resultsContainer.appendChild(section);
 
@@ -554,6 +573,9 @@ export class ColorMatcherTool extends BaseComponent {
       const centerX = (startX + endX) / 2;
       const centerY = (startY + endY) / 2;
       const size = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+
+      // Store sample position for preview overlay
+      this.samplePosition = { x: centerX, y: centerY };
 
       if (this.colorPicker) {
         this.colorPicker.setColorFromImage(canvas, centerX, centerY, Math.max(1, size));
@@ -991,7 +1013,7 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     const dyeSwatch = this.createElement('div', {
-      className: 'w-8 h-8 rounded border-2 border-gray-400 dark:border-gray-500',
+      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-400 dark:border-gray-500',
       attributes: {
         title: `Dye: ${dye.hex}`,
         style: `background-color: ${dye.hex}`,
@@ -1110,6 +1132,23 @@ export class ColorMatcherTool extends BaseComponent {
 
       card.appendChild(priceDiv);
     }
+
+    // Add hover events for preview overlay
+    card.addEventListener('mouseenter', () => {
+      if (this.previewOverlay && this.samplePosition.x > 0) {
+        this.previewOverlay.showPreview({
+          sampledColor,
+          sampledPosition: this.samplePosition,
+          dye,
+        });
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      if (this.previewOverlay) {
+        this.previewOverlay.hidePreview();
+      }
+    });
 
     return card;
   }

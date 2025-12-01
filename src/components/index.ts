@@ -39,3 +39,19 @@ export { MobileBottomNav, type MobileToolDef } from './mobile-bottom-nav';
 export { ToolsDropdown, type ToolDef } from './tools-dropdown';
 export { MarketBoard } from './market-board';
 export { PaletteExporter, type PaletteData, type PaletteExporterOptions } from './palette-exporter';
+export { ModalContainer } from './modal-container';
+export { WelcomeModal, showWelcomeIfFirstVisit } from './welcome-modal';
+export { ChangelogModal, showChangelogIfUpdated } from './changelog-modal';
+export {
+  createInfoIcon,
+  createLabelWithInfo,
+  addInfoIconTo,
+  TOOLTIP_CONTENT,
+  type InfoTooltipOptions,
+} from './info-tooltip';
+export { DyePreviewOverlay } from './dye-preview-overlay';
+export {
+  createDyeActionDropdown,
+  type DyeAction,
+  type DyeActionCallback,
+} from './dye-action-dropdown';

@@ -7,6 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2025-11-30
+
+### 🎨 Phase 1: UI/UX Foundation Improvements
+
+**Status**: ✅ COMPLETE
+**Focus**: Feedback states and accessibility foundations from UI/UX roadmap.
+
+#### Added ✅
+
+**Toast Notification System (F2)**
+- New `ToastService` static singleton for app-wide notifications
+- New `ToastContainer` component renders toast stack with animations
+- Toast types: `success`, `error`, `warning`, `info`
+- Features:
+  - Auto-dismiss with configurable duration (default 4s)
+  - Manual dismiss with close button
+  - Swipe-to-dismiss on mobile
+  - Stacks up to 5 toasts with queue management
+  - ARIA live region for screen reader announcements
+  - Theme-aware dark mode styling
+
+**Loading Spinner Component (F1)**
+- New `LoadingSpinner` component with 3 sizes: `sm`, `md`, `lg`
+- Factory functions: `createInlineSpinner()`, `createBlockSpinner()`, `getSpinnerHTML()`
+- Respects `prefers-reduced-motion` (uses pulse animation instead of spin)
+- Theme-aware using `currentColor`
+
+**Empty State Component (F3)**
+- New `EmptyState` component for zero-result scenarios
+- Preset configurations in `EMPTY_STATE_PRESETS`:
+  - `noSearchResults` - When search finds no matches
+  - `allFilteredOut` - When filters hide all results
+  - `noPriceData` - When Universalis has no data
+  - `noHarmonyResults` - When no base dye selected
+  - `noImage` - When no image uploaded
+  - `error` - Generic error state
+  - `loading` - Loading placeholder
+- Supports primary and secondary action buttons
+
+**Keyboard Navigation for Dye Selector (A1)**
+- Full ARIA grid role implementation with roving tabindex
+- Keyboard controls:
+  - Arrow keys for grid navigation
+  - Home/End for first/last item
+  - PageUp/PageDown for multi-row jumps
+  - Enter/Space to select dye
+  - Escape to clear selection or blur
+  - `/` or `Ctrl+F` to focus search input
+- Responsive column detection for proper arrow navigation
+- Smooth scroll-into-view when navigating
+
+**Dye Selector Empty States (F3)**
+- Shows empty state when search returns no matches
+- Shows empty state when category has no dyes
+- Uses localized messages from translation files
+
+#### Changed ✅
+
+**CSS Animations**
+- Added toast slide-in/out animations with mobile variants
+- Added spinner spin and pulse animations
+- Added empty state styling
+- All animations respect `prefers-reduced-motion`
+
+**Localization**
+- Added 3 new translation keys to all 6 locale files:
+  - `dyeSelector.gridAriaLabel` - Grid accessibility label
+  - `dyeSelector.noResults` - No search results message
+  - `dyeSelector.noResultsHint` - Search hint text
+
+#### Technical Details ✅
+
+**Files Created**
+- `src/services/toast-service.ts` - Toast state management
+- `src/components/toast-container.ts` - Toast UI rendering
+- `src/components/loading-spinner.ts` - Spinner component
+- `src/components/empty-state.ts` - Empty state component
+
+**Files Modified**
+- `src/services/index.ts` - Export ToastService
+- `src/components/app-layout.ts` - Initialize ToastContainer
+- `src/styles/globals.css` - Toast, spinner, empty state CSS
+- `src/components/dye-selector.ts` - Keyboard nav + empty states
+- `src/locales/*.json` - Added new translation keys (6 files)
+
+**Test Results**
+- All 1772 tests passing
+- TypeScript compiles with no errors
+
+---
+
 ## [2.1.3] - 2025-11-30
 
 ### 🎨 UI Improvements: SVG Harmony Icons

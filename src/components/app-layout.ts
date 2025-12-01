@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ThemeSwitcher } from './theme-switcher';
 import { LanguageSelector } from './language-selector';
 import { ToastContainer } from './toast-container';
+import { ModalContainer } from './modal-container';
 import { ThemeService, LanguageService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
@@ -23,6 +24,7 @@ export class AppLayout extends BaseComponent {
   private themeSwitcher: ThemeSwitcher | null = null;
   private languageSelector: LanguageSelector | null = null;
   private toastContainer: ToastContainer | null = null;
+  private modalContainer: ModalContainer | null = null;
   private contentContainer: HTMLElement | null = null;
 
   /**
@@ -55,6 +57,12 @@ export class AppLayout extends BaseComponent {
       id: 'toast-root',
     });
     app.appendChild(toastContainerEl);
+
+    // Modal container (for dialogs)
+    const modalContainerEl = this.createElement('div', {
+      id: 'modal-root',
+    });
+    app.appendChild(modalContainerEl);
 
     clearContainer(this.container);
     this.element = app;
@@ -285,6 +293,13 @@ export class AppLayout extends BaseComponent {
       this.toastContainer.init();
     }
 
+    // Initialize modal container (for dialogs)
+    const modalRoot = this.querySelector<HTMLElement>('#modal-root');
+    if (modalRoot) {
+      this.modalContainer = new ModalContainer(modalRoot);
+      this.modalContainer.init();
+    }
+
     // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
     ThemeService.subscribe(() => {
       this.updateHeaderColors();
@@ -385,6 +400,9 @@ export class AppLayout extends BaseComponent {
     }
     if (this.toastContainer) {
       this.toastContainer.destroy();
+    }
+    if (this.modalContainer) {
+      this.modalContainer.destroy();
     }
     super.destroy();
   }

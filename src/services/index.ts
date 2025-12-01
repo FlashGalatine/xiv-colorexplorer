@@ -24,6 +24,10 @@ export { LanguageService };
 export { APIService, apiService } from './api-service-wrapper';
 export { ToastService } from './toast-service';
 export type { Toast, ToastType, ToastOptions } from './toast-service';
+export { ModalService } from './modal-service';
+export type { Modal, ModalType, ModalConfig } from './modal-service';
+export { TooltipService } from './tooltip-service';
+export type { TooltipConfig, TooltipPosition } from './tooltip-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
@@ -59,6 +63,12 @@ export async function initializeServices(): Promise<void> {
 
     // ToastService is static singleton, always ready
     logger.info('✅ ToastService ready');
+
+    // ModalService is static singleton, always ready
+    logger.info('✅ ModalService ready');
+
+    // TooltipService is static singleton, always ready
+    logger.info('✅ TooltipService ready');
 
     logger.info('🚀 All services initialized successfully');
   } catch (error) {

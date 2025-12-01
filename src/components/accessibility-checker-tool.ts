@@ -9,6 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
+import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import type { Dye } from '@shared/types';
 import { ColorService, LanguageService } from '@services/index';
 import { clearContainer } from '@shared/utils';
@@ -365,6 +366,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       textContent: LanguageService.t('accessibility.contrastScore'),
       className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
     });
+    addInfoIconTo(scoreLabel, TOOLTIP_CONTENT.wcagContrast);
     scoreSection.appendChild(scoreLabel);
 
     const scoreBar = this.createElement('div', {

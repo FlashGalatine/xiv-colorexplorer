@@ -203,6 +203,9 @@ export const STORAGE_KEYS = {
   HARMONY_FILTERS: `${STORAGE_PREFIX}_harmony_filters`,
   HARMONY_SUGGESTIONS_MODE: `${STORAGE_PREFIX}_harmony_suggestions_mode`,
   HARMONY_COMPANION_DYES: `${STORAGE_PREFIX}_harmony_companion_dyes`,
+  // Phase 2: Discoverability
+  WELCOME_SEEN: `${STORAGE_PREFIX}_welcome_seen`,
+  LAST_VERSION_VIEWED: `${STORAGE_PREFIX}_last_version_viewed`,
 } as const;
 
 // ============================================================================

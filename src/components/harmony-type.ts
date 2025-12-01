@@ -9,6 +9,8 @@
 
 import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
+import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
+import { createDyeActionDropdown, type DyeAction } from './dye-action-dropdown';
 import { APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { clearContainer } from '@shared/utils';
@@ -179,7 +181,7 @@ export class HarmonyType extends BaseComponent {
 
     // Color swatch
     const swatch = this.createElement('div', {
-      className: 'w-12 h-12 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className: 'dye-swatch w-12 h-12 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${dye.hex}`,
         title: dye.hex,
@@ -221,8 +223,9 @@ export class HarmonyType extends BaseComponent {
 
     const devianceLabel = this.createElement('div', {
       textContent: LanguageService.t('harmony.hueDiff'),
-      className: 'text-xs text-gray-500 dark:text-gray-400',
+      className: 'text-xs text-gray-500 dark:text-gray-400 inline-flex items-center',
     });
+    addInfoIconTo(devianceLabel, TOOLTIP_CONTENT.deviance);
 
     devianceDiv.appendChild(devianceValue);
     devianceDiv.appendChild(devianceLabel);
@@ -263,7 +266,25 @@ export class HarmonyType extends BaseComponent {
       item.appendChild(priceDiv);
     }
 
+    // Action dropdown for quick access
+    const actionDropdown = createDyeActionDropdown(dye, (action: DyeAction, selectedDye: Dye) => {
+      this.handleDyeAction(action, selectedDye);
+    });
+    item.appendChild(actionDropdown);
+
     return item;
+  }
+
+  /**
+   * Handle dye action from dropdown
+   */
+  private handleDyeAction(action: DyeAction, dye: Dye): void {
+    // Dispatch custom event for parent components to handle
+    const event = new CustomEvent('dyeAction', {
+      bubbles: true,
+      detail: { action, dye },
+    });
+    this.container.dispatchEvent(event);
   }
 
   /**
