@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
+
+## [2.4.2] - 2025-12-01
+
+### 🐛 Critical Bug Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Memory leak prevention and functionality restoration.
+
+#### Memory Leak Fixes ✅
+
+**BUG-001: Dye Action Dropdown Global Listener Leak**
+- Fixed critical memory leak where `dye-dropdown-close-all` event listener was never removed
+- Each dropdown creation would accumulate listeners, causing 50+ orphaned listeners after several tool switches
+- **Solution**: Added `__cleanup` method to dropdown container for proper listener removal
+- **Impact**: Prevents memory accumulation and browser slowdown during extended usage
+- **File**: `src/components/dye-action-dropdown.ts`
+
+**BUG-003: Modal Container Event Leaks**
+- Fixed modal event listeners bypassing BaseComponent's cleanup system
+- Replaced 4 `addEventListener()` calls with `this.on()` for automatic cleanup:
+  - Close button click handler
+  - Cancel button click handler
+  - Confirm button click handler
+  - Backdrop click handler
+- **Impact**: Prevents event listener accumulation on modal open/close cycles
+- **File**: `src/components/modal-container.ts`
+
+#### Functionality Fixes ✅
+
+**BUG-005: Color Sampling Not Triggering Matching**
+- Fixed canvas drag sampling feature not matching dyes
+- Canvas drag would update color picker but not call `matchColor()`
+- **Solution**: Added manual `matchColor()` call after `setColorFromImage()`
+- **Impact**: Restored canvas color sampling feature - users can now drag to select colors
+- **File**: `src/components/color-matcher-tool.ts`
+
+**BUG-008: Wrong Color Used for Filter Re-matching**
+- Fixed incorrect dye matching when filters change
+- Filter changes were re-matching using matched dye's color instead of original sampled color
+- **Solution**: Changed `onFilterChange` callback to use `this.lastSampledColor`
+- **Impact**: Ensures accurate dye matching when filters exclude certain categories
+- **File**: `src/components/color-matcher-tool.ts`
+
+#### Technical Details ✅
+
+**Pattern Improvements**
+- Reinforced proper event listener usage: `this.on()` instead of `addEventListener()`
+- Established pattern of storing original input values for re-computation
+- Added cleanup mechanisms for global event listeners
+
+**Files Modified**
+- `src/components/dye-action-dropdown.ts` - Global listener cleanup
+- `src/components/modal-container.ts` - Event tracking integration
+- `src/components/color-matcher-tool.ts` - Color sampling fix, filter re-matching fix
+
+**Testing Recommendations**
+- Memory leak testing: Use Chrome DevTools to verify listener cleanup
+- Event listener audit: Check document listeners remain stable during usage
+- Functional testing: Verify canvas sampling and filter re-matching work correctly
+
+#### Benefits Achieved ✅
+- ✅ **Memory Leak Prevention** - Event listeners properly cleaned up
+- ✅ **Restored Features** - Canvas color sampling fully functional
+- ✅ **Accurate Matching** - Filters use correct source color
+- ✅ **Better Code Patterns** - Consistent event listener management
+
+---
+
 ## [2.4.1] - 2025-12-01
 
 ### 🐛 Phase 4 Testing: Bug Fixes
