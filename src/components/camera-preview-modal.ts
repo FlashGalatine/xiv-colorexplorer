@@ -87,6 +87,12 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   instructions.textContent = LanguageService.t('camera.instructions') || 'Position your subject and click capture';
   content.appendChild(instructions);
 
+  // Privacy notice
+  const privacyNotice = document.createElement('p');
+  privacyNotice.className = 'text-xs text-center opacity-60 mt-1';
+  privacyNotice.textContent = LanguageService.t('camera.privacyNotice') || 'Your camera stream is processed locally. No images are sent to our servers.';
+  content.appendChild(privacyNotice);
+
   // Action buttons
   const buttons = document.createElement('div');
   buttons.className = 'flex justify-center gap-3';

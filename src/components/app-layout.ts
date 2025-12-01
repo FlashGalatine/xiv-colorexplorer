@@ -12,8 +12,7 @@ import { ThemeSwitcher } from './theme-switcher';
 import { LanguageSelector } from './language-selector';
 import { ToastContainer } from './toast-container';
 import { ModalContainer } from './modal-container';
-import { initShortcutsListener } from './shortcuts-panel';
-import { ThemeService, LanguageService, AnnouncerService } from '@services/index';
+import { ThemeService, LanguageService, AnnouncerService, KeyboardService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
 import {
@@ -322,8 +321,8 @@ export class AppLayout extends BaseComponent {
       AnnouncerService.init(announcerRoot);
     }
 
-    // Initialize keyboard shortcuts listener (O4 - press "?" to show shortcuts)
-    initShortcutsListener();
+    // Initialize keyboard shortcuts (O4 - press "?" to show shortcuts, 1-5 for tools, etc.)
+    KeyboardService.initialize();
 
     // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
     ThemeService.subscribe(() => {

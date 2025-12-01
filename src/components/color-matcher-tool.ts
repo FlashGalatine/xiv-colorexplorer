@@ -545,6 +545,11 @@ export class ColorMatcherTool extends BaseComponent {
     }
     this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
 
+    // Hide preview overlay when scrolling the canvas container
+    canvasContainer.addEventListener('scroll', () => {
+      this.previewOverlay?.hidePreview();
+    }, { passive: true });
+
     // Image interaction
     this.setupImageInteraction(canvas as HTMLCanvasElement, image);
 

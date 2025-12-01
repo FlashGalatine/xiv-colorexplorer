@@ -265,7 +265,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
       className: 'flex items-center gap-1',
     });
     const startSwatch = this.createElement('div', {
-      className: 'w-3 h-3 rounded border border-gray-400',
+      className: 'dye-swatch w-3 h-3 rounded border border-gray-400',
       attributes: {
         style: `background-color: ${this.startColor}`,
       },
@@ -278,7 +278,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
       className: 'flex items-center gap-1',
     });
     const endSwatch = this.createElement('div', {
-      className: 'w-3 h-3 rounded border border-gray-400',
+      className: 'dye-swatch w-3 h-3 rounded border border-gray-400',
       attributes: {
         style: `background-color: ${this.endColor}`,
       },
@@ -510,7 +510,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Theoretical color swatch
     const theoreticalSwatch = this.createElement('div', {
-      className: 'w-6 h-6 rounded border border-gray-300 dark:border-gray-600',
+      className: 'dye-swatch w-6 h-6 rounded border border-gray-300 dark:border-gray-600',
       attributes: {
         style: `background-color: ${step.theoreticalColor}`,
         title: `Theoretical: ${step.theoreticalColor}`,
@@ -528,7 +528,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
       // Matched dye swatch
       const matchedSwatch = this.createElement('div', {
-        className: 'w-6 h-6 rounded border-2 border-gray-400',
+        className: 'dye-swatch w-6 h-6 rounded border-2 border-gray-400',
         attributes: {
           style: `background-color: ${step.matchedDye.hex}`,
           title: step.matchedDye.hex,

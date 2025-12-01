@@ -39,6 +39,7 @@ export { IndexedDBService, indexedDBService, STORES } from './indexeddb-service'
 export type { StoreName } from './indexeddb-service';
 export { TutorialService } from './tutorial-service';
 export type { TutorialTool, TutorialStep, Tutorial } from './tutorial-service';
+export { KeyboardService } from './keyboard-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';

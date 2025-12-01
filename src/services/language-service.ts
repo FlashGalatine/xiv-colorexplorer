@@ -124,6 +124,16 @@ export class LanguageService {
   }
 
   /**
+   * Cycle to the next locale in the supported locales list
+   * Wraps around to the first locale after the last
+   */
+  static async cycleToNextLocale(): Promise<void> {
+    const currentIndex = SUPPORTED_LOCALES.indexOf(this.currentLocale);
+    const nextIndex = (currentIndex + 1) % SUPPORTED_LOCALES.length;
+    await this.setLocale(SUPPORTED_LOCALES[nextIndex]);
+  }
+
+  /**
    * Subscribe to locale changes
    * Returns an unsubscribe function
    */

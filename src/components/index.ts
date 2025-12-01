@@ -56,3 +56,4 @@ export {
   type DyeActionCallback,
 } from './dye-action-dropdown';
 export { TutorialSpotlight, initializeTutorialSpotlight } from './tutorial-spotlight';
+export { offlineBanner } from './offline-banner';

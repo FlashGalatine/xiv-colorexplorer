@@ -27,7 +27,11 @@ import {
   type ToolDef,
   showWelcomeIfFirstVisit,
   showChangelogIfUpdated,
+  offlineBanner,
 } from '@components/index';
+
+// Import TutorialService for dev mode console access
+import { TutorialService } from '@services/index';
 
 // Import inline SVG icons for theme color inheritance
 import {
@@ -363,6 +367,15 @@ async function initializeApp(): Promise<void> {
       }
     }) as EventListener);
 
+    // Listen for keyboard-navigate-tool events (from KeyboardService)
+    window.addEventListener('keyboard-navigate-tool', ((e: CustomEvent) => {
+      const { toolId } = e.detail as { toolId: string };
+      if (toolId) {
+        void loadTool(toolId);
+        logger.info(`⌨️ Navigating to ${toolId} tool via keyboard shortcut`);
+      }
+    }) as EventListener);
+
     // Add bottom padding to content on mobile to account for fixed bottom nav
     const updateContentPadding = (): void => {
       const isMobile = window.innerWidth <= 768;
@@ -436,6 +449,16 @@ async function initializeApp(): Promise<void> {
     // Show welcome modal for first-time visitors, or changelog for returning users
     showWelcomeIfFirstVisit();
     showChangelogIfUpdated();
+
+    // Initialize offline banner for network status detection
+    offlineBanner.initialize();
+    logger.info('📡 Offline banner initialized');
+
+    // Expose TutorialService on window for dev mode debugging
+    if (import.meta.env.DEV) {
+      (window as unknown as Record<string, unknown>).TutorialService = TutorialService;
+      console.info('[DEV] TutorialService exposed on window for debugging');
+    }
   } catch (error) {
     const appError = ErrorHandler.log(error);
     logger.error('❌ Failed to initialize application:', appError);

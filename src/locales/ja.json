@@ -373,7 +373,9 @@
     "cottonCandy": "コットンキャンディ",
     "sugarRiot": "シュガーライオット",
     "grayscaleLight": "グレースケール（ライト）",
-    "grayscaleDark": "グレースケール（ダーク）"
+    "grayscaleDark": "グレースケール（ダーク）",
+    "highContrastLight": "ハイコントラスト（ライト）",
+    "highContrastDark": "ハイコントラスト（ダーク）"
   },
   "changelog": {
     "title": "新機能",
@@ -446,6 +448,7 @@
     "ready": "カメラ準備完了",
     "switching": "カメラを切り替え中...",
     "instructions": "被写体を配置してキャプチャをクリック",
+    "privacyNotice": "カメラ映像はローカルで処理されます。画像はサーバーに送信されません。",
     "capture": "キャプチャ",
     "capturing": "キャプチャ中...",
     "captured": "画像をキャプチャしました！",

@@ -130,9 +130,9 @@ export class ToolsDropdown extends BaseComponent {
         });
       }
 
-      // Tool info container
+      // Tool info container (flex-col + justify-center for vertical alignment with icon)
       const infoContainer = this.createElement('div', {
-        className: 'flex-1',
+        className: 'flex-1 flex flex-col justify-center',
       });
 
       // Tool name

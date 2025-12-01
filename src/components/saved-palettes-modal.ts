@@ -7,8 +7,24 @@
  * @module components/saved-palettes-modal
  */
 
-import { ModalService, PaletteService, LanguageService, ToastService } from '@services/index';
+import { ModalService, PaletteService, LanguageService, ToastService, dyeService } from '@services/index';
 import type { SavedPalette } from '@services/palette-service';
+import { ICON_FOLDER } from '@shared/empty-state-icons';
+
+// Cache dye name to hex color mapping for fast lookups
+let dyeNameToHexMap: Map<string, string> | null = null;
+
+function getDyeHexByName(name: string): string | undefined {
+  // Build the map on first use
+  if (!dyeNameToHexMap) {
+    dyeNameToHexMap = new Map();
+    const allDyes = dyeService.getAllDyes();
+    for (const dye of allDyes) {
+      dyeNameToHexMap.set(dye.name, dye.hex);
+    }
+  }
+  return dyeNameToHexMap.get(name);
+}
 
 /**
  * Callback when a palette is loaded
@@ -36,9 +52,9 @@ export function showSavedPalettesModal(onLoad?: OnPaletteLoadCallback): void {
   const actionsDiv = document.createElement('div');
   actionsDiv.className = 'flex gap-2';
 
-  // Export button
+  // Export button - uses theme-aware primary button styling
   const exportBtn = document.createElement('button');
-  exportBtn.className = 'px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  exportBtn.className = 'btn-theme-primary';
   exportBtn.textContent = LanguageService.t('palette.export');
   exportBtn.disabled = palettes.length === 0;
   exportBtn.addEventListener('click', () => {
@@ -47,9 +63,9 @@ export function showSavedPalettesModal(onLoad?: OnPaletteLoadCallback): void {
   });
   actionsDiv.appendChild(exportBtn);
 
-  // Import button
+  // Import button - uses theme-aware secondary button styling
   const importBtn = document.createElement('button');
-  importBtn.className = 'px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors';
+  importBtn.className = 'btn-theme-secondary';
   importBtn.textContent = LanguageService.t('palette.import');
   importBtn.addEventListener('click', () => {
     triggerImport(content, onLoad);
@@ -65,8 +81,8 @@ export function showSavedPalettesModal(onLoad?: OnPaletteLoadCallback): void {
     emptyState.className = 'text-center py-8';
 
     const emptyIcon = document.createElement('div');
-    emptyIcon.className = 'text-4xl mb-2';
-    emptyIcon.textContent = '📁';
+    emptyIcon.className = 'w-12 h-12 mx-auto mb-2 opacity-50';
+    emptyIcon.innerHTML = ICON_FOLDER;
     emptyState.appendChild(emptyIcon);
 
     const emptyText = document.createElement('p');
@@ -113,14 +129,15 @@ function createPaletteItem(
   onDelete?: () => void
 ): HTMLElement {
   const item = document.createElement('div');
-  item.className = 'palette-item p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors';
+  item.className = 'palette-item p-3 rounded-lg card-theme-hover';
 
   // Top row with name and actions
   const topRow = document.createElement('div');
   topRow.className = 'flex items-center justify-between mb-2';
 
   const nameDiv = document.createElement('div');
-  nameDiv.className = 'font-semibold text-gray-900 dark:text-white truncate flex-1';
+  nameDiv.className = 'font-semibold truncate flex-1';
+  nameDiv.style.color = 'var(--theme-text)';
   nameDiv.textContent = palette.name;
   nameDiv.title = palette.name;
   topRow.appendChild(nameDiv);
@@ -128,11 +145,11 @@ function createPaletteItem(
   const actions = document.createElement('div');
   actions.className = 'flex gap-1 ml-2';
 
-  // Load button
+  // Load button - uses theme-aware ghost button styling
   const loadBtn = document.createElement('button');
-  loadBtn.className = 'p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors';
+  loadBtn.className = 'btn-theme-ghost';
   loadBtn.title = LanguageService.t('palette.load');
-  loadBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-blue-400"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>`;
+  loadBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--theme-primary);"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>`;
   loadBtn.addEventListener('click', () => {
     if (onLoad) {
       onLoad(palette);
@@ -142,11 +159,11 @@ function createPaletteItem(
   });
   actions.appendChild(loadBtn);
 
-  // Delete button
+  // Delete button - uses theme-aware danger button styling
   const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors';
+  deleteBtn.className = 'btn-theme-danger';
   deleteBtn.title = LanguageService.t('common.delete');
-  deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+  deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
   deleteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (confirm(LanguageService.t('palette.confirmDelete'))) {
@@ -177,13 +194,20 @@ function createPaletteItem(
   arrow.textContent = '→';
   swatchRow.appendChild(arrow);
 
-  // Companion swatches (up to 4)
+  // Companion swatches (up to 4) - look up actual dye colors
   const companionColors = palette.companions.slice(0, 4);
   for (const name of companionColors) {
     const swatch = document.createElement('div');
-    swatch.className = 'w-6 h-6 rounded border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700';
+    swatch.className = 'w-6 h-6 rounded border border-gray-300 dark:border-gray-600';
     swatch.title = name;
-    // We don't have the hex here, but that's okay - we show the name in tooltip
+    // Look up the actual dye color by name
+    const hexColor = getDyeHexByName(name);
+    if (hexColor) {
+      swatch.style.backgroundColor = hexColor;
+    } else {
+      // Fallback for unknown dye names
+      swatch.classList.add('bg-gray-200', 'dark:bg-gray-700');
+    }
     swatchRow.appendChild(swatch);
   }
 

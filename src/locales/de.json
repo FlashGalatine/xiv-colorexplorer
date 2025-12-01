@@ -373,7 +373,9 @@
     "cottonCandy": "Zuckerwatte",
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Graustufen (Hell)",
-    "grayscaleDark": "Graustufen (Dunkel)"
+    "grayscaleDark": "Graustufen (Dunkel)",
+    "highContrastLight": "Hoher Kontrast (Hell)",
+    "highContrastDark": "Hoher Kontrast (Dunkel)"
   },
   "changelog": {
     "title": "Neuigkeiten",
@@ -446,6 +448,7 @@
     "ready": "Kamera bereit",
     "switching": "Kamera wird gewechselt...",
     "instructions": "Positionieren Sie Ihr Motiv und klicken Sie auf Aufnehmen",
+    "privacyNotice": "Ihr Kamerastream wird lokal verarbeitet. Keine Bilder werden an unsere Server gesendet.",
     "capture": "Aufnehmen",
     "capturing": "Aufnahme...",
     "captured": "Bild aufgenommen!",

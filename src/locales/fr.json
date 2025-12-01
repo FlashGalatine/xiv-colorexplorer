@@ -373,7 +373,9 @@
     "cottonCandy": "Barbe à Papa",
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Niveaux de Gris (Clair)",
-    "grayscaleDark": "Niveaux de Gris (Sombre)"
+    "grayscaleDark": "Niveaux de Gris (Sombre)",
+    "highContrastLight": "Contraste Élevé (Clair)",
+    "highContrastDark": "Contraste Élevé (Sombre)"
   },
   "changelog": {
     "title": "Nouveautés",
@@ -446,6 +448,7 @@
     "ready": "Caméra prête",
     "switching": "Changement de caméra...",
     "instructions": "Positionnez votre sujet et cliquez sur capturer",
+    "privacyNotice": "Votre flux caméra est traité localement. Aucune image n'est envoyée à nos serveurs.",
     "capture": "Capturer",
     "capturing": "Capture...",
     "captured": "Image capturée !",

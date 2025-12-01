@@ -373,7 +373,9 @@
     "cottonCandy": "코튼 캔디",
     "sugarRiot": "슈가 라이엇",
     "grayscaleLight": "그레이스케일 (라이트)",
-    "grayscaleDark": "그레이스케일 (다크)"
+    "grayscaleDark": "그레이스케일 (다크)",
+    "highContrastLight": "고대비 (라이트)",
+    "highContrastDark": "고대비 (다크)"
   },
   "changelog": {
     "title": "새로운 기능",
@@ -446,6 +448,7 @@
     "ready": "카메라 준비 완료",
     "switching": "카메라 전환 중...",
     "instructions": "피사체를 배치하고 캡처를 클릭하세요",
+    "privacyNotice": "카메라 스트림은 로컬에서 처리됩니다. 이미지는 서버로 전송되지 않습니다.",
     "capture": "캡처",
     "capturing": "캡처 중...",
     "captured": "이미지가 캡처되었습니다!",

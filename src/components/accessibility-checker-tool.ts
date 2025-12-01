@@ -337,7 +337,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const swatch = this.createElement('div', {
-      className: 'w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className: 'dye-swatch w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.hex}`,
       },
@@ -497,7 +497,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'flex-1 flex items-center gap-2',
     });
     const leftSwatch = this.createElement('div', {
-      className: 'w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.dye1Hex}`,
       },
@@ -526,7 +526,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'text-sm font-medium text-gray-900 dark:text-white truncate text-right',
     });
     const rightSwatch = this.createElement('div', {
-      className: 'w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.dye2Hex}`,
       },

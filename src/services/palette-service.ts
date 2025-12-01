@@ -269,6 +269,9 @@ export class PaletteService {
         return 0;
       }
 
+      // Store existing count BEFORE modifying storage (fixes count calculation bug)
+      const existingCount = this.getPalettes().length;
+
       let palettes: SavedPalette[];
 
       if (merge) {
@@ -290,9 +293,8 @@ export class PaletteService {
       const success = StorageService.setItem(STORAGE_KEYS.SAVED_PALETTES, palettes);
 
       if (success) {
-        const count = merge
-          ? palettes.length - this.getPalettes().length
-          : importedPalettes.length;
+        // Use stored existingCount, not fresh read from storage
+        const count = merge ? palettes.length - existingCount : importedPalettes.length;
         logger.info(`Imported ${count} palettes`);
         return count;
       }

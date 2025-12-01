@@ -375,7 +375,9 @@
     "cottonCandy": "Cotton Candy",
     "sugarRiot": "Sugar Riot",
     "grayscaleLight": "Grayscale (Light)",
-    "grayscaleDark": "Grayscale (Dark)"
+    "grayscaleDark": "Grayscale (Dark)",
+    "highContrastLight": "High Contrast (Light)",
+    "highContrastDark": "High Contrast (Dark)"
   },
   "changelog": {
     "title": "What's New",
@@ -448,6 +450,7 @@
     "ready": "Camera ready",
     "switching": "Switching camera...",
     "instructions": "Position your subject and click capture",
+    "privacyNotice": "Your camera stream is processed locally. No images are sent to our servers.",
     "capture": "Capture",
     "capturing": "Capturing...",
     "captured": "Image captured!",

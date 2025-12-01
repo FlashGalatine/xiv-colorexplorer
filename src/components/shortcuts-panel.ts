@@ -138,35 +138,11 @@ function createPanelContent(): HTMLElement {
 export function showShortcutsPanel(): string {
   return ModalService.show({
     type: 'custom',
-    title: LanguageService.t('shortcuts.title') || '⌨️ Keyboard Shortcuts',
+    title: LanguageService.t('shortcuts.title') || 'Keyboard Shortcuts',
     content: createPanelContent(),
     size: 'sm',
     closable: true,
     closeOnBackdrop: true,
     closeOnEscape: true,
-  });
-}
-
-/**
- * Initialize global keyboard shortcut listener
- * Should be called once during app initialization
- */
-export function initShortcutsListener(): void {
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    // Check if ? key is pressed (Shift + / on most keyboards)
-    // Also support ? without shift for keyboards that have it directly
-    const isQuestionMark = e.key === '?' || (e.shiftKey && e.key === '/');
-
-    // Don't trigger if user is typing in an input
-    const activeElement = document.activeElement;
-    const isTyping =
-      activeElement instanceof HTMLInputElement ||
-      activeElement instanceof HTMLTextAreaElement ||
-      activeElement?.getAttribute('contenteditable') === 'true';
-
-    if (isQuestionMark && !isTyping && !ModalService.hasOpenModals()) {
-      e.preventDefault();
-      showShortcutsPanel();
-    }
   });
 }
