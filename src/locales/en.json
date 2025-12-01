@@ -126,7 +126,7 @@
     "supportedFormatsWithSize": "Supported formats: PNG, JPG, WebP, GIF. Maximum size: 20MB",
     "privacyNote": "Images never leave your browser",
     "privacyNoteFull": "Privacy: Images never leave your browser. All processing happens locally.",
-    "privacyNoticeHtml": "🔒 <strong>Privacy Protected:</strong> Photos and images are processed locally in your browser and never uploaded to any server. <a href=\"https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">Learn more</a>",
+    "privacyNoticeHtml": "🔒 <strong>Privacy Protected:</strong> Photos and images are processed locally in your browser and never uploaded to any server. <a href=\"https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">Learn more</a>",
     "pasteHint": "Tip: Paste an image using Ctrl+V (Cmd+V on Mac)",
     "selectColor": "Select Color",
     "colorPicker": "Color Picker",

@@ -125,7 +125,7 @@
     "supportedFormats": "Formats supportés : PNG, JPG, GIF, WebP",
     "supportedFormatsWithSize": "Formats supportés : PNG, JPG, WebP, GIF. Taille max : 20 Mo",
     "privacyNote": "Les images ne quittent jamais votre navigateur",
-    "privacyNoticeHtml": "🔒 <strong>Protection de la vie privée :</strong> Les photos et images sont traitées localement dans votre navigateur et ne sont jamais téléchargées sur un serveur. <a href=\"https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">En savoir plus</a>",
+    "privacyNoticeHtml": "🔒 <strong>Protection de la vie privée :</strong> Les photos et images sont traitées localement dans votre navigateur et ne sont jamais téléchargées sur un serveur. <a href=\"https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">En savoir plus</a>",
     "pasteHint": "Astuce : Collez une image avec Ctrl+V (Cmd+V sur Mac)",
     "selectColor": "Sélectionner une Couleur",
     "colorPicker": "Sélecteur de Couleur",

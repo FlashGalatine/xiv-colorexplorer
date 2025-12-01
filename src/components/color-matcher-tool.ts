@@ -417,7 +417,7 @@ export class ColorMatcherTool extends BaseComponent {
 
     const privacyNotice = this.createElement('p', {
       innerHTML:
-        `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
+        `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
       className: 'text-xs text-gray-500 dark:text-gray-400 mb-4',
     });
     section.appendChild(privacyNotice);

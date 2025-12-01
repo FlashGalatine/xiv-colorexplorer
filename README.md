@@ -330,12 +330,12 @@ To get a local copy of the project, follow these steps:
 
 2. **Clone the repository**:
    ```bash
-   git clone https://github.com/FlashGalatine/xivdyetools.git
+   git clone https://github.com/FlashGalatine/xivdyetools-web-app.git
    ```
 
 3. **Navigate to the project directory**:
    ```bash
-   cd xivdyetools
+   cd xivdyetools-web-app
    ```
 
 4. **Open the tools in your browser**:

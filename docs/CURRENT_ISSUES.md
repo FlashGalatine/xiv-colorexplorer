@@ -2,7 +2,7 @@
 
 > **Found a bug or have a suggestion?**
 >
-> Please report issues on **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools/issues)** or discuss on **[Discord](https://discord.gg/5VUSKTZCe5)**.
+> Please report issues on **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools-web-app/issues)** or discuss on **[Discord](https://discord.gg/5VUSKTZCe5)**.
 >
 > Community feedback helps us improve the tools for everyone! ✨
 

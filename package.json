@@ -21,15 +21,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FlashGalatine/xivdyetools.git"
+    "url": "git+https://github.com/FlashGalatine/xivdyetools-web-app.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/FlashGalatine/xivdyetools/issues"
+    "url": "https://github.com/FlashGalatine/xivdyetools-web-app/issues"
   },
-  "homepage": "https://github.com/FlashGalatine/xivdyetools#readme",
+  "homepage": "https://github.com/FlashGalatine/xivdyetools-web-app#readme",
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@testing-library/dom": "^9.3.3",

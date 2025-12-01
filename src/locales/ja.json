@@ -125,7 +125,7 @@
     "supportedFormats": "対応形式: PNG, JPG, GIF, WebP",
     "supportedFormatsWithSize": "対応形式: PNG, JPG, WebP, GIF。最大サイズ: 20MB",
     "privacyNote": "画像はブラウザから外に出ません",
-    "privacyNoticeHtml": "🔒 <strong>プライバシー保護:</strong> 写真と画像はブラウザ内でローカル処理され、サーバーにアップロードされることはありません。<a href=\"https://github.com/FlashGalatine/xivdyetools/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">詳細</a>",
+    "privacyNoticeHtml": "🔒 <strong>プライバシー保護:</strong> 写真と画像はブラウザ内でローカル処理され、サーバーにアップロードされることはありません。<a href=\"https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline font-semibold\">詳細</a>",
     "pasteHint": "ヒント: Ctrl+V（Macの場合はCmd+V）で画像を貼り付け",
     "selectColor": "色を選択",
     "colorPicker": "カラーピッカー",

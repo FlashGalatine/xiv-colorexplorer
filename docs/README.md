@@ -95,7 +95,7 @@ npm run preview    # Preview production build
 ## 🐛 Found an Issue?
 
 **Report bugs and suggest features**:
-- **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools/issues)** - Technical issues and feature requests
+- **[GitHub Issues](https://github.com/FlashGalatine/xivdyetools-web-app/issues)** - Technical issues and feature requests
 - **[Discord](https://discord.gg/5VUSKTZCe5)** - Community discussion and support
 
 See **[CURRENT_ISSUES.md](./CURRENT_ISSUES.md)** for known issues and workarounds.

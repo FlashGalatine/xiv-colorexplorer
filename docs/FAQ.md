@@ -15,7 +15,7 @@ A: No, all tools are completely free with no ads, paywalls, or premium features.
 A: Not currently. The tools are web-based and optimized for desktop browsers. You can use them on mobile, but the experience is better on larger screens.
 
 **Q: How are these tools made? Is AI involved?**
-A: The tools were developed with AI assistance, built using vanilla JavaScript. The code is open source and available on GitHub (https://github.com/FlashGalatine/xivdyetools) under the MIT license.
+A: The tools were developed with AI assistance, built using vanilla JavaScript. The code is open source and available on GitHub (https://github.com/FlashGalatine/xivdyetools-web-app) under the MIT license.
 
 **Q: Who made these tools?**
 A: XIV Dye Tools was created by Flash Galatine (Balmung) as a passion project for the FFXIV community.
@@ -166,7 +166,7 @@ A: Check if your browser allows localStorage (it's usually enabled by default). 
 A: Make sure you've enabled "Show Market Prices" and have internet connection. Prices only appear when both conditions are met.
 
 **Q: What if I find a bug?**
-A: Report it on GitHub (https://github.com/FlashGalatine/xivdyetools/issues) or join our Discord (https://discord.gg/5VUSKTZCe5) for support.
+A: Report it on GitHub (https://github.com/FlashGalatine/xivdyetools-web-app/issues) or join our Discord (https://discord.gg/5VUSKTZCe5) for support.
 
 ---
 
@@ -196,7 +196,7 @@ A: Each tool is a single self-contained HTML file (~1,500-1,900 lines) with embe
 - All styling uses Tailwind CSS and custom theme variables
 
 **Q: Can I contribute to XIV Dye Tools?**
-A: Yes! The project is open source under the MIT license. Since there's no complex build process, you can easily modify and test the tools locally. Check out the GitHub repository (https://github.com/FlashGalatine/xivdyetools) and CLAUDE.md for development guidelines.
+A: Yes! The project is open source under the MIT license. Since there's no complex build process, you can easily modify and test the tools locally. Check out the GitHub repository (https://github.com/FlashGalatine/xivdyetools-web-app) and CLAUDE.md for development guidelines.
 
 **Q: How are duplicate functions handled across tools?**
 A: Version v2.0.0 eliminated code duplication by refactoring the monolithic HTML files into modular TypeScript components and services. All tools now reference a single implementation from the service layer for:
@@ -228,10 +228,10 @@ A: Check these files in the repository:
 ## Contact & Support
 
 **Q: How do I report bugs or request features?**
-A: Use GitHub Issues (https://github.com/FlashGalatine/xivdyetools/issues) or join the Discord server (https://discord.gg/5VUSKTZCe5).
+A: Use GitHub Issues (https://github.com/FlashGalatine/xivdyetools-web-app/issues) or join the Discord server (https://discord.gg/5VUSKTZCe5).
 
 **Q: Where can I find the source code?**
-A: GitHub: https://github.com/FlashGalatine/xivdyetools
+A: GitHub: https://github.com/FlashGalatine/xivdyetools-web-app
 
 **Q: Are there social media accounts I can follow?**
 A: Yes! You can find me on:
@@ -240,7 +240,7 @@ A: Yes! You can find me on:
 - **BlueSky**: https://bsky.app/profile/projectgalatine.com
 - **Twitch**: https://www.twitch.tv/flashgalatine
 - **Blog**: https://blog.projectgalatine.com/
-- **GitHub**: https://github.com/FlashGalatine/xivdyetools
+- **GitHub**: https://github.com/FlashGalatine/xivdyetools-web-app
 - **Discord**: https://discord.gg/5VUSKTZCe5
 
 **Q: Can I donate or support this project?**
