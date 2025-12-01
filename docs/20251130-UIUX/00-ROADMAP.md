@@ -71,17 +71,24 @@ Focus on refinement and accessibility enhancements.
 
 ---
 
-## Phase 4: Advanced Features (Backlog)
+## Phase 4: Advanced Features (In Progress)
 
-Larger features for future consideration.
+Larger features for future consideration. **v2.4.0 implemented core features; v2.4.1 addressed testing feedback.**
 
-| ID | Improvement | Priority | Effort | Document |
-|----|-------------|----------|--------|----------|
-| O5 | Interactive tutorial walkthrough | P3 | L | [01-ONBOARDING](01-ONBOARDING.md) |
-| T6 | Harmony Generator: Save favorite palettes | P3 | M | [04-TOOL-SPECIFIC-UX](04-TOOL-SPECIFIC-UX.md) |
-| T7 | Color Matcher: Camera capture (mobile) | P3 | L | [04-TOOL-SPECIFIC-UX](04-TOOL-SPECIFIC-UX.md) |
-| F4 | Offline mode with service worker | P3 | XL | [02-FEEDBACK-STATES](02-FEEDBACK-STATES.md) |
-| A5 | High contrast mode theme option | P3 | M | [03-ACCESSIBILITY](03-ACCESSIBILITY.md) |
+| ID | Improvement | Priority | Effort | Status | Document |
+|----|-------------|----------|--------|--------|----------|
+| O5 | Interactive tutorial walkthrough | P3 | L | ✅ Implemented | [01-ONBOARDING](01-ONBOARDING.md) |
+| T6 | Harmony Generator: Save favorite palettes | P3 | M | ✅ Implemented | [04-TOOL-SPECIFIC-UX](04-TOOL-SPECIFIC-UX.md) |
+| T7 | Color Matcher: Camera capture (mobile) | P3 | L | ✅ Implemented | [04-TOOL-SPECIFIC-UX](04-TOOL-SPECIFIC-UX.md) |
+| F4 | Offline mode with service worker | P3 | XL | ✅ Implemented | [02-FEEDBACK-STATES](02-FEEDBACK-STATES.md) |
+| A5 | High contrast mode theme option | P3 | M | ✅ Implemented | [03-ACCESSIBILITY](03-ACCESSIBILITY.md) |
+
+### v2.4.1 Bug Fixes (Testing Feedback)
+- **T6**: Fixed import count calculation, companion dye colors, theme-aware hover states, emoji→SVG
+- **A5**: Added missing high contrast locale keys, fixed tool button alignment
+- **T7**: Added camera privacy notice with translations
+- **F4**: Fixed offline banner initialization
+- **O5**: Exposed TutorialService in dev mode for testing
 
 ---
 
@@ -110,7 +117,8 @@ Larger features for future consideration.
 - Mobile improvements need testing on actual devices
 
 ### Version Targeting
-- **v2.1.0**: Phase 1 (Foundation)
-- **v2.2.0**: Phase 2 (Discoverability)
-- **v2.3.0**: Phase 3 (Polish)
-- **v3.0.0+**: Phase 4 (Advanced Features)
+- **v2.1.0**: Phase 1 (Foundation) ✅
+- **v2.2.0**: Phase 2 (Discoverability) ✅
+- **v2.3.0**: Phase 3 (Polish) ✅
+- **v2.4.0**: Phase 4 (Advanced Features) ✅
+- **v2.4.1**: Phase 4 Testing Bug Fixes ✅

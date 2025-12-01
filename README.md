@@ -1,10 +1,10 @@
-# XIV Dye Tools v2.0.2
+# XIV Dye Tools v2.4.1
 
-**Status**: ✅ Production Ready | **Version**: 2.0.2 | **Release**: November 22, 2025 | **Phase**: 12 Complete
+**Status**: ✅ Production Ready | **Version**: 2.4.1 | **Release**: December 1, 2025 | **Phase**: UI/UX Phase 4 Complete
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.0.2 Release Notes**: Core package integration (now using `xivdyetools-core@1.0.1` from npm), fixed analogous harmony calculation bug, and eliminated code duplication across the codebase. Major architectural improvement with zero breaking changes. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
+> **v2.4.1 Release Notes**: Phase 4 testing bug fixes including palette import count calculation, companion dye color display, theme-aware button styling, camera privacy notice, offline banner initialization, and high contrast theme localization. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -48,7 +48,7 @@ Find smooth color transitions between any two FFXIV dyes using HSV color space i
 - **Price Filtering** - Toggle pricing visibility per dye category (Base, Craft, Allied Society, Cosmic, Special)
 
 **Accessibility & Theme Support:**
-- **10 Theme Variants** - Choose from 5 theme families with light/dark options
+- **12 Theme Variants** - Choose from 6 theme families with light/dark options (including High Contrast)
 - **Smooth Animations** - Card details expand/collapse with 0.3s transitions
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **XSS Protection** - HTML escaping for safety in dynamic content
@@ -216,8 +216,8 @@ Save your color palettes in multiple formats:
 - SCSS variables
 - Copy individual or all hex codes to clipboard
 
-### 🌓 Theme System (v2.0.1)
-Comprehensive theme system with 10 theme variants, all fully WCAG compliant:
+### 🌓 Theme System (v2.4.0)
+Comprehensive theme system with 12 theme variants, all fully WCAG compliant:
 
 **Available Themes:**
 - **Standard** - Classic red light/dark (default)
@@ -226,6 +226,7 @@ Comprehensive theme system with 10 theme variants, all fully WCAG compliant:
 - **Parchment** - Warm beige light/dark (retro aesthetic)
 - **Sugar Riot** - Vibrant pink light/dark (fun & playful)
 - **Grayscale** - Pure black/white/gray light/dark (accessibility-focused)
+- **High Contrast** - Maximum contrast light/dark for visual accessibility (NEW in v2.4.0)
 
 **Theme System Features:**
 - Unified theme switcher in navigation (all tools synchronized)
@@ -247,6 +248,48 @@ Comprehensive theme system with 10 theme variants, all fully WCAG compliant:
 - Automatic Tailwind utility class overrides for theme consistency
 - Component-level styling inheritance from theme variables
 - No additional JavaScript dependencies beyond localStorage
+
+### ✨ UI/UX Improvements (v2.1.0 - v2.4.1)
+
+Comprehensive UI/UX overhaul delivered across 4 phases:
+
+**Phase 1: Foundation (v2.1.0)**
+- **Loading Spinners** - Visual feedback during Universalis API calls
+- **Toast Notifications** - Success/error feedback system with auto-dismiss
+- **Empty State Designs** - Friendly illustrations for no-results scenarios
+- **Keyboard Navigation** - Full keyboard support for dye selector (arrow keys, Enter, Escape)
+- **Custom SVG Icons** - 32 theme-adaptive icons replacing emojis for consistent cross-platform display
+
+**Phase 2: Discoverability (v2.2.0)**
+- **Welcome Modal** - First-time user introduction with tool overview
+- **Contextual Tooltips** - Info icons explaining sample size, WCAG contrast, deviance ratings
+- **"What's New" Changelog** - Modal showing recent updates after version changes
+- **Dye Preview Overlay** - Color Matcher shows sampled vs matched dye comparison
+- **Quick-Add Actions** - Harmony Generator dropdown for adding dyes to comparison/mixer
+- **Hover Micro-interactions** - Scale and shadow effects on dye swatches
+
+**Phase 3: Polish (v2.3.0)**
+- **Focus Ring Visibility** - Enhanced 3px outlines with theme-aware colors
+- **Screen Reader Announcements** - AnnouncerService for aria-live region updates
+- **Reduced Motion Support** - Respects `prefers-reduced-motion` preference
+- **Interactive Gradient Stops** - Dye Mixer shows clickable stop markers
+- **Recent Colors History** - Color Matcher remembers last 5 sampled colors
+- **Keyboard Shortcuts Panel** - Press `?` to view all available shortcuts
+- **Smooth Theme Transitions** - 200ms color transitions when switching themes
+
+**Phase 4: Advanced Features (v2.4.0)**
+- **Interactive Tutorial System** - Step-by-step walkthrough for new users
+- **Save Favorite Palettes** - Export/import palettes as JSON, localStorage persistence
+- **Camera Capture** - Mobile camera support for Color Matcher with privacy notice
+- **Offline Mode** - Service worker caching with offline banner indicator
+- **High Contrast Themes** - Light/dark variants for visual accessibility
+
+**Accessibility (WCAG 2.1 AA)**
+- All 12 themes are WCAG compliant
+- Keyboard navigable throughout
+- Screen reader compatible with ARIA labels
+- Focus indicators visible on all interactive elements
+- Reduced motion support for vestibular disorders
 
 ## Getting Started
 
@@ -271,9 +314,11 @@ Comprehensive theme system with 10 theme variants, all fully WCAG compliant:
 All tools are fully optimized for mobile and tablet devices:
 - **Responsive Design**: Automatically adapts layout from mobile (375px) through tablets (768px) to desktop (1920px+)
 - **Touch-Friendly Navigation**: 44px minimum touch targets on all buttons and controls
-- **Optimized Input Methods**: Clipboard paste support, drag-drop, and touch-friendly pickers
+- **Optimized Input Methods**: Clipboard paste support, drag-drop, camera capture, and touch-friendly pickers
 - **Bottom Navigation on Mobile**: Smart navigation system that switches between bottom nav (mobile) and Tools dropdown (desktop)
-- **Theme System**: Full 10-theme support on all device sizes with persistent preferences
+- **Camera Capture**: Use device camera for color matching directly in Color Matcher tool
+- **Offline Support**: Service worker caching allows basic functionality without network
+- **Theme System**: Full 12-theme support on all device sizes with persistent preferences
 
 No installation or server required! All tools work directly in your browser.
 
@@ -417,12 +462,14 @@ All tools are production-ready stable versions with full feature support. The ap
 ## Technology Stack
 
 - **TypeScript 5.x** - Strict mode with full type safety
-- **Vite 5.x** - Modern build system with instant HMR
-- **Tailwind CSS** - Utility-first CSS framework
-- **Vitest 1.x** - Unit testing framework (514 tests, 100% passing)
+- **Vite 7.x** - Modern build system with instant HMR
+- **Tailwind CSS 3.x** - Utility-first CSS framework
+- **Vitest 4.x** - Unit testing framework with comprehensive coverage
+- **xivdyetools-core** - Shared npm library for color algorithms and dye database
 - **Component Architecture** - Reusable UI components with lifecycle hooks
-- **Service Layer** - Centralized business logic (ColorService, DyeService, ThemeService, StorageService)
-- localStorage for user preferences and theme persistence
+- **Service Layer** - Centralized business logic (ColorService, DyeService, ThemeService, StorageService, TutorialService, AnnouncerService)
+- **Service Worker** - Offline caching and network status detection
+- localStorage/IndexedDB for user preferences, palettes, and theme persistence
 
 ## Browser Compatibility
 

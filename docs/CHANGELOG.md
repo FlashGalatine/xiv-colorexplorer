@@ -7,6 +7,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.1] - 2025-12-01
+
+### 🐛 Phase 4 Testing: Bug Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Fixes for issues discovered during comprehensive Phase 4 feature testing.
+
+#### Saved Palettes (T6) Fixes ✅
+
+**Import Count Bug**
+- Fixed "No valid palettes found" message appearing even when import succeeded
+- Root cause: Count was calculated AFTER saving, resulting in `newCount - newCount = 0`
+- Now stores existing count BEFORE modifying storage
+
+**Companion Dye Colors**
+- Fixed grey/placeholder swatches for companion dyes in saved palette modal
+- Added `getDyeHexByName()` lookup function to resolve dye names to hex colors
+- Swatches now display actual dye colors from the database
+
+**Theme-Aware Styling**
+- Replaced hardcoded Tailwind hover classes with CSS custom property-based utilities
+- Added new reusable button classes to `themes.css`:
+  - `.btn-theme-primary` - Primary action buttons
+  - `.btn-theme-secondary` - Secondary/cancel buttons
+  - `.btn-theme-ghost` - Transparent ghost buttons
+  - `.btn-theme-danger` - Destructive action buttons
+  - `.card-theme-hover` - Hoverable card/list items
+- All 12 themes now have consistent hover states
+
+**SVG Icon Replacement**
+- Replaced 📁 emoji with `ICON_FOLDER` SVG for folder/empty state
+- Icon uses `currentColor` for proper theme adaptation
+
+#### Accessibility (A5) Fixes ✅
+
+**High Contrast Theme Localization**
+- Added missing `highContrastLight` and `highContrastDark` locale keys
+- Updated all 6 language files (en, ja, de, fr, ko, zh)
+- Theme names now display correctly in theme switcher
+
+**Tool Panel Button Alignment**
+- Fixed tool navigation buttons appearing top-aligned instead of vertically centered
+- Added `flex flex-col justify-center` to info container
+
+#### Camera Capture (T7) Fixes ✅
+
+**Privacy Notice**
+- Added privacy notice to camera preview modal
+- Message: "Your camera stream is processed locally. No images are sent to our servers."
+- Translated into all 6 supported languages
+- Styled with reduced opacity for subtle appearance
+
+#### Offline Mode (F4) Fixes ✅
+
+**Offline Banner Initialization**
+- Fixed offline banner not appearing when network connectivity lost
+- Added `offlineBanner.initialize()` call in main.ts during app startup
+- Banner now correctly shows/hides based on network status
+
+#### Tutorial System (O5) Fixes ✅
+
+**Developer Debugging**
+- Exposed `TutorialService` on `window` object in development mode only
+- Allows console access for testing: `TutorialService.markAllComplete()`, etc.
+- Production builds do not expose this service for security
+
+#### Files Modified ✅
+
+- `src/services/palette-service.ts` - Import count calculation fix
+- `src/components/saved-palettes-modal.ts` - Dye colors, theme classes, SVG icon
+- `src/shared/empty-state-icons.ts` - Added ICON_FOLDER
+- `src/styles/themes.css` - Theme-aware button utility classes
+- `src/components/tools-dropdown.ts` - Button vertical alignment
+- `src/components/camera-preview-modal.ts` - Privacy notice
+- `src/main.ts` - Offline banner init, TutorialService dev exposure
+- `src/components/index.ts` - Export offlineBanner
+- `src/locales/*.json` (6 files) - High contrast themes, camera privacy notice
+
+---
+
 ## [2.4.0] - 2025-12-01
 
 ### ✨ Phase 3: Polish
