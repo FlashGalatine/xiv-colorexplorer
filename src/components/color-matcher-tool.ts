@@ -14,8 +14,17 @@ import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import { DyePreviewOverlay } from './dye-preview-overlay';
-import { ColorService, dyeService, APIService, LanguageService } from '@services/index';
+import { ColorService, dyeService, APIService, LanguageService, AnnouncerService } from '@services/index';
+import { StorageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
+
+/**
+ * Recent color entry for history (T5)
+ */
+interface RecentColor {
+  hex: string;
+  timestamp: number;
+}
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 
@@ -39,6 +48,11 @@ export class ColorMatcherTool extends BaseComponent {
   private samplePosition: { x: number; y: number } = { x: 0, y: 0 };
   private canvasContainerRef: HTMLElement | null = null;
   private canvasRef: HTMLCanvasElement | null = null;
+
+  // Recent Colors History (T5)
+  private recentColors: RecentColor[] = [];
+  private readonly maxRecentColors = 10;
+  private readonly recentColorsStorageKey = 'colormatcher_recent_colors';
 
   /**
    * Render the tool component
@@ -179,6 +193,30 @@ export class ColorMatcherTool extends BaseComponent {
     settingsSection.appendChild(sampleDiv);
 
     wrapper.appendChild(settingsSection);
+
+    // Recent Colors History section (T5)
+    const recentColorsSection = this.createElement('div', {
+      id: 'recent-colors-section',
+      className:
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
+      attributes: {
+        style: 'display: none;', // Hidden until there are recent colors
+      },
+    });
+
+    const recentColorsTitle = this.createElement('h3', {
+      textContent: LanguageService.t('matcher.recentColors') || 'Recent Picks',
+      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-3',
+    });
+    recentColorsSection.appendChild(recentColorsTitle);
+
+    const recentColorsContainer = this.createElement('div', {
+      id: 'recent-colors-container',
+      className: 'flex flex-wrap items-center gap-2',
+    });
+    recentColorsSection.appendChild(recentColorsContainer);
+
+    wrapper.appendChild(recentColorsSection);
 
     // Dye Filters section
     const filtersSection = this.createElement('div', {
@@ -341,6 +379,9 @@ export class ColorMatcherTool extends BaseComponent {
     LanguageService.subscribe(() => {
       this.update();
     });
+
+    // Load recent colors from localStorage (T5)
+    this.loadRecentColors();
   }
 
   /**
@@ -886,6 +927,9 @@ export class ColorMatcherTool extends BaseComponent {
     // Store the sampled color for refreshResults()
     this.lastSampledColor = hex;
 
+    // Add to recent colors history (T5)
+    this.addToRecentColors(hex);
+
     // Clear any existing match results, but preserve the image
     const existingResults = resultsContainer.querySelector('[data-results-section]');
     if (existingResults) {
@@ -1153,6 +1197,140 @@ export class ColorMatcherTool extends BaseComponent {
     return card;
   }
 
+  // ============================================================================
+  // Recent Colors History Methods (T5)
+  // ============================================================================
+
+  /**
+   * Load recent colors from localStorage
+   */
+  private loadRecentColors(): void {
+    try {
+      const stored = StorageService.getItem<RecentColor[]>(this.recentColorsStorageKey);
+      if (stored && Array.isArray(stored)) {
+        this.recentColors = stored.slice(0, this.maxRecentColors);
+        this.renderRecentColors();
+      }
+    } catch (error) {
+      logger.warn('Failed to load recent colors from storage:', error);
+    }
+  }
+
+  /**
+   * Save recent colors to localStorage
+   */
+  private saveRecentColors(): void {
+    try {
+      StorageService.setItem(this.recentColorsStorageKey, this.recentColors);
+    } catch (error) {
+      logger.warn('Failed to save recent colors to storage:', error);
+    }
+  }
+
+  /**
+   * Add a color to recent history
+   */
+  private addToRecentColors(hex: string): void {
+    // Normalize hex to uppercase
+    const normalizedHex = hex.toUpperCase();
+
+    // Remove if already exists (to move to front)
+    this.recentColors = this.recentColors.filter(
+      (c) => c.hex.toUpperCase() !== normalizedHex
+    );
+
+    // Add to front
+    this.recentColors.unshift({
+      hex: normalizedHex,
+      timestamp: Date.now(),
+    });
+
+    // Trim to max size
+    if (this.recentColors.length > this.maxRecentColors) {
+      this.recentColors = this.recentColors.slice(0, this.maxRecentColors);
+    }
+
+    // Save and re-render
+    this.saveRecentColors();
+    this.renderRecentColors();
+  }
+
+  /**
+   * Clear all recent colors
+   */
+  private clearRecentColors(): void {
+    this.recentColors = [];
+    this.saveRecentColors();
+    this.renderRecentColors();
+    AnnouncerService.announce('Recent colors cleared');
+  }
+
+  /**
+   * Render the recent colors UI
+   */
+  private renderRecentColors(): void {
+    const section = this.querySelector<HTMLElement>('#recent-colors-section');
+    const container = this.querySelector<HTMLElement>('#recent-colors-container');
+    if (!section || !container) return;
+
+    // Clear existing content
+    clearContainer(container);
+
+    // Hide section if no recent colors
+    if (this.recentColors.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    // Show section
+    section.style.display = 'block';
+
+    // Render swatches
+    this.recentColors.forEach((color, index) => {
+      const swatch = this.createElement('button', {
+        className:
+          'w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer ' +
+          'hover:scale-110 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+          'transition-transform',
+        attributes: {
+          style: `background-color: ${color.hex};`,
+          title: `${color.hex} - Click to re-match`,
+          'aria-label': `Recent color ${color.hex}, click to match`,
+          'data-recent-index': String(index),
+        },
+      });
+
+      // Click to re-match
+      this.on(swatch, 'click', () => {
+        this.matchColor(color.hex);
+        AnnouncerService.announce(`Re-matching color ${color.hex}`);
+      });
+
+      container.appendChild(swatch);
+    });
+
+    // Add clear button
+    const clearBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 ' +
+        'hover:bg-red-50 hover:border-red-300 hover:text-red-600 ' +
+        'dark:hover:bg-red-900/20 dark:hover:border-red-700 dark:hover:text-red-400 ' +
+        'transition-colors ml-2',
+      textContent: LanguageService.t('matcher.clearHistory') || 'Clear',
+      attributes: {
+        title: 'Clear recent colors history',
+        'aria-label': 'Clear recent colors history',
+      },
+    });
+
+    this.on(clearBtn, 'click', () => {
+      this.clearRecentColors();
+    });
+
+    container.appendChild(clearBtn);
+  }
+
   /**
    * Get component state
    */
@@ -1160,6 +1338,7 @@ export class ColorMatcherTool extends BaseComponent {
     return {
       matchedDyeCount: this.matchedDyes.length,
       sampleSize: this.sampleSize,
+      recentColorsCount: this.recentColors.length,
     };
   }
 
