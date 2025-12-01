@@ -665,3 +665,44 @@ body.theme-grayscale-dark :focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================================
+   Smooth Theme Transitions (Q2)
+   Smooth color transitions when switching themes
+   Automatically disabled by reduced motion preference above
+   ============================================================================ */
+
+/* Main app shell and layout */
+body,
+.app-shell,
+main,
+header,
+footer,
+nav {
+  transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+/* Cards and containers */
+.card,
+.tool-card,
+.harmony-card,
+.modal-dialog,
+[class*="rounded"][class*="shadow"],
+[class*="bg-"] {
+  transition: background-color 0.3s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Interactive elements */
+button,
+.btn,
+a,
+input,
+select,
+textarea {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* SVG icons */
+svg {
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
