@@ -46,15 +46,39 @@ export class IndexedDBCacheBackend implements ICacheBackend {
     // Update memory cache immediately
     this.memoryCache.set(key, value);
 
-    // Persist to IndexedDB asynchronously
-    indexedDBService.set(STORES.PRICE_CACHE, key, value).catch((error) => {
-      logger.warn('Failed to persist price data to IndexedDB:', error);
-    });
+    // Persist to IndexedDB asynchronously with retry logic
+    void this.persistWithRetry(key, value);
+  }
+
+  /**
+   * Persist to IndexedDB with retry logic
+   * If persistence consistently fails, remove from memory cache to avoid state mismatch
+   */
+  private async persistWithRetry(
+    key: string,
+    value: CachedData<PriceData>,
+    attempt = 1,
+    maxAttempts = 2
+  ): Promise<void> {
+    try {
+      await indexedDBService.set(STORES.PRICE_CACHE, key, value);
+    } catch (error) {
+      if (attempt < maxAttempts) {
+        logger.warn(`Failed to persist price data (attempt ${attempt}/${maxAttempts}), retrying:`, error);
+        // Retry with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, attempt * 100));
+        await this.persistWithRetry(key, value, attempt + 1, maxAttempts);
+      } else {
+        logger.error('Failed to persist price data after retries, removing from memory cache:', error);
+        // Remove from memory cache to prevent false positive caching
+        this.memoryCache.delete(key);
+      }
+    }
   }
 
   delete(key: string): void {
     this.memoryCache.delete(key);
-    indexedDBService.delete(STORES.PRICE_CACHE, key).catch((error) => {
+    void indexedDBService.delete(STORES.PRICE_CACHE, key).catch((error) => {
       logger.warn('Failed to delete from IndexedDB:', error);
     });
   }
