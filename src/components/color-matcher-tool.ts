@@ -1406,18 +1406,41 @@ export class ColorMatcherTool extends BaseComponent {
   }
 
   /**
-   * Cleanup child components
+   * Cleanup child components and references
    */
   destroy(): void {
+    // Destroy child components
     if (this.imageUpload) {
       this.imageUpload.destroy();
+      this.imageUpload = null;
     }
     if (this.colorPicker) {
       this.colorPicker.destroy();
+      this.colorPicker = null;
+    }
+    if (this.dyeFilters) {
+      this.dyeFilters.destroy();
+      this.dyeFilters = null;
     }
     if (this.marketBoard) {
       this.marketBoard.destroy();
+      this.marketBoard = null;
     }
+    if (this.previewOverlay) {
+      this.previewOverlay.destroy();
+      this.previewOverlay = null;
+    }
+
+    // Clear arrays and Maps
+    this.matchedDyes = [];
+    this.priceData.clear();
+    this.recentColors = [];
+
+    // Null element references
+    this.currentImage = null;
+    this.canvasContainerRef = null;
+    this.canvasRef = null;
+
     super.destroy();
   }
 

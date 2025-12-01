@@ -684,15 +684,28 @@ export class DyeMixerTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Destroy child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();
+      this.dyeSelector = null;
     }
     if (this.interpolationDisplay) {
       this.interpolationDisplay.destroy();
+      this.interpolationDisplay = null;
+    }
+    if (this.dyeFilters) {
+      this.dyeFilters.destroy();
+      this.dyeFilters = null;
     }
     if (this.paletteExporter) {
       this.paletteExporter.destroy();
+      this.paletteExporter = null;
     }
+
+    // Clear arrays
+    this.selectedDyes = [];
+    this.currentSteps = [];
+
     super.destroy();
   }
 

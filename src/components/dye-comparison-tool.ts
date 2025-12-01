@@ -711,21 +711,33 @@ export class DyeComparisonTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Destroy all child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();
+      this.dyeSelector = null;
     }
     if (this.marketBoard) {
       this.marketBoard.destroy();
+      this.marketBoard = null;
     }
     if (this.colorMatrix) {
       this.colorMatrix.destroy();
+      this.colorMatrix = null;
     }
     if (this.hueSatChart) {
       this.hueSatChart.destroy();
+      this.hueSatChart = null;
     }
     if (this.brightnessChart) {
       this.brightnessChart.destroy();
+      this.brightnessChart = null;
     }
+
+    // Clear arrays and Maps
+    this.selectedDyes = [];
+    this.priceData.clear();
+
+    // Call parent destroy
     super.destroy();
   }
 }

@@ -376,9 +376,16 @@ export class DyeComparisonChart extends BaseComponent {
    * Cleanup on destroy
    */
   destroy(): void {
+    // Unsubscribe from theme changes
     if (this.themeUnsubscribe) {
       this.themeUnsubscribe();
+      this.themeUnsubscribe = null;
     }
+
+    // Clear arrays and references
+    this.dyes = [];
+    this.canvas = null;
+
     super.destroy();
   }
 

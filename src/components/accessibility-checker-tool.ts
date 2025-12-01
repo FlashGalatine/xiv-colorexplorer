@@ -824,4 +824,21 @@ export class AccessibilityCheckerTool extends BaseComponent {
       clearContainer(pairsContainer);
     }
   }
+
+  /**
+   * Cleanup child components and references
+   */
+  destroy(): void {
+    // Destroy child components
+    if (this.dyeSelector) {
+      this.dyeSelector.destroy();
+      this.dyeSelector = null;
+    }
+
+    // Clear arrays
+    this.dyePairs = [];
+    this.pairResults = [];
+
+    super.destroy();
+  }
 }

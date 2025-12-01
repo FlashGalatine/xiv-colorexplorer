@@ -252,4 +252,12 @@ export class ColorDistanceMatrix extends BaseComponent {
       dyeNames: this.dyes.map((d) => d.name),
     };
   }
+
+  /**
+   * Cleanup component resources
+   */
+  destroy(): void {
+    this.dyes = [];
+    super.destroy();
+  }
 }
