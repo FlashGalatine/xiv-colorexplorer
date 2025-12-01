@@ -558,10 +558,10 @@ export class DyeMixerTool extends BaseComponent {
         matchedDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-                const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-                const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-                return dyeDist < bestDist ? dye : best;
-              })
+              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+              return dyeDist < bestDist ? dye : best;
+            })
             : null;
       }
 
@@ -594,8 +594,25 @@ export class DyeMixerTool extends BaseComponent {
 
     // Subscribe to language changes to update localized text
     LanguageService.subscribe(() => {
-      this.update();
+      this.updateLocalizedText();
     });
+  }
+
+  /**
+   * Update localized text when language changes (without re-rendering)
+   */
+  private updateLocalizedText(): void {
+    // Update title
+    const title = this.querySelector<HTMLElement>('h2');
+    if (title) {
+      title.textContent = LanguageService.t('tools.mixer.title');
+    }
+
+    // Update subtitle
+    const subtitle = this.querySelector<HTMLElement>('h2 + p');
+    if (subtitle) {
+      subtitle.textContent = LanguageService.t('tools.mixer.subtitle');
+    }
   }
 
   /**

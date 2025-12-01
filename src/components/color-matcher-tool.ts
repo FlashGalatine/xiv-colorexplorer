@@ -390,11 +390,28 @@ export class ColorMatcherTool extends BaseComponent {
   onMount(): void {
     // Subscribe to language changes to update localized text
     LanguageService.subscribe(() => {
-      this.update();
+      this.updateLocalizedText();
     });
 
     // Load recent colors from localStorage (T5)
     this.loadRecentColors();
+  }
+
+  /**
+   * Update localized text when language changes (without re-rendering)
+   */
+  private updateLocalizedText(): void {
+    // Update title
+    const title = this.querySelector<HTMLElement>('h2');
+    if (title) {
+      title.textContent = LanguageService.t('tools.matcher.title');
+    }
+
+    // Update subtitle
+    const subtitle = this.querySelector<HTMLElement>('h2 + p');
+    if (subtitle) {
+      subtitle.textContent = LanguageService.t('tools.matcher.subtitle');
+    }
   }
 
   /**
@@ -827,24 +844,25 @@ export class ColorMatcherTool extends BaseComponent {
       updateZoom(this.zoomLevel + delta);
     });
 
-    // Allow keyboard shortcuts
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
+    // Allow keyboard shortcuts (using this.on for proper cleanup)
+    this.on(document, 'keydown', (e: Event) => {
+      const keyEvent = e as KeyboardEvent;
       if (
         document.activeElement === document.body ||
         document.activeElement?.contains(canvasContainer)
       ) {
-        if (e.key === '+' || e.key === '=') {
-          e.preventDefault();
+        if (keyEvent.key === '+' || keyEvent.key === '=') {
+          keyEvent.preventDefault();
           if (this.zoomLevel < MAX_ZOOM) {
             updateZoom(this.zoomLevel + 10);
           }
-        } else if (e.key === '-') {
-          e.preventDefault();
+        } else if (keyEvent.key === '-') {
+          keyEvent.preventDefault();
           if (this.zoomLevel > MIN_ZOOM) {
             updateZoom(this.zoomLevel - 10);
           }
-        } else if (e.key === '0') {
-          e.preventDefault();
+        } else if (keyEvent.key === '0') {
+          keyEvent.preventDefault();
           updateZoom(100);
         }
       }

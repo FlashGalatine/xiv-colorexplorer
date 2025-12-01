@@ -1183,8 +1183,25 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Subscribe to language changes to update localized text
     LanguageService.subscribe(() => {
-      this.update();
+      this.updateLocalizedText();
     });
+  }
+
+  /**
+   * Update localized text when language changes (without re-rendering)
+   */
+  private updateLocalizedText(): void {
+    // Update title
+    const title = this.querySelector<HTMLElement>('h2');
+    if (title) {
+      title.textContent = LanguageService.t('tools.harmony.title');
+    }
+
+    // Update subtitle
+    const subtitle = this.querySelector<HTMLElement>('h2 + p');
+    if (subtitle) {
+      subtitle.textContent = LanguageService.t('tools.harmony.subtitle');
+    }
   }
 
   /**
