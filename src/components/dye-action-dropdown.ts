@@ -76,25 +76,25 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
     labelKey: string;
     defaultLabel: string;
   }> = [
-    {
-      action: 'comparison',
-      icon: '⚖️',
-      labelKey: 'harmony.addToComparison',
-      defaultLabel: 'Add to Comparison',
-    },
-    {
-      action: 'mixer',
-      icon: '🌈',
-      labelKey: 'harmony.addToMixer',
-      defaultLabel: 'Add to Mixer',
-    },
-    {
-      action: 'copy',
-      icon: '📋',
-      labelKey: 'harmony.copyHex',
-      defaultLabel: 'Copy Hex',
-    },
-  ];
+      {
+        action: 'comparison',
+        icon: '⚖️',
+        labelKey: 'harmony.addToComparison',
+        defaultLabel: 'Add to Comparison',
+      },
+      {
+        action: 'mixer',
+        icon: '🌈',
+        labelKey: 'harmony.addToMixer',
+        defaultLabel: 'Add to Mixer',
+      },
+      {
+        action: 'copy',
+        icon: '📋',
+        labelKey: 'harmony.copyHex',
+        defaultLabel: 'Copy Hex',
+      },
+    ];
 
   actions.forEach(({ action, icon, labelKey, defaultLabel }) => {
     const menuItem = document.createElement('button');
@@ -201,6 +201,13 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
   }
 
   document.addEventListener('dye-dropdown-close-all', handleCloseAll);
+
+  // Attach cleanup mechanism to container for lifecycle management
+  // This should be called when the dropdown is removed from the DOM
+  (container as any).__cleanup = (): void => {
+    closeMenu(); // Ensure menu is closed and click listener is removed
+    document.removeEventListener('dye-dropdown-close-all', handleCloseAll);
+  };
 
   return container;
 }
