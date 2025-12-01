@@ -82,6 +82,8 @@ export const THEME_NAMES: readonly ThemeName[] = [
   'sugar-riot',
   'grayscale-light',
   'grayscale-dark',
+  'high-contrast-light',
+  'high-contrast-dark',
 ] as const;
 
 export const THEME_COUNT = THEME_NAMES.length;
@@ -101,6 +103,8 @@ export const THEME_DISPLAY_NAMES: Record<ThemeName, string> = {
   'sugar-riot': 'Sugar Riot',
   'grayscale-light': 'Grayscale (Light)',
   'grayscale-dark': 'Grayscale (Dark)',
+  'high-contrast-light': 'High Contrast (Light)',
+  'high-contrast-dark': 'High Contrast (Dark)',
 };
 
 // ============================================================================

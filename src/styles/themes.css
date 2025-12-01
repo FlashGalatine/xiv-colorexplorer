@@ -2,7 +2,7 @@
  * XIV Dye Tools v2.0.0 - Theme Definitions
  * Phase 12: Modular CSS for theme management
  *
- * 9 theme variants:
+ * 11 theme variants:
  * 1. Standard (Light/Dark)
  * 2. Hydaelyn (Light)
  * 3. OG Classic (Dark)
@@ -10,6 +10,7 @@
  * 5. Cotton Candy (Light)
  * 6. Sugar Riot (Dark)
  * 7. Grayscale (Light/Dark)
+ * 8. High Contrast (Light/Dark) - WCAG AAA
  */
 
 :root {
@@ -78,6 +79,17 @@ html.theme-grayscale-light {
 }
 
 html.theme-grayscale-dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   HIGH CONTRAST THEME (Light/Dark) - WCAG AAA
+   ===================================================== */
+html.theme-high-contrast-light {
+  color-scheme: light;
+}
+
+html.theme-high-contrast-dark {
   color-scheme: dark;
 }
 
@@ -313,4 +325,125 @@ select:focus {
 .rounded-lg,
 .rounded {
   background-color: inherit;
+}
+
+/* =====================================================
+   HIGH CONTRAST THEME SPECIFIC OVERRIDES
+   Enhanced borders and visual boundaries for accessibility
+   ===================================================== */
+html.theme-high-contrast-light,
+html.theme-high-contrast-dark {
+  /* Force visible focus indicators */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+html.theme-high-contrast-light *:focus-visible,
+html.theme-high-contrast-dark *:focus-visible {
+  outline: 3px solid var(--theme-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Enhanced borders for high contrast themes */
+html.theme-high-contrast-light .border,
+html.theme-high-contrast-light .border-gray-200,
+html.theme-high-contrast-dark .border,
+html.theme-high-contrast-dark .border-gray-200 {
+  border-width: 2px !important;
+}
+
+/* Ensure harmony icons are visible in high contrast */
+html.theme-high-contrast-light .harmony-icon {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+html.theme-high-contrast-dark .harmony-icon {
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   WINDOWS HIGH CONTRAST MODE SUPPORT
+   Respects user's system-level high contrast settings
+   ===================================================== */
+@media (forced-colors: active) {
+  /* Let the system control colors in forced-colors mode */
+  :root {
+    --theme-primary: CanvasText;
+    --theme-background: Canvas;
+    --theme-text: CanvasText;
+    --theme-text-header: Canvas;
+    --theme-border: CanvasText;
+    --theme-background-secondary: Canvas;
+    --theme-card-background: Canvas;
+    --theme-card-hover: Highlight;
+    --theme-text-muted: CanvasText;
+  }
+
+  /* Ensure buttons are visible */
+  button,
+  .btn,
+  [role="button"] {
+    forced-color-adjust: none;
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonText !important;
+  }
+
+  button:hover,
+  .btn:hover,
+  [role="button"]:hover {
+    background-color: Highlight !important;
+    color: HighlightText !important;
+    border-color: HighlightText !important;
+  }
+
+  /* Ensure links are distinguishable */
+  a {
+    color: LinkText !important;
+  }
+
+  a:visited {
+    color: VisitedText !important;
+  }
+
+  /* Preserve color swatches - critical for a dye tool */
+  .dye-swatch,
+  .color-swatch,
+  [data-color-swatch],
+  .palette-color,
+  .gradient-stop {
+    forced-color-adjust: none !important;
+  }
+
+  /* Ensure focus indicators are visible */
+  *:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Form inputs */
+  input,
+  textarea,
+  select {
+    forced-color-adjust: none;
+    background-color: Field !important;
+    color: FieldText !important;
+    border: 2px solid CanvasText !important;
+  }
+
+  /* Disabled states */
+  button:disabled,
+  input:disabled,
+  select:disabled {
+    opacity: 0.5 !important;
+    border-style: dashed !important;
+  }
+
+  /* SVG icons should use system colors */
+  svg:not([data-color-swatch] svg) {
+    fill: CanvasText;
+    stroke: CanvasText;
+  }
 }

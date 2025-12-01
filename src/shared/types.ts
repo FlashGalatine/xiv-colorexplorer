@@ -117,7 +117,9 @@ export type ThemeName =
   | 'cotton-candy'
   | 'sugar-riot'
   | 'grayscale-light'
-  | 'grayscale-dark';
+  | 'grayscale-dark'
+  | 'high-contrast-light'
+  | 'high-contrast-dark';
 
 /**
  * Color palette for a theme

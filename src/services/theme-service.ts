@@ -2,7 +2,7 @@
  * XIV Dye Tools v2.0.0 - Theme Service
  *
  * Phase 12: Architecture Refactor
- * 9-theme system management
+ * 11-theme system management (includes WCAG AAA high contrast themes)
  *
  * @module services/theme-service
  */
@@ -121,6 +121,32 @@ const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     cardBackground: '#111827',
     cardHover: '#1F2937',
     textMuted: '#9CA3AF',
+  },
+  'high-contrast-light': {
+    // WCAG AAA compliant high contrast light theme
+    // Pure black on white for maximum 21:1 contrast ratio
+    primary: '#0000CC', // Bold blue primary for clear visibility
+    background: '#FFFFFF', // Pure white background
+    text: '#000000', // Pure black text - 21:1 contrast
+    textHeader: '#FFFFFF', // White text on blue header
+    border: '#000000', // Black borders for maximum definition
+    backgroundSecondary: '#F0F0F0', // Light gray for subtle distinction
+    cardBackground: '#FFFFFF', // Pure white cards
+    cardHover: '#E0E0E0', // Noticeable hover state
+    textMuted: '#333333', // Dark gray for muted text - still 12.6:1 contrast
+  },
+  'high-contrast-dark': {
+    // WCAG AAA compliant high contrast dark theme
+    // Pure white on black for maximum 21:1 contrast ratio
+    primary: '#FFFF00', // Bold yellow primary for maximum visibility
+    background: '#000000', // Pure black background
+    text: '#FFFFFF', // Pure white text - 21:1 contrast
+    textHeader: '#000000', // Black text on yellow header
+    border: '#FFFFFF', // White borders for maximum definition
+    backgroundSecondary: '#1A1A1A', // Very dark gray for subtle distinction
+    cardBackground: '#000000', // Pure black cards
+    cardHover: '#333333', // Noticeable hover state
+    textMuted: '#CCCCCC', // Light gray for muted text - still 13.1:1 contrast
   },
 };
 
