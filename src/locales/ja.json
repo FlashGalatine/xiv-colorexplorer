@@ -433,5 +433,21 @@
     "deleted": "パレットを削除しました",
     "confirmDelete": "このパレットを削除してもよろしいですか？",
     "harmonyType": "ハーモニータイプ"
+  },
+  "camera": {
+    "title": "カメラキャプチャ",
+    "useWebcam": "ウェブカメラを使用",
+    "notAvailable": "カメラが検出されませんでした",
+    "initializing": "カメラを初期化中...",
+    "ready": "カメラ準備完了",
+    "switching": "カメラを切り替え中...",
+    "instructions": "被写体を配置してキャプチャをクリック",
+    "capture": "キャプチャ",
+    "capturing": "キャプチャ中...",
+    "captured": "画像をキャプチャしました！",
+    "captureFailed": "画像のキャプチャに失敗しました",
+    "permissionDenied": "カメラへのアクセスが拒否されました",
+    "checkPermissions": "ブラウザの権限設定を確認してください",
+    "error": "カメラエラー"
   }
 }

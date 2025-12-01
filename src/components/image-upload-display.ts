@@ -8,7 +8,8 @@
  */
 
 import { BaseComponent } from './base-component';
-import { LanguageService } from '@services/index';
+import { LanguageService, cameraService } from '@services/index';
+import { showCameraPreviewModal } from './camera-preview-modal';
 import { clearContainer } from '@shared/utils';
 
 /**
@@ -110,9 +111,32 @@ export class ImageUploadDisplay extends BaseComponent {
       cameraInput.click();
     });
 
+    // Desktop webcam button (T7) - visible when camera detected, hidden on mobile
+    const desktopCameraBtn = this.createElement('button', {
+      innerHTML: `<img src="/assets/icons/camera.svg" alt="" class="inline-block w-5 h-5 mr-1" aria-hidden="true" /> ${LanguageService.t('camera.useWebcam') || 'Use Webcam'}`,
+      className: 'mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium hidden md:inline-flex items-center',
+      attributes: {
+        type: 'button',
+        id: 'desktop-camera-btn',
+        'aria-label': LanguageService.t('camera.useWebcam') || 'Use Webcam',
+      },
+    });
+
+    // Only show if camera is available
+    if (!cameraService.hasCameraAvailable()) {
+      desktopCameraBtn.style.display = 'none';
+    }
+
+    // Stop propagation to prevent triggering the drop zone click
+    desktopCameraBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.openCameraPreview();
+    });
+
     dropContent.appendChild(icon);
     dropContent.appendChild(text);
     dropContent.appendChild(cameraBtn);
+    dropContent.appendChild(desktopCameraBtn);
     dropZone.appendChild(dropContent);
     dropZone.appendChild(fileInput);
     dropZone.appendChild(cameraInput);
@@ -416,6 +440,17 @@ export class ImageUploadDisplay extends BaseComponent {
   clear(): void {
     this.uploadedImage = null;
     this.update();
+  }
+
+  /**
+   * Open camera preview modal for webcam capture (T7)
+   */
+  private openCameraPreview(): void {
+    showCameraPreviewModal((result) => {
+      // Convert capture result to same format as file upload
+      this.uploadedImage = result.image;
+      this.emit('image-loaded', { image: result.image, dataUrl: result.dataUrl });
+    });
   }
 
   /**

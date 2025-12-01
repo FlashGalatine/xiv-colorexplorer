@@ -433,5 +433,21 @@
     "deleted": "팔레트가 삭제되었습니다",
     "confirmDelete": "이 팔레트를 삭제하시겠습니까?",
     "harmonyType": "하모니 유형"
+  },
+  "camera": {
+    "title": "카메라 캡처",
+    "useWebcam": "웹캠 사용",
+    "notAvailable": "카메라가 감지되지 않았습니다",
+    "initializing": "카메라 초기화 중...",
+    "ready": "카메라 준비 완료",
+    "switching": "카메라 전환 중...",
+    "instructions": "피사체를 배치하고 캡처를 클릭하세요",
+    "capture": "캡처",
+    "capturing": "캡처 중...",
+    "captured": "이미지가 캡처되었습니다!",
+    "captureFailed": "이미지 캡처에 실패했습니다",
+    "permissionDenied": "카메라 접근이 거부되었습니다",
+    "checkPermissions": "브라우저 권한 설정을 확인해주세요",
+    "error": "카메라 오류"
   }
 }

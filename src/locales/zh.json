@@ -433,5 +433,21 @@
     "deleted": "调色板已删除",
     "confirmDelete": "确定要删除此调色板吗？",
     "harmonyType": "和谐类型"
+  },
+  "camera": {
+    "title": "相机捕获",
+    "useWebcam": "使用网络摄像头",
+    "notAvailable": "未检测到摄像头",
+    "initializing": "正在初始化摄像头...",
+    "ready": "摄像头就绪",
+    "switching": "正在切换摄像头...",
+    "instructions": "将拍摄对象放置好后点击捕获",
+    "capture": "捕获",
+    "capturing": "捕获中...",
+    "captured": "图像已捕获！",
+    "captureFailed": "图像捕获失败",
+    "permissionDenied": "摄像头访问被拒绝",
+    "checkPermissions": "请检查您的浏览器权限设置",
+    "error": "摄像头错误"
   }
 }

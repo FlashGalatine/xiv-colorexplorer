@@ -433,5 +433,21 @@
     "deleted": "Palette gelöscht",
     "confirmDelete": "Möchtest du diese Palette wirklich löschen?",
     "harmonyType": "Harmonietyp"
+  },
+  "camera": {
+    "title": "Kameraaufnahme",
+    "useWebcam": "Webcam verwenden",
+    "notAvailable": "Keine Kamera erkannt",
+    "initializing": "Kamera wird initialisiert...",
+    "ready": "Kamera bereit",
+    "switching": "Kamera wird gewechselt...",
+    "instructions": "Positionieren Sie Ihr Motiv und klicken Sie auf Aufnehmen",
+    "capture": "Aufnehmen",
+    "capturing": "Aufnahme...",
+    "captured": "Bild aufgenommen!",
+    "captureFailed": "Bildaufnahme fehlgeschlagen",
+    "permissionDenied": "Kamerazugriff verweigert",
+    "checkPermissions": "Bitte überprüfen Sie Ihre Browserberechtigungen",
+    "error": "Kamerafehler"
   }
 }

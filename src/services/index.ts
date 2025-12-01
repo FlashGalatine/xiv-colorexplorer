@@ -13,6 +13,7 @@ import { StorageService } from './storage-service';
 import { ThemeService } from './theme-service';
 import { LanguageService } from './language-service';
 import { APIService } from './api-service-wrapper';
+import { cameraService } from './camera-service';
 // APIService now from wrapper;
 
 // Export service classes
@@ -32,6 +33,8 @@ export { AnnouncerService } from './announcer-service';
 export type { AnnouncementPriority } from './announcer-service';
 export { PaletteService } from './palette-service';
 export type { SavedPalette, PaletteExportData } from './palette-service';
+export { CameraService, cameraService } from './camera-service';
+export type { CameraDevice, CaptureResult } from './camera-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
@@ -73,6 +76,13 @@ export async function initializeServices(): Promise<void> {
 
     // TooltipService is static singleton, always ready
     logger.info('✅ TooltipService ready');
+
+    // Initialize CameraService (async - detects cameras)
+    await cameraService.initialize();
+    cameraService.startDeviceChangeListener();
+    logger.info(
+      `✅ CameraService: ${cameraService.hasCameraAvailable() ? 'Camera available' : 'No camera detected'}`
+    );
 
     logger.info('🚀 All services initialized successfully');
   } catch (error) {

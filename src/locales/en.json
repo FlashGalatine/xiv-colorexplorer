@@ -435,5 +435,21 @@
     "deleted": "Palette deleted",
     "confirmDelete": "Are you sure you want to delete this palette?",
     "harmonyType": "Harmony Type"
+  },
+  "camera": {
+    "title": "Camera Capture",
+    "useWebcam": "Use Webcam",
+    "notAvailable": "No camera detected",
+    "initializing": "Initializing camera...",
+    "ready": "Camera ready",
+    "switching": "Switching camera...",
+    "instructions": "Position your subject and click capture",
+    "capture": "Capture",
+    "capturing": "Capturing...",
+    "captured": "Image captured!",
+    "captureFailed": "Failed to capture image",
+    "permissionDenied": "Camera access denied",
+    "checkPermissions": "Please check your browser permissions",
+    "error": "Camera error"
   }
 }

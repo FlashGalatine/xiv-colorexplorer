@@ -433,5 +433,21 @@
     "deleted": "Palette supprimée",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette palette ?",
     "harmonyType": "Type d'harmonie"
+  },
+  "camera": {
+    "title": "Capture caméra",
+    "useWebcam": "Utiliser la webcam",
+    "notAvailable": "Aucune caméra détectée",
+    "initializing": "Initialisation de la caméra...",
+    "ready": "Caméra prête",
+    "switching": "Changement de caméra...",
+    "instructions": "Positionnez votre sujet et cliquez sur capturer",
+    "capture": "Capturer",
+    "capturing": "Capture...",
+    "captured": "Image capturée !",
+    "captureFailed": "Échec de la capture",
+    "permissionDenied": "Accès à la caméra refusé",
+    "checkPermissions": "Veuillez vérifier les permissions de votre navigateur",
+    "error": "Erreur caméra"
   }
 }
