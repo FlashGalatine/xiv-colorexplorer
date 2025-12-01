@@ -605,3 +605,45 @@ body.theme-sugar-riot .tooltip[data-position="right"] .tooltip-arrow,
 body.theme-grayscale-dark .tooltip[data-position="right"] .tooltip-arrow {
   border-right-color: #f3f4f6;
 }
+
+/* ============================================================================
+   Focus Ring Visibility (A2)
+   Consistent, high-visibility focus indicators for keyboard navigation
+   ============================================================================ */
+
+/* Global focus-visible style */
+:focus-visible {
+  outline: 2px solid var(--theme-primary, #3b82f6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default outline for mouse/touch focus, keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure focus ring is visible on dark backgrounds */
+body.standard-dark :focus-visible,
+body.theme-og-classic-dark :focus-visible,
+body.theme-sugar-riot :focus-visible,
+body.theme-grayscale-dark :focus-visible {
+  outline-color: var(--theme-primary, #60a5fa);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2);
+}
+
+/* High contrast mode enhancement */
+@media (prefers-contrast: more) {
+  :focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+/* Windows High Contrast Mode support */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+}
