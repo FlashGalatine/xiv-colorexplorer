@@ -385,10 +385,10 @@ Use this template to track progress:
 
 ### Phase 1: Quick Wins
 - [ ] Move showToast to ToastService
-- [ ] Implement incremental language updates (5 tools)
-- [ ] Fix event listener cleanup
+- [x] Implement incremental language updates (5 tools)
+- [x] Fix event listener cleanup
 - [ ] Add card styling constant
-- [ ] Cache color distance calculations
+- [x] Cache color distance calculations
 
 ### Phase 2: Medium Effort
 - [ ] Extract MarketBoard mixin
