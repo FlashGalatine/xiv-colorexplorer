@@ -147,7 +147,9 @@
     "sampledColor": "サンプルした色",
     "imageColorPicker": "画像カラーピッカー",
     "privacyNoteFull": "プライバシー保護: 画像はブラウザから外に出ません。すべての処理はローカルで行われます。",
-    "samplePreview": "サンプルポイントプレビュー"
+    "samplePreview": "サンプルポイントプレビュー",
+    "recentColors": "最近の選択",
+    "clearHistory": "クリア"
   },
   "accessibility": {
     "selectDyes": "カララントを選択",
@@ -262,7 +264,8 @@
     "coverage": "カバレッジ:",
     "matched": "マッチ",
     "avgDistance": "平均距離:",
-    "maxDistance": "最大距離:"
+    "maxDistance": "最大距離:",
+    "clickStopHint": "ストップマーカーをクリックして対応するカララントをハイライト"
   },
   "dyeSelector": {
     "searchPlaceholder": "カララント名で検索...",
@@ -391,5 +394,21 @@
       "mixer": "カララントの組み合わせとグラデーションを試す",
       "accessibility": "色のアクセシビリティをチェックし、色覚異常をシミュレート"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ キーボードショートカット",
+    "navigation": "ナビゲーション",
+    "switchTool": "ツール切り替え",
+    "closeModal": "モーダルを閉じる",
+    "quickActions": "クイックアクション",
+    "toggleTheme": "テーマ切り替え",
+    "cycleLanguage": "言語切り替え",
+    "showHelp": "このパネルを表示",
+    "dyeSelection": "カララント選択",
+    "focusSelector": "セレクターにフォーカス",
+    "navigateDyes": "カララント間を移動",
+    "selectDye": "フォーカス中のカララントを選択",
+    "platformHint": "ヒント",
+    "useModifier": "システムショートカットにはCtrlを使用"
   }
 }

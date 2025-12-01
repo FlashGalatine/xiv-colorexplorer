@@ -149,7 +149,9 @@
     "zoomReset": "Reset",
     "sampled": "Sampled",
     "sampledColor": "Sampled Color",
-    "samplePreview": "Sample Point Preview"
+    "samplePreview": "Sample Point Preview",
+    "recentColors": "Recent Picks",
+    "clearHistory": "Clear"
   },
   "accessibility": {
     "selectDyes": "Select Dyes",
@@ -264,7 +266,8 @@
     "coverage": "Coverage:",
     "matched": "matched",
     "avgDistance": "Average Distance:",
-    "maxDistance": "Max Distance:"
+    "maxDistance": "Max Distance:",
+    "clickStopHint": "Click a stop marker to highlight the corresponding dye"
   },
   "dyeSelector": {
     "searchPlaceholder": "Search dyes by name...",
@@ -393,5 +396,21 @@
       "mixer": "Experiment with dye combinations and gradients",
       "accessibility": "Check color accessibility and simulate color blindness"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ Keyboard Shortcuts",
+    "navigation": "Navigation",
+    "switchTool": "Switch between tools",
+    "closeModal": "Close modal or dropdown",
+    "quickActions": "Quick Actions",
+    "toggleTheme": "Toggle theme",
+    "cycleLanguage": "Cycle language",
+    "showHelp": "Show this panel",
+    "dyeSelection": "Dye Selection",
+    "focusSelector": "Focus dye selector",
+    "navigateDyes": "Navigate between dyes",
+    "selectDye": "Select focused dye",
+    "platformHint": "Tip",
+    "useModifier": "Use Ctrl for system shortcuts"
   }
 }

@@ -147,7 +147,9 @@
     "sampledColor": "Couleur échantillonnée",
     "imageColorPicker": "Sélecteur de couleur d'image",
     "privacyNoteFull": "Confidentialité : Les images ne quittent jamais votre navigateur. Tout le traitement est effectué localement.",
-    "samplePreview": "Aperçu du point d'échantillonnage"
+    "samplePreview": "Aperçu du point d'échantillonnage",
+    "recentColors": "Sélections récentes",
+    "clearHistory": "Effacer"
   },
   "accessibility": {
     "selectDyes": "Sélectionner des Teintures",
@@ -262,7 +264,8 @@
     "coverage": "Couverture :",
     "matched": "correspondues",
     "avgDistance": "Distance Moyenne :",
-    "maxDistance": "Distance Max :"
+    "maxDistance": "Distance Max :",
+    "clickStopHint": "Cliquez sur un marqueur d'arrêt pour mettre en surbrillance la teinture correspondante"
   },
   "dyeSelector": {
     "searchPlaceholder": "Rechercher des teintures par nom...",
@@ -391,5 +394,21 @@
       "mixer": "Expérimentez avec des combinaisons et des dégradés de teintures",
       "accessibility": "Vérifiez l'accessibilité des couleurs et simulez le daltonisme"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ Raccourcis Clavier",
+    "navigation": "Navigation",
+    "switchTool": "Changer d'outil",
+    "closeModal": "Fermer le modal",
+    "quickActions": "Actions Rapides",
+    "toggleTheme": "Changer de thème",
+    "cycleLanguage": "Changer de langue",
+    "showHelp": "Afficher ce panneau",
+    "dyeSelection": "Sélection de Teinture",
+    "focusSelector": "Focus sur le sélecteur",
+    "navigateDyes": "Naviguer entre les teintures",
+    "selectDye": "Sélectionner la teinture en focus",
+    "platformHint": "Astuce",
+    "useModifier": "Utilisez Ctrl pour les raccourcis système"
   }
 }

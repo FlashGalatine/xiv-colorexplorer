@@ -147,7 +147,9 @@
     "sampledColor": "采样颜色",
     "imageColorPicker": "图像取色器",
     "privacyNoteFull": "隐私保护：图像永远不会离开您的浏览器。所有处理均在本地进行。",
-    "samplePreview": "采样点预览"
+    "samplePreview": "采样点预览",
+    "recentColors": "最近选择",
+    "clearHistory": "清除"
   },
   "accessibility": {
     "selectDyes": "选择染剂",
@@ -262,7 +264,8 @@
     "coverage": "覆盖率：",
     "matched": "已匹配",
     "avgDistance": "平均距离：",
-    "maxDistance": "最大距离："
+    "maxDistance": "最大距离：",
+    "clickStopHint": "点击停止标记以突出显示对应的染剂"
   },
   "dyeSelector": {
     "searchPlaceholder": "按名称搜索染剂...",
@@ -391,5 +394,21 @@
       "mixer": "尝试染剂组合和渐变效果",
       "accessibility": "检查颜色无障碍性并模拟色盲"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ 键盘快捷键",
+    "navigation": "导航",
+    "switchTool": "切换工具",
+    "closeModal": "关闭模态框",
+    "quickActions": "快捷操作",
+    "toggleTheme": "切换主题",
+    "cycleLanguage": "切换语言",
+    "showHelp": "显示此面板",
+    "dyeSelection": "染剂选择",
+    "focusSelector": "聚焦选择器",
+    "navigateDyes": "在染剂间导航",
+    "selectDye": "选择聚焦的染剂",
+    "platformHint": "提示",
+    "useModifier": "使用 Ctrl 进行系统快捷键"
   }
 }

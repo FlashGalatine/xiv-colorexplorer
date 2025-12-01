@@ -147,7 +147,9 @@
     "sampledColor": "샘플링된 색상",
     "imageColorPicker": "이미지 색상 선택기",
     "privacyNoteFull": "개인정보 보호: 이미지는 브라우저를 떠나지 않습니다. 모든 처리는 로컬에서 이루어집니다.",
-    "samplePreview": "샘플 포인트 미리보기"
+    "samplePreview": "샘플 포인트 미리보기",
+    "recentColors": "최근 선택",
+    "clearHistory": "지우기"
   },
   "accessibility": {
     "selectDyes": "염료 선택",
@@ -262,7 +264,8 @@
     "coverage": "커버리지:",
     "matched": "매칭됨",
     "avgDistance": "평균 거리:",
-    "maxDistance": "최대 거리:"
+    "maxDistance": "최대 거리:",
+    "clickStopHint": "스톱 마커를 클릭하여 해당 염료를 강조 표시"
   },
   "dyeSelector": {
     "searchPlaceholder": "염료 이름으로 검색...",
@@ -391,5 +394,21 @@
       "mixer": "염료 조합과 그라데이션 실험",
       "accessibility": "색상 접근성 확인 및 색맹 시뮬레이션"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ 키보드 단축키",
+    "navigation": "탐색",
+    "switchTool": "도구 간 전환",
+    "closeModal": "모달 닫기",
+    "quickActions": "빠른 작업",
+    "toggleTheme": "테마 전환",
+    "cycleLanguage": "언어 변경",
+    "showHelp": "이 패널 표시",
+    "dyeSelection": "염료 선택",
+    "focusSelector": "선택기에 포커스",
+    "navigateDyes": "염료 간 이동",
+    "selectDye": "포커스된 염료 선택",
+    "platformHint": "팁",
+    "useModifier": "시스템 단축키에는 Ctrl을 사용"
   }
 }

@@ -147,7 +147,9 @@
     "sampledColor": "Aufgenommene Farbe",
     "imageColorPicker": "Bild-Farbwähler",
     "privacyNoteFull": "Datenschutz: Bilder verlassen niemals Ihren Browser. Die gesamte Verarbeitung erfolgt lokal.",
-    "samplePreview": "Abtastpunkt-Vorschau"
+    "samplePreview": "Abtastpunkt-Vorschau",
+    "recentColors": "Kürzlich gewählt",
+    "clearHistory": "Leeren"
   },
   "accessibility": {
     "selectDyes": "Farbstoffe auswählen",
@@ -262,7 +264,8 @@
     "coverage": "Abdeckung:",
     "matched": "zugeordnet",
     "avgDistance": "Durchschnittlicher Abstand:",
-    "maxDistance": "Maximaler Abstand:"
+    "maxDistance": "Maximaler Abstand:",
+    "clickStopHint": "Klicke auf einen Stop-Marker, um den entsprechenden Farbstoff hervorzuheben"
   },
   "dyeSelector": {
     "searchPlaceholder": "Farbstoffe nach Name suchen...",
@@ -391,5 +394,21 @@
       "mixer": "Experimentiere mit Farbstoffkombinationen und Verläufen",
       "accessibility": "Prüfe Farbzugänglichkeit und simuliere Farbenblindheit"
     }
+  },
+  "shortcuts": {
+    "title": "⌨️ Tastenkürzel",
+    "navigation": "Navigation",
+    "switchTool": "Zwischen Werkzeugen wechseln",
+    "closeModal": "Modal schließen",
+    "quickActions": "Schnellaktionen",
+    "toggleTheme": "Design wechseln",
+    "cycleLanguage": "Sprache wechseln",
+    "showHelp": "Dieses Panel anzeigen",
+    "dyeSelection": "Farbstoffauswahl",
+    "focusSelector": "Selektor fokussieren",
+    "navigateDyes": "Zwischen Farbstoffen navigieren",
+    "selectDye": "Fokussierten Farbstoff auswählen",
+    "platformHint": "Tipp",
+    "useModifier": "Verwende Strg für Systemkürzel"
   }
 }
