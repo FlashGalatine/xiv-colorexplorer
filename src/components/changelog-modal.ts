@@ -1,8 +1,11 @@
 /**
- * XIV Dye Tools v2.2.0 - Changelog Modal Component
+ * XIV Dye Tools v2.3.0 - Changelog Modal Component
  *
  * Shows "What's New" modal after version updates
  * Displays recent changes to returning users
+ *
+ * Changelog data is automatically parsed from docs/CHANGELOG.md at build time
+ * by the vite-plugin-changelog-parser plugin.
  *
  * @module components/changelog-modal
  */
@@ -10,7 +13,8 @@
 import { ModalService } from '@services/modal-service';
 import { StorageService } from '@services/storage-service';
 import { LanguageService } from '@services/language-service';
-import { STORAGE_KEYS, APP_VERSION, APP_NAME } from '@shared/constants';
+import { STORAGE_KEYS, APP_VERSION } from '@shared/constants';
+import { changelogEntries } from 'virtual:changelog';
 
 // ============================================================================
 // Changelog Data Structure
@@ -20,69 +24,7 @@ interface ChangelogEntry {
   version: string;
   date: string;
   highlights: string[];
-  isBreaking?: boolean;
 }
-
-/**
- * Changelog entries - most recent first
- * Only include user-facing changes, not internal refactors
- */
-const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  {
-    version: '2.2.0',
-    date: '2025-11-30',
-    highlights: [
-      'Welcome modal for first-time visitors',
-      'What\'s New changelog for returning users',
-      'Toast notification system for feedback',
-      'Loading spinners with reduced motion support',
-      'Keyboard navigation for dye selector (arrow keys, Home/End)',
-      'Empty states when no results found',
-    ],
-  },
-  {
-    version: '2.1.3',
-    date: '2025-11-30',
-    highlights: [
-      'New SVG harmony icons for better cross-platform display',
-      'Visual representations of each harmony type on color wheel',
-    ],
-  },
-  {
-    version: '2.1.2',
-    date: '2025-11-30',
-    highlights: [
-      'Fixed French, Korean, and Chinese localization terminology',
-      'Corrected "Cosmic Fortunes" and dye filter translations',
-    ],
-  },
-  {
-    version: '2.1.1',
-    date: '2025-11-28',
-    highlights: [
-      '80%+ branch coverage testing achieved',
-      'Full 6-language internationalization support',
-      'Browser language auto-detection',
-    ],
-  },
-  {
-    version: '2.0.7',
-    date: '2025-12-26',
-    highlights: [
-      'Enhanced storage service test coverage',
-      'Bug fixes and stability improvements',
-    ],
-  },
-  {
-    version: '2.0.6',
-    date: '2025-11-25',
-    highlights: [
-      'New Cotton Candy and Sugar Riot themes',
-      'Improved theme WCAG AA compliance',
-      'Center-aligned UI elements',
-    ],
-  },
-];
 
 // ============================================================================
 // Changelog Modal Class
@@ -126,14 +68,15 @@ export class ChangelogModal {
 
   /**
    * Get the entries to display (current version + recent history)
+   * Uses dynamically parsed changelog data from docs/CHANGELOG.md
    */
   private getRelevantEntries(): ChangelogEntry[] {
-    // Find current version entry
-    const currentEntry = CHANGELOG_ENTRIES.find((e) => e.version === APP_VERSION);
+    // Find current version entry from parsed changelog
+    const currentEntry = changelogEntries.find((e) => e.version === APP_VERSION);
 
     // Get up to 3 previous versions for context
-    const currentIndex = CHANGELOG_ENTRIES.findIndex((e) => e.version === APP_VERSION);
-    const previousEntries = CHANGELOG_ENTRIES.slice(currentIndex + 1, currentIndex + 3);
+    const currentIndex = changelogEntries.findIndex((e) => e.version === APP_VERSION);
+    const previousEntries = changelogEntries.slice(currentIndex + 1, currentIndex + 3);
 
     const entries: ChangelogEntry[] = [];
     if (currentEntry) {

@@ -368,6 +368,13 @@
     "grayscaleLight": "Graustufen (Hell)",
     "grayscaleDark": "Graustufen (Dunkel)"
   },
+  "changelog": {
+    "title": "Neuigkeiten",
+    "previousUpdates": "Frühere Updates:",
+    "viewFull": "Vollständiges Änderungsprotokoll anzeigen",
+    "gotIt": "Verstanden!",
+    "noChanges": "Fehlerbehebungen und Leistungsverbesserungen."
+  },
   "welcome": {
     "title": "Willkommen bei XIV Farbwerkzeuge",
     "intro": "Finde die perfekten Farbstoffe für deine FFXIV-Glamours! Entdecke unsere Werkzeuge unten:",

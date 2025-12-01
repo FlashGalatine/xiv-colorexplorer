@@ -368,6 +368,13 @@
     "grayscaleLight": "그레이스케일 (라이트)",
     "grayscaleDark": "그레이스케일 (다크)"
   },
+  "changelog": {
+    "title": "새로운 기능",
+    "previousUpdates": "이전 업데이트:",
+    "viewFull": "전체 변경 기록 보기",
+    "gotIt": "확인!",
+    "noChanges": "버그 수정 및 성능 개선."
+  },
   "welcome": {
     "title": "XIV 염색 도구에 오신 것을 환영합니다",
     "intro": "FFXIV 글래머에 완벽한 염료를 찾아보세요! 아래 도구를 살펴보세요:",

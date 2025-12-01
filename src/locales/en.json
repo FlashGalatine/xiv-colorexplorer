@@ -370,6 +370,13 @@
     "grayscaleLight": "Grayscale (Light)",
     "grayscaleDark": "Grayscale (Dark)"
   },
+  "changelog": {
+    "title": "What's New",
+    "previousUpdates": "Previous updates:",
+    "viewFull": "View full changelog",
+    "gotIt": "Got it!",
+    "noChanges": "Bug fixes and performance improvements."
+  },
   "welcome": {
     "title": "Welcome to XIV Dye Tools",
     "intro": "Find the perfect dyes for your FFXIV glamours! Explore our tools below:",

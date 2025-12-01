@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import { asyncCss } from './vite-plugin-async-css'
+import { changelogParser } from './vite-plugin-changelog-parser'
 import pkg from './package.json'
 
 export default defineConfig({
@@ -95,5 +96,6 @@ export default defineConfig({
 
   plugins: [
     asyncCss(),
+    changelogParser(),
   ],
 })

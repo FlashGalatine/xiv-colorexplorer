@@ -368,6 +368,13 @@
     "grayscaleLight": "Niveaux de Gris (Clair)",
     "grayscaleDark": "Niveaux de Gris (Sombre)"
   },
+  "changelog": {
+    "title": "Nouveautés",
+    "previousUpdates": "Mises à jour précédentes :",
+    "viewFull": "Voir le journal complet des modifications",
+    "gotIt": "Compris !",
+    "noChanges": "Corrections de bogues et améliorations de performances."
+  },
   "welcome": {
     "title": "Bienvenue sur Outils de Teinture XIV",
     "intro": "Trouvez les teintures parfaites pour vos glamours FFXIV ! Explorez nos outils ci-dessous :",

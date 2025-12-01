@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.0] - 2025-11-30
+
+### 🐛 Phase 2: Bug Fixes and Enhancements
+
+**Status**: ✅ COMPLETE
+**Focus**: UI bug fixes, tooltip enhancements, and missing localization keys.
+
+#### Bug Fixes ✅
+
+**Harmony Dropdown Menu Stacking**
+- Fixed issue where clicking multiple dye action menus would stack them on top of each other
+- Implemented custom event broadcast pattern (`dye-dropdown-close-all`) to ensure mutual exclusivity
+- Only one dropdown menu can be open at a time across all harmony cards
+
+**Color Matcher Tooltip Positioning**
+- Fixed tooltip appearing at wrong position when canvas has CSS transforms (scale)
+- Now correctly uses `getBoundingClientRect()` which already accounts for CSS transforms and scroll position
+- Tooltip accurately appears at the sample point on the canvas
+
+**Harmony Card Overflow**
+- Fixed dropdown menus being clipped by parent card overflow settings
+- Ensured dropdown menus render above card boundaries
+
+**Welcome Modal Theme Colors**
+- Fixed Welcome Modal using hardcoded Tailwind colors instead of theme CSS variables
+- Modal now properly adapts to all 9 themes
+
+#### Enhancements ✅
+
+**Sample Point Preview Overlay**
+- Added magnifying glass icon to the dye preview overlay header
+- Added "Sample Point Preview" title text to clarify the tooltip's purpose
+- Header now includes descriptive text explaining what the overlay represents
+
+**Harmony Context Menu Navigation**
+- Added "Add to Comparison" and "Add to Mixer" actions in harmony card dropdown menus
+- Users can now quickly add dyes to other tools directly from harmony suggestions
+
+#### Localization ✅
+
+**New Translation Keys Added**
+- `matcher.imageColorPicker` - Image color picker tool label
+- `matcher.privacyNoteFull` - Full privacy notice for image processing
+- `matcher.samplePreview` - Sample point preview tooltip header
+
+**Languages Updated**
+- 🇬🇧 English (en)
+- 🇯🇵 Japanese (ja)
+- 🇩🇪 German (de)
+- 🇫🇷 French (fr)
+- 🇰🇷 Korean (ko)
+- 🇨🇳 Chinese (zh)
+
+#### Files Modified ✅
+- `src/components/dye-action-dropdown.ts` - Dropdown stacking fix with custom event pattern
+- `src/components/dye-preview-overlay.ts` - Tooltip positioning fix and magnifying glass header
+- `src/locales/*.json` - Added 3 new translation keys to all 6 locale files
+
+#### Test Results ✅
+- All tests passing
+- TypeScript compiles with no errors
+
+---
+
 ## [2.2.0] - 2025-11-30
 
 ### 🎨 Phase 1: UI/UX Foundation Improvements

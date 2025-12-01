@@ -368,6 +368,13 @@
     "grayscaleLight": "灰度（浅色）",
     "grayscaleDark": "灰度（深色）"
   },
+  "changelog": {
+    "title": "新功能",
+    "previousUpdates": "之前的更新：",
+    "viewFull": "查看完整更新日志",
+    "gotIt": "知道了！",
+    "noChanges": "错误修复和性能改进。"
+  },
   "welcome": {
     "title": "欢迎使用 XIV 染色工具",
     "intro": "为您的 FFXIV 幻化找到完美的染剂！探索我们的工具：",
