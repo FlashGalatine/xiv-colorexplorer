@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { LanguageService } from '@services/index';
+import { LanguageService, AnnouncerService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 
@@ -31,6 +31,7 @@ export class ColorInterpolationDisplay extends BaseComponent {
   private endColor: string = '#0000FF';
   private steps: InterpolationStep[] = [];
   private colorSpace: 'rgb' | 'hsv' = 'hsv';
+  private selectedStopIndex: number = -1; // T4: Track selected gradient stop
 
   constructor(
     container: HTMLElement,
@@ -108,9 +109,13 @@ export class ColorInterpolationDisplay extends BaseComponent {
       className: 'flex items-center gap-2 font-semibold text-sm text-blue-900 dark:text-blue-200',
     });
 
-    const icon = this.createElement('span', {
-      textContent: 'ℹ️',
-      className: 'text-base',
+    const icon = this.createElement('img', {
+      attributes: {
+        src: '/assets/icons/info.svg',
+        alt: '',
+        'aria-hidden': 'true',
+      },
+      className: 'w-4 h-4',
     });
 
     const titleText = this.createElement('span', {
@@ -190,21 +195,34 @@ export class ColorInterpolationDisplay extends BaseComponent {
   }
 
   /**
-   * Render the gradient bar
+   * Render the gradient bar with interactive stops (T4)
    */
   private renderGradientBar(): HTMLElement {
     const container = this.createElement('div', {
       className: 'space-y-2',
     });
 
-    // Gradient display
+    // Gradient display label
     const label = this.createElement('div', {
       textContent: LanguageService.t('mixer.colorGradient'),
       className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
+    container.appendChild(label);
 
+    // Gradient container with stops overlay (T4)
+    const gradientWrapper = this.createElement('div', {
+      className: 'relative',
+      attributes: {
+        id: 'gradient-stops-wrapper',
+      },
+    });
+
+    // Gradient background
     const gradient = this.createElement('div', {
       className: 'h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-md',
+      attributes: {
+        id: 'gradient-bar',
+      },
     });
 
     // Build gradient stops
@@ -213,6 +231,30 @@ export class ColorInterpolationDisplay extends BaseComponent {
       .join(', ');
 
     gradient.style.background = `linear-gradient(to right, ${gradientStops})`;
+    gradientWrapper.appendChild(gradient);
+
+    // Add interactive stop markers (T4)
+    const stopsContainer = this.createElement('div', {
+      className: 'absolute inset-0 flex items-end pointer-events-none',
+      attributes: {
+        id: 'stops-container',
+      },
+    });
+
+    this.steps.forEach((step, index) => {
+      const stopMarker = this.createStopMarker(step, index);
+      stopsContainer.appendChild(stopMarker);
+    });
+
+    gradientWrapper.appendChild(stopsContainer);
+    container.appendChild(gradientWrapper);
+
+    // Hint text
+    const hint = this.createElement('p', {
+      textContent: LanguageService.t('mixer.clickStopHint') || 'Click a stop marker to highlight the corresponding dye',
+      className: 'text-xs text-gray-500 dark:text-gray-400 italic',
+    });
+    container.appendChild(hint);
 
     // Start and end labels
     const labels = this.createElement('div', {
@@ -247,12 +289,154 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     labels.appendChild(startLabel);
     labels.appendChild(endLabel);
-
-    container.appendChild(label);
-    container.appendChild(gradient);
     container.appendChild(labels);
 
     return container;
+  }
+
+  /**
+   * Create an interactive stop marker (T4)
+   */
+  private createStopMarker(step: InterpolationStep, index: number): HTMLElement {
+    const isSelected = this.selectedStopIndex === index;
+    const position = step.position * 100;
+
+    // Stop marker container (positioned absolutely)
+    const marker = this.createElement('button', {
+      className: `absolute pointer-events-auto cursor-pointer transition-all duration-150
+        ${isSelected ? 'z-20' : 'z-10'}`,
+      attributes: {
+        style: `left: ${position}%; transform: translateX(-50%);`,
+        title: step.matchedDye
+          ? `${Math.round(position)}% - ${LanguageService.getDyeName(step.matchedDye.itemID) || step.matchedDye.name}`
+          : `${Math.round(position)}%`,
+        'aria-label': `Stop at ${Math.round(position)}%${step.matchedDye ? ', ' + step.matchedDye.name : ''}`,
+        'data-stop-index': String(index),
+      },
+    });
+
+    // Stop handle (diamond shape)
+    const handle = this.createElement('div', {
+      className: `w-4 h-4 rotate-45 border-2 transition-all duration-150
+        ${isSelected
+          ? 'border-blue-500 shadow-lg scale-125'
+          : 'border-gray-400 dark:border-gray-500 hover:border-blue-400 hover:scale-110'}`,
+      attributes: {
+        style: `background-color: ${step.matchedDye?.hex || step.theoreticalColor};`,
+      },
+    });
+    marker.appendChild(handle);
+
+    // Position label below (only for selected or on hover via CSS)
+    const posLabel = this.createElement('div', {
+      textContent: `${Math.round(position)}%`,
+      className: `absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-mono whitespace-nowrap
+        ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`,
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
+    });
+    marker.appendChild(posLabel);
+
+    // Add group class for hover effects
+    marker.classList.add('group');
+
+    // Click handler
+    this.on(marker, 'click', (e: Event) => {
+      e.preventDefault();
+      this.selectStop(index);
+    });
+
+    return marker;
+  }
+
+  /**
+   * Select a gradient stop (T4)
+   */
+  private selectStop(index: number): void {
+    const previousIndex = this.selectedStopIndex;
+    this.selectedStopIndex = this.selectedStopIndex === index ? -1 : index;
+
+    // Update marker visuals
+    this.updateStopMarkerVisuals(previousIndex, this.selectedStopIndex);
+
+    // Highlight corresponding step in list
+    this.highlightStepInList(this.selectedStopIndex);
+
+    // Announce for screen readers
+    if (this.selectedStopIndex >= 0) {
+      const step = this.steps[this.selectedStopIndex];
+      const dyeName = step.matchedDye?.name || 'No match';
+      AnnouncerService.announce(`Stop ${Math.round(step.position * 100)}% selected: ${dyeName}`);
+    } else {
+      AnnouncerService.announce('Stop deselected');
+    }
+  }
+
+  /**
+   * Update stop marker visuals after selection change (T4)
+   */
+  private updateStopMarkerVisuals(oldIndex: number, newIndex: number): void {
+    const stopsContainer = this.querySelector<HTMLElement>('#stops-container');
+    if (!stopsContainer) return;
+
+    const markers = stopsContainer.querySelectorAll('button[data-stop-index]');
+
+    markers.forEach((markerEl) => {
+      const marker = markerEl as HTMLElement;
+      const idx = parseInt(marker.getAttribute('data-stop-index') || '-1', 10);
+      const handle = marker.querySelector('div');
+      const label = marker.querySelectorAll('div')[1];
+
+      if (idx === newIndex) {
+        // Selected state
+        marker.classList.add('z-20');
+        marker.classList.remove('z-10');
+        if (handle) {
+          handle.classList.add('border-blue-500', 'shadow-lg', 'scale-125');
+          handle.classList.remove('border-gray-400', 'dark:border-gray-500');
+        }
+        if (label) {
+          label.classList.add('opacity-100');
+          label.classList.remove('opacity-0');
+        }
+      } else {
+        // Deselected state
+        marker.classList.remove('z-20');
+        marker.classList.add('z-10');
+        if (handle) {
+          handle.classList.remove('border-blue-500', 'shadow-lg', 'scale-125');
+          handle.classList.add('border-gray-400', 'dark:border-gray-500');
+        }
+        if (label) {
+          label.classList.remove('opacity-100');
+          label.classList.add('opacity-0');
+        }
+      }
+    });
+  }
+
+  /**
+   * Highlight corresponding step in the list (T4)
+   */
+  private highlightStepInList(index: number): void {
+    const listContainer = this.querySelector<HTMLElement>('.max-h-80.overflow-y-auto');
+    if (!listContainer) return;
+
+    const items = listContainer.children;
+
+    Array.from(items).forEach((item, idx) => {
+      const el = item as HTMLElement;
+      if (idx === index) {
+        // Highlight selected
+        el.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50', 'dark:bg-blue-900/30');
+        // Scroll into view
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        // Remove highlight
+        el.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50', 'dark:bg-blue-900/30');
+      }
+    });
   }
 
   /**
@@ -285,12 +469,36 @@ export class ColorInterpolationDisplay extends BaseComponent {
   }
 
   /**
-   * Render a single step item
+   * Render a single step item (T4: now interactive)
    */
-  private renderStepItem(step: InterpolationStep, _index: number): HTMLElement {
+  private renderStepItem(step: InterpolationStep, index: number): HTMLElement {
+    const isSelected = this.selectedStopIndex === index;
+
     const item = this.createElement('div', {
-      className:
-        'flex items-center gap-3 p-2 rounded border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors',
+      className: `flex items-center gap-3 p-2 rounded border cursor-pointer transition-colors
+        ${isSelected
+          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500'
+          : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`,
+      attributes: {
+        'data-step-index': String(index),
+        role: 'button',
+        tabindex: '0',
+        'aria-label': `Step ${Math.round(step.position * 100)}%: ${step.matchedDye?.name || 'No match'}`,
+      },
+    });
+
+    // Click to select stop
+    this.on(item, 'click', () => {
+      this.selectStop(index);
+    });
+
+    // Keyboard support
+    this.on(item, 'keydown', (e: Event) => {
+      const keyEvent = e as KeyboardEvent;
+      if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+        e.preventDefault();
+        this.selectStop(index);
+      }
     });
 
     // Position indicator
