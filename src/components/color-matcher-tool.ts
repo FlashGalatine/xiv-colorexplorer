@@ -31,6 +31,13 @@ interface RecentColor {
   hex: string;
   timestamp: number;
 }
+
+/**
+ * Dye with cached distance for performance optimization
+ */
+interface DyeWithDistance extends Dye {
+  distance: number;
+}
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
@@ -44,7 +51,7 @@ export class ColorMatcherTool extends BaseComponent {
   private colorPicker: ColorPickerDisplay | null = null;
   private marketBoard: MarketBoard | null = null;
   private dyeFilters: DyeFilters | null = null;
-  private matchedDyes: Dye[] = [];
+  private matchedDyes: DyeWithDistance[] = [];
   private priceData: Map<number, PriceData> = new Map();
   private showPrices: boolean = false;
   private sampleSize: number = 5;
@@ -992,6 +999,20 @@ export class ColorMatcherTool extends BaseComponent {
       return;
     }
 
+    // Cache distances to avoid recalculation during rendering
+    const closestDyeWithDistance: DyeWithDistance = {
+      ...closestDye,
+      distance: ColorService.getColorDistance(hex, closestDye.hex),
+    };
+
+    const withinDistanceWithCache: DyeWithDistance[] = withinDistance.map((dye) => ({
+      ...dye,
+      distance: ColorService.getColorDistance(hex, dye.hex),
+    }));
+
+    // Store matched dyes with cached distances
+    this.matchedDyes = [closestDyeWithDistance, ...withinDistanceWithCache];
+
     // Results section
     const section = this.createElement('div', {
       className:
@@ -1017,20 +1038,20 @@ export class ColorMatcherTool extends BaseComponent {
     });
     bestMatchSection.appendChild(bestMatchLabel);
 
-    const bestMatchCard = this.renderDyeCard(closestDye, hex);
+    const bestMatchCard = this.renderDyeCard(closestDyeWithDistance, hex);
     bestMatchSection.appendChild(bestMatchCard);
 
     section.appendChild(bestMatchSection);
 
     // Other matches
-    if (withinDistance.length > 0) {
+    if (withinDistanceWithCache.length > 0) {
       const otherMatchesSection = this.createElement('div', {
         className: 'space-y-2',
       });
 
       const otherLabel = this.createElement('div', {
         textContent: LanguageService.tInterpolate('matcher.similarDyesCount', {
-          count: String(withinDistance.length),
+          count: String(withinDistanceWithCache.length),
         }),
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
       });
@@ -1040,7 +1061,7 @@ export class ColorMatcherTool extends BaseComponent {
         className: 'space-y-2 max-h-80 overflow-y-auto',
       });
 
-      for (const dye of withinDistance) {
+      for (const dye of withinDistanceWithCache) {
         const dyeCard = this.renderDyeCard(dye, hex);
         matchesList.appendChild(dyeCard);
       }
@@ -1050,8 +1071,6 @@ export class ColorMatcherTool extends BaseComponent {
     }
 
     resultsContainer.appendChild(section);
-
-    this.matchedDyes = [closestDye, ...withinDistance];
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard) {
@@ -1103,7 +1122,11 @@ export class ColorMatcherTool extends BaseComponent {
       className: 'font-semibold text-gray-900 dark:text-white truncate',
     });
 
-    const distance = ColorService.getColorDistance(sampledColor, dye.hex);
+    // Use cached distance if available, otherwise calculate
+    const distance =
+      'distance' in dye && typeof dye.distance === 'number'
+        ? dye.distance
+        : ColorService.getColorDistance(sampledColor, dye.hex);
     const distanceText = this.createElement('div', {
       textContent: `${LanguageService.t('matcher.distance')}: ${distance.toFixed(1)}`,
       className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
