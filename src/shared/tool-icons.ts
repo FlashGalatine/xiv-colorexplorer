@@ -1,0 +1,93 @@
+/**
+ * XIV Dye Tools - Tool Navigation SVG Icons
+ *
+ * Inline SVG icons for tool navigation using currentColor for theme adaptation
+ * These replace external SVG files loaded via <img> tags which can't inherit color
+ *
+ * @module shared/tool-icons
+ */
+
+/**
+ * Harmony Explorer icon - Triadic color harmony visualization
+ */
+export const ICON_TOOL_HARMONY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="10" opacity="0.3" />
+  <circle cx="12" cy="3" r="2.5" fill="currentColor" stroke="none" />
+  <circle cx="20.66" cy="16.5" r="2.5" fill="currentColor" stroke="none" />
+  <circle cx="3.34" cy="16.5" r="2.5" fill="currentColor" stroke="none" />
+  <polygon points="12,3 20.66,16.5 3.34,16.5" fill="none" opacity="0.5" />
+</svg>`;
+
+/**
+ * Color Matcher icon - Target/bullseye
+ */
+export const ICON_TOOL_MATCHER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="10" opacity="0.3" />
+  <circle cx="12" cy="12" r="6.5" opacity="0.5" />
+  <circle cx="12" cy="12" r="3.5" opacity="0.7" />
+  <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+</svg>`;
+
+/**
+ * Accessibility Checker icon - Eye
+ */
+export const ICON_TOOL_ACCESSIBILITY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M 2 12 Q 12 5 22 12 Q 12 19 2 12 Z" />
+  <circle cx="12" cy="12" r="3.5" />
+  <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+</svg>`;
+
+/**
+ * Dye Comparison icon - Overlapping swatches
+ */
+export const ICON_TOOL_COMPARISON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="9" y="4" width="11" height="11" rx="2" opacity="0.4" />
+  <rect x="4" y="9" width="11" height="11" rx="2" />
+  <path d="M16 19l2 2 4-4" opacity="0.6" />
+  <path d="M8 12h.01" stroke-width="3" />
+  <path d="M13 7h.01" stroke-width="3" opacity="0.4" />
+</svg>`;
+
+/**
+ * Dye Mixer icon - Paint palette with brush
+ */
+export const ICON_TOOL_MIXER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M 4 8 C 4 6 5 5 7 5 L 17 5 C 19 5 20 6 20 8 L 20 16 C 20 18 19 19 17 19 L 7 19 C 5 19 4 18 4 16 Z" />
+  <circle cx="18" cy="16" r="1.5" fill="currentColor" stroke="none" />
+  <circle cx="8" cy="10" r="2" opacity="0.5" />
+  <circle cx="12" cy="10" r="2" opacity="0.5" />
+  <circle cx="16" cy="10" r="2" opacity="0.5" />
+  <line x1="6" y1="15" x2="10" y2="15" stroke-width="2" />
+  <path d="M 10 15 L 12 13 L 12 17 Z" fill="currentColor" stroke="none" opacity="0.7" />
+</svg>`;
+
+/**
+ * Tools Menu icon - Toolbox
+ */
+export const ICON_TOOL_MENU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="10" width="16" height="10" rx="1" />
+  <path d="M 4 10 L 4 8 C 4 7 5 6 6 6 L 9 6" />
+  <path d="M 20 10 L 20 8 C 20 7 19 6 18 6 L 15 6" />
+  <path d="M 9 6 L 9 4 C 9 3 10 2 12 2 C 14 2 15 3 15 4 L 15 6" />
+  <rect x="11" y="13" width="2" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.6" />
+  <line x1="12" y1="10" x2="12" y2="20" opacity="0.3" stroke-width="1" />
+</svg>`;
+
+/**
+ * Map of tool icon names to SVG strings
+ */
+export const TOOL_ICONS: Record<string, string> = {
+  harmony: ICON_TOOL_HARMONY,
+  matcher: ICON_TOOL_MATCHER,
+  accessibility: ICON_TOOL_ACCESSIBILITY,
+  comparison: ICON_TOOL_COMPARISON,
+  mixer: ICON_TOOL_MIXER,
+  tools: ICON_TOOL_MENU,
+};
+
+/**
+ * Get tool icon by name
+ */
+export function getToolIcon(name: string): string | undefined {
+  return TOOL_ICONS[name];
+}

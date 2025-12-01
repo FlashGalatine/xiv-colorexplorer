@@ -99,6 +99,9 @@
     "copyHex": "Hexコードをコピー",
     "copiedHex": "コピーしました",
     "copyFailed": "コピーに失敗しました",
+    "selectColorPrompt": "ベースカラーを選択",
+    "selectColorMessage": "Hexカラーを入力するか、カララントを選択してハーモニーを生成します。",
+    "selectColorAction": "カラーを入力",
     "types": {
       "complementaryDesc": "カラーホイールで正反対の色、最大コントラストを実現",
       "analogousDesc": "カラーホイール上で隣接する色、調和のとれた統一感",
@@ -325,7 +328,8 @@
     "refreshError": "価格の更新に失敗しました。もう一度お試しください。",
     "lastUpdated": "最終更新: {time}",
     "priceUnavailable": "価格不明",
-    "fetchingPrices": "価格を取得中..."
+    "fetchingPrices": "価格を取得中...",
+    "offlineWarning": "オフラインです。価格を更新できません。"
   },
   "export": {
     "title": "パレットをエクスポート",

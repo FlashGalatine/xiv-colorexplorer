@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { LanguageService, cameraService } from '@services/index';
 import { showCameraPreviewModal } from './camera-preview-modal';
 import { clearContainer } from '@shared/utils';
+import { ICON_UPLOAD, ICON_CAMERA, ICON_HINT } from '@shared/ui-icons';
 
 /**
  * Image Upload Display Component
@@ -51,14 +52,14 @@ export class ImageUploadDisplay extends BaseComponent {
       className: 'space-y-3',
     });
 
-    const icon = this.createElement('img', {
-      className: 'w-8 h-8',
+    // Upload icon - inline SVG for theme color inheritance
+    const icon = this.createElement('span', {
+      className: 'w-8 h-8 inline-block mx-auto',
       attributes: {
-        src: '/assets/icons/upload.svg',
-        alt: '',
         'aria-hidden': 'true',
       },
     });
+    icon.innerHTML = ICON_UPLOAD;
 
     const text = this.createElement('div', {
       className: 'space-y-1',
@@ -97,7 +98,7 @@ export class ImageUploadDisplay extends BaseComponent {
     });
 
     const cameraBtn = this.createElement('button', {
-      innerHTML: `<img src="/assets/icons/camera.svg" alt="" class="inline-block w-5 h-5 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.takePhoto')}`,
+      innerHTML: `<span class="inline-block w-5 h-5 mr-1" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('matcher.takePhoto')}`,
       className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
       attributes: {
         type: 'button',
@@ -113,7 +114,7 @@ export class ImageUploadDisplay extends BaseComponent {
 
     // Desktop webcam button (T7) - visible when camera detected, hidden on mobile
     const desktopCameraBtn = this.createElement('button', {
-      innerHTML: `<img src="/assets/icons/camera.svg" alt="" class="inline-block w-5 h-5 mr-1" aria-hidden="true" /> ${LanguageService.t('camera.useWebcam') || 'Use Webcam'}`,
+      innerHTML: `<span class="inline-block w-5 h-5 mr-1" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.useWebcam') || 'Use Webcam'}`,
       className: 'mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium hidden md:inline-flex items-center',
       attributes: {
         type: 'button',
@@ -165,7 +166,7 @@ export class ImageUploadDisplay extends BaseComponent {
 
     // Keyboard shortcut hint (theme-aware)
     const shortcut = this.createElement('div', {
-      innerHTML: `<img src="/assets/icons/hint.svg" alt="" class="inline-block w-4 h-4 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.pasteHint')}`,
+      innerHTML: `<span class="inline-block w-4 h-4 mr-1" aria-hidden="true">${ICON_HINT}</span> ${LanguageService.t('matcher.pasteHint')}`,
       className: 'p-2 rounded text-xs border',
       attributes: {
         style: `

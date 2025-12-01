@@ -16,6 +16,15 @@ import { initShortcutsListener } from './shortcuts-panel';
 import { ThemeService, LanguageService, AnnouncerService } from '@services/index';
 import { APP_VERSION } from '@shared/constants';
 import { clearContainer } from '@shared/utils';
+import {
+  ICON_GITHUB,
+  ICON_TWITTER,
+  ICON_TWITCH,
+  ICON_BLUESKY,
+  ICON_DISCORD,
+  ICON_PATREON,
+} from '@shared/social-icons';
+import { ICON_CRYSTAL } from '@shared/ui-icons';
 
 /**
  * Main application layout component
@@ -222,12 +231,12 @@ export class AppLayout extends BaseComponent {
     });
 
     const socialMedia = [
-      { label: 'GitHub', url: 'https://github.com/FlashGalatine', icon: '/assets/icons/social/github.svg' },
-      { label: 'X/Twitter', url: 'https://x.com/AsheJunius', icon: '/assets/icons/social/twitter.svg' },
-      { label: 'Twitch', url: 'https://www.twitch.tv/flashgalatine', icon: '/assets/icons/social/twitch.svg' },
-      { label: 'BlueSky', url: 'https://bsky.app/profile/projectgalatine.com', icon: '/assets/icons/social/bluesky.svg' },
-      { label: 'Discord', url: 'https://discord.gg/5VUSKTZCe5', icon: '/assets/icons/social/discord.svg' },
-      { label: 'Patreon', url: 'https://patreon.com/ProjectGalatine', icon: '/assets/icons/social/patreon.svg' },
+      { label: 'GitHub', url: 'https://github.com/FlashGalatine', icon: ICON_GITHUB },
+      { label: 'X/Twitter', url: 'https://x.com/AsheJunius', icon: ICON_TWITTER },
+      { label: 'Twitch', url: 'https://www.twitch.tv/flashgalatine', icon: ICON_TWITCH },
+      { label: 'BlueSky', url: 'https://bsky.app/profile/projectgalatine.com', icon: ICON_BLUESKY },
+      { label: 'Discord', url: 'https://discord.gg/5VUSKTZCe5', icon: ICON_DISCORD },
+      { label: 'Patreon', url: 'https://patreon.com/ProjectGalatine', icon: ICON_PATREON },
     ];
 
     socialMedia.forEach((social) => {
@@ -240,7 +249,7 @@ export class AppLayout extends BaseComponent {
           rel: 'noopener noreferrer',
           title: social.label,
         },
-        innerHTML: `<img src="${social.icon}" alt="" class="inline-block w-4 h-4" aria-hidden="true" /> ${social.label}`,
+        innerHTML: `<span class="inline-block w-4 h-4" aria-hidden="true">${social.icon}</span> ${social.label}`,
       });
       socialLinks.appendChild(link);
     });
@@ -250,7 +259,7 @@ export class AppLayout extends BaseComponent {
     // Creator info
     const creator = this.createElement('div', {
       className: 'text-center text-xs text-gray-500 dark:text-gray-500',
-      innerHTML: `${LanguageService.t('footer.createdBy')} <img src="/assets/icons/crystal.svg" alt="" class="inline-block w-3 h-3 ml-0.5" aria-hidden="true" style="vertical-align: middle;" />`,
+      innerHTML: `${LanguageService.t('footer.createdBy')} <span class="inline-block w-3 h-3 ml-0.5" aria-hidden="true" style="vertical-align: middle;">${ICON_CRYSTAL}</span>`,
     });
     footerContent.appendChild(creator);
 

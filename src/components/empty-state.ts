@@ -9,13 +9,22 @@
 
 import { BaseComponent } from './base-component';
 import { clearContainer } from '@shared/utils';
+import {
+  ICON_SEARCH,
+  ICON_PALETTE,
+  ICON_COINS,
+  ICON_HARMONY,
+  ICON_IMAGE,
+  ICON_WARNING,
+  ICON_LOADING,
+} from '@shared/empty-state-icons';
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export interface EmptyStateOptions {
-  /** Icon to display (emoji or text) */
+  /** Icon to display (SVG string, emoji, or text) */
   icon: string;
   /** Main title text */
   title: string;
@@ -37,7 +46,7 @@ export interface EmptyStateOptions {
 
 export const EMPTY_STATE_PRESETS = {
   noSearchResults: (query: string, onClear?: () => void): EmptyStateOptions => ({
-    icon: '🔍',
+    icon: ICON_SEARCH,
     title: `No dyes match "${query}"`,
     description: 'Try checking your spelling or search for a category like "purple" or "red".',
     actionLabel: 'Clear search',
@@ -45,7 +54,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   allFilteredOut: (onReset?: () => void): EmptyStateOptions => ({
-    icon: '🎨',
+    icon: ICON_PALETTE,
     title: 'All suggestions were filtered out',
     description: 'Your current filters are hiding all matching dyes. Try adjusting your filter settings.',
     actionLabel: 'Reset filters',
@@ -53,7 +62,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   noPriceData: (onTryAnother?: () => void): EmptyStateOptions => ({
-    icon: '💰',
+    icon: ICON_COINS,
     title: 'No price data available',
     description: 'This dye may not be tradeable or Universalis doesn\'t have recent data for this server.',
     actionLabel: 'Try different server',
@@ -61,7 +70,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   noHarmonyResults: (onSelectDye?: () => void): EmptyStateOptions => ({
-    icon: '🎵',
+    icon: ICON_HARMONY,
     title: 'No harmony suggestions',
     description: 'Select a base dye to generate color harmony suggestions.',
     actionLabel: 'Select a dye',
@@ -69,7 +78,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   noImage: (onUpload?: () => void): EmptyStateOptions => ({
-    icon: '🖼️',
+    icon: ICON_IMAGE,
     title: 'No image loaded',
     description: 'Upload an image to start matching colors from it.',
     actionLabel: 'Upload image',
@@ -77,7 +86,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   error: (message: string, onRetry?: () => void): EmptyStateOptions => ({
-    icon: '⚠️',
+    icon: ICON_WARNING,
     title: 'Something went wrong',
     description: message,
     actionLabel: 'Try again',
@@ -85,7 +94,7 @@ export const EMPTY_STATE_PRESETS = {
   }),
 
   loading: (): EmptyStateOptions => ({
-    icon: '⏳',
+    icon: ICON_LOADING,
     title: 'Loading...',
     description: 'Please wait while we fetch the data.',
   }),
@@ -114,14 +123,19 @@ export class EmptyState extends BaseComponent {
       className: 'empty-state',
     });
 
-    // Icon
+    // Icon - supports both SVG strings and emoji/text
     const icon = this.createElement('div', {
       className: 'empty-state-icon',
-      textContent: this.options.icon,
       attributes: {
         'aria-hidden': 'true',
       },
     });
+    // Check if the icon is an SVG string
+    if (this.options.icon.includes('<svg')) {
+      icon.innerHTML = this.options.icon;
+    } else {
+      icon.textContent = this.options.icon;
+    }
     wrapper.appendChild(icon);
 
     // Title
@@ -214,11 +228,17 @@ export function createEmptyState(
 
 /**
  * Create empty state HTML string for use in innerHTML
+ * Handles both SVG icons and emoji/text icons
  */
 export function getEmptyStateHTML(options: EmptyStateOptions): string {
+  // SVG icons are inserted directly, emojis are escaped
+  const iconContent = options.icon.includes('<svg')
+    ? options.icon
+    : options.icon.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   return `
     <div class="empty-state">
-      <div class="empty-state-icon" aria-hidden="true">${options.icon}</div>
+      <div class="empty-state-icon" aria-hidden="true">${iconContent}</div>
       <h3 class="empty-state-title">${options.title}</h3>
       ${options.description ? `<p class="empty-state-description">${options.description}</p>` : ''}
     </div>

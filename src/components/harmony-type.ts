@@ -14,6 +14,7 @@ import { createDyeActionDropdown, type DyeAction } from './dye-action-dropdown';
 import { APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { clearContainer } from '@shared/utils';
+import { HARMONY_ICONS } from '@shared/harmony-icons';
 
 /**
  * Harmony type information
@@ -130,15 +131,14 @@ export class HarmonyType extends BaseComponent {
       className: 'flex items-center gap-2',
     });
 
-    const icon = this.createElement('img', {
-      attributes: {
-        src: `/assets/icons/harmony/${this.harmonyInfo.icon}.svg`,
-        alt: `${this.harmonyInfo.name} icon`,
-        width: '28',
-        height: '28',
-      },
+    // Use inline SVG for theme-aware icon coloring
+    const icon = this.createElement('span', {
       className: 'harmony-icon',
+      attributes: {
+        'aria-hidden': 'true',
+      },
     });
+    icon.innerHTML = HARMONY_ICONS[this.harmonyInfo.icon] || '';
 
     const name = this.createElement('h3', {
       textContent: this.harmonyInfo.name,

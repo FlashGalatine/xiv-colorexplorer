@@ -99,6 +99,9 @@
     "copyHex": "Copy Hex Code",
     "copiedHex": "Copied",
     "copyFailed": "Failed to copy",
+    "selectColorPrompt": "Select a Base Color",
+    "selectColorMessage": "Enter a hex color or pick a dye to generate harmonies.",
+    "selectColorAction": "Enter color",
     "types": {
       "complementaryDesc": "Colors directly opposite on the color wheel for maximum contrast",
       "analogousDesc": "Colors adjacent on the wheel for a harmonious, unified look",
@@ -327,7 +330,8 @@
     "refreshError": "Error refreshing prices. Please try again.",
     "lastUpdated": "Last updated: {time}",
     "priceUnavailable": "Price unavailable",
-    "fetchingPrices": "Fetching prices..."
+    "fetchingPrices": "Fetching prices...",
+    "offlineWarning": "You are offline. Cannot refresh prices."
   },
   "export": {
     "title": "Export Palette",

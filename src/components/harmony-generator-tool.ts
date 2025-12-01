@@ -13,6 +13,8 @@ import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { DyeFilters, type DyeFilterConfig } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
+import { EmptyState, EMPTY_STATE_PRESETS } from './empty-state';
+import { ICON_HARMONY } from '@shared/empty-state-icons';
 import { showSavedPalettesModal, showSavePaletteDialog } from './saved-palettes-modal';
 import { ColorService, DyeService, LanguageService, PaletteService } from '@services/index';
 import { appStorage } from '@services/storage-service';
@@ -25,7 +27,7 @@ import {
 } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
 import { logger } from '@shared/logger';
-import { clearContainer } from '@shared/utils';
+import { clearContainer, isValidHexColor } from '@shared/utils';
 
 /**
  * Suggestions mode type
@@ -84,13 +86,15 @@ const HARMONY_OFFSETS: Record<string, number[]> = {
  * Generates color harmony palettes from a base color
  */
 export class HarmonyGeneratorTool extends BaseComponent {
-  private baseColor: string = '#FF0000';
+  private baseColor: string = '';
   private dyeSelector: DyeSelector | null = null;
   private marketBoard: MarketBoard | null = null;
   private harmonyDisplays: Map<string, HarmonyType> = new Map();
   private showPrices: boolean = false;
   private priceData: Map<number, PriceData> = new Map();
   private harmonyContainers: Map<string, HTMLElement> = new Map();
+  private harmoniesGridElement: HTMLElement | null = null;
+  private emptyStateElement: EmptyState | null = null;
   private dyeFilters: DyeFilters | null = null;
   private suggestionsMode: SuggestionsMode = 'simple';
   private suggestionsModeRadios: Map<SuggestionsMode, HTMLInputElement> = new Map();
@@ -187,10 +191,16 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const optionsSection = this.renderOptionsSection();
     wrapper.appendChild(optionsSection);
 
+    // Harmony displays wrapper (contains grid or empty state)
+    const harmoniesWrapper = this.createElement('div', {
+      id: 'harmonies-wrapper',
+    });
+
     // Harmony displays grid
     const harmoniesGrid = this.createElement('div', {
       className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4',
     });
+    this.harmoniesGridElement = harmoniesGrid;
 
     for (const { id } of HARMONY_TYPE_IDS) {
       const container = this.createElement('div', {
@@ -200,7 +210,14 @@ export class HarmonyGeneratorTool extends BaseComponent {
       harmoniesGrid.appendChild(container);
     }
 
-    wrapper.appendChild(harmoniesGrid);
+    // Empty state container (hidden initially via generateHarmonies)
+    const emptyStateContainer = this.createElement('div', {
+      id: 'harmony-empty-state',
+    });
+
+    harmoniesWrapper.appendChild(harmoniesGrid);
+    harmoniesWrapper.appendChild(emptyStateContainer);
+    wrapper.appendChild(harmoniesWrapper);
 
     // Export section
     const exportContainer = this.createElement('div', {
@@ -951,6 +968,43 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Generate all harmony types
    */
   private generateHarmonies(): void {
+    const emptyStateContainer = this.querySelector<HTMLElement>('#harmony-empty-state');
+
+    // Show empty state when no base color is selected
+    if (!this.baseColor || !isValidHexColor(this.baseColor)) {
+      // Hide the grid, show empty state
+      if (this.harmoniesGridElement) {
+        this.harmoniesGridElement.classList.add('hidden');
+      }
+      if (emptyStateContainer) {
+        emptyStateContainer.classList.remove('hidden');
+        // Create empty state if not already present
+        if (!this.emptyStateElement) {
+          const focusHexInput = () => {
+            const hexInput = this.querySelector<HTMLInputElement>('#harmony-hex-input');
+            if (hexInput) hexInput.focus();
+          };
+          this.emptyStateElement = new EmptyState(emptyStateContainer, {
+            icon: ICON_HARMONY,
+            title: LanguageService.t('harmony.selectColorPrompt'),
+            description: LanguageService.t('harmony.selectColorMessage'),
+            actionLabel: LanguageService.t('harmony.selectColorAction'),
+            onAction: focusHexInput,
+          });
+          this.emptyStateElement.init();
+        }
+      }
+      return;
+    }
+
+    // Hide empty state, show the grid
+    if (emptyStateContainer) {
+      emptyStateContainer.classList.add('hidden');
+    }
+    if (this.harmoniesGridElement) {
+      this.harmoniesGridElement.classList.remove('hidden');
+    }
+
     const dyeService = DyeService.getInstance();
     const harmonyTypes = getHarmonyTypes();
 

@@ -99,6 +99,9 @@
     "copyHex": "Copier le code Hex",
     "copiedHex": "Copié",
     "copyFailed": "Échec de la copie",
+    "selectColorPrompt": "Sélectionnez une couleur de base",
+    "selectColorMessage": "Entrez une couleur hex ou choisissez une teinture pour générer des harmonies.",
+    "selectColorAction": "Entrer la couleur",
     "types": {
       "complementaryDesc": "Couleurs directement opposées sur le cercle chromatique pour un contraste maximal",
       "analogousDesc": "Couleurs adjacentes sur le cercle pour un aspect harmonieux et unifié",
@@ -325,7 +328,8 @@
     "refreshError": "Erreur lors de l'actualisation des prix. Veuillez réessayer.",
     "lastUpdated": "Dernière mise à jour : {time}",
     "priceUnavailable": "Prix indisponible",
-    "fetchingPrices": "Récupération des prix..."
+    "fetchingPrices": "Récupération des prix...",
+    "offlineWarning": "Vous êtes hors ligne. Impossible de rafraîchir les prix."
   },
   "export": {
     "title": "Exporter la Palette",

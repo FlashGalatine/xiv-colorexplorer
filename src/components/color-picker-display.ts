@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ColorService, LanguageService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
+import { ICON_EYEDROPPER } from '@shared/ui-icons';
 
 /**
  * Color Picker Display Component
@@ -136,10 +137,10 @@ export class ColorPickerDisplay extends BaseComponent {
     valuesSection.appendChild(hsvText);
     wrapper.appendChild(valuesSection);
 
-    // Eyedropper button (if supported)
+    // Eyedropper button (if supported) - inline SVG for theme color inheritance
     if ('EyeDropper' in window) {
       const eyedropperBtn = this.createElement('button', {
-        innerHTML: `<img src="/assets/icons/eyedropper.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('matcher.useEyedropper')}`,
+        innerHTML: `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_EYEDROPPER}</span> ${LanguageService.t('matcher.useEyedropper')}`,
         className:
           'w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-500 text-white rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
         attributes: {

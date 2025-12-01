@@ -99,6 +99,9 @@
     "copyHex": "复制十六进制代码",
     "copiedHex": "已复制",
     "copyFailed": "复制失败",
+    "selectColorPrompt": "选择基础颜色",
+    "selectColorMessage": "输入十六进制颜色或选择染剂以生成和谐配色。",
+    "selectColorAction": "输入颜色",
     "types": {
       "complementaryDesc": "色轮上正对面的颜色，实现最大对比度",
       "analogousDesc": "色轮上相邻的颜色，营造和谐统一的外观",
@@ -325,7 +328,8 @@
     "refreshError": "刷新价格时出错。请重试。",
     "lastUpdated": "最后更新：{time}",
     "priceUnavailable": "价格不可用",
-    "fetchingPrices": "正在获取价格..."
+    "fetchingPrices": "正在获取价格...",
+    "offlineWarning": "您处于离线状态。无法刷新价格。"
   },
   "export": {
     "title": "导出调色板",

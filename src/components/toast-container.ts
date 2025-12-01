@@ -92,16 +92,12 @@ export class ToastContainer extends BaseComponent {
 
   /**
    * Get CSS classes for toast type
+   * Colors are now applied via CSS variables in globals.css for theme support
    */
   private getToastClasses(type: ToastType): string {
     const baseClasses = 'toast flex items-start gap-3 p-4 rounded-lg shadow-lg border max-w-sm';
-    const typeClasses: Record<ToastType, string> = {
-      success: 'toast-success bg-green-50 border-green-200 text-green-800',
-      error: 'toast-error bg-red-50 border-red-200 text-red-800',
-      warning: 'toast-warning bg-yellow-50 border-yellow-200 text-yellow-800',
-      info: 'toast-info bg-blue-50 border-blue-200 text-blue-800',
-    };
-    return `${baseClasses} ${typeClasses[type]}`;
+    // Type class applies themed colors via CSS variables
+    return `${baseClasses} toast-${type}`;
   }
 
   /**

@@ -286,11 +286,20 @@ a:hover {
   color: var(--theme-text-header) !important;
 }
 
-/* Harmony SVG icons - filter to match header text color */
+/* Harmony SVG icons - inline SVG with currentColor for theme adaptation */
 .harmony-icon {
-  /* Convert black stroke SVG to white for visibility on colored backgrounds */
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--theme-text-header);
+}
+
+.harmony-icon svg {
+  width: 100%;
+  height: 100%;
+  /* currentColor in SVG inherits from parent's color property */
 }
 
 /* Form elements */
@@ -352,16 +361,7 @@ html.theme-high-contrast-dark .border-gray-200 {
   border-width: 2px !important;
 }
 
-/* Ensure harmony icons are visible in high contrast */
-html.theme-high-contrast-light .harmony-icon {
-  filter: none !important;
-  opacity: 1 !important;
-}
-
-html.theme-high-contrast-dark .harmony-icon {
-  filter: brightness(0) invert(1) !important;
-  opacity: 1 !important;
-}
+/* Harmony icons in high contrast use currentColor - no filter overrides needed */
 
 /* =====================================================
    WINDOWS HIGH CONTRAST MODE SUPPORT

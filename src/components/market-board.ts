@@ -10,6 +10,7 @@
 import { BaseComponent } from './base-component';
 import { APIService, LanguageService } from '@services/index';
 import { appStorage } from '@services/storage-service';
+import { ToastService } from '@services/toast-service';
 import { PRICE_CATEGORIES } from '@shared/constants';
 import type { Dye, PriceData, DataCenter, World } from '@shared/types';
 import { logger } from '@shared/logger';
@@ -421,13 +422,32 @@ export class MarketBoard extends BaseComponent {
   async refreshPrices(): Promise<void> {
     if (this.isRefreshing) return;
 
+    // Check for offline status first
+    if (!navigator.onLine) {
+      ToastService.warning(LanguageService.t('marketBoard.offlineWarning'));
+      return;
+    }
+
     this.isRefreshing = true;
     const statusMsg = this.querySelector('#mb-price-status');
     const refreshBtn = this.querySelector<HTMLButtonElement>('#mb-refresh-btn');
 
+    // Store original button text for restoration
+    const originalBtnText = LanguageService.t('marketBoard.refresh');
+
     if (refreshBtn) {
       refreshBtn.disabled = true;
-      refreshBtn.textContent = LanguageService.t('marketBoard.refreshing');
+      // Show inline spinner with loading text
+      const spinnerSvg = `<svg class="loading-spinner w-4 h-4" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>`;
+      refreshBtn.innerHTML = `
+        <span class="inline-flex items-center justify-center gap-2">
+          ${spinnerSvg}
+          <span>${LanguageService.t('marketBoard.refreshing')}</span>
+        </span>
+      `.trim();
     }
 
     if (statusMsg) {
@@ -449,6 +469,7 @@ export class MarketBoard extends BaseComponent {
       }
     } catch (error) {
       logger.error('Error refreshing prices:', error);
+      ToastService.error(LanguageService.t('marketBoard.refreshError'));
       if (statusMsg) {
         statusMsg.textContent = LanguageService.t('marketBoard.refreshError');
       }

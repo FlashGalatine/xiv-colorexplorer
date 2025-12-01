@@ -12,6 +12,7 @@ import { ThemeService, LanguageService } from '@services/index';
 import { ColorService } from '@services/index';
 import type { ThemeName } from '@shared/types';
 import { clearContainer } from '@shared/utils';
+import { ICON_THEME } from '@shared/ui-icons';
 
 /**
  * Theme switcher component - allows users to select from 10 available themes
@@ -44,8 +45,8 @@ export class ThemeSwitcher extends BaseComponent {
       },
     });
 
-    // Add theme icon
-    button.innerHTML = `<img src="/assets/icons/theme.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('header.theme')}`;
+    // Add theme icon (inline SVG for theme color inheritance)
+    button.innerHTML = `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_THEME}</span> ${LanguageService.t('header.theme')}`;
 
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {

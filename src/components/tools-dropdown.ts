@@ -11,6 +11,7 @@ import { BaseComponent } from './base-component';
 import { ThemeService, LanguageService } from '@services/index';
 import { ColorService } from '@services/index';
 import { clearContainer } from '@shared/utils';
+import { ICON_TOOL_MENU } from '@shared/tool-icons';
 
 /**
  * Tool definition for dropdown
@@ -60,7 +61,8 @@ export class ToolsDropdown extends BaseComponent {
       },
     });
 
-    button.innerHTML = `<img src="/assets/icons/tools/tools.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('header.tools')}`;
+    // Use inline SVG for theme color inheritance
+    button.innerHTML = `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_TOOL_MENU}</span> ${LanguageService.t('header.tools')}`;
 
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
@@ -104,15 +106,29 @@ export class ToolsDropdown extends BaseComponent {
         toolBtn.style.backgroundColor = 'transparent';
       });
 
-      // Tool icon
-      const icon = this.createElement('img', {
-        className: 'w-5 h-5',
-        attributes: {
-          src: tool.icon,
-          alt: '',
-          'aria-hidden': 'true',
-        },
-      });
+      // Tool icon - support both inline SVG strings and image paths
+      let icon: HTMLElement;
+      if (tool.icon.includes('<svg')) {
+        // Inline SVG for theme color inheritance
+        icon = this.createElement('span', {
+          className: 'w-5 h-5 flex items-center justify-center',
+          attributes: {
+            'aria-hidden': 'true',
+            style: 'color: var(--theme-text);',
+          },
+        });
+        icon.innerHTML = tool.icon;
+      } else {
+        // Fallback to img for paths
+        icon = this.createElement('img', {
+          className: 'w-5 h-5',
+          attributes: {
+            src: tool.icon,
+            alt: '',
+            'aria-hidden': 'true',
+          },
+        });
+      }
 
       // Tool info container
       const infoContainer = this.createElement('div', {

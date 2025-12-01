@@ -10,6 +10,7 @@
 import { ModalService, LanguageService, cameraService, ToastService } from '@services/index';
 import type { CaptureResult } from '@services/camera-service';
 import { logger } from '@shared/logger';
+import { ICON_CAMERA } from '@shared/ui-icons';
 
 /**
  * Callback when a frame is captured
@@ -90,10 +91,10 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   const buttons = document.createElement('div');
   buttons.className = 'flex justify-center gap-3';
 
-  // Capture button
+  // Capture button - inline SVG for theme color inheritance
   const captureBtn = document.createElement('button');
   captureBtn.className = 'px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2';
-  captureBtn.innerHTML = `<img src="/assets/icons/camera.svg" alt="" class="w-5 h-5 invert" aria-hidden="true" /> ${LanguageService.t('camera.capture') || 'Capture'}`;
+  captureBtn.innerHTML = `<span class="w-5 h-5" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.capture') || 'Capture'}`;
   captureBtn.disabled = true;
   captureBtn.id = 'camera-capture-btn';
   buttons.appendChild(captureBtn);
@@ -181,7 +182,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
       logger.error('Capture failed:', error);
       ToastService.error(LanguageService.t('camera.captureFailed') || 'Failed to capture image');
       captureBtn.disabled = false;
-      captureBtn.innerHTML = `<img src="/assets/icons/camera.svg" alt="" class="w-5 h-5 invert" aria-hidden="true" /> ${LanguageService.t('camera.capture') || 'Capture'}`;
+      captureBtn.innerHTML = `<span class="w-5 h-5" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.capture') || 'Capture'}`;
     }
   });
 

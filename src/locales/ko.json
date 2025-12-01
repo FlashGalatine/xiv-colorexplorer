@@ -99,6 +99,9 @@
     "copyHex": "Hex 코드 복사",
     "copiedHex": "복사됨",
     "copyFailed": "복사 실패",
+    "selectColorPrompt": "기본 색상 선택",
+    "selectColorMessage": "Hex 색상을 입력하거나 염료를 선택하여 조화를 생성하세요.",
+    "selectColorAction": "색상 입력",
     "types": {
       "complementaryDesc": "색상환에서 정반대에 위치한 색상으로 최대 대비 효과",
       "analogousDesc": "색상환에서 인접한 색상으로 조화롭고 통일된 느낌",
@@ -325,7 +328,8 @@
     "refreshError": "가격 새로고침 오류. 다시 시도해주세요.",
     "lastUpdated": "마지막 업데이트: {time}",
     "priceUnavailable": "가격 정보 없음",
-    "fetchingPrices": "가격 가져오는 중..."
+    "fetchingPrices": "가격 가져오는 중...",
+    "offlineWarning": "오프라인 상태입니다. 가격을 새로고침할 수 없습니다."
   },
   "export": {
     "title": "팔레트 내보내기",

@@ -17,6 +17,7 @@ import { ColorService, dyeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
+import { ICON_SAVE, ICON_SHARE } from '@shared/ui-icons';
 
 /**
  * Dye Mixer Tool Component
@@ -258,16 +259,18 @@ export class DyeMixerTool extends BaseComponent {
       className: 'flex flex-col sm:flex-row gap-2',
     });
 
+    // Save button - inline SVG for theme color inheritance
     const saveBtn = this.createElement('button', {
       id: 'save-gradient-btn',
-      innerHTML: `<img src="/assets/icons/save.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('mixer.saveGradient')}`,
+      innerHTML: `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_SAVE}</span> ${LanguageService.t('mixer.saveGradient')}`,
       className:
         'px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
     });
 
+    // Share button - inline SVG for theme color inheritance
     const shareBtn = this.createElement('button', {
       id: 'copy-url-btn',
-      innerHTML: `<img src="/assets/icons/share.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('mixer.copyShareUrl')}`,
+      innerHTML: `<span class="inline-block w-5 h-5" aria-hidden="true">${ICON_SHARE}</span> ${LanguageService.t('mixer.copyShareUrl')}`,
       className:
         'px-4 py-3 rounded-lg transition-all duration-200 text-sm font-semibold flex-1 min-h-[44px]',
       attributes: {

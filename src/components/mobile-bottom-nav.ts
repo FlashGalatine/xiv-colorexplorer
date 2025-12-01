@@ -66,15 +66,28 @@ export class MobileBottomNav extends BaseComponent {
         },
       });
 
-      // Icon
-      const icon = this.createElement('img', {
-        className: 'w-6 h-6 mb-0.5',
-        attributes: {
-          src: tool.icon,
-          alt: '',
-          'aria-hidden': 'true',
-        },
-      });
+      // Icon - support both inline SVG strings and image paths
+      let icon: HTMLElement;
+      if (tool.icon.includes('<svg')) {
+        // Inline SVG for theme color inheritance
+        icon = this.createElement('span', {
+          className: 'w-6 h-6 mb-0.5 flex items-center justify-center',
+          attributes: {
+            'aria-hidden': 'true',
+          },
+        });
+        icon.innerHTML = tool.icon;
+      } else {
+        // Fallback to img for paths
+        icon = this.createElement('img', {
+          className: 'w-6 h-6 mb-0.5',
+          attributes: {
+            src: tool.icon,
+            alt: '',
+            'aria-hidden': 'true',
+          },
+        });
+      }
 
       // Label
       const label = this.createElement('span', {

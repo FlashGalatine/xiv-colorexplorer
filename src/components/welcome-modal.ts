@@ -11,6 +11,13 @@ import { ModalService } from '@services/modal-service';
 import { StorageService } from '@services/storage-service';
 import { LanguageService } from '@services/language-service';
 import { STORAGE_KEYS, APP_NAME, APP_VERSION } from '@shared/constants';
+import {
+  ICON_TOOL_HARMONY,
+  ICON_TOOL_MATCHER,
+  ICON_TOOL_COMPARISON,
+  ICON_TOOL_MIXER,
+  ICON_TOOL_ACCESSIBILITY,
+} from '@shared/tool-icons';
 
 // ============================================================================
 // Tool Definitions
@@ -26,31 +33,31 @@ interface ToolInfo {
 const TOOLS: ToolInfo[] = [
   {
     id: 'harmony',
-    icon: '/assets/icons/tools/harmony.svg',
+    icon: ICON_TOOL_HARMONY,
     nameKey: 'tools.harmony.shortName',
     descriptionKey: 'welcome.tools.harmony',
   },
   {
     id: 'matcher',
-    icon: '/assets/icons/tools/matcher.svg',
+    icon: ICON_TOOL_MATCHER,
     nameKey: 'tools.matcher.shortName',
     descriptionKey: 'welcome.tools.matcher',
   },
   {
     id: 'comparison',
-    icon: '/assets/icons/tools/comparison.svg',
+    icon: ICON_TOOL_COMPARISON,
     nameKey: 'tools.comparison.shortName',
     descriptionKey: 'welcome.tools.comparison',
   },
   {
     id: 'mixer',
-    icon: '/assets/icons/tools/mixer.svg',
+    icon: ICON_TOOL_MIXER,
     nameKey: 'tools.mixer.shortName',
     descriptionKey: 'welcome.tools.mixer',
   },
   {
     id: 'accessibility',
-    icon: '/assets/icons/tools/accessibility.svg',
+    icon: ICON_TOOL_ACCESSIBILITY,
     nameKey: 'tools.accessibility.shortName',
     descriptionKey: 'welcome.tools.accessibility',
   },
@@ -220,12 +227,13 @@ export class WelcomeModal {
       card.style.backgroundColor = 'var(--theme-card-background)';
     });
 
-    const icon = document.createElement('img');
-    icon.className = 'w-8 h-8 mb-2';
-    icon.src = tool.icon;
-    icon.alt = '';
-    icon.setAttribute('aria-hidden', 'true');
-    card.appendChild(icon);
+    // Use inline SVG for theme color inheritance
+    const iconContainer = document.createElement('span');
+    iconContainer.className = 'w-8 h-8 mb-2 flex items-center justify-center';
+    iconContainer.style.color = 'var(--theme-text)';
+    iconContainer.setAttribute('aria-hidden', 'true');
+    iconContainer.innerHTML = tool.icon;
+    card.appendChild(iconContainer);
 
     const name = document.createElement('span');
     name.className = 'text-xs font-medium text-center';

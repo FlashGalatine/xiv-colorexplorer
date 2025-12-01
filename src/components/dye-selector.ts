@@ -13,6 +13,7 @@ import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { getEmptyStateHTML } from './empty-state';
+import { ICON_SEARCH, ICON_PALETTE } from '@shared/empty-state-icons';
 
 /**
  * Sort options for dye list
@@ -289,14 +290,14 @@ export class DyeSelector extends BaseComponent {
     if (this.filteredDyes.length === 0) {
       const emptyHtml = this.searchQuery.trim()
         ? getEmptyStateHTML({
-            icon: '🔍',
+            icon: ICON_SEARCH,
             title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
               `No dyes match "${this.searchQuery}"`,
             description: LanguageService.t('dyeSelector.noResultsHint') ||
               'Try checking your spelling or search for a category like "purple".',
           })
         : getEmptyStateHTML({
-            icon: '🎨',
+            icon: ICON_PALETTE,
             title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
             description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
           });
@@ -800,14 +801,14 @@ export class DyeSelector extends BaseComponent {
         if (this.filteredDyes.length === 0) {
           const emptyHtml = this.searchQuery.trim()
             ? getEmptyStateHTML({
-                icon: '🔍',
+                icon: ICON_SEARCH,
                 title: LanguageService.tInterpolate('dyeSelector.noResults', { query: this.searchQuery }) ||
                   `No dyes match "${this.searchQuery}"`,
                 description: LanguageService.t('dyeSelector.noResultsHint') ||
                   'Try checking your spelling or search for a category like "purple".',
               })
             : getEmptyStateHTML({
-                icon: '🎨',
+                icon: ICON_PALETTE,
                 title: LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
                 description: LanguageService.t('dyeSelector.tryCategoryHint') || 'Try selecting a different category.',
               });

@@ -29,6 +29,15 @@ import {
   showChangelogIfUpdated,
 } from '@components/index';
 
+// Import inline SVG icons for theme color inheritance
+import {
+  ICON_TOOL_HARMONY,
+  ICON_TOOL_MATCHER,
+  ICON_TOOL_ACCESSIBILITY,
+  ICON_TOOL_COMPARISON,
+  ICON_TOOL_MIXER,
+} from '@shared/tool-icons';
+
 /**
  * Initialize the application
  */
@@ -93,12 +102,13 @@ async function initializeApp(): Promise<void> {
     }
 
     // Helper function to get localized tool definitions
+    // Uses inline SVG icons for theme color inheritance
     const getLocalizedTools = (): ToolDefinition[] => [
       {
         id: 'harmony',
         name: LanguageService.t('tools.harmony.title'),
         shortName: LanguageService.t('tools.harmony.shortName'),
-        icon: '/assets/icons/tools/harmony.svg',
+        icon: ICON_TOOL_HARMONY,
         description: LanguageService.t('tools.harmony.description'),
         loadComponent: async () => {
           const { HarmonyGeneratorTool } = await import('@components/harmony-generator-tool');
@@ -109,7 +119,7 @@ async function initializeApp(): Promise<void> {
         id: 'matcher',
         name: LanguageService.t('tools.matcher.title'),
         shortName: LanguageService.t('tools.matcher.shortName'),
-        icon: '/assets/icons/tools/matcher.svg',
+        icon: ICON_TOOL_MATCHER,
         description: LanguageService.t('tools.matcher.description'),
         loadComponent: async () => {
           const { ColorMatcherTool } = await import('@components/color-matcher-tool');
@@ -120,7 +130,7 @@ async function initializeApp(): Promise<void> {
         id: 'accessibility',
         name: LanguageService.t('tools.accessibility.title'),
         shortName: LanguageService.t('tools.accessibility.shortName'),
-        icon: '/assets/icons/tools/accessibility.svg',
+        icon: ICON_TOOL_ACCESSIBILITY,
         description: LanguageService.t('tools.accessibility.description'),
         loadComponent: async () => {
           const { AccessibilityCheckerTool } = await import(
@@ -133,7 +143,7 @@ async function initializeApp(): Promise<void> {
         id: 'comparison',
         name: LanguageService.t('tools.comparison.title'),
         shortName: LanguageService.t('tools.comparison.shortName'),
-        icon: '/assets/icons/tools/comparison.svg',
+        icon: ICON_TOOL_COMPARISON,
         description: LanguageService.t('tools.comparison.description'),
         loadComponent: async () => {
           const { DyeComparisonTool } = await import('@components/dye-comparison-tool');
@@ -144,7 +154,7 @@ async function initializeApp(): Promise<void> {
         id: 'mixer',
         name: LanguageService.t('tools.mixer.title'),
         shortName: LanguageService.t('tools.mixer.shortName'),
-        icon: '/assets/icons/tools/mixer.svg',
+        icon: ICON_TOOL_MIXER,
         description: LanguageService.t('tools.mixer.description'),
         loadComponent: async () => {
           const { DyeMixerTool } = await import('@components/dye-mixer-tool');
@@ -312,7 +322,8 @@ async function initializeApp(): Promise<void> {
         btn.style.filter = 'brightness(0.9)';
       });
 
-      btn.innerHTML = `<img src="${tool.icon}" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${tool.name}`;
+      // Use inline SVG for theme color inheritance
+      btn.innerHTML = `<span class="inline-block w-5 h-5" aria-hidden="true">${tool.icon}</span> ${tool.name}`;
       btn.title = tool.description;
       btn.addEventListener('click', () => {
         void loadTool(tool.id);
@@ -376,7 +387,8 @@ async function initializeApp(): Promise<void> {
         const toolId = btn.getAttribute('data-tool-id');
         const tool = tools.find((t) => t.id === toolId);
         if (tool) {
-          btn.innerHTML = `${tool.icon} ${tool.name}`;
+          // Use inline SVG for theme color inheritance
+          btn.innerHTML = `<span class="inline-block w-5 h-5" aria-hidden="true">${tool.icon}</span> ${tool.name}`;
           btn.title = tool.description;
         }
       });
