@@ -873,6 +873,9 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Re-run matchColor with the first matched dye's original sampled color
     // Since we don't store the sampled color, we'll just re-render the cards
+    // Safety check: ensure matchedDyes still has elements (BUG-019)
+    if (this.matchedDyes.length === 0) return;
+
     const closestDye = this.matchedDyes[0];
     const otherDyes = this.matchedDyes.slice(1);
 

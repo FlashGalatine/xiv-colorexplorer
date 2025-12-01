@@ -303,6 +303,9 @@ export class TooltipService {
   private static positionTooltip(target: HTMLElement, state: TooltipState): void {
     if (!state.element) return;
 
+    // Guard against detached DOM (BUG-020)
+    if (!target.isConnected || !state.element.isConnected) return;
+
     const targetRect = target.getBoundingClientRect();
     const tooltipRect = state.element.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
