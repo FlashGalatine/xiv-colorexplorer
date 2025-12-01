@@ -15,15 +15,17 @@ import { DyeFilters } from './dye-filters';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import { DyePreviewOverlay } from './dye-preview-overlay';
 import {
-  ColorService,
   dyeService,
-  APIService,
   LanguageService,
-  AnnouncerService,
+  StorageService,
+  ColorService,
   ToastService,
+  AnnouncerService,
 } from '@services/index';
-import { StorageService } from '@services/index';
-import type { Dye, PriceData } from '@shared/types';
+import type { PriceData, DyeWithDistance } from '@shared/types';
+import { PricingMixin, type PricingState } from '@services/pricing-mixin';
+import { ToolHeader } from './tool-header';
+import { DyeCardRenderer } from './dye-card-renderer';
 
 /**
  * Recent color entry for history (T5)
@@ -32,14 +34,7 @@ interface RecentColor {
   hex: string;
   timestamp: number;
 }
-
-/**
- * Dye with cached distance for performance optimization
- */
-interface DyeWithDistance extends Dye {
-  distance: number;
-}
-import { CARD_CLASSES, CARD_CLASSES_COMPACT } from '@shared/constants';
+import { CARD_CLASSES } from '@shared/constants';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
@@ -48,14 +43,14 @@ import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
  * Color Matcher Tool Component
  * Match colors to the closest FFXIV dyes
  */
-export class ColorMatcherTool extends BaseComponent {
+export class ColorMatcherTool extends BaseComponent implements PricingState {
   private imageUpload: ImageUploadDisplay | null = null;
   private colorPicker: ColorPickerDisplay | null = null;
-  private marketBoard: MarketBoard | null = null;
+  marketBoard: MarketBoard | null = null;
   private dyeFilters: DyeFilters | null = null;
   private matchedDyes: DyeWithDistance[] = [];
-  private priceData: Map<number, PriceData> = new Map();
-  private showPrices: boolean = false;
+  priceData: Map<number, PriceData> = new Map();
+  showPrices: boolean = false;
   private sampleSize: number = 5;
   private zoomLevel: number = 100;
   private currentImage: HTMLImageElement | null = null;
@@ -71,6 +66,18 @@ export class ColorMatcherTool extends BaseComponent {
   private readonly recentColorsStorageKey = 'colormatcher_recent_colors';
   private languageUnsubscribe: (() => void) | null = null;
 
+  // PricingMixin implementation
+  onPricesLoaded?: () => void;
+  initMarketBoard!: (container: HTMLElement) => Promise<void>;
+  setupMarketBoardListeners!: (container: HTMLElement) => void;
+  fetchPrices!: () => Promise<void>;
+  cleanupMarketBoard!: () => void;
+
+  constructor(container: HTMLElement) {
+    super(container);
+    Object.assign(this, PricingMixin);
+  }
+
   /**
    * Render the tool component
    */
@@ -80,28 +87,10 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     // Title
-    const title = this.createElement('div', {
-      className: 'space-y-2 text-center',
-    });
-
-    const heading = this.createElement('h2', {
-      textContent: LanguageService.t('tools.matcher.title'),
-      className: 'text-3xl font-bold',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
-    });
-
-    const subtitle = this.createElement('p', {
-      textContent: LanguageService.t('tools.matcher.subtitle'),
-      attributes: {
-        style: 'color: var(--theme-text-muted);',
-      },
-    });
-
-    title.appendChild(heading);
-    title.appendChild(subtitle);
-    wrapper.appendChild(title);
+    new ToolHeader(wrapper, {
+      title: LanguageService.t('tools.matcher.title'),
+      description: LanguageService.t('tools.matcher.subtitle'),
+    }).render();
 
     // Input section
     const inputSection = this.createElement('div', {
@@ -347,42 +336,9 @@ export class ColorMatcherTool extends BaseComponent {
     }
 
     // Initialize Market Board
-    if (marketBoardContainer && !this.marketBoard) {
-      this.marketBoard = new MarketBoard(marketBoardContainer);
-      await this.marketBoard.loadServerData();
-      this.marketBoard.init();
-
-      // Listen for Market Board events
-      marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        this.showPrices = customEvent.detail?.showPrices ?? false;
-        if (this.showPrices && this.matchedDyes.length > 0) {
-          void this.fetchPricesForMatchedDyes();
-        } else {
-          this.priceData.clear();
-          this.refreshResults();
-        }
-      });
-
-      marketBoardContainer.addEventListener('server-changed', () => {
-        if (this.showPrices && this.matchedDyes.length > 0) {
-          void this.fetchPricesForMatchedDyes();
-        }
-      });
-
-      marketBoardContainer.addEventListener('categories-changed', () => {
-        if (this.showPrices && this.matchedDyes.length > 0) {
-          void this.fetchPricesForMatchedDyes();
-          marketBoardContainer.addEventListener('refresh-requested', () => {
-            if (this.showPrices && this.matchedDyes.length > 0) {
-              void this.fetchPricesForMatchedDyes();
-            }
-          });
-
-          // Get initial showPrices state
-          this.showPrices = this.marketBoard?.getShowPrices() ?? false;
-        }
-      });
+    if (marketBoardContainer) {
+      this.onPricesLoaded = this.refreshResults.bind(this);
+      await this.initMarketBoard(marketBoardContainer);
     }
   }
 
@@ -562,7 +518,6 @@ export class ColorMatcherTool extends BaseComponent {
     }
     this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
 
-    // Hide preview overlay when scrolling the canvas container
     // Hide preview overlay when scrolling the canvas container
     this.on(canvasContainer, 'scroll', () => {
       this.previewOverlay?.hidePreview();
@@ -857,14 +812,15 @@ export class ColorMatcherTool extends BaseComponent {
 
   /**
    * Fetch prices for matched dyes
+   * Renamed to updatePrices to satisfy PricingMixin
    */
-  private async fetchPricesForMatchedDyes(): Promise<void> {
+  async updatePrices(): Promise<void> {
     if (!this.marketBoard || !this.showPrices || this.matchedDyes.length === 0) return;
 
     // Fetch prices using Market Board
     this.priceData = await this.marketBoard.fetchPricesForDyes(this.matchedDyes);
 
-    // Refresh results display with prices
+    // Update results with prices
     this.refreshResults();
   }
 
@@ -996,10 +952,10 @@ export class ColorMatcherTool extends BaseComponent {
         closestDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-                const bestDist = ColorService.getColorDistance(hex, best.hex);
-                const dyeDist = ColorService.getColorDistance(hex, dye.hex);
-                return dyeDist < bestDist ? dye : best;
-              })
+              const bestDist = ColorService.getColorDistance(hex, best.hex);
+              const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+              return dyeDist < bestDist ? dye : best;
+            })
             : null;
       }
 
@@ -1090,75 +1046,14 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard) {
-      void this.fetchPricesForMatchedDyes();
+      void this.updatePrices();
     }
   }
 
   /**
    * Render dye card
    */
-  private renderDyeCard(dye: Dye, sampledColor: string): HTMLElement {
-    const card = this.createElement('div', {
-      className: `${CARD_CLASSES_COMPACT} flex items-center gap-3`,
-    });
-
-    // Swatches
-    const swatchContainer = this.createElement('div', {
-      className: 'flex gap-2',
-    });
-
-    const sampledSwatch = this.createElement('div', {
-      className: 'w-8 h-8 rounded border border-gray-300 dark:border-gray-600',
-      attributes: {
-        title: `Sampled: ${sampledColor}`,
-        style: `background-color: ${sampledColor}`,
-      },
-    });
-
-    const dyeSwatch = this.createElement('div', {
-      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-400 dark:border-gray-500',
-      attributes: {
-        title: `Dye: ${dye.hex}`,
-        style: `background-color: ${dye.hex}`,
-      },
-    });
-
-    swatchContainer.appendChild(sampledSwatch);
-    swatchContainer.appendChild(dyeSwatch);
-    card.appendChild(swatchContainer);
-
-    // Dye info
-    const info = this.createElement('div', {
-      className: 'flex-1 min-w-0',
-    });
-
-    const name = this.createElement('div', {
-      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
-      className: 'font-semibold text-gray-900 dark:text-white truncate',
-    });
-
-    // Use cached distance if available, otherwise calculate
-    const distance =
-      'distance' in dye && typeof dye.distance === 'number'
-        ? dye.distance
-        : ColorService.getColorDistance(sampledColor, dye.hex);
-    const distanceText = this.createElement('div', {
-      textContent: `${LanguageService.t('matcher.distance')}: ${distance.toFixed(1)}`,
-      className: 'text-xs text-gray-600 dark:text-gray-400 font-mono',
-    });
-
-    info.appendChild(name);
-    info.appendChild(distanceText);
-    card.appendChild(info);
-
-    // Category badge
-    const category = this.createElement('div', {
-      textContent: LanguageService.getCategory(dye.category),
-      className:
-        'text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded font-medium',
-    });
-    card.appendChild(category);
-
+  private renderDyeCard(dye: DyeWithDistance, sampledColor: string): HTMLElement {
     // Copy Hex button
     const copyButton = this.createElement('button', {
       textContent: LanguageService.t('matcher.copyHex'),
@@ -1179,7 +1074,8 @@ export class ColorMatcherTool extends BaseComponent {
     });
 
     // Copy to clipboard on click
-    copyButton.addEventListener('click', async () => {
+    copyButton.addEventListener('click', async (e) => {
+      e.stopPropagation();
       try {
         await navigator.clipboard.writeText(dye.hex);
         ToastService.success(`✓ Copied ${dye.hex} to clipboard`);
@@ -1202,61 +1098,30 @@ export class ColorMatcherTool extends BaseComponent {
       }
     });
 
-    card.appendChild(copyButton);
-
-    // Optional market price
-    if (this.showPrices) {
-      const priceDiv = this.createElement('div', {
-        className: 'text-right flex-shrink-0 ml-2 min-w-[80px]',
-      });
-
-      const price = this.priceData.get(dye.itemID);
-      if (price) {
-        const priceValue = this.createElement('div', {
-          className: 'text-xs font-mono font-bold',
-          attributes: {
-            style: 'color: var(--theme-primary);',
-          },
-        });
-        priceValue.textContent = APIService.formatPrice(price.currentAverage);
-        const priceLabel = this.createElement('div', {
-          textContent: LanguageService.t('matcher.market'),
-          className: 'text-xs',
-          attributes: {
-            style: 'color: var(--theme-text-muted);',
-          },
-        });
-        priceDiv.appendChild(priceValue);
-        priceDiv.appendChild(priceLabel);
-      } else {
-        const noPriceLabel = this.createElement('div', {
-          textContent: 'N/A',
-          className: 'text-xs text-gray-400 dark:text-gray-600',
-        });
-        priceDiv.appendChild(noPriceLabel);
-      }
-
-      card.appendChild(priceDiv);
-    }
-
-    // Add hover events for preview overlay
-    card.addEventListener('mouseenter', () => {
-      if (this.previewOverlay && this.samplePosition.x > 0) {
-        this.previewOverlay.showPreview({
-          sampledColor,
-          sampledPosition: this.samplePosition,
-          dye,
-        });
-      }
+    const renderer = new DyeCardRenderer(this.container);
+    return renderer.render({
+      dye,
+      sampledColor,
+      price: this.priceData.get(dye.itemID),
+      showPrice: this.showPrices,
+      actions: [copyButton],
+      onHover: (d, enter) => {
+        if (this.previewOverlay && this.samplePosition.x > 0) {
+          if (enter) {
+            this.previewOverlay.showPreview({
+              sampledColor,
+              sampledPosition: this.samplePosition,
+              dye: d,
+            });
+          } else {
+            this.previewOverlay.hide();
+          }
+        }
+      },
+      onClick: () => {
+        // Handle click if needed
+      },
     });
-
-    card.addEventListener('mouseleave', () => {
-      if (this.previewOverlay) {
-        this.previewOverlay.hidePreview();
-      }
-    });
-
-    return card;
   }
 
   // ============================================================================
@@ -1416,16 +1281,10 @@ export class ColorMatcherTool extends BaseComponent {
       this.colorPicker = null;
     }
     if (this.dyeFilters) {
-      this.dyeFilters.destroy();
-      this.dyeFilters = null;
-    }
-    if (this.marketBoard) {
-      this.marketBoard.destroy();
-      this.marketBoard = null;
-    }
-    if (this.previewOverlay) {
-      this.previewOverlay.destroy();
-      this.previewOverlay = null;
+      if (this.dyeFilters) {
+        this.dyeFilters.destroy();
+        this.dyeFilters = null;
+      }
     }
 
     // Clear arrays and Maps

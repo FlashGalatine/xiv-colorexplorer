@@ -12,6 +12,7 @@ import { ColorService, LanguageService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { ICON_EYEDROPPER } from '@shared/ui-icons';
+import '@shared/browser-api-types';
 
 /**
  * Color Picker Display Component
@@ -249,11 +250,11 @@ export class ColorPickerDisplay extends BaseComponent {
    */
   private async activateEyedropper(): Promise<void> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const EyeDropperClass = (window as any).EyeDropper as new () => {
-        open: () => Promise<{ sRGBHex?: string }>;
-      };
-      const eyeDropper = new EyeDropperClass();
+      if (!window.EyeDropper) {
+        throw new Error('EyeDropper API not supported');
+      }
+
+      const eyeDropper = new window.EyeDropper();
       const result = await eyeDropper.open();
 
       if (result && result.sRGBHex) {

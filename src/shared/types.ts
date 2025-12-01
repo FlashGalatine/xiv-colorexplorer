@@ -93,6 +93,13 @@ export interface Dye {
 }
 
 /**
+ * Dye with calculated color distance
+ */
+export interface DyeWithDistance extends Dye {
+  distance: number;
+}
+
+/**
  * Dye database with search and filtering
  */
 export interface DyeDatabase {
@@ -170,12 +177,12 @@ export interface AccessibilityState extends AppState {
 
 export interface HarmonyState extends AppState {
   harmonyType:
-    | 'complementary'
-    | 'analogous'
-    | 'triadic'
-    | 'split-complementary'
-    | 'tetradic'
-    | 'square';
+  | 'complementary'
+  | 'analogous'
+  | 'triadic'
+  | 'split-complementary'
+  | 'tetradic'
+  | 'square';
   baseColor: HexColor;
   selectedDyes: number[];
 }

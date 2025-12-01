@@ -11,6 +11,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.6] - 2025-12-01
+
+### 🐛 Localization & Rendering Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Fixed localization regression in tool headers and implemented reusable DyeCardRenderer.
+
+#### Bug Fixes ✅
+
+**Localization Regression**
+- Fixed tool headers displaying placeholder text (e.g., "matcher.title") instead of localized strings
+- Updated `HarmonyGeneratorTool`, `ColorMatcherTool`, and `DyeMixerTool` to use correct localization keys
+- **Files**:
+  - `src/components/harmony-generator-tool.ts`
+  - `src/components/color-matcher-tool.ts`
+  - `src/components/dye-mixer-tool.ts`
+
+**Linting Errors**
+- Fixed indentation and unused variable errors in `ColorMatcherTool` and `DyeMixerTool`
+
+#### Refactoring ✅
+
+**DyeCardRenderer**
+- Implemented reusable `DyeCardRenderer` component
+- Integrated into `ColorMatcherTool` and `HarmonyType` for consistent dye card display
+- **Files**:
+  - `src/components/dye-card-renderer.ts` (New)
+  - `src/components/color-matcher-tool.ts`
+  - `src/components/harmony-type.ts`
+
+#### Statistics ✅
+- **Files Modified**: 6
+- **New Components**: 1
+
+---
+
 ## [2.4.5] - 2025-12-01
 
 ### 🐛 Memory Leak Fixes

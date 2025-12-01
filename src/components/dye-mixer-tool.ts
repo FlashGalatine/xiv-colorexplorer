@@ -13,6 +13,7 @@ import { ColorInterpolationDisplay } from './color-interpolation-display';
 import type { InterpolationStep } from './color-interpolation-display';
 import { DyeFilters } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
+import { ToolHeader } from './tool-header';
 import { ColorService, dyeService, LanguageService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
@@ -47,28 +48,10 @@ export class DyeMixerTool extends BaseComponent {
     });
 
     // Title
-    const title = this.createElement('div', {
-      className: 'space-y-2 text-center',
-    });
-
-    const heading = this.createElement('h2', {
-      textContent: LanguageService.t('tools.mixer.title'),
-      className: 'text-3xl font-bold',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
-    });
-
-    const subtitle = this.createElement('p', {
-      textContent: LanguageService.t('tools.mixer.subtitle'),
-      attributes: {
-        style: 'color: var(--theme-text-muted);',
-      },
-    });
-
-    title.appendChild(heading);
-    title.appendChild(subtitle);
-    wrapper.appendChild(title);
+    new ToolHeader(wrapper, {
+      title: LanguageService.t('tools.mixer.title'),
+      description: LanguageService.t('tools.mixer.subtitle'),
+    }).render();
 
     // Dye selector section
     const selectorSection = this.createElement('div', {
@@ -563,10 +546,10 @@ export class DyeMixerTool extends BaseComponent {
         matchedDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-                const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-                const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-                return dyeDist < bestDist ? dye : best;
-              })
+              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+              return dyeDist < bestDist ? dye : best;
+            })
             : null;
       }
 

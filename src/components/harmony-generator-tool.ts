@@ -25,6 +25,8 @@ import {
   COMPANION_DYES_DEFAULT,
 } from '@shared/constants';
 import type { Dye, PriceData } from '@shared/types';
+import { PricingMixin, type PricingState } from '@services/pricing-mixin';
+import { ToolHeader } from './tool-header';
 import { logger } from '@shared/logger';
 import { clearContainer, isValidHexColor } from '@shared/utils';
 
@@ -84,13 +86,13 @@ const HARMONY_OFFSETS: Record<string, number[]> = {
  * Harmony Generator Tool Component
  * Generates color harmony palettes from a base color
  */
-export class HarmonyGeneratorTool extends BaseComponent {
+export class HarmonyGeneratorTool extends BaseComponent implements PricingState {
   private baseColor: string = '';
   private dyeSelector: DyeSelector | null = null;
-  private marketBoard: MarketBoard | null = null;
+  marketBoard: MarketBoard | null = null;
   private harmonyDisplays: Map<string, HarmonyType> = new Map();
-  private showPrices: boolean = false;
-  private priceData: Map<number, PriceData> = new Map();
+  showPrices: boolean = false;
+  priceData: Map<number, PriceData> = new Map();
   private harmonyContainers: Map<string, HTMLElement> = new Map();
   private harmoniesGridElement: HTMLElement | null = null;
   private emptyStateElement: EmptyState | null = null;
@@ -101,6 +103,18 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private companionDyesInput: HTMLInputElement | null = null;
   private paletteExporter: PaletteExporter | null = null;
   private languageUnsubscribe: (() => void) | null = null;
+
+  // PricingMixin implementation
+  onPricesLoaded?: () => void;
+  initMarketBoard!: (container: HTMLElement) => Promise<void>;
+  setupMarketBoardListeners!: (container: HTMLElement) => void;
+  fetchPrices!: () => Promise<void>;
+  cleanupMarketBoard!: () => void;
+
+  constructor(container: HTMLElement) {
+    super(container);
+    Object.assign(this, PricingMixin);
+  }
 
   /**
    * Initialize the tool
@@ -114,46 +128,10 @@ export class HarmonyGeneratorTool extends BaseComponent {
       className: 'space-y-8',
     });
 
-    // Title section with saved palettes button
-    const titleSection = this.createElement('div', {
-      className: 'space-y-2',
-    });
-
-    const titleRow = this.createElement('div', {
-      className: 'flex items-center justify-between',
-    });
-
-    const titleText = this.createElement('div', {
-      className: 'text-center flex-1',
-    });
-
-    const heading = this.createElement('h2', {
-      textContent: LanguageService.t('tools.harmony.title'),
-      className: 'text-3xl font-bold',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
-    });
-
-    const subtitle = this.createElement('p', {
-      textContent: LanguageService.t('tools.harmony.subtitle'),
-      attributes: {
-        style: 'color: var(--theme-text-muted);',
-      },
-    });
-
-    titleText.appendChild(heading);
-    titleText.appendChild(subtitle);
-
-    // Spacer for centering
-    const spacerLeft = this.createElement('div', {
-      className: 'w-32',
-    });
-
     // Saved Palettes button
     const savedPalettesBtn = this.createElement('button', {
       className:
-        'saved-palettes-btn flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-32 justify-center',
+        'saved-palettes-btn flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors justify-center',
       attributes: {
         style: 'color: var(--theme-text);',
       },
@@ -177,12 +155,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
       savedPalettesBtn.appendChild(badge);
     }
 
-    titleRow.appendChild(spacerLeft);
-    titleRow.appendChild(titleText);
-    titleRow.appendChild(savedPalettesBtn);
-
-    titleSection.appendChild(titleRow);
-    wrapper.appendChild(titleSection);
+    // Title
+    new ToolHeader(wrapper, {
+      title: LanguageService.t('tools.harmony.title'),
+      description: LanguageService.t('tools.harmony.subtitle'),
+      actions: [savedPalettesBtn],
+    }).render();
 
     // Store reference for event binding
     (this as unknown as Record<string, HTMLElement>)._savedPalettesBtn = savedPalettesBtn;
@@ -548,43 +526,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }
 
     // Initialize Market Board
-    if (marketBoardContainer && !this.marketBoard) {
-      this.marketBoard = new MarketBoard(marketBoardContainer);
-      await this.marketBoard.loadServerData();
-      this.marketBoard.init();
-
-      // Listen for Market Board events
-      marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        this.showPrices = customEvent.detail?.showPrices ?? false;
-        if (this.showPrices) {
-          void this.fetchPricesForCurrentDyes();
-        } else {
-          this.priceData.clear();
-          this.updateAllDisplays();
-        }
-      });
-
-      marketBoardContainer.addEventListener('server-changed', () => {
-        if (this.showPrices) {
-          void this.fetchPricesForCurrentDyes();
-        }
-      });
-
-      marketBoardContainer.addEventListener('categories-changed', () => {
-        if (this.showPrices) {
-          void this.fetchPricesForCurrentDyes();
-        }
-      });
-
-      marketBoardContainer.addEventListener('refresh-requested', () => {
-        if (this.showPrices) {
-          void this.fetchPricesForCurrentDyes();
-        }
-      });
-
-      // Get initial showPrices state from Market Board
-      this.showPrices = this.marketBoard.getShowPrices();
+    if (marketBoardContainer) {
+      this.onPricesLoaded = this.updateAllDisplays.bind(this);
+      await this.initMarketBoard(marketBoardContainer);
     }
 
     // Initialize dye selector
@@ -839,26 +783,35 @@ export class HarmonyGeneratorTool extends BaseComponent {
   }
 
   /**
-   * Fetch prices for all currently displayed dyes
+   * Fetch prices for current dyes
+   * Renamed to updatePrices to satisfy PricingMixin
    */
-  private async fetchPricesForCurrentDyes(): Promise<void> {
+  async updatePrices(): Promise<void> {
     if (!this.marketBoard || !this.showPrices) return;
 
-    // Collect all unique dyes from all harmony displays
-    const dyesToFetch: Dye[] = [];
-    for (const display of this.harmonyDisplays.values()) {
-      const dyes = display.getDyes();
+    // Collect all unique dyes from all harmony types
+    const uniqueDyes = new Map<number, Dye>();
+
+    // Add base dye
+    const baseDye = DyeService.getInstance().findClosestDye(this.baseColor);
+    if (baseDye) {
+      uniqueDyes.set(baseDye.itemID, baseDye);
+    }
+
+    // Add dyes from all harmonies
+    for (const harmonyType of this.harmonyDisplays.values()) {
+      const dyes = harmonyType.getDyes();
       for (const dye of dyes) {
-        if (!dyesToFetch.find((d) => d.itemID === dye.itemID)) {
-          dyesToFetch.push(dye);
-        }
+        uniqueDyes.set(dye.itemID, dye);
       }
     }
 
-    // Fetch prices using Market Board
-    this.priceData = await this.marketBoard.fetchPricesForDyes(dyesToFetch);
+    if (uniqueDyes.size === 0) return;
 
-    // Update all displays with new price data
+    // Fetch prices
+    this.priceData = await this.marketBoard.fetchPricesForDyes(Array.from(uniqueDyes.values()));
+
+    // Update displays
     this.updateAllDisplays();
   }
 
@@ -1157,7 +1110,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard) {
-      void this.fetchPricesForCurrentDyes();
+      void this.updatePrices();
     }
 
     // Update palette exporter
@@ -1306,14 +1259,6 @@ export class HarmonyGeneratorTool extends BaseComponent {
     if (this.dyeSelector) {
       this.dyeSelector.destroy();
       this.dyeSelector = null;
-    }
-    if (this.marketBoard) {
-      this.marketBoard.destroy();
-      this.marketBoard = null;
-    }
-    if (this.paletteExporter) {
-      this.paletteExporter.destroy();
-      this.paletteExporter = null;
     }
     if (this.dyeFilters) {
       this.dyeFilters.destroy();

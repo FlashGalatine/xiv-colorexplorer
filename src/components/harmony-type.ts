@@ -11,10 +11,11 @@ import { BaseComponent } from './base-component';
 import { ColorWheelDisplay } from './color-wheel-display';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import { createDyeActionDropdown, type DyeAction } from './dye-action-dropdown';
-import { APIService, LanguageService } from '@services/index';
+import { LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 import { HARMONY_ICONS } from '@shared/harmony-icons';
+import { DyeCardRenderer } from './dye-card-renderer';
 
 /**
  * Harmony type information
@@ -204,42 +205,7 @@ export class HarmonyType extends BaseComponent {
    * Render a single dye item
    */
   private renderDyeItem(dye: Dye, deviance: number): HTMLElement {
-    const item = this.createElement('div', {
-      className:
-        'flex items-center gap-3 p-2 rounded border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors',
-    });
-
-    // Color swatch
-    const swatch = this.createElement('div', {
-      className:
-        'dye-swatch w-12 h-12 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
-      attributes: {
-        style: `background-color: ${dye.hex}`,
-        title: dye.hex,
-      },
-    });
-    item.appendChild(swatch);
-
-    // Dye info
-    const info = this.createElement('div', {
-      className: 'flex-1 min-w-0',
-    });
-
-    const nameDiv = this.createElement('div', {
-      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
-      className: 'font-semibold text-sm text-gray-900 dark:text-white truncate',
-    });
-
-    const categoryDiv = this.createElement('div', {
-      textContent: LanguageService.getCategory(dye.category),
-      className: 'text-xs text-gray-600 dark:text-gray-400 truncate',
-    });
-
-    info.appendChild(nameDiv);
-    info.appendChild(categoryDiv);
-    item.appendChild(info);
-
-    // Deviance score
+    // Deviance score display
     const devianceDiv = this.createElement('div', {
       className: 'text-right flex-shrink-0',
     });
@@ -260,50 +226,23 @@ export class HarmonyType extends BaseComponent {
 
     devianceDiv.appendChild(devianceValue);
     devianceDiv.appendChild(devianceLabel);
-    item.appendChild(devianceDiv);
 
-    // Optional market price
-    if (this.showPrices) {
-      const priceDiv = this.createElement('div', {
-        className: 'text-right flex-shrink-0 ml-2 min-w-[80px]',
-      });
-
-      const price = this.priceData.get(dye.itemID);
-      if (price) {
-        const priceValue = this.createElement('div', {
-          className: 'text-xs font-mono font-bold',
-          attributes: {
-            style: 'color: var(--theme-primary);',
-          },
-        });
-        priceValue.textContent = APIService.formatPrice(price.currentAverage);
-        const priceLabel = this.createElement('div', {
-          textContent: LanguageService.t('matcher.market'),
-          className: 'text-xs',
-          attributes: {
-            style: 'color: var(--theme-text-muted);',
-          },
-        });
-        priceDiv.appendChild(priceValue);
-        priceDiv.appendChild(priceLabel);
-      } else {
-        const noPriceLabel = this.createElement('div', {
-          textContent: 'N/A',
-          className: 'text-xs text-gray-400 dark:text-gray-600',
-        });
-        priceDiv.appendChild(noPriceLabel);
-      }
-
-      item.appendChild(priceDiv);
-    }
-
-    // Action dropdown for quick access
+    // Action dropdown
     const actionDropdown = createDyeActionDropdown(dye, (action: DyeAction, selectedDye: Dye) => {
       this.handleDyeAction(action, selectedDye);
     });
-    item.appendChild(actionDropdown);
 
-    return item;
+    const renderer = new DyeCardRenderer(this.container);
+    return renderer.render({
+      dye,
+      price: this.priceData.get(dye.itemID),
+      showPrice: this.showPrices,
+      extraInfo: devianceDiv,
+      actions: [actionDropdown],
+      onClick: () => {
+        this.emit('dye-selected', { dyeName: LanguageService.getDyeName(dye.itemID) || dye.name });
+      },
+    });
   }
 
   /**

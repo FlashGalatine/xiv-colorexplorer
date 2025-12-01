@@ -14,25 +14,35 @@ import { DyeComparisonChart } from './dye-comparison-chart';
 import { MarketBoard } from './market-board';
 import { ColorService, APIService, LanguageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
+import { PricingMixin, type PricingState } from '@services/pricing-mixin';
+import { ToolHeader } from './tool-header';
 import { clearContainer } from '@shared/utils';
 
 /**
  * Dye Comparison Tool Component
  * Compare up to 4 dyes with visualizations and metrics
  */
-export class DyeComparisonTool extends BaseComponent {
+export class DyeComparisonTool extends BaseComponent implements PricingState {
   private dyeSelector: DyeSelector | null = null;
-  private marketBoard: MarketBoard | null = null;
+  marketBoard: MarketBoard | null = null;
   private colorMatrix: ColorDistanceMatrix | null = null;
   private hueSatChart: DyeComparisonChart | null = null;
   private brightnessChart: DyeComparisonChart | null = null;
   private selectedDyes: Dye[] = [];
-  private priceData: Map<number, PriceData> = new Map();
-  private showPrices: boolean = false;
+  priceData: Map<number, PriceData> = new Map();
+  showPrices: boolean = false;
   private languageUnsubscribe: (() => void) | null = null;
+
+  // PricingMixin implementation
+  onPricesLoaded?: () => void;
+  initMarketBoard!: (container: HTMLElement) => Promise<void>;
+  setupMarketBoardListeners!: (container: HTMLElement) => void;
+  fetchPrices!: () => Promise<void>;
+  cleanupMarketBoard!: () => void;
 
   constructor(container: HTMLElement) {
     super(container);
+    Object.assign(this, PricingMixin);
   }
 
   /**
@@ -54,28 +64,10 @@ export class DyeComparisonTool extends BaseComponent {
     });
 
     // Title
-    const title = this.createElement('div', {
-      className: 'space-y-2 text-center',
-    });
-
-    const heading = this.createElement('h2', {
-      textContent: LanguageService.t('tools.comparison.title'),
-      className: 'text-3xl font-bold',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
-    });
-
-    const subtitle = this.createElement('p', {
-      textContent: LanguageService.t('tools.comparison.subtitle'),
-      attributes: {
-        style: 'color: var(--theme-text-muted);',
-      },
-    });
-
-    title.appendChild(heading);
-    title.appendChild(subtitle);
-    wrapper.appendChild(title);
+    new ToolHeader(wrapper, {
+      title: LanguageService.t('tools.comparison.title'),
+      description: LanguageService.t('tools.comparison.subtitle'),
+    }).render();
 
     // Dye selector section
     const selectorSection = this.createElement('div', {
@@ -182,51 +174,17 @@ export class DyeComparisonTool extends BaseComponent {
     }
 
     // Initialize Market Board
-    if (marketBoardContainer && !this.marketBoard) {
-      this.marketBoard = new MarketBoard(marketBoardContainer);
-      await this.marketBoard.loadServerData();
-      this.marketBoard.init();
-
-      // Listen for Market Board events
-      marketBoardContainer.addEventListener('toggle-prices', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        void this.showTutorial();
-        this.showPrices = customEvent.detail?.showPrices ?? false;
-        if (this.showPrices && this.selectedDyes.length > 0) {
-          void this.fetchPricesForSelectedDyes();
-        } else {
-          this.priceData.clear();
-          this.updateSummary();
-        }
-      });
-
-      marketBoardContainer.addEventListener('server-changed', () => {
-        if (this.showPrices && this.selectedDyes.length > 0) {
-          void this.fetchPricesForSelectedDyes();
-        }
-      });
-
-      marketBoardContainer.addEventListener('categories-changed', () => {
-        if (this.showPrices && this.selectedDyes.length > 0) {
-          void this.fetchPricesForSelectedDyes();
-        }
-      });
-
-      marketBoardContainer.addEventListener('refresh-requested', () => {
-        if (this.showPrices && this.selectedDyes.length > 0) {
-          void this.fetchPricesForSelectedDyes();
-        }
-      });
-
-      // Get initial showPrices state
-      this.showPrices = this.marketBoard.getShowPrices();
+    if (marketBoardContainer) {
+      this.onPricesLoaded = this.updateSummary.bind(this);
+      await this.initMarketBoard(marketBoardContainer);
     }
   }
 
   /**
    * Fetch prices for selected dyes
+   * Renamed to updatePrices to satisfy PricingMixin
    */
-  private async fetchPricesForSelectedDyes(): Promise<void> {
+  async updatePrices(): Promise<void> {
     if (!this.marketBoard || !this.showPrices || this.selectedDyes.length === 0) return;
 
     // Fetch prices using Market Board
@@ -247,7 +205,7 @@ export class DyeComparisonTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard && this.selectedDyes.length > 0) {
-      void this.fetchPricesForSelectedDyes();
+      void this.updatePrices();
     }
   }
 
@@ -723,10 +681,9 @@ export class DyeComparisonTool extends BaseComponent {
       this.dyeSelector.destroy();
       this.dyeSelector = null;
     }
-    if (this.marketBoard) {
-      this.marketBoard.destroy();
-      this.marketBoard = null;
-    }
+
+    this.cleanupMarketBoard();
+
     if (this.colorMatrix) {
       this.colorMatrix.destroy();
       this.colorMatrix = null;
