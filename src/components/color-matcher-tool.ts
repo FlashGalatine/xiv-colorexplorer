@@ -67,6 +67,7 @@ export class ColorMatcherTool extends BaseComponent {
   private recentColors: RecentColor[] = [];
   private readonly maxRecentColors = 10;
   private readonly recentColorsStorageKey = 'colormatcher_recent_colors';
+  private languageUnsubscribe: (() => void) | null = null;
 
   /**
    * Render the tool component
@@ -370,31 +371,17 @@ export class ColorMatcherTool extends BaseComponent {
       marketBoardContainer.addEventListener('categories-changed', () => {
         if (this.showPrices && this.matchedDyes.length > 0) {
           void this.fetchPricesForMatchedDyes();
+          marketBoardContainer.addEventListener('refresh-requested', () => {
+            if (this.showPrices && this.matchedDyes.length > 0) {
+              void this.fetchPricesForMatchedDyes();
+            }
+          });
+
+          // Get initial showPrices state
+          this.showPrices = this.marketBoard.getShowPrices();
         }
       });
-
-      marketBoardContainer.addEventListener('refresh-requested', () => {
-        if (this.showPrices && this.matchedDyes.length > 0) {
-          void this.fetchPricesForMatchedDyes();
-        }
-      });
-
-      // Get initial showPrices state
-      this.showPrices = this.marketBoard.getShowPrices();
     }
-  }
-
-  /**
-   * Initialize the tool
-   */
-  onMount(): void {
-    // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
-      this.updateLocalizedText();
-    });
-
-    // Load recent colors from localStorage (T5)
-    this.loadRecentColors();
   }
 
   /**
@@ -965,6 +952,19 @@ export class ColorMatcherTool extends BaseComponent {
   }
 
   /**
+   * Initialize the tool
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.updateLocalizedText();
+    });
+
+    // Load recent colors from localStorage (T5)
+    this.loadRecentColors();
+  }
+
+  /**
    * Match a color to dyes
    */
   private matchColor(hex: string): void {
@@ -997,10 +997,10 @@ export class ColorMatcherTool extends BaseComponent {
         closestDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(hex, best.hex);
-              const dyeDist = ColorService.getColorDistance(hex, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+                const bestDist = ColorService.getColorDistance(hex, best.hex);
+                const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
             : null;
       }
 

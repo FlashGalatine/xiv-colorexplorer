@@ -76,25 +76,25 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
     labelKey: string;
     defaultLabel: string;
   }> = [
-      {
-        action: 'comparison',
-        icon: '⚖️',
-        labelKey: 'harmony.addToComparison',
-        defaultLabel: 'Add to Comparison',
-      },
-      {
-        action: 'mixer',
-        icon: '🌈',
-        labelKey: 'harmony.addToMixer',
-        defaultLabel: 'Add to Mixer',
-      },
-      {
-        action: 'copy',
-        icon: '📋',
-        labelKey: 'harmony.copyHex',
-        defaultLabel: 'Copy Hex',
-      },
-    ];
+    {
+      action: 'comparison',
+      icon: '⚖️',
+      labelKey: 'harmony.addToComparison',
+      defaultLabel: 'Add to Comparison',
+    },
+    {
+      action: 'mixer',
+      icon: '🌈',
+      labelKey: 'harmony.addToMixer',
+      defaultLabel: 'Add to Mixer',
+    },
+    {
+      action: 'copy',
+      icon: '📋',
+      labelKey: 'harmony.copyHex',
+      defaultLabel: 'Copy Hex',
+    },
+  ];
 
   actions.forEach(({ action, icon, labelKey, defaultLabel }) => {
     const menuItem = document.createElement('button');
@@ -118,7 +118,7 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
     labelSpan.textContent = LanguageService.t(labelKey) || defaultLabel;
     menuItem.appendChild(labelSpan);
 
-    menuItem.addEventListener('click', (e) => {
+    menuItem.addEventListener('click', (e: MouseEvent) => {
       e.stopPropagation();
       closeMenu();
 
@@ -204,7 +204,7 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
 
   // Attach cleanup mechanism to container for lifecycle management
   // This should be called when the dropdown is removed from the DOM
-  (container as any).__cleanup = (): void => {
+  (container as HTMLElement & { __cleanup?: () => void }).__cleanup = (): void => {
     closeMenu(); // Ensure menu is closed and click listener is removed
     document.removeEventListener('dye-dropdown-close-all', handleCloseAll);
   };

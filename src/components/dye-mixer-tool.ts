@@ -32,6 +32,11 @@ export class DyeMixerTool extends BaseComponent {
   private colorSpace: 'rgb' | 'hsv' = 'hsv';
   private currentSteps: InterpolationStep[] = [];
   private paletteExporter: PaletteExporter | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
+
+  /**
+   * Initialize the tool
+   */
 
   /**
    * Render the tool component
@@ -558,10 +563,10 @@ export class DyeMixerTool extends BaseComponent {
         matchedDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+                const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+                const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
             : null;
       }
 
@@ -593,7 +598,7 @@ export class DyeMixerTool extends BaseComponent {
     this.checkPendingDye();
 
     // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.updateLocalizedText();
     });
   }
@@ -684,6 +689,12 @@ export class DyeMixerTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Unsubscribe from language changes
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+
     // Destroy child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();

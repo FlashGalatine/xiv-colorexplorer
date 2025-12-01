@@ -104,7 +104,10 @@ describe('MobileBottomNav', () => {
 
       const harmonyBtn = container.querySelector('[data-tool-id="harmony"]') as HTMLElement;
       // Icon is rendered based on icon string type (SVG string or image src)
-      const hasIcon = harmonyBtn.querySelector('svg') || harmonyBtn.querySelector('img') || harmonyBtn.innerHTML.includes('<svg');
+      const hasIcon =
+        harmonyBtn.querySelector('svg') ||
+        harmonyBtn.querySelector('img') ||
+        harmonyBtn.innerHTML.includes('<svg');
       expect(hasIcon).toBeTruthy();
       expect(harmonyBtn.textContent).toContain('Harmony');
     });

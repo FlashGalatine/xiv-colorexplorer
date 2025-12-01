@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.5] - 2025-12-01
+
+### 🐛 Memory Leak Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Comprehensive memory leak audit and fixes across all tool components.
+
+#### Memory Leak Fixes ✅
+
+**Global Service Subscription Leaks**
+- Fixed critical memory leaks where components subscribed to `LanguageService` but never unsubscribed
+- Implemented proper `destroy()` methods in all 5 tool components to capture and call unsubscribe functions
+- **Impact**: Prevents accumulation of detached DOM nodes and event listeners on language changes and tool switching
+- **Files**:
+  - `src/components/accessibility-checker-tool.ts`
+  - `src/components/color-matcher-tool.ts`
+  - `src/components/dye-comparison-tool.ts`
+  - `src/components/dye-mixer-tool.ts`
+  - `src/components/harmony-generator-tool.ts`
+
+#### Code Cleanup ✅
+
+**Duplicate Methods**
+- Removed duplicate `onMount` methods in `DyeMixerTool` and `HarmonyGeneratorTool`
+- Consolidated initialization logic into single lifecycle methods
+
+**Linting & Syntax**
+- Fixed syntax errors in `ColorMatcherTool`
+- Resolved unused variables in tests
+- Improved type safety in `DyeActionDropdown` cleanup mechanism
+
+#### Statistics ✅
+- **Files Modified**: 7
+- **Memory Leaks Fixed**: 5 major component leaks
+- **Lint Errors Fixed**: All pending errors resolved
+
+---
+
 ## [2.4.4] - 2025-12-01
 
 ### 🐛 Additional Bug Fixes

@@ -21,14 +21,29 @@ import { clearContainer } from '@shared/utils';
  * Compare up to 4 dyes with visualizations and metrics
  */
 export class DyeComparisonTool extends BaseComponent {
-  private selectedDyes: Dye[] = [];
   private dyeSelector: DyeSelector | null = null;
   private marketBoard: MarketBoard | null = null;
-  private priceData: Map<number, PriceData> = new Map();
-  private showPrices: boolean = false;
   private colorMatrix: ColorDistanceMatrix | null = null;
   private hueSatChart: DyeComparisonChart | null = null;
   private brightnessChart: DyeComparisonChart | null = null;
+  private selectedDyes: Dye[] = [];
+  private priceData: Map<number, PriceData> = new Map();
+  private showPrices: boolean = false;
+  private languageUnsubscribe: (() => void) | null = null;
+
+  constructor(container: HTMLElement) {
+    super(container);
+  }
+
+  /**
+   * Initialize the tool
+   */
+  onMount(): void {
+    // Subscribe to language changes to update localized text
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.updateLocalizedText();
+    });
+  }
 
   /**
    * Render the tool component
@@ -615,20 +630,6 @@ export class DyeComparisonTool extends BaseComponent {
   /**
    * Initialize the tool
    */
-  onMount(): void {
-    // Initialize components after mount
-    setTimeout(() => {
-      this.updateAnalysis();
-    }, 100);
-
-    // Check for pending dye from navigation (e.g., "Add to Comparison" from Harmony tool)
-    this.checkPendingDye();
-
-    // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
-      this.updateLocalizedText();
-    });
-  }
 
   /**
    * Update localized text when language changes (without re-rendering)
@@ -711,6 +712,12 @@ export class DyeComparisonTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Unsubscribe from language changes
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+
     // Destroy all child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();

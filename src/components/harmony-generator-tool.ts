@@ -100,6 +100,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
   private companionDyesCount: number = COMPANION_DYES_DEFAULT;
   private companionDyesInput: HTMLInputElement | null = null;
   private paletteExporter: PaletteExporter | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
+
+  /**
+   * Initialize the tool
+   */
 
   /**
    * Render the tool component
@@ -1182,7 +1187,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     }, 100);
 
     // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.updateLocalizedText();
     });
   }
@@ -1291,6 +1296,12 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Unsubscribe from language changes
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+
     // Destroy all child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();

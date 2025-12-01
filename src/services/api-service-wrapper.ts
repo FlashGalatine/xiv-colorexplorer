@@ -70,12 +70,18 @@ export class IndexedDBCacheBackend implements ICacheBackend {
       await indexedDBService.set(STORES.PRICE_CACHE, key, value);
     } catch (error) {
       if (attempt < maxAttempts) {
-        logger.warn(`Failed to persist price data (attempt ${attempt}/${maxAttempts}), retrying:`, error);
+        logger.warn(
+          `Failed to persist price data (attempt ${attempt}/${maxAttempts}), retrying:`,
+          error
+        );
         // Retry with exponential backoff
-        await new Promise(resolve => setTimeout(resolve, attempt * 100));
+        await new Promise((resolve) => setTimeout(resolve, attempt * 100));
         await this.persistWithRetry(key, value, attempt + 1, maxAttempts);
       } else {
-        logger.error('Failed to persist price data after retries, removing from memory cache:', error);
+        logger.error(
+          'Failed to persist price data after retries, removing from memory cache:',
+          error
+        );
         // Remove from memory cache to prevent false positive caching
         this.memoryCache.delete(key);
       }

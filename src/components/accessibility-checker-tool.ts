@@ -152,9 +152,32 @@ export class AccessibilityCheckerTool extends BaseComponent {
    */
   onMount(): void {
     // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.updateLocalizedText();
     });
+  }
+
+  /**
+   * Cleanup child components and references
+   */
+  destroy(): void {
+    // Unsubscribe from language changes
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+
+    // Destroy child components
+    if (this.dyeSelector) {
+      this.dyeSelector.destroy();
+      this.dyeSelector = null;
+    }
+
+    // Clear arrays
+    this.dyePairs = [];
+    this.pairResults = [];
+
+    super.destroy();
   }
 
   /**
@@ -472,12 +495,12 @@ export class AccessibilityCheckerTool extends BaseComponent {
       key: keyof typeof result.colorblindnessSimulations;
       localeKey: string;
     }> = [
-        { key: 'normal', localeKey: 'normal' },
-        { key: 'deuteranopia', localeKey: 'deuteranopia' },
-        { key: 'protanopia', localeKey: 'protanopia' },
-        { key: 'tritanopia', localeKey: 'tritanopia' },
-        { key: 'achromatopsia', localeKey: 'achromatopsia' },
-      ];
+      { key: 'normal', localeKey: 'normal' },
+      { key: 'deuteranopia', localeKey: 'deuteranopia' },
+      { key: 'protanopia', localeKey: 'protanopia' },
+      { key: 'tritanopia', localeKey: 'tritanopia' },
+      { key: 'achromatopsia', localeKey: 'achromatopsia' },
+    ];
 
     for (const visionType of visionTypes) {
       const simCard = this.createElement('div', {
@@ -823,22 +846,5 @@ export class AccessibilityCheckerTool extends BaseComponent {
     if (pairsContainer) {
       clearContainer(pairsContainer);
     }
-  }
-
-  /**
-   * Cleanup child components and references
-   */
-  destroy(): void {
-    // Destroy child components
-    if (this.dyeSelector) {
-      this.dyeSelector.destroy();
-      this.dyeSelector = null;
-    }
-
-    // Clear arrays
-    this.dyePairs = [];
-    this.pairResults = [];
-
-    super.destroy();
   }
 }

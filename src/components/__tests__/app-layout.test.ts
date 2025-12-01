@@ -455,13 +455,6 @@ describe('AppLayout', () => {
     });
 
     it('should clean up event listeners on destroy', () => {
-      component = new AppLayout(container);
-      component.init();
-
-      // AppLayout delegates event handling to child components (ThemeSwitcher, LanguageSelector, etc.)
-      // so the parent component may have zero direct listeners, which is valid
-      const listenerCountBefore = component['listeners'].size;
-
       component.destroy();
 
       // After destroy, listeners should be cleared (or remain at 0 if none were added)
