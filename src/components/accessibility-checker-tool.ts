@@ -13,6 +13,7 @@ import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import type { Dye } from '@shared/types';
 import { ColorService, LanguageService } from '@services/index';
 import { clearContainer } from '@shared/utils';
+import { ICON_TOOL_ACCESSIBILITY } from '@shared/tool-icons';
 
 /**
  * Individual dye accessibility analysis
@@ -427,14 +428,14 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const colorblindLabel = this.createElement('div', {
-      textContent: `👁️ ${LanguageService.t('accessibility.visionSimulation')}`,
-      className: 'text-xs font-semibold text-gray-700 dark:text-gray-300',
+      className: 'text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5',
     });
+    colorblindLabel.innerHTML = `<span class="inline-block w-4 h-4">${ICON_TOOL_ACCESSIBILITY}</span> ${LanguageService.t('accessibility.visionSimulation')}`;
     colorblindSection.appendChild(colorblindLabel);
 
-    // Grid of 5 vision type simulations
+    // Flex wrap container for vision type simulations
     const simulationsGrid = this.createElement('div', {
-      className: 'grid grid-cols-5 gap-2',
+      className: 'flex flex-wrap gap-3',
     });
 
     // Vision types to display (using core localization for vision type names)
@@ -451,7 +452,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     for (const visionType of visionTypes) {
       const simCard = this.createElement('div', {
-        className: 'flex flex-col items-center gap-1',
+        className: 'flex flex-col items-center gap-1 min-w-[4.5rem] flex-1',
       });
 
       const colorSwatch = this.createElement('div', {
