@@ -4,6 +4,7 @@
  * Tests for theme selection, dropdown interaction, and persistence
  */
 
+import { vi } from 'vitest';
 import { ThemeSwitcher } from '../theme-switcher';
 import { ThemeService } from '@services/theme-service';
 import { StorageService, appStorage } from '@services/storage-service';
@@ -55,11 +56,11 @@ describe('ThemeSwitcher', () => {
       expectElement.toHaveClass(dropdown as HTMLElement, 'hidden');
     });
 
-    it('should render all 10 theme options', () => {
+    it('should render all 11 theme options', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
       const themeButtons = container.querySelectorAll('[data-theme]');
-      expect(themeButtons.length).toBe(9);
+      expect(themeButtons.length).toBe(11);
     });
 
     it('should highlight current theme', () => {

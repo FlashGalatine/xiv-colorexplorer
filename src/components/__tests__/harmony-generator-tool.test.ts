@@ -197,6 +197,9 @@ vi.mock('@services/index', () => {
         getPricesForItems: vi.fn().mockResolvedValue(new Map()),
       }),
     },
+    PaletteService: {
+      getPaletteCount: vi.fn(() => 0),
+    },
   };
 });
 
@@ -566,12 +569,13 @@ describe('HarmonyGeneratorTool', () => {
       expect((component as unknown as ComponentWithPrivate).suggestionsMode).toBe('simple');
     });
 
-    it('should have default baseColor', () => {
+    it('should have default baseColor as empty string', () => {
       const container = document.createElement('div');
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      expect((component as unknown as ComponentWithPrivate).baseColor).toBe('#FF0000');
+      // Component initializes with empty baseColor - user must select a color to generate harmonies
+      expect((component as unknown as ComponentWithPrivate).baseColor).toBe('');
     });
 
     it('should have showPrices default to false', () => {
@@ -1596,10 +1600,13 @@ describe('HarmonyGeneratorTool', () => {
 
       const mockMarketBoard = {
         fetchPricesForDyes: vi.fn().mockResolvedValue(new Map()),
+        getShowPrices: vi.fn().mockReturnValue(true),
       };
       (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
         mockMarketBoard;
       (component as unknown as ComponentWithPrivate).showPrices = true;
+      // Must set a valid baseColor for generateHarmonies to proceed past early return
+      (component as unknown as ComponentWithPrivate).baseColor = '#FF0000';
 
       (component as unknown as ComponentWithPrivate).generateHarmonies();
 
@@ -1617,6 +1624,8 @@ describe('HarmonyGeneratorTool', () => {
       };
       (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter =
         mockPaletteExporter;
+      // Must set a valid baseColor for generateHarmonies to proceed past early return
+      (component as unknown as ComponentWithPrivate).baseColor = '#FF0000';
 
       (component as unknown as ComponentWithPrivate).generateHarmonies();
 

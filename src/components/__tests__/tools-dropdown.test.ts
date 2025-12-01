@@ -5,6 +5,7 @@
  * Covers rendering, dropdown behavior, tool selection, and event handling
  */
 
+import { vi } from 'vitest';
 import { ToolsDropdown, type ToolDef } from '../tools-dropdown';
 import {
   createTestContainer,
@@ -122,7 +123,9 @@ describe('ToolsDropdown', () => {
       component.init();
 
       const harmonyBtn = container.querySelector('[data-tool-id="harmony"]') as HTMLElement;
-      expect(harmonyBtn.textContent).toContain('🎨');
+      // Icon is rendered based on icon string type (SVG string or image src)
+      const hasIcon = harmonyBtn.querySelector('svg') || harmonyBtn.querySelector('img') || harmonyBtn.innerHTML.includes('<svg');
+      expect(hasIcon).toBeTruthy();
     });
 
     it('should render with empty tools array', () => {

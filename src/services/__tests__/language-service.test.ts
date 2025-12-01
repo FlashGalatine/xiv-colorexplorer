@@ -566,10 +566,9 @@ describe('LanguageService getCurrentLocaleDisplay', () => {
 // These paths are defensive error handling and follow the pattern of graceful degradation.
 // The code structure ensures the app continues to work even when locale resources fail.
 
-describe('LanguageService Error Handling', () => {
-  vi.spyOn(console, 'warn').mockImplementation(() => {});
-  vi.spyOn(console, 'info').mockImplementation(() => {});
-});
+// Note: Error handling is tested in the "navigator access error handling" and
+// "translation loading resilience" describe blocks below. This empty describe
+// block was removed as Vitest requires at least one test per suite.
 
 afterEach(() => {
   vi.restoreAllMocks();

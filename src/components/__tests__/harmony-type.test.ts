@@ -673,10 +673,11 @@ describe('HarmonyType Component', () => {
       component = new HarmonyType(container, mockHarmonyInfo, '#FF0000', []);
       component.init();
 
-      // Icon is now rendered as an img element with SVG source
-      const iconImg = container.querySelector('img.harmony-icon');
-      expect(iconImg).toBeDefined();
-      expect(iconImg?.getAttribute('src')).toContain(mockHarmonyInfo.icon);
+      // Icon is now rendered as inline SVG in a span element
+      const iconSpan = container.querySelector('span.harmony-icon');
+      expect(iconSpan).toBeDefined();
+      // Check for SVG content
+      expect(iconSpan?.innerHTML.includes('<svg') || iconSpan?.querySelector('svg')).toBeTruthy();
     });
 
     it('should display harmony name', () => {

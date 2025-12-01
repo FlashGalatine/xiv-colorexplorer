@@ -1070,10 +1070,11 @@ describe('AccessibilityCheckerTool Component', () => {
       };
 
       const card = comp.renderDyeCard(result);
-      const grid = card.querySelector('.grid-cols-5');
+      // Layout was changed from grid-cols-5 to flex flex-wrap for better i18n support
+      const flexContainer = card.querySelector('.flex.flex-wrap');
 
-      expect(grid).not.toBeNull();
-      expect(grid?.children.length).toBe(5); // 5 vision types
+      expect(flexContainer).not.toBeNull();
+      expect(flexContainer?.children.length).toBe(5); // 5 vision types
     });
   });
 

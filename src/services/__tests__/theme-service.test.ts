@@ -54,9 +54,9 @@ describe('ThemeService Integration', () => {
   // ============================================================================
 
   describe('Theme Selection', () => {
-    it('should support all 9 theme variants', () => {
+    it('should support all 11 theme variants', () => {
       const themes = ThemeService.getAllThemes();
-      expect(themes.length).toBe(9);
+      expect(themes.length).toBe(11);
     });
 
     it('should switch between light and dark themes', () => {

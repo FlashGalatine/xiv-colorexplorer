@@ -68,21 +68,28 @@ describe('ImageUploadDisplay', () => {
       component = new ImageUploadDisplay(container);
       component.init();
 
-      expect(container.textContent).toContain('📁');
+      // Icons are now inline SVGs - check for SVG presence in drop zone
+      const dropZone = container.querySelector('#image-drop-zone');
+      expect(dropZone?.querySelector('svg') || dropZone?.innerHTML.includes('<svg')).toBeTruthy();
     });
 
     it('should render camera button for mobile', () => {
       component = new ImageUploadDisplay(container);
       component.init();
 
-      expect(container.textContent).toContain('📷');
+      // Camera functionality should have input element (button triggers it programmatically)
+      const cameraInput = container.querySelector('#camera-file-input');
+      expect(cameraInput).toBeTruthy();
+      // Check for camera-related button or text
+      expect(container.textContent).toContain('Take Photo');
     });
 
     it('should render paste hint', () => {
       component = new ImageUploadDisplay(container);
       component.init();
 
-      expect(container.textContent).toContain('💡');
+      // Paste hint text should still exist (lightbulb icon is decorative)
+      expect(container.textContent).toContain('Tip');
     });
 
     it('should have hidden canvas for image processing', () => {
