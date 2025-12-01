@@ -445,12 +445,12 @@ export class AccessibilityCheckerTool extends BaseComponent {
       key: keyof typeof result.colorblindnessSimulations;
       localeKey: string;
     }> = [
-      { key: 'normal', localeKey: 'normal' },
-      { key: 'deuteranopia', localeKey: 'deuteranopia' },
-      { key: 'protanopia', localeKey: 'protanopia' },
-      { key: 'tritanopia', localeKey: 'tritanopia' },
-      { key: 'achromatopsia', localeKey: 'achromatopsia' },
-    ];
+        { key: 'normal', localeKey: 'normal' },
+        { key: 'deuteranopia', localeKey: 'deuteranopia' },
+        { key: 'protanopia', localeKey: 'protanopia' },
+        { key: 'tritanopia', localeKey: 'tritanopia' },
+        { key: 'achromatopsia', localeKey: 'achromatopsia' },
+      ];
 
     for (const visionType of visionTypes) {
       const simCard = this.createElement('div', {
@@ -619,20 +619,22 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
   /**
    * Calculate overall accessibility score from selected dyes
-   * Uses legacy logic: Starts at 100 and subtracts points for distinguishability issues
-   * across all vision types (Normal, Deuteranopia, Protanopia, Tritanopia).
+   * Normalizes penalties by total comparisons to scale properly with any number of dyes.
+   * Scores remain meaningful whether selecting 2 dyes or 12 dyes.
    */
   private calculateOverallAccessibilityScore(): number {
     // If less than 2 dyes, there are no pairs to compare, so score is 100% (Pass)
     if (this.selectedDyes.length < 2) return 100;
 
-    let score = 100;
     const visionTypes: ('normal' | 'deuteranopia' | 'protanopia' | 'tritanopia')[] = [
       'normal',
       'deuteranopia',
       'protanopia',
       'tritanopia',
     ];
+
+    let totalPenalty = 0;
+    let totalComparisons = 0;
 
     // Check every pair of dyes
     for (let i = 0; i < this.selectedDyes.length; i++) {
@@ -646,18 +648,26 @@ export class AccessibilityCheckerTool extends BaseComponent {
           const c2 = ColorService.simulateColorblindnessHex(dye2.hex, visionType);
           const distance = ColorService.getColorDistance(c1, c2);
 
+          totalComparisons++;
+
           // Apply penalties based on distance (thresholds from legacy tool)
           if (distance < 30) {
-            score -= 10; // Hard to distinguish
+            totalPenalty += 10; // Hard to distinguish
           } else if (distance < 60) {
-            score -= 2; // Somewhat similar
+            totalPenalty += 2; // Somewhat similar
           }
         }
       }
     }
 
-    // Clamp score between 0 and 100
-    return Math.max(0, Math.min(100, score));
+    // Normalize penalty by total comparisons to get average penalty per check
+    const avgPenalty = totalComparisons > 0 ? totalPenalty / totalComparisons : 0;
+
+    // Scale to 0-100 range (avgPenalty of 10 = worst case, maps to score 0)
+    // avgPenalty of 0 = best case, maps to score 100
+    const score = Math.max(0, Math.min(100, 100 - avgPenalty * 10));
+
+    return Math.round(score);
   }
 
   /**
