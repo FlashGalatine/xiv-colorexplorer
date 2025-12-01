@@ -647,3 +647,21 @@ body.theme-grayscale-dark :focus-visible {
     outline-offset: 2px;
   }
 }
+
+/* ============================================================================
+   Reduced Motion Preference Support (A4)
+   Respect user preference for reduced motion - catches all animations/transitions
+   Note: Component-specific overrides above provide fallback animations where needed
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Global disable for all animations and transitions */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
