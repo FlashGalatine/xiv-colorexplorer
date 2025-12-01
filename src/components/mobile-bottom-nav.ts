@@ -67,9 +67,13 @@ export class MobileBottomNav extends BaseComponent {
       });
 
       // Icon
-      const icon = this.createElement('span', {
-        className: 'text-xl mb-0.5',
-        textContent: tool.icon,
+      const icon = this.createElement('img', {
+        className: 'w-6 h-6 mb-0.5',
+        attributes: {
+          src: tool.icon,
+          alt: '',
+          'aria-hidden': 'true',
+        },
       });
 
       // Label

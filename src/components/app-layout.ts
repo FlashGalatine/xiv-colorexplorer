@@ -215,25 +215,25 @@ export class AppLayout extends BaseComponent {
     });
 
     const socialMedia = [
-      { label: 'GitHub', url: 'https://github.com/FlashGalatine', icon: '🐙' },
-      { label: 'X/Twitter', url: 'https://x.com/AsheJunius', icon: '𝕏' },
-      { label: 'Twitch', url: 'https://www.twitch.tv/flashgalatine', icon: '📺' },
-      { label: 'BlueSky', url: 'https://bsky.app/profile/projectgalatine.com', icon: '🌐' },
-      { label: 'Discord', url: 'https://discord.gg/5VUSKTZCe5', icon: '💬' },
-      { label: 'Patreon', url: 'https://patreon.com/ProjectGalatine', icon: '❤️' },
+      { label: 'GitHub', url: 'https://github.com/FlashGalatine', icon: '/assets/icons/social/github.svg' },
+      { label: 'X/Twitter', url: 'https://x.com/AsheJunius', icon: '/assets/icons/social/twitter.svg' },
+      { label: 'Twitch', url: 'https://www.twitch.tv/flashgalatine', icon: '/assets/icons/social/twitch.svg' },
+      { label: 'BlueSky', url: 'https://bsky.app/profile/projectgalatine.com', icon: '/assets/icons/social/bluesky.svg' },
+      { label: 'Discord', url: 'https://discord.gg/5VUSKTZCe5', icon: '/assets/icons/social/discord.svg' },
+      { label: 'Patreon', url: 'https://patreon.com/ProjectGalatine', icon: '/assets/icons/social/patreon.svg' },
     ];
 
     socialMedia.forEach((social) => {
       const link = this.createElement('a', {
         className:
-          'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm',
+          'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm flex items-center gap-1',
         attributes: {
           href: social.url,
           target: '_blank',
           rel: 'noopener noreferrer',
           title: social.label,
         },
-        innerHTML: `${social.icon} ${social.label}`,
+        innerHTML: `<img src="${social.icon}" alt="" class="inline-block w-4 h-4" aria-hidden="true" /> ${social.label}`,
       });
       socialLinks.appendChild(link);
     });
@@ -243,7 +243,7 @@ export class AppLayout extends BaseComponent {
     // Creator info
     const creator = this.createElement('div', {
       className: 'text-center text-xs text-gray-500 dark:text-gray-500',
-      innerHTML: `${LanguageService.t('footer.createdBy')} ✨`,
+      innerHTML: `${LanguageService.t('footer.createdBy')} <img src="/assets/icons/crystal.svg" alt="" class="inline-block w-3 h-3 ml-0.5" aria-hidden="true" style="vertical-align: middle;" />`,
     });
     footerContent.appendChild(creator);
 

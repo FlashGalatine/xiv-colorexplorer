@@ -260,14 +260,14 @@ export class DyeMixerTool extends BaseComponent {
 
     const saveBtn = this.createElement('button', {
       id: 'save-gradient-btn',
-      textContent: `💾 ${LanguageService.t('mixer.saveGradient')}`,
+      innerHTML: `<img src="/assets/icons/save.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('mixer.saveGradient')}`,
       className:
         'px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-semibold flex-1 min-h-[44px]',
     });
 
     const shareBtn = this.createElement('button', {
       id: 'copy-url-btn',
-      textContent: `🔗 ${LanguageService.t('mixer.copyShareUrl')}`,
+      innerHTML: `<img src="/assets/icons/share.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('mixer.copyShareUrl')}`,
       className:
         'px-4 py-3 rounded-lg transition-all duration-200 text-sm font-semibold flex-1 min-h-[44px]',
       attributes: {
@@ -555,10 +555,10 @@ export class DyeMixerTool extends BaseComponent {
         );
         matchedDye = filteredDyes.length > 0
           ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+            const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+            const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+            return dyeDist < bestDist ? dye : best;
+          })
           : null;
       }
 

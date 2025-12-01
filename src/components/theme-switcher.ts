@@ -30,7 +30,7 @@ export class ThemeSwitcher extends BaseComponent {
     const currentTheme = ThemeService.getCurrentTheme();
     const themeObject = ThemeService.getTheme(currentTheme);
     const isLightText = ColorService.getOptimalTextColor(themeObject.palette.primary) === '#FFFFFF';
-    
+
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'theme-switcher-btn',
@@ -45,8 +45,8 @@ export class ThemeSwitcher extends BaseComponent {
     });
 
     // Add theme icon
-    button.innerHTML = `🎨 ${LanguageService.t('header.theme')}`;
-    
+    button.innerHTML = `<img src="/assets/icons/theme.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('header.theme')}`;
+
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
       button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
@@ -103,7 +103,7 @@ export class ThemeSwitcher extends BaseComponent {
           style: 'color: var(--theme-text);',
         },
       });
-      
+
       // Add hover effect using theme colors
       themeBtn.addEventListener('mouseenter', () => {
         themeBtn.style.backgroundColor = 'var(--theme-card-hover)';
@@ -230,7 +230,7 @@ export class ThemeSwitcher extends BaseComponent {
       // Close other dropdowns (Tools dropdown)
       document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'theme' } }));
     }
-    
+
     this.isDropdownOpen = !this.isDropdownOpen;
     dropdown.classList.toggle('hidden', !this.isDropdownOpen);
     button.setAttribute('aria-expanded', String(this.isDropdownOpen));

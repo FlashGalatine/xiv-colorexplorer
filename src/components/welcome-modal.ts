@@ -26,31 +26,31 @@ interface ToolInfo {
 const TOOLS: ToolInfo[] = [
   {
     id: 'harmony',
-    icon: '🎨',
+    icon: '/assets/icons/tools/harmony.svg',
     nameKey: 'tools.harmony.shortName',
     descriptionKey: 'welcome.tools.harmony',
   },
   {
     id: 'matcher',
-    icon: '🖼️',
+    icon: '/assets/icons/tools/matcher.svg',
     nameKey: 'tools.matcher.shortName',
     descriptionKey: 'welcome.tools.matcher',
   },
   {
     id: 'comparison',
-    icon: '⚖️',
+    icon: '/assets/icons/tools/comparison.svg',
     nameKey: 'tools.comparison.shortName',
     descriptionKey: 'welcome.tools.comparison',
   },
   {
     id: 'mixer',
-    icon: '🌈',
+    icon: '/assets/icons/tools/mixer.svg',
     nameKey: 'tools.mixer.shortName',
     descriptionKey: 'welcome.tools.mixer',
   },
   {
     id: 'accessibility',
-    icon: '👁️',
+    icon: '/assets/icons/tools/accessibility.svg',
     nameKey: 'tools.accessibility.shortName',
     descriptionKey: 'welcome.tools.accessibility',
   },
@@ -220,9 +220,11 @@ export class WelcomeModal {
       card.style.backgroundColor = 'var(--theme-card-background)';
     });
 
-    const icon = document.createElement('span');
-    icon.className = 'text-2xl mb-2';
-    icon.textContent = tool.icon;
+    const icon = document.createElement('img');
+    icon.className = 'w-8 h-8 mb-2';
+    icon.src = tool.icon;
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
     card.appendChild(icon);
 
     const name = document.createElement('span');

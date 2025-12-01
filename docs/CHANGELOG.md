@@ -668,8 +668,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/components/harmony-type.ts` - Updated display to show degrees
 
 ---
+# Changelog
 
-## [Unreleased] - 2025-11-22
+## [Unreleased]
+
+### Added
+- **Custom SVG Icon System**: Replaced all user-facing emojis with 23 custom-designed SVG icons for perfect cross-platform consistency
+  - Tool Icons (7): harmony, matcher, accessibility, comparison, mixer, tools, theme
+  - Upload State Icons (3): upload, camera, hint
+  - Social Media Icons (7): github, twitter, twitch, bluesky, discord, patreon, blog
+  - Action Icons (2): save, share
+  - Zoom Controls (2): zoom-fit, zoom-width
+  - Color Tools (1): eyedropper
+  - Decorative (1): crystal (FFXIV-themed)
+- All icons use `currentColor` for seamless theme integration
+- Icons support both light and dark themes automatically
+
+### Changed
+- Updated 10 component files to use SVG icons instead of emojis:
+  - `main.ts` - Tool navigation icons
+  - `tools-dropdown.ts` - Dropdown menu icons
+  - `mobile-bottom-nav.ts` - Mobile navigation icons
+  - `welcome-modal.ts` - Feature showcase icons (also fixed icon inconsistency bug)
+  - `image-upload-display.ts` - Upload UI icons
+  - `theme-switcher.ts` - Theme button icon
+  - `app-layout.ts` - Footer social links and creator attribution
+  - `dye-mixer-tool.ts` - Save/share button icons
+  - `color-matcher-tool.ts` - Zoom control icons
+  - `color-picker-display.ts` - Eyedropper icon
+
+### Fixed
+- Welcome modal tool icons now match the main navigation icons (previously showed different emojis) - 2025-11-22
 
 ### 📦 Dedicated Core Package Repository Setup
 

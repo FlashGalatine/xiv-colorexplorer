@@ -98,7 +98,7 @@ async function initializeApp(): Promise<void> {
         id: 'harmony',
         name: LanguageService.t('tools.harmony.title'),
         shortName: LanguageService.t('tools.harmony.shortName'),
-        icon: '🎨',
+        icon: '/assets/icons/tools/harmony.svg',
         description: LanguageService.t('tools.harmony.description'),
         loadComponent: async () => {
           const { HarmonyGeneratorTool } = await import('@components/harmony-generator-tool');
@@ -109,7 +109,7 @@ async function initializeApp(): Promise<void> {
         id: 'matcher',
         name: LanguageService.t('tools.matcher.title'),
         shortName: LanguageService.t('tools.matcher.shortName'),
-        icon: '🎯',
+        icon: '/assets/icons/tools/matcher.svg',
         description: LanguageService.t('tools.matcher.description'),
         loadComponent: async () => {
           const { ColorMatcherTool } = await import('@components/color-matcher-tool');
@@ -120,7 +120,7 @@ async function initializeApp(): Promise<void> {
         id: 'accessibility',
         name: LanguageService.t('tools.accessibility.title'),
         shortName: LanguageService.t('tools.accessibility.shortName'),
-        icon: '👁️',
+        icon: '/assets/icons/tools/accessibility.svg',
         description: LanguageService.t('tools.accessibility.description'),
         loadComponent: async () => {
           const { AccessibilityCheckerTool } = await import(
@@ -133,7 +133,7 @@ async function initializeApp(): Promise<void> {
         id: 'comparison',
         name: LanguageService.t('tools.comparison.title'),
         shortName: LanguageService.t('tools.comparison.shortName'),
-        icon: '📊',
+        icon: '/assets/icons/tools/comparison.svg',
         description: LanguageService.t('tools.comparison.description'),
         loadComponent: async () => {
           const { DyeComparisonTool } = await import('@components/dye-comparison-tool');
@@ -144,7 +144,7 @@ async function initializeApp(): Promise<void> {
         id: 'mixer',
         name: LanguageService.t('tools.mixer.title'),
         shortName: LanguageService.t('tools.mixer.shortName'),
-        icon: '🎭',
+        icon: '/assets/icons/tools/mixer.svg',
         description: LanguageService.t('tools.mixer.description'),
         loadComponent: async () => {
           const { DyeMixerTool } = await import('@components/dye-mixer-tool');
@@ -240,7 +240,7 @@ async function initializeApp(): Promise<void> {
         // Update button styles
         document.querySelectorAll<HTMLButtonElement>('[data-tool-id]').forEach((btn) => {
           const isSelected = btn.getAttribute('data-tool-id') === toolId;
-          
+
           // Apply theme-aware styling
           if (isSelected) {
             btn.style.backgroundColor = 'var(--theme-primary)';
@@ -285,10 +285,10 @@ async function initializeApp(): Promise<void> {
       const btn = document.createElement('button');
       btn.setAttribute('data-tool-id', tool.id);
       const isActive = tool.id === 'harmony';
-      
+
       // Base classes
       btn.className = 'px-4 py-2 rounded-lg font-medium transition-all duration-200';
-      
+
       // Apply theme-aware styling
       if (isActive) {
         btn.style.backgroundColor = 'var(--theme-primary)';
@@ -297,7 +297,7 @@ async function initializeApp(): Promise<void> {
         btn.style.backgroundColor = 'var(--theme-background-secondary)';
         btn.style.color = 'var(--theme-text)';
       }
-      
+
       // Add hover effect with brightness filter
       btn.addEventListener('mouseenter', () => {
         btn.style.filter = 'brightness(0.9)';
@@ -311,8 +311,8 @@ async function initializeApp(): Promise<void> {
       btn.addEventListener('mouseup', () => {
         btn.style.filter = 'brightness(0.9)';
       });
-      
-      btn.innerHTML = `${tool.icon} ${tool.name}`;
+
+      btn.innerHTML = `<img src="${tool.icon}" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${tool.name}`;
       btn.title = tool.description;
       btn.addEventListener('click', () => {
         void loadTool(tool.id);

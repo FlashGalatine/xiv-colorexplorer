@@ -390,7 +390,7 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: `📐 ${LanguageService.t('matcher.zoomFit')}`,
+      innerHTML: `<img src="/assets/icons/zoom-fit.svg" alt="" class="inline-block w-4 h-4 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.zoomFit')}`,
       attributes: {
         title: LanguageService.t('matcher.zoomFit'),
         id: 'zoom-fit-btn',
@@ -403,7 +403,7 @@ export class ColorMatcherTool extends BaseComponent {
       className:
         'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
         'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: `↔️ ${LanguageService.t('matcher.zoomWidth')}`,
+      innerHTML: `<img src="/assets/icons/zoom-width.svg" alt="" class="inline-block w-4 h-4 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.zoomWidth')}`,
       attributes: {
         title: LanguageService.t('matcher.zoomWidth'),
         id: 'zoom-width-btn',
@@ -905,10 +905,10 @@ export class ColorMatcherTool extends BaseComponent {
         const filteredDyes = this.dyeFilters.filterDyes(allDyes);
         closestDye = filteredDyes.length > 0
           ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(hex, best.hex);
-              const dyeDist = ColorService.getColorDistance(hex, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+            const bestDist = ColorService.getColorDistance(hex, best.hex);
+            const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+            return dyeDist < bestDist ? dye : best;
+          })
           : null;
       }
 

@@ -50,9 +50,13 @@ export class ImageUploadDisplay extends BaseComponent {
       className: 'space-y-3',
     });
 
-    const icon = this.createElement('div', {
-      textContent: '📁',
-      className: 'text-4xl',
+    const icon = this.createElement('img', {
+      className: 'w-8 h-8',
+      attributes: {
+        src: '/assets/icons/upload.svg',
+        alt: '',
+        'aria-hidden': 'true',
+      },
     });
 
     const text = this.createElement('div', {
@@ -92,7 +96,7 @@ export class ImageUploadDisplay extends BaseComponent {
     });
 
     const cameraBtn = this.createElement('button', {
-      textContent: `📷 ${LanguageService.t('matcher.takePhoto')}`,
+      innerHTML: `<img src="/assets/icons/camera.svg" alt="" class="inline-block w-5 h-5 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.takePhoto')}`,
       className: 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium md:hidden',
       attributes: {
         type: 'button',
@@ -137,7 +141,7 @@ export class ImageUploadDisplay extends BaseComponent {
 
     // Keyboard shortcut hint (theme-aware)
     const shortcut = this.createElement('div', {
-      textContent: `💡 ${LanguageService.t('matcher.pasteHint')}`,
+      innerHTML: `<img src="/assets/icons/hint.svg" alt="" class="inline-block w-4 h-4 mr-1" aria-hidden="true" /> ${LanguageService.t('matcher.pasteHint')}`,
       className: 'p-2 rounded text-xs border',
       attributes: {
         style: `

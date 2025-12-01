@@ -45,7 +45,7 @@ export class ToolsDropdown extends BaseComponent {
     const currentTheme = ThemeService.getCurrentTheme();
     const themeObject = ThemeService.getTheme(currentTheme);
     const isLightText = ColorService.getOptimalTextColor(themeObject.palette.primary) === '#FFFFFF';
-    
+
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'tools-dropdown-btn',
@@ -60,8 +60,8 @@ export class ToolsDropdown extends BaseComponent {
       },
     });
 
-    button.innerHTML = `🛠️ ${LanguageService.t('header.tools')}`;
-    
+    button.innerHTML = `<img src="/assets/icons/tools/tools.svg" alt="" class="inline-block w-5 h-5" aria-hidden="true" /> ${LanguageService.t('header.tools')}`;
+
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
       button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
@@ -95,7 +95,7 @@ export class ToolsDropdown extends BaseComponent {
           title: tool.description,
         },
       });
-      
+
       // Add hover effect using theme colors
       toolBtn.addEventListener('mouseenter', () => {
         toolBtn.style.backgroundColor = 'var(--theme-card-hover)';
@@ -105,9 +105,13 @@ export class ToolsDropdown extends BaseComponent {
       });
 
       // Tool icon
-      const icon = this.createElement('span', {
-        className: 'text-lg',
-        textContent: tool.icon,
+      const icon = this.createElement('img', {
+        className: 'w-5 h-5',
+        attributes: {
+          src: tool.icon,
+          alt: '',
+          'aria-hidden': 'true',
+        },
       });
 
       // Tool info container
@@ -239,7 +243,7 @@ export class ToolsDropdown extends BaseComponent {
     if (dropdown && button) {
       // Close other dropdowns (Theme switcher)
       document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'tools' } }));
-      
+
       dropdown.classList.remove('hidden');
       button.setAttribute('aria-expanded', 'true');
       this.isDropdownOpen = true;
