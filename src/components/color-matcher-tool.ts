@@ -325,10 +325,9 @@ export class ColorMatcherTool extends BaseComponent {
       this.dyeFilters = new DyeFilters(filtersContainer, {
         storageKeyPrefix: 'colormatcher',
         onFilterChange: () => {
-          // Re-match color if we have a current match
-          if (this.matchedDyes.length > 0) {
-            const lastColor = this.matchedDyes[0]?.hex || '#FF0000';
-            this.matchColor(lastColor);
+          // Re-match color if we have a current match - use original sampled color
+          if (this.matchedDyes.length > 0 && this.lastSampledColor) {
+            this.matchColor(this.lastSampledColor);
           }
         },
       });
