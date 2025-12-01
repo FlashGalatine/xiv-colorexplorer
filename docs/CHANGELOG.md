@@ -7,6 +7,127 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.0] - 2025-12-01
+
+### ✨ Phase 3: Polish
+
+**Status**: ✅ COMPLETE
+**Focus**: Accessibility refinements, micro-interactions, and tool-specific UX polish.
+
+#### Accessibility Improvements ✅
+
+**Focus Ring Visibility (A2)**
+- Enhanced focus ring visibility with high-contrast outline styles
+- Focus rings now use 3px solid outline with 2px offset for better visibility
+- Applied consistently across buttons, links, inputs, and interactive elements
+- Theme-aware focus ring colors using CSS custom properties
+
+**Screen Reader Announcements (A3)**
+- New `AnnouncerService` singleton for managing live region announcements
+- Automatic announcements for:
+  - Dye selection changes
+  - Harmony generation results
+  - Color matching results
+  - Tool navigation
+- Uses `aria-live="polite"` regions for non-disruptive announcements
+- Visually hidden announcement container (screen reader only)
+
+**Reduced Motion Support (A4)**
+- Added `prefers-reduced-motion` media query support throughout
+- Disabled animations and transitions when user prefers reduced motion
+- Applied to: theme transitions, hover effects, modal animations
+- Fallback to instant state changes instead of animated transitions
+
+#### Tool-Specific UX Improvements ✅
+
+**Dye Mixer: Interactive Gradient Stops (T4)**
+- Gradient preview now shows interactive stop markers below the gradient
+- Clickable stops highlight the corresponding dye card
+- Visual connection between gradient position and dye information
+- Hint text explains the interaction: "Click a stop marker to highlight the corresponding dye"
+
+**Color Matcher: Recent Colors History (T5)**
+- Added "Recent Picks" section showing last 5 sampled colors
+- Colors persist across page reloads via localStorage
+- Click any recent color to re-match it
+- "Clear" button to reset history
+- Displayed as compact color swatches with hover states
+
+**Keyboard Shortcuts Panel (O4)**
+- New keyboard shortcuts reference panel accessible via `?` key
+- Displays available shortcuts organized by category:
+  - Navigation shortcuts (tool switching, modal closing)
+  - Quick actions (theme toggle, language cycle)
+  - Dye selection (focus, navigate, select)
+- Modal overlay with escape to close
+- Theme-aware styling
+
+#### Custom SVG Icon System ✅
+
+**Emoji Replacement with Custom Icons**
+- Replaced all user-facing emojis with 32 custom-designed SVG icons for consistent cross-platform display
+- All icons use `currentColor` for seamless theme integration
+- Icons support both light and dark themes automatically
+
+**Icon Categories**
+- **Tool Icons** (6): harmony, matcher, accessibility, comparison, mixer, tools
+- **Harmony Type Icons** (9): complementary, analogous, triadic, split-complementary, tetradic, square, compound, monochromatic, shades
+- **Social Media Icons** (7): github, twitter, twitch, bluesky, discord, patreon, blog
+- **Upload State Icons** (3): upload, camera, hint
+- **Action Icons** (2): save, share
+- **Zoom Controls** (2): zoom-fit, zoom-width
+- **UI Icons** (3): theme, eyedropper, crystal (FFXIV-themed decorative)
+
+**Files Added**
+- `public/assets/icons/tools/*.svg` - Tool navigation icons
+- `public/assets/icons/harmony/*.svg` - Harmony type visualization icons
+- `public/assets/icons/social/*.svg` - Footer social link icons
+- `public/assets/icons/*.svg` - General UI icons (camera, upload, save, share, etc.)
+
+#### Micro-Interactions ✅
+
+**Theme Transition Smoothness (Q2)**
+- Added 200ms transitions for theme color changes
+- Smooth transitions for:
+  - Background colors
+  - Text colors
+  - Border colors
+  - Button states
+- Respects `prefers-reduced-motion` preference
+
+#### Localization ✅
+
+**Phase 3 Locale Keys Added**
+- `matcher.recentColors` - "Recent Picks" label
+- `matcher.clearHistory` - "Clear" button text
+- `mixer.clickStopHint` - Gradient stop interaction hint
+- `shortcuts.*` section (14 keys) - Keyboard shortcuts panel text
+
+**Languages Updated**
+- 🇬🇧 English (en)
+- 🇯🇵 Japanese (ja)
+- 🇩🇪 German (de)
+- 🇫🇷 French (fr)
+- 🇰🇷 Korean (ko)
+- 🇨🇳 Chinese (zh)
+
+#### Files Created ✅
+- `src/services/announcer-service.ts` - Screen reader announcement service
+- `src/components/shortcuts-panel.ts` - Keyboard shortcuts modal component
+
+#### Files Modified ✅
+- `src/styles/globals.css` - Focus ring styles, reduced motion, theme transitions
+- `src/components/app-layout.ts` - Announcer integration, shortcuts panel, keyboard listener
+- `src/components/color-matcher-tool.ts` - Recent colors history feature
+- `src/components/color-interpolation-display.ts` - Interactive gradient stops
+- `src/locales/*.json` - Added Phase 3 translation keys (6 files)
+
+#### Test Results ✅
+- TypeScript compiles with no errors
+- All existing tests passing
+
+---
+
 ## [2.3.0] - 2025-11-30
 
 ### 🐛 Phase 2: Bug Fixes and Enhancements
@@ -668,37 +789,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/components/harmony-type.ts` - Updated display to show degrees
 
 ---
-# Changelog
-
-## [Unreleased]
-
-### Added
-- **Custom SVG Icon System**: Replaced all user-facing emojis with 23 custom-designed SVG icons for perfect cross-platform consistency
-  - Tool Icons (7): harmony, matcher, accessibility, comparison, mixer, tools, theme
-  - Upload State Icons (3): upload, camera, hint
-  - Social Media Icons (7): github, twitter, twitch, bluesky, discord, patreon, blog
-  - Action Icons (2): save, share
-  - Zoom Controls (2): zoom-fit, zoom-width
-  - Color Tools (1): eyedropper
-  - Decorative (1): crystal (FFXIV-themed)
-- All icons use `currentColor` for seamless theme integration
-- Icons support both light and dark themes automatically
-
-### Changed
-- Updated 10 component files to use SVG icons instead of emojis:
-  - `main.ts` - Tool navigation icons
-  - `tools-dropdown.ts` - Dropdown menu icons
-  - `mobile-bottom-nav.ts` - Mobile navigation icons
-  - `welcome-modal.ts` - Feature showcase icons (also fixed icon inconsistency bug)
-  - `image-upload-display.ts` - Upload UI icons
-  - `theme-switcher.ts` - Theme button icon
-  - `app-layout.ts` - Footer social links and creator attribution
-  - `dye-mixer-tool.ts` - Save/share button icons
-  - `color-matcher-tool.ts` - Zoom control icons
-  - `color-picker-display.ts` - Eyedropper icon
-
-### Fixed
-- Welcome modal tool icons now match the main navigation icons (previously showed different emojis) - 2025-11-22
 
 ### 📦 Dedicated Core Package Repository Setup
 
