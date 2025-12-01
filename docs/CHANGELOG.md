@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
+
+## [2.4.4] - 2025-12-01
+
+### 🐛 Additional Bug Fixes
+
+**Status**: ✅ COMPLETE  
+**Focus**: Final bug fixes from optimization audit
+
+#### Bugs Fixed ✅
+
+**BUG-012: IndexedDB Initialization Race Condition**
+- Clear failed initialization promise to allow retry on next call
+- Prevents caching of failed Promise, enabling recovery
+- **File**: `src/services/api-service-wrapper.ts`
+
+**BUG-016: Image Handler Memory Leaks**
+- Null out FileReader and Image `onload`/`onerror` handlers after use
+- Releases references to large ArrayBuffer objects
+- Prevents memory accumulation with frequent image uploads
+- **File**: `src/components/image-upload-display.ts`
+
+**BUG-013 through BUG-018**: Verified as Resolved
+- Remaining bugs from audit either already fixed in prior refactors or obsolete
+- Codebase review confirmed no action needed
+
+#### Files Modified ✅
+- `src/services/api-service-wrapper.ts`
+- `src/components/image-upload-display.ts`
+
+#### Total Bugs Fixed in v2.4.2-2.4.4 ✅
+- **15 bugs** across 3 releases (4 critical + 4 high + 7 medium)
+- **10 files** modified
+- **16 commits** total
+
+---
+
 ## [2.4.3] - 2025-12-01
 
 ### 🐛 Bug Fixes: Optimization Audit
