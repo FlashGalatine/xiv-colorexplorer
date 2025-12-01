@@ -404,8 +404,25 @@ export function hasClass(element: HTMLElement, className: string): boolean {
 /**
  * Clear all children from an element safely
  * Preferred over innerHTML = '' for better performance and explicit intent
+ * Calls __cleanup() on child elements if it exists to prevent memory leaks
  */
 export function clearContainer(element: HTMLElement): void {
+  // Call cleanup functions on all children that have them
+  const children = Array.from(element.children);
+  for (const child of children) {
+    // Check if child has a cleanup function (used by components like dye-action-dropdown)
+    const elementWithCleanup = child as Element & { __cleanup?: () => void };
+    if (typeof elementWithCleanup.__cleanup === 'function') {
+      try {
+        elementWithCleanup.__cleanup();
+      } catch (error) {
+        // Log but don't throw - cleanup errors shouldn't break the app
+        console.warn('Error during element cleanup:', error);
+      }
+    }
+  }
+
+  // Now remove all children
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
