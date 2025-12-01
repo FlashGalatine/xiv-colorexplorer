@@ -410,5 +410,28 @@
     "selectDye": "选择聚焦的染剂",
     "platformHint": "提示",
     "useModifier": "使用 Ctrl 进行系统快捷键"
+  },
+  "palette": {
+    "saved": "已保存",
+    "savePalette": "保存调色板",
+    "savedPalettes": "已保存的调色板",
+    "savedCount": "已保存 {count} 个调色板",
+    "noPalettes": "暂无已保存的调色板",
+    "saveHint": "点击和谐卡片上的书签图标进行保存",
+    "name": "调色板名称",
+    "preview": "预览",
+    "load": "加载",
+    "export": "全部导出",
+    "import": "导入",
+    "exported": "调色板导出成功！",
+    "imported": "已导入 {count} 个调色板",
+    "importFailed": "文件中未找到有效的调色板",
+    "invalidFile": "无效的调色板文件格式",
+    "saveSuccess": "调色板已保存！",
+    "saveFailed": "保存调色板失败",
+    "loaded": "调色板已加载！",
+    "deleted": "调色板已删除",
+    "confirmDelete": "确定要删除此调色板吗？",
+    "harmonyType": "和谐类型"
   }
 }

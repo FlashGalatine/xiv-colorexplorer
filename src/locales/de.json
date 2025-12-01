@@ -410,5 +410,28 @@
     "selectDye": "Fokussierten Farbstoff auswählen",
     "platformHint": "Tipp",
     "useModifier": "Verwende Strg für Systemkürzel"
+  },
+  "palette": {
+    "saved": "Gespeichert",
+    "savePalette": "Palette speichern",
+    "savedPalettes": "Gespeicherte Paletten",
+    "savedCount": "{count} Palette(n) gespeichert",
+    "noPalettes": "Keine gespeicherten Paletten",
+    "saveHint": "Klicke auf das Lesezeichen-Symbol auf einer Harmoniekarte zum Speichern",
+    "name": "Palettenname",
+    "preview": "Vorschau",
+    "load": "Laden",
+    "export": "Alle exportieren",
+    "import": "Importieren",
+    "exported": "Paletten erfolgreich exportiert!",
+    "imported": "{count} Palette(n) importiert",
+    "importFailed": "Keine gültigen Paletten in der Datei gefunden",
+    "invalidFile": "Ungültiges Palettenformat",
+    "saveSuccess": "Palette gespeichert!",
+    "saveFailed": "Palette konnte nicht gespeichert werden",
+    "loaded": "Palette geladen!",
+    "deleted": "Palette gelöscht",
+    "confirmDelete": "Möchtest du diese Palette wirklich löschen?",
+    "harmonyType": "Harmonietyp"
   }
 }

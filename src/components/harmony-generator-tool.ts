@@ -13,7 +13,8 @@ import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
 import { DyeFilters, type DyeFilterConfig } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
-import { ColorService, DyeService, LanguageService } from '@services/index';
+import { showSavedPalettesModal, showSavePaletteDialog } from './saved-palettes-modal';
+import { ColorService, DyeService, LanguageService, PaletteService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import {
   STORAGE_KEYS,
@@ -105,9 +106,17 @@ export class HarmonyGeneratorTool extends BaseComponent {
       className: 'space-y-8',
     });
 
-    // Title
-    const title = this.createElement('div', {
-      className: 'space-y-2 text-center',
+    // Title section with saved palettes button
+    const titleSection = this.createElement('div', {
+      className: 'space-y-2',
+    });
+
+    const titleRow = this.createElement('div', {
+      className: 'flex items-center justify-between',
+    });
+
+    const titleText = this.createElement('div', {
+      className: 'text-center flex-1',
     });
 
     const heading = this.createElement('h2', {
@@ -125,9 +134,50 @@ export class HarmonyGeneratorTool extends BaseComponent {
       },
     });
 
-    title.appendChild(heading);
-    title.appendChild(subtitle);
-    wrapper.appendChild(title);
+    titleText.appendChild(heading);
+    titleText.appendChild(subtitle);
+
+    // Spacer for centering
+    const spacerLeft = this.createElement('div', {
+      className: 'w-32',
+    });
+
+    // Saved Palettes button
+    const savedPalettesBtn = this.createElement('button', {
+      className:
+        'saved-palettes-btn flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-32 justify-center',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
+    });
+
+    // Bookmark icon
+    savedPalettesBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+
+    const btnText = this.createElement('span', {
+      textContent: LanguageService.t('palette.saved'),
+    });
+    savedPalettesBtn.appendChild(btnText);
+
+    // Add palette count badge
+    const count = PaletteService.getPaletteCount();
+    if (count > 0) {
+      const badge = this.createElement('span', {
+        textContent: count.toString(),
+        className: 'px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full',
+      });
+      savedPalettesBtn.appendChild(badge);
+    }
+
+    titleRow.appendChild(spacerLeft);
+    titleRow.appendChild(titleText);
+    titleRow.appendChild(savedPalettesBtn);
+
+    titleSection.appendChild(titleRow);
+    wrapper.appendChild(titleSection);
+
+    // Store reference for event binding
+    (this as unknown as Record<string, HTMLElement>)._savedPalettesBtn = savedPalettesBtn;
 
     // Input section
     const inputSection = this.renderInputSection();
@@ -601,6 +651,54 @@ export class HarmonyGeneratorTool extends BaseComponent {
         );
       }
     }) as EventListener);
+
+    // Listen for save palette events from harmony type components
+    this.container.addEventListener('savePalette', ((event: CustomEvent) => {
+      const { harmonyType, harmonyName, baseColor, dyes } = event.detail as {
+        harmonyType: string;
+        harmonyName: string;
+        baseColor: string;
+        dyes: Dye[];
+      };
+
+      // Get base dye name
+      const baseDye = DyeService.getInstance().findClosestDye(baseColor);
+      const baseDyeName = baseDye
+        ? LanguageService.getDyeName(baseDye.itemID) || baseDye.name
+        : 'Unknown';
+
+      // Get companion dye names
+      const companions = dyes.map(
+        (dye) => LanguageService.getDyeName(dye.itemID) || dye.name
+      );
+
+      // Show save dialog
+      showSavePaletteDialog(harmonyType, harmonyName, baseColor, baseDyeName, companions);
+    }) as EventListener);
+
+    // Saved palettes button
+    const savedPalettesBtn = (this as unknown as Record<string, HTMLElement>)
+      ._savedPalettesBtn as HTMLButtonElement;
+    if (savedPalettesBtn) {
+      this.on(savedPalettesBtn, 'click', () => {
+        showSavedPalettesModal((palette) => {
+          // Load palette: set base color and regenerate
+          this.baseColor = palette.baseColor;
+
+          // Update UI
+          const hexInput = (this as unknown as Record<string, HTMLElement>)
+            ._hexInput as HTMLInputElement;
+          const colorPicker = (this as unknown as Record<string, HTMLElement>)
+            ._colorPicker as HTMLInputElement;
+
+          if (hexInput) hexInput.value = this.baseColor;
+          if (colorPicker) colorPicker.value = this.baseColor;
+
+          // Regenerate harmonies with the loaded base color
+          this.generateHarmonies();
+        });
+      });
+    }
   }
 
 

@@ -30,6 +30,8 @@ export { TooltipService } from './tooltip-service';
 export type { TooltipConfig, TooltipPosition } from './tooltip-service';
 export { AnnouncerService } from './announcer-service';
 export type { AnnouncementPriority } from './announcer-service';
+export { PaletteService } from './palette-service';
+export type { SavedPalette, PaletteExportData } from './palette-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';

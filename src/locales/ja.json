@@ -410,5 +410,28 @@
     "selectDye": "フォーカス中のカララントを選択",
     "platformHint": "ヒント",
     "useModifier": "システムショートカットにはCtrlを使用"
+  },
+  "palette": {
+    "saved": "保存済み",
+    "savePalette": "パレットを保存",
+    "savedPalettes": "保存したパレット",
+    "savedCount": "{count}件のパレットを保存中",
+    "noPalettes": "保存されたパレットはありません",
+    "saveHint": "ハーモニーカードのブックマークアイコンをクリックして保存",
+    "name": "パレット名",
+    "preview": "プレビュー",
+    "load": "読み込む",
+    "export": "すべてエクスポート",
+    "import": "インポート",
+    "exported": "パレットをエクスポートしました！",
+    "imported": "{count}件のパレットをインポートしました",
+    "importFailed": "有効なパレットが見つかりませんでした",
+    "invalidFile": "無効なパレットファイル形式です",
+    "saveSuccess": "パレットを保存しました！",
+    "saveFailed": "パレットの保存に失敗しました",
+    "loaded": "パレットを読み込みました！",
+    "deleted": "パレットを削除しました",
+    "confirmDelete": "このパレットを削除してもよろしいですか？",
+    "harmonyType": "ハーモニータイプ"
   }
 }

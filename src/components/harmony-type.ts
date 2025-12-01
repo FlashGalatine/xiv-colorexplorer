@@ -121,8 +121,13 @@ export class HarmonyType extends BaseComponent {
       className: 'harmony-header bg-blue-700 dark:bg-blue-900 p-4 rounded-t-lg',
     });
 
+    // Top row with title and save button
+    const topRow = this.createElement('div', {
+      className: 'flex items-center justify-between mb-2',
+    });
+
     const titleDiv = this.createElement('div', {
-      className: 'flex items-center gap-2 mb-2',
+      className: 'flex items-center gap-2',
     });
 
     const icon = this.createElement('img', {
@@ -142,7 +147,31 @@ export class HarmonyType extends BaseComponent {
 
     titleDiv.appendChild(icon);
     titleDiv.appendChild(name);
-    header.appendChild(titleDiv);
+    topRow.appendChild(titleDiv);
+
+    // Save button (only show if there are dyes)
+    if (this.matchedDyes.length > 0) {
+      const saveBtn = this.createElement('button', {
+        className:
+          'save-palette-btn p-1.5 rounded-md bg-white/20 hover:bg-white/30 transition-colors',
+        attributes: {
+          title: LanguageService.t('palette.savePalette'),
+          'aria-label': LanguageService.t('palette.savePalette'),
+        },
+      });
+
+      // Bookmark/save icon SVG
+      saveBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+
+      saveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.emitSaveEvent();
+      });
+
+      topRow.appendChild(saveBtn);
+    }
+
+    header.appendChild(topRow);
 
     const description = this.createElement('p', {
       textContent: this.harmonyInfo.description,
@@ -284,6 +313,22 @@ export class HarmonyType extends BaseComponent {
     const event = new CustomEvent('dyeAction', {
       bubbles: true,
       detail: { action, dye },
+    });
+    this.container.dispatchEvent(event);
+  }
+
+  /**
+   * Emit save palette event
+   */
+  private emitSaveEvent(): void {
+    const event = new CustomEvent('savePalette', {
+      bubbles: true,
+      detail: {
+        harmonyType: this.harmonyInfo.id,
+        harmonyName: this.harmonyInfo.name,
+        baseColor: this.baseColor,
+        dyes: this.matchedDyes.map(({ dye }) => dye),
+      },
     });
     this.container.dispatchEvent(event);
   }

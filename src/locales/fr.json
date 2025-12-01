@@ -410,5 +410,28 @@
     "selectDye": "Sélectionner la teinture en focus",
     "platformHint": "Astuce",
     "useModifier": "Utilisez Ctrl pour les raccourcis système"
+  },
+  "palette": {
+    "saved": "Enregistré",
+    "savePalette": "Enregistrer la palette",
+    "savedPalettes": "Palettes enregistrées",
+    "savedCount": "{count} palette(s) enregistrée(s)",
+    "noPalettes": "Aucune palette enregistrée",
+    "saveHint": "Cliquez sur l'icône de signet sur une carte d'harmonie pour l'enregistrer",
+    "name": "Nom de la palette",
+    "preview": "Aperçu",
+    "load": "Charger",
+    "export": "Tout exporter",
+    "import": "Importer",
+    "exported": "Palettes exportées avec succès !",
+    "imported": "{count} palette(s) importée(s)",
+    "importFailed": "Aucune palette valide trouvée dans le fichier",
+    "invalidFile": "Format de fichier de palette invalide",
+    "saveSuccess": "Palette enregistrée !",
+    "saveFailed": "Échec de l'enregistrement de la palette",
+    "loaded": "Palette chargée !",
+    "deleted": "Palette supprimée",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette palette ?",
+    "harmonyType": "Type d'harmonie"
   }
 }

@@ -412,5 +412,28 @@
     "selectDye": "Select focused dye",
     "platformHint": "Tip",
     "useModifier": "Use Ctrl for system shortcuts"
+  },
+  "palette": {
+    "saved": "Saved",
+    "savePalette": "Save Palette",
+    "savedPalettes": "Saved Palettes",
+    "savedCount": "{count} palette(s) saved",
+    "noPalettes": "No saved palettes yet",
+    "saveHint": "Click the bookmark icon on any harmony card to save it",
+    "name": "Palette Name",
+    "preview": "Preview",
+    "load": "Load",
+    "export": "Export All",
+    "import": "Import",
+    "exported": "Palettes exported successfully!",
+    "imported": "{count} palette(s) imported",
+    "importFailed": "No valid palettes found in file",
+    "invalidFile": "Invalid palette file format",
+    "saveSuccess": "Palette saved!",
+    "saveFailed": "Failed to save palette",
+    "loaded": "Palette loaded!",
+    "deleted": "Palette deleted",
+    "confirmDelete": "Are you sure you want to delete this palette?",
+    "harmonyType": "Harmony Type"
   }
 }

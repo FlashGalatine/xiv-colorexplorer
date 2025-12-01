@@ -410,5 +410,28 @@
     "selectDye": "포커스된 염료 선택",
     "platformHint": "팁",
     "useModifier": "시스템 단축키에는 Ctrl을 사용"
+  },
+  "palette": {
+    "saved": "저장됨",
+    "savePalette": "팔레트 저장",
+    "savedPalettes": "저장된 팔레트",
+    "savedCount": "{count}개의 팔레트 저장됨",
+    "noPalettes": "저장된 팔레트가 없습니다",
+    "saveHint": "하모니 카드의 북마크 아이콘을 클릭하여 저장",
+    "name": "팔레트 이름",
+    "preview": "미리보기",
+    "load": "불러오기",
+    "export": "모두 내보내기",
+    "import": "가져오기",
+    "exported": "팔레트를 내보냈습니다!",
+    "imported": "{count}개의 팔레트를 가져왔습니다",
+    "importFailed": "유효한 팔레트를 찾을 수 없습니다",
+    "invalidFile": "유효하지 않은 팔레트 파일 형식",
+    "saveSuccess": "팔레트가 저장되었습니다!",
+    "saveFailed": "팔레트 저장에 실패했습니다",
+    "loaded": "팔레트를 불러왔습니다!",
+    "deleted": "팔레트가 삭제되었습니다",
+    "confirmDelete": "이 팔레트를 삭제하시겠습니까?",
+    "harmonyType": "하모니 유형"
   }
 }
