@@ -732,12 +732,13 @@ describe('StorageService', () => {
       }
 
       // Mock isAvailable to return true, but length access fails
-      const originalIsAvailable = StorageService.isAvailable;
-      const mockStorage = {
-        get length() {
-          throw new Error('Length access error');
-        },
-      };
+      // const originalIsAvailable = StorageService.isAvailable;
+      // const mockStorage = {
+      // const mockStorage = {
+      //   get length() {
+      //     throw new Error('Length access error');
+      //   },
+      // };
 
       // This test verifies that the catch block returns 0
       // We can't easily mock localStorage.length in jsdom, so we just verify the method exists

@@ -89,7 +89,9 @@ export class OfflineBanner {
       flex items-center justify-center gap-2
       transform transition-transform duration-300
       -translate-y-full
-    `.trim().replace(/\s+/g, ' ');
+    `
+      .trim()
+      .replace(/\s+/g, ' ');
 
     // Icon
     const icon = document.createElement('span');
@@ -101,12 +103,14 @@ export class OfflineBanner {
     // Message
     const message = document.createElement('span');
     message.id = 'offline-banner-message';
-    message.textContent = LanguageService.t('offline.banner') || 'You are offline. Some features may be limited.';
+    message.textContent =
+      LanguageService.t('offline.banner') || 'You are offline. Some features may be limited.';
     this.banner.appendChild(message);
 
     // Dismiss button
     const dismissBtn = document.createElement('button');
-    dismissBtn.className = 'ml-4 px-2 py-1 bg-amber-600 hover:bg-amber-700 rounded text-xs font-bold transition-colors';
+    dismissBtn.className =
+      'ml-4 px-2 py-1 bg-amber-600 hover:bg-amber-700 rounded text-xs font-bold transition-colors';
     dismissBtn.textContent = '✕';
     dismissBtn.setAttribute('aria-label', LanguageService.t('common.dismiss') || 'Dismiss');
     dismissBtn.addEventListener('click', () => {
@@ -182,7 +186,8 @@ export class OfflineBanner {
   updateMessage(): void {
     const message = this.banner?.querySelector('#offline-banner-message');
     if (message) {
-      message.textContent = LanguageService.t('offline.banner') || 'You are offline. Some features may be limited.';
+      message.textContent =
+        LanguageService.t('offline.banner') || 'You are offline. Some features may be limited.';
     }
   }
 
@@ -190,7 +195,7 @@ export class OfflineBanner {
    * Cleanup
    */
   destroy(): void {
-    this.listeners.forEach(cleanup => cleanup());
+    this.listeners.forEach((cleanup) => cleanup());
     this.listeners = [];
 
     if (this.banner) {

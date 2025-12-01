@@ -222,14 +222,26 @@ export class MarketBoard extends BaseComponent {
 
     // Add each price category checkbox
     const categories = [
-      { id: 'baseDyes', label: LanguageService.t('marketBoard.baseDyes'), key: 'baseDyes' as keyof PriceCategorySettings },
-      { id: 'craftDyes', label: LanguageService.t('marketBoard.craftDyes'), key: 'craftDyes' as keyof PriceCategorySettings },
+      {
+        id: 'baseDyes',
+        label: LanguageService.t('marketBoard.baseDyes'),
+        key: 'baseDyes' as keyof PriceCategorySettings,
+      },
+      {
+        id: 'craftDyes',
+        label: LanguageService.t('marketBoard.craftDyes'),
+        key: 'craftDyes' as keyof PriceCategorySettings,
+      },
       {
         id: 'alliedSocietyDyes',
         label: LanguageService.t('marketBoard.alliedSocietyDyes'),
         key: 'alliedSocietyDyes' as keyof PriceCategorySettings,
       },
-      { id: 'cosmicDyes', label: LanguageService.t('marketBoard.cosmicDyes'), key: 'cosmicDyes' as keyof PriceCategorySettings },
+      {
+        id: 'cosmicDyes',
+        label: LanguageService.t('marketBoard.cosmicDyes'),
+        key: 'cosmicDyes' as keyof PriceCategorySettings,
+      },
       {
         id: 'specialDyes',
         label: LanguageService.t('marketBoard.specialDyes'),
@@ -431,9 +443,6 @@ export class MarketBoard extends BaseComponent {
     this.isRefreshing = true;
     const statusMsg = this.querySelector('#mb-price-status');
     const refreshBtn = this.querySelector<HTMLButtonElement>('#mb-refresh-btn');
-
-    // Store original button text for restoration
-    const originalBtnText = LanguageService.t('marketBoard.refresh');
 
     if (refreshBtn) {
       refreshBtn.disabled = true;

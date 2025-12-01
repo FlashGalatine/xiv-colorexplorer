@@ -156,7 +156,9 @@ export class ModalContainer extends BaseComponent {
         modal-backdrop fixed inset-0 flex items-center justify-center p-4
         ${isTopModal ? 'bg-black/50' : 'bg-transparent'}
         ${!ModalService.prefersReducedMotion() ? 'modal-backdrop-animate-in' : ''}
-      `.replace(/\s+/g, ' ').trim(),
+      `
+        .replace(/\s+/g, ' ')
+        .trim(),
       attributes: {
         role: 'presentation',
         'data-modal-id': modal.id,
@@ -180,13 +182,16 @@ export class ModalContainer extends BaseComponent {
         bg-white dark:bg-gray-800 rounded-lg shadow-xl
         border border-gray-200 dark:border-gray-700
         ${!ModalService.prefersReducedMotion() ? 'modal-animate-in' : ''}
-      `.replace(/\s+/g, ' ').trim(),
+      `
+        .replace(/\s+/g, ' ')
+        .trim(),
       attributes: dialogAttributes,
     });
 
     // Header
     const header = this.createElement('div', {
-      className: 'flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700',
+      className:
+        'flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700',
     });
 
     const title = this.createElement('h2', {
@@ -203,7 +208,9 @@ export class ModalContainer extends BaseComponent {
           p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
           hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
-        `.replace(/\s+/g, ' ').trim(),
+        `
+          .replace(/\s+/g, ' ')
+          .trim(),
         attributes: {
           type: 'button',
           'aria-label': 'Close modal',
@@ -250,7 +257,9 @@ export class ModalContainer extends BaseComponent {
             text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700
             hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors
             focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1
-          `.replace(/\s+/g, ' ').trim(),
+          `
+            .replace(/\s+/g, ' ')
+            .trim(),
           attributes: { type: 'button' },
           textContent: modal.cancelText || 'Cancel',
         });
@@ -265,7 +274,9 @@ export class ModalContainer extends BaseComponent {
             px-4 py-2 text-sm font-medium rounded-lg
             text-white bg-blue-600 hover:bg-blue-700 transition-colors
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
-          `.replace(/\s+/g, ' ').trim(),
+          `
+            .replace(/\s+/g, ' ')
+            .trim(),
           attributes: { type: 'button' },
           textContent: modal.confirmText || 'Confirm',
         });
@@ -319,7 +330,9 @@ export class ModalContainer extends BaseComponent {
     this.container.appendChild(this.element);
 
     // Set up focus trap for topmost modal
-    const topModalEl = this.element.querySelector(`[data-modal-id="${this.modals[this.modals.length - 1].id}"] .modal-dialog`);
+    const topModalEl = this.element.querySelector(
+      `[data-modal-id="${this.modals[this.modals.length - 1].id}"] .modal-dialog`
+    );
     if (topModalEl) {
       this.focusTrapElements = this.getFocusableElements(topModalEl as HTMLElement);
       // Focus first focusable element

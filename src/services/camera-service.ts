@@ -69,7 +69,9 @@ export class CameraService {
     try {
       await this.enumerateCameras();
       this.hasEnumerated = true;
-      logger.info(`📷 Camera service initialized: ${this.availableCameras.length} camera(s) detected`);
+      logger.info(
+        `📷 Camera service initialized: ${this.availableCameras.length} camera(s) detected`
+      );
     } catch (error) {
       logger.warn('Camera enumeration failed:', error);
     }

@@ -6,7 +6,7 @@
  * @module shared/__tests__/error-handler.test
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   ErrorHandler,
   withErrorHandling,
@@ -278,7 +278,10 @@ describe('withAsyncErrorHandling', () => {
   });
 
   it('should return fallback on error', async () => {
-    const result = await withAsyncErrorHandling(() => Promise.reject(new Error('fail')), 'fallback');
+    const result = await withAsyncErrorHandling(
+      () => Promise.reject(new Error('fail')),
+      'fallback'
+    );
     expect(result).toBe('fallback');
   });
 
@@ -374,7 +377,11 @@ describe('handleAsyncError', () => {
   });
 
   it('should return fallback on error', async () => {
-    const result = await handleAsyncError(() => Promise.reject(new Error('fail')), 'ctx', 'fallback');
+    const result = await handleAsyncError(
+      () => Promise.reject(new Error('fail')),
+      'ctx',
+      'fallback'
+    );
     expect(result).toBe('fallback');
   });
 

@@ -6,7 +6,6 @@
 
 import { DyeSelector, type DyeSelectorOptions } from '../dye-selector';
 import { DyeService } from '@services/index';
-import type { Dye } from '@shared/types';
 import {
   createTestContainer,
   cleanupTestContainer,
@@ -790,14 +789,12 @@ describe('DyeSelector', () => {
       await waitForComponent(100);
 
       const dyeCards = container.querySelectorAll('.dye-select-btn');
-      const dyeNames = Array.from(dyeCards).map(
-        (card) => card.querySelector('.text-sm.font-semibold')?.textContent
-      );
-
+      // Verify dye cards are rendered with names
+      const firstDyeName = dyeCards[0]?.querySelector('.text-sm.font-semibold')?.textContent;
       expect(dyeCards.length).toBeGreaterThan(0);
+      expect(firstDyeName).toBeTruthy();
     });
   });
-
 
   // ==========================================================================
   // Branch Coverage Tests - compareDyes sort options
@@ -849,6 +846,7 @@ describe('DyeSelector', () => {
       [component, container] = renderComponent(DyeSelector);
 
       // Force an unknown sort option through setState
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       component['sortOption'] = 'unknown' as any;
       component.update();
 
@@ -1024,7 +1022,9 @@ describe('DyeSelector', () => {
       component.init();
 
       // Dye cards should not have category div
-      const categoryDivs = container.querySelectorAll('.text-xs.text-gray-500.dark\\:text-gray-500');
+      const categoryDivs = container.querySelectorAll(
+        '.text-xs.text-gray-500.dark\\:text-gray-500'
+      );
       // When showCategories is false, no category divs in dye cards
       expect(categoryDivs.length).toBe(0);
     });
@@ -1092,5 +1092,4 @@ describe('DyeSelector', () => {
       expect(facewearBtn).toBeDefined();
     });
   });
-
 });

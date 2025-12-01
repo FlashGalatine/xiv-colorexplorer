@@ -132,8 +132,8 @@ export class ChangelogModal {
       // Fallback if no changelog data for current version
       const fallback = document.createElement('p');
       fallback.className = 'text-gray-600 dark:text-gray-300';
-      fallback.textContent = LanguageService.t('changelog.noChanges') ||
-        'Bug fixes and performance improvements.';
+      fallback.textContent =
+        LanguageService.t('changelog.noChanges') || 'Bug fixes and performance improvements.';
       container.appendChild(fallback);
     } else {
       // Current version highlights
@@ -150,7 +150,8 @@ export class ChangelogModal {
 
         const previousTitle = document.createElement('h4');
         previousTitle.className = 'text-sm font-medium text-gray-500 dark:text-gray-400 mb-3';
-        previousTitle.textContent = LanguageService.t('changelog.previousUpdates') || 'Previous updates:';
+        previousTitle.textContent =
+          LanguageService.t('changelog.previousUpdates') || 'Previous updates:';
         previousSection.appendChild(previousTitle);
 
         const previousList = document.createElement('div');
@@ -170,12 +171,14 @@ export class ChangelogModal {
 
     // Action buttons
     const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'flex justify-between items-center mt-6 pt-4 border-t border-gray-200 dark:border-gray-700';
+    buttonContainer.className =
+      'flex justify-between items-center mt-6 pt-4 border-t border-gray-200 dark:border-gray-700';
 
     // View full changelog link
     const viewFullBtn = document.createElement('a');
     viewFullBtn.className = 'text-sm text-blue-600 dark:text-blue-400 hover:underline';
-    viewFullBtn.href = 'https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/CHANGELOG.md';
+    viewFullBtn.href =
+      'https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/CHANGELOG.md';
     viewFullBtn.target = '_blank';
     viewFullBtn.rel = 'noopener noreferrer';
     viewFullBtn.textContent = LanguageService.t('changelog.viewFull') || 'View full changelog';
@@ -186,7 +189,9 @@ export class ChangelogModal {
       px-6 py-2 text-sm font-medium rounded-lg
       text-white bg-blue-600 hover:bg-blue-700 transition-colors
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
-    `.replace(/\s+/g, ' ').trim();
+    `
+      .replace(/\s+/g, ' ')
+      .trim();
     gotItBtn.textContent = LanguageService.t('changelog.gotIt') || 'Got it!';
     gotItBtn.addEventListener('click', () => {
       this.close();

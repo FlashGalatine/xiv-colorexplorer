@@ -8,11 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { LanguageSelector } from '../language-selector';
-import {
-  createTestContainer,
-  cleanupTestContainer,
-  waitForComponent,
-} from './test-utils';
+import { createTestContainer, cleanupTestContainer, waitForComponent } from './test-utils';
 import { LOCALE_DISPLAY_INFO } from '@shared/constants';
 
 // Mock the services
@@ -320,7 +316,9 @@ describe('LanguageSelector', () => {
       component = new LanguageSelector(container);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('currentLocale');
       expect(state).toHaveProperty('isDropdownOpen');

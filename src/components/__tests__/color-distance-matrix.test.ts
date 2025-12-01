@@ -278,7 +278,9 @@ describe('ColorDistanceMatrix', () => {
       component = new ColorDistanceMatrix(container, mockDyes);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('dyeCount', 3);
       expect(state).toHaveProperty('dyeNames');
@@ -289,7 +291,9 @@ describe('ColorDistanceMatrix', () => {
       component = new ColorDistanceMatrix(container);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.dyeCount).toBe(0);
       expect((state.dyeNames as string[]).length).toBe(0);
@@ -342,7 +346,11 @@ describe('ColorDistanceMatrix', () => {
     });
 
     it('should truncate long dye names', () => {
-      const longNameDye = createMockDye(9010, 'Very Long Dye Name That Should Be Truncated', '#AABBCC');
+      const longNameDye = createMockDye(
+        9010,
+        'Very Long Dye Name That Should Be Truncated',
+        '#AABBCC'
+      );
       component = new ColorDistanceMatrix(container, [longNameDye]);
       component.init();
 

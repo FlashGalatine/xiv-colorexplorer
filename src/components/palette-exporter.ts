@@ -182,7 +182,7 @@ export class PaletteExporter extends BaseComponent {
 
     if (this.copyBtn) {
       this.on(this.copyBtn, 'click', () => {
-        this.handleCopyHexCodes();
+        void this.handleCopyHexCodes();
       });
     }
   }
@@ -462,4 +462,3 @@ export class PaletteExporter extends BaseComponent {
     };
   }
 }
-

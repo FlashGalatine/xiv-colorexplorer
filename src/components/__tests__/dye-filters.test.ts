@@ -105,7 +105,9 @@ describe('DyeFilters', () => {
       component = new DyeFilters(container);
       component.init();
 
-      const checkboxesContainer = container.querySelector('[id$="-checkboxes-container"]') as HTMLElement;
+      const checkboxesContainer = container.querySelector(
+        '[id$="-checkboxes-container"]'
+      ) as HTMLElement;
       expect(checkboxesContainer?.style.maxHeight).toBe('0px');
     });
   });
@@ -120,7 +122,9 @@ describe('DyeFilters', () => {
       component.init();
 
       const header = container.querySelector('button') as HTMLButtonElement;
-      const checkboxesContainer = container.querySelector('[id$="-checkboxes-container"]') as HTMLElement;
+      const checkboxesContainer = container.querySelector(
+        '[id$="-checkboxes-container"]'
+      ) as HTMLElement;
 
       expect(checkboxesContainer.style.maxHeight).toBe('0px');
 
@@ -135,7 +139,9 @@ describe('DyeFilters', () => {
       component.init();
 
       const header = container.querySelector('button') as HTMLButtonElement;
-      const checkboxesContainer = container.querySelector('[id$="-checkboxes-container"]') as HTMLElement;
+      const checkboxesContainer = container.querySelector(
+        '[id$="-checkboxes-container"]'
+      ) as HTMLElement;
 
       // Expand
       header.click();
@@ -172,7 +178,9 @@ describe('DyeFilters', () => {
   describe('filter logic', () => {
     // Helper to enable a checkbox by index
     const enableCheckbox = async (comp: DyeFilters, cont: HTMLElement, index: number) => {
-      const checkboxes = cont.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+      const checkboxes = cont.querySelectorAll(
+        'input[type="checkbox"]'
+      ) as NodeListOf<HTMLInputElement>;
       checkboxes[index].checked = true;
       checkboxes[index].dispatchEvent(new Event('change'));
       await waitForComponent();
@@ -366,7 +374,9 @@ describe('DyeFilters', () => {
       await waitForComponent();
 
       // Find and check the first checkbox
-      const checkboxes = container.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+      const checkboxes = container.querySelectorAll(
+        'input[type="checkbox"]'
+      ) as NodeListOf<HTMLInputElement>;
       expect(checkboxes.length).toBeGreaterThan(0);
 
       checkboxes[0].checked = true;
@@ -455,7 +465,10 @@ describe('DyeFilters', () => {
       component = new DyeFilters(container, { storageKeyPrefix: 'custom' });
       component.init();
 
-      expect(appStorage.getItem).toHaveBeenCalledWith('xivdyetools_custom_filters', expect.anything());
+      expect(appStorage.getItem).toHaveBeenCalledWith(
+        'xivdyetools_custom_filters',
+        expect.anything()
+      );
     });
 
     it('should use default storage key prefix when not specified', async () => {
@@ -463,7 +476,10 @@ describe('DyeFilters', () => {
       component = new DyeFilters(container);
       component.init();
 
-      expect(appStorage.getItem).toHaveBeenCalledWith('xivdyetools_harmony_filters', expect.anything());
+      expect(appStorage.getItem).toHaveBeenCalledWith(
+        'xivdyetools_harmony_filters',
+        expect.anything()
+      );
     });
   });
 

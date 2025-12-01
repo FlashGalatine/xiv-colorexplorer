@@ -263,8 +263,7 @@ const TUTORIALS: Record<TutorialTool, Tutorial> = {
 // ============================================================================
 
 const TUTORIAL_VERSION = '1.0.0';
-const getStorageKey = (tool: TutorialTool): string =>
-  `${STORAGE_PREFIX}_tutorial_${tool}`;
+const getStorageKey = (tool: TutorialTool): string => `${STORAGE_PREFIX}_tutorial_${tool}`;
 
 // ============================================================================
 // Tutorial Service Class
@@ -376,7 +375,7 @@ export class TutorialService {
     };
 
     this.notifyListeners();
-    this.showCurrentStep();
+    void this.showCurrentStep();
     logger.info(`Tutorial started: ${tool}`);
   }
 
@@ -430,7 +429,7 @@ export class TutorialService {
     if (this.state.currentStepIndex < tutorial.steps.length - 1) {
       this.state.currentStepIndex++;
       this.notifyListeners();
-      this.showCurrentStep();
+      void this.showCurrentStep();
     } else {
       this.complete();
     }
@@ -444,7 +443,7 @@ export class TutorialService {
 
     this.state.currentStepIndex--;
     this.notifyListeners();
-    this.showCurrentStep();
+    void this.showCurrentStep();
   }
 
   /**
@@ -531,8 +530,7 @@ export class TutorialService {
     message.className = 'mb-4';
     message.style.color = 'var(--theme-text-muted)';
     message.textContent =
-      LanguageService.t('tutorial.prompt.message') ||
-      'Would you like a quick tour of this tool?';
+      LanguageService.t('tutorial.prompt.message') || 'Would you like a quick tour of this tool?';
     content.appendChild(message);
 
     const buttonContainer = document.createElement('div');

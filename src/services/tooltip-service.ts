@@ -312,8 +312,14 @@ export class TooltipService {
     }
 
     // Constrain to viewport
-    top = Math.max(VIEWPORT_PADDING, Math.min(top, viewportHeight - tooltipRect.height - VIEWPORT_PADDING));
-    left = Math.max(VIEWPORT_PADDING, Math.min(left, viewportWidth - tooltipRect.width - VIEWPORT_PADDING));
+    top = Math.max(
+      VIEWPORT_PADDING,
+      Math.min(top, viewportHeight - tooltipRect.height - VIEWPORT_PADDING)
+    );
+    left = Math.max(
+      VIEWPORT_PADDING,
+      Math.min(left, viewportWidth - tooltipRect.width - VIEWPORT_PADDING)
+    );
 
     // Apply position
     state.element.style.top = `${top}px`;

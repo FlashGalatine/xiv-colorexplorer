@@ -478,7 +478,8 @@ export class SecureStorage {
       }
 
       // Verify integrity
-      const serialized = typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
+      const serialized =
+        typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
       const isValid = await verifyChecksum(serialized, entry.checksum);
 
       if (!isValid) {
@@ -587,7 +588,8 @@ export class SecureStorage {
         }
 
         // Verify checksum
-        const serialized = typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
+        const serialized =
+          typeof entry.value === 'string' ? String(entry.value) : JSON.stringify(entry.value);
         const isValid = await verifyChecksum(serialized, entry.checksum);
 
         if (!isValid) {

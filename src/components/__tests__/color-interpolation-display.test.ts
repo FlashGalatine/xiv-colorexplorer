@@ -396,7 +396,9 @@ describe('ColorInterpolationDisplay', () => {
       component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps, 'hsv');
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('startColor', '#FF0000');
       expect(state).toHaveProperty('endColor', '#00FF00');

@@ -57,7 +57,9 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Title
     const title = this.createElement('h3', {
-      textContent: LanguageService.tInterpolate('mixer.colorTransition', { space: this.colorSpace.toUpperCase() }),
+      textContent: LanguageService.tInterpolate('mixer.colorTransition', {
+        space: this.colorSpace.toUpperCase(),
+      }),
       className: 'text-lg font-semibold text-gray-900 dark:text-white',
     });
     wrapper.appendChild(title);
@@ -168,7 +170,11 @@ export class ColorInterpolationDisplay extends BaseComponent {
         color: 'text-yellow-600 dark:text-yellow-400 font-semibold',
         label: LanguageService.t('mixer.fairMatch'),
       },
-      { range: '>100', color: 'text-red-600 dark:text-red-400 font-semibold', label: LanguageService.t('mixer.poorMatch') },
+      {
+        range: '>100',
+        color: 'text-red-600 dark:text-red-400 font-semibold',
+        label: LanguageService.t('mixer.poorMatch'),
+      },
     ];
 
     for (const item of scaleItems) {
@@ -251,7 +257,9 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     // Hint text
     const hint = this.createElement('p', {
-      textContent: LanguageService.t('mixer.clickStopHint') || 'Click a stop marker to highlight the corresponding dye',
+      textContent:
+        LanguageService.t('mixer.clickStopHint') ||
+        'Click a stop marker to highlight the corresponding dye',
       className: 'text-xs text-gray-500 dark:text-gray-400 italic',
     });
     container.appendChild(hint);
@@ -318,9 +326,11 @@ export class ColorInterpolationDisplay extends BaseComponent {
     // Stop handle (diamond shape)
     const handle = this.createElement('div', {
       className: `w-4 h-4 rotate-45 border-2 transition-all duration-150
-        ${isSelected
-          ? 'border-blue-500 shadow-lg scale-125'
-          : 'border-gray-400 dark:border-gray-500 hover:border-blue-400 hover:scale-110'}`,
+        ${
+          isSelected
+            ? 'border-blue-500 shadow-lg scale-125'
+            : 'border-gray-400 dark:border-gray-500 hover:border-blue-400 hover:scale-110'
+        }`,
       attributes: {
         style: `background-color: ${step.matchedDye?.hex || step.theoreticalColor};`,
       },
@@ -476,9 +486,11 @@ export class ColorInterpolationDisplay extends BaseComponent {
 
     const item = this.createElement('div', {
       className: `flex items-center gap-3 p-2 rounded border cursor-pointer transition-colors
-        ${isSelected
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500'
-          : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`,
+        ${
+          isSelected
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500'
+            : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+        }`,
       attributes: {
         'data-step-index': String(index),
         role: 'button',

@@ -244,7 +244,8 @@ export class DyeFilters extends BaseComponent {
    * Load filter state from localStorage
    */
   private loadFilterState(): void {
-    const saved = appStorage.getItem<DyeFilterConfig>(this.storageKey, this.filters) ?? this.filters;
+    const saved =
+      appStorage.getItem<DyeFilterConfig>(this.storageKey, this.filters) ?? this.filters;
     this.filters = saved;
 
     // Update checkboxes to reflect saved state
@@ -393,4 +394,3 @@ export class DyeFilters extends BaseComponent {
     return dyes.filter((dye) => !this.isDyeExcluded(dye));
   }
 }
-

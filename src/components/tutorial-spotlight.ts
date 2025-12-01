@@ -92,11 +92,13 @@ export class TutorialSpotlight extends BaseComponent {
     });
 
     // Listen for step show events
-    this.on(document as unknown as HTMLElement, 'tutorial:show-step' as keyof HTMLElementEventMap, ((
-      event: CustomEvent<{ step: TutorialStep; stepIndex: number; totalSteps: number }>
-    ) => {
-      this.showStep(event.detail.step, event.detail.stepIndex, event.detail.totalSteps);
-    }) as EventListener);
+    this.on(
+      document as unknown as HTMLElement,
+      'tutorial:show-step' as keyof HTMLElementEventMap,
+      ((event: CustomEvent<{ step: TutorialStep; stepIndex: number; totalSteps: number }>) => {
+        this.showStep(event.detail.step, event.detail.stepIndex, event.detail.totalSteps);
+      }) as EventListener
+    );
 
     // Listen for tutorial end
     this.on(document as unknown as HTMLElement, 'tutorial:end' as keyof HTMLElementEventMap, () => {
@@ -111,11 +113,15 @@ export class TutorialSpotlight extends BaseComponent {
     });
 
     // Handle escape key
-    this.on(document as unknown as HTMLElement, 'keydown' as keyof HTMLElementEventMap, ((event: KeyboardEvent) => {
-      if (event.key === 'Escape' && TutorialService.getState().isActive) {
-        TutorialService.skip();
-      }
-    }) as EventListener);
+    this.on(
+      document as unknown as HTMLElement,
+      'keydown' as keyof HTMLElementEventMap,
+      ((event: KeyboardEvent) => {
+        if (event.key === 'Escape' && TutorialService.getState().isActive) {
+          TutorialService.skip();
+        }
+      }) as EventListener
+    );
   }
 
   // ============================================================================
@@ -133,9 +139,7 @@ export class TutorialSpotlight extends BaseComponent {
       bottom: '0',
       backgroundColor: 'rgba(0, 0, 0, 0.7)',
       zIndex: '9998',
-      transition: this.prefersReducedMotion()
-        ? 'none'
-        : `opacity ${ANIMATION_DURATION}ms ease-out`,
+      transition: this.prefersReducedMotion() ? 'none' : `opacity ${ANIMATION_DURATION}ms ease-out`,
     });
   }
 
@@ -149,9 +153,7 @@ export class TutorialSpotlight extends BaseComponent {
       boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.7)',
       backgroundColor: 'transparent',
       pointerEvents: 'none',
-      transition: this.prefersReducedMotion()
-        ? 'none'
-        : `all ${ANIMATION_DURATION}ms ease-out`,
+      transition: this.prefersReducedMotion() ? 'none' : `all ${ANIMATION_DURATION}ms ease-out`,
     });
   }
 
@@ -501,11 +503,14 @@ export class TutorialSpotlight extends BaseComponent {
       if (this.spotlight) this.spotlight.style.opacity = '0';
       if (this.tooltip) this.tooltip.style.opacity = '0';
 
-      setTimeout(() => {
-        if (this.element) {
-          this.element.style.display = 'none';
-        }
-      }, this.prefersReducedMotion() ? 0 : ANIMATION_DURATION);
+      setTimeout(
+        () => {
+          if (this.element) {
+            this.element.style.display = 'none';
+          }
+        },
+        this.prefersReducedMotion() ? 0 : ANIMATION_DURATION
+      );
     }
 
     // Cleanup

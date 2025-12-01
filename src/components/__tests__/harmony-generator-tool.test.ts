@@ -116,11 +116,17 @@ vi.mock('../harmony-type', () => {
 vi.mock('../market-board', () => {
   return {
     MarketBoard: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement) {}
       async loadServerData() {}
       init() {}
-      getShowPrices() { return false; }
-      async fetchPricesForDyes(_dyes: Dye[]) { return new Map(); }
+      getShowPrices() {
+        return false;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async fetchPricesForDyes(_dyes: Dye[]) {
+        return new Map();
+      }
       destroy() {}
     },
   };
@@ -129,6 +135,7 @@ vi.mock('../market-board', () => {
 vi.mock('../dye-selector', () => {
   return {
     DyeSelector: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options?: unknown) {}
       init() {}
       destroy() {}
@@ -139,11 +146,15 @@ vi.mock('../dye-selector', () => {
 vi.mock('../dye-filters', () => {
   return {
     DyeFilters: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options?: unknown) {}
       render() {}
       bindEvents() {}
       onMount() {}
-      isDyeExcluded(_dye: Dye) { return false; }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      isDyeExcluded(_dye: Dye) {
+        return false;
+      }
       destroy() {}
     },
   };
@@ -152,6 +163,7 @@ vi.mock('../dye-filters', () => {
 vi.mock('../palette-exporter', () => {
   return {
     PaletteExporter: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options?: unknown) {}
       init() {}
       update() {}
@@ -164,7 +176,8 @@ vi.mock('@services/index', () => {
   return {
     ColorService: {
       getColorDistance: () => 10,
-      hexToHsv: (hex: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      hexToHsv: (_hex: string) => {
         // Simple mock that extracts HSV from hex or returns default
         // Real implementation would convert, but for tests this is sufficient
         return { h: 0, s: 100, v: 100 };
@@ -221,12 +234,14 @@ describe('HarmonyGeneratorTool', () => {
       },
     ];
 
-    const result = (component as unknown as {
-      applySuggestionsMode: (
-        harmonyId: string,
-        matched: Array<{ dye: Dye; deviance: number }>
-      ) => Array<{ dye: Dye; deviance: number }>;
-    }).applySuggestionsMode('complementary', baseMatch);
+    const result = (
+      component as unknown as {
+        applySuggestionsMode: (
+          harmonyId: string,
+          matched: Array<{ dye: Dye; deviance: number }>
+        ) => Array<{ dye: Dye; deviance: number }>;
+      }
+    ).applySuggestionsMode('complementary', baseMatch);
 
     expect(result).toHaveLength(3);
     expect(result[0].dye.name).toBe('Complement');
@@ -244,7 +259,10 @@ describe('HarmonyGeneratorTool', () => {
     expect(mockDyeService.findTriadicDyes).toHaveBeenCalled();
     expect(mockHarmonySnapshots.triadic).toBeDefined();
     expect(mockHarmonySnapshots.triadic).toHaveLength(2);
-    expect(mockHarmonySnapshots.triadic?.map(({ dye }) => dye.name)).toEqual(['Triad A', 'Triad B']);
+    expect(mockHarmonySnapshots.triadic?.map(({ dye }) => dye.name)).toEqual([
+      'Triad A',
+      'Triad B',
+    ]);
   });
 
   // ==========================================================================
@@ -257,7 +275,9 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit('complementary');
+      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit(
+        'complementary'
+      );
       expect(limit).toBe(2);
     });
 
@@ -302,7 +322,9 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit('monochromatic');
+      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit(
+        'monochromatic'
+      );
       expect(limit).toBe(3);
     });
 
@@ -311,7 +333,9 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit('unknown-type');
+      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit(
+        'unknown-type'
+      );
       expect(limit).toBe(6);
     });
   });
@@ -336,7 +360,10 @@ describe('HarmonyGeneratorTool', () => {
         { dye: createDye({ id: 5 }), deviance: 0.5 },
       ];
 
-      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('complementary', dyes);
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode(
+        'complementary',
+        dyes
+      );
 
       // Complementary limit is 2
       expect(result).toHaveLength(2);
@@ -355,7 +382,10 @@ describe('HarmonyGeneratorTool', () => {
         { dye: createDye({ id: 3, name: 'Medium' }), deviance: 0.3 },
       ];
 
-      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('triadic', dyes);
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode(
+        'triadic',
+        dyes
+      );
 
       expect(result[0].dye.name).toBe('Low');
       expect(result[1].dye.name).toBe('Medium');
@@ -372,7 +402,11 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#ff0000', [0]);
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance(
+        '#ff0000',
+        '#ff0000',
+        [0]
+      );
 
       expect(deviance).toBe(0);
     });
@@ -383,7 +417,11 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Mock hexToHsv returns same values, so deviance will be based on offsets
-      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#00ff00', [120, 240]);
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance(
+        '#ff0000',
+        '#00ff00',
+        [120, 240]
+      );
 
       // Should return a finite number
       expect(Number.isFinite(deviance)).toBe(true);
@@ -563,7 +601,9 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit('split-complementary');
+      const limit = (component as unknown as ComponentWithPrivate).getSimpleModeLimit(
+        'split-complementary'
+      );
       expect(limit).toBe(3);
     });
 
@@ -628,7 +668,8 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Don't set up the companion section
-      (component as unknown as Record<string, HTMLElement>)._companionDyesSection = undefined as unknown as HTMLElement;
+      (component as unknown as Record<string, HTMLElement>)._companionDyesSection =
+        undefined as unknown as HTMLElement;
 
       expect(() => {
         (component as unknown as ComponentWithPrivate).toggleCompanionSection();
@@ -646,7 +687,11 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#00ff00', []);
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance(
+        '#ff0000',
+        '#00ff00',
+        []
+      );
 
       // With empty offsets, should return Infinity
       expect(deviance).toBe(Infinity);
@@ -658,7 +703,11 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Test the wrap-around case where hue difference crosses 360
-      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#ff0000', [359]);
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance(
+        '#ff0000',
+        '#ff0000',
+        [359]
+      );
 
       expect(Number.isFinite(deviance)).toBe(true);
     });
@@ -668,7 +717,11 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance('#ff0000', '#00ff00', [0, 120, 240]);
+      const deviance = (component as unknown as ComponentWithPrivate).calculateHueDeviance(
+        '#ff0000',
+        '#00ff00',
+        [0, 120, 240]
+      );
 
       expect(Number.isFinite(deviance)).toBe(true);
     });
@@ -707,7 +760,10 @@ describe('HarmonyGeneratorTool', () => {
         { dye: createDye({ id: 2, itemID: 2, category: 'Blue' }), deviance: 0.2 },
       ];
 
-      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(dyes, 'triadic');
+      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(
+        dyes,
+        'triadic'
+      );
 
       expect(result).toHaveLength(2);
       expect(result[0].dye.id).toBe(1);
@@ -721,7 +777,10 @@ describe('HarmonyGeneratorTool', () => {
       // When finding alternatives, Facewear category should be skipped
       const dyes = [{ dye: createDye({ id: 1, itemID: 1 }), deviance: 0.1 }];
 
-      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(dyes, 'complementary');
+      const result = (component as unknown as ComponentWithPrivate).replaceExcludedDyes(
+        dyes,
+        'complementary'
+      );
 
       // Facewear should be filtered from allDyes during replacement
       expect(result).toBeDefined();
@@ -742,7 +801,9 @@ describe('HarmonyGeneratorTool', () => {
       document.getElementById('companion-dyes-value')?.remove();
 
       expect(() => {
-        (component as unknown as { updateCompanionDyesDisplay: () => void }).updateCompanionDyesDisplay();
+        (
+          component as unknown as { updateCompanionDyesDisplay: () => void }
+        ).updateCompanionDyesDisplay();
       }).not.toThrow();
     });
 
@@ -757,7 +818,9 @@ describe('HarmonyGeneratorTool', () => {
       document.body.appendChild(display);
 
       (component as unknown as ComponentWithPrivate).companionDyesCount = 5;
-      (component as unknown as { updateCompanionDyesDisplay: () => void }).updateCompanionDyesDisplay();
+      (
+        component as unknown as { updateCompanionDyesDisplay: () => void }
+      ).updateCompanionDyesDisplay();
 
       expect(display.textContent).toBe('5');
 
@@ -777,7 +840,8 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Set input to null
-      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = null;
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput =
+        null;
 
       expect(() => {
         (component as unknown as ComponentWithPrivate).updateCompanionDyesCount();
@@ -793,7 +857,8 @@ describe('HarmonyGeneratorTool', () => {
       const input = document.createElement('input');
       input.type = 'range';
       input.value = '7';
-      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = input;
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput =
+        input;
 
       (component as unknown as ComponentWithPrivate).updateCompanionDyesCount();
 
@@ -814,13 +879,16 @@ describe('HarmonyGeneratorTool', () => {
       // Set up input
       const input = document.createElement('input');
       input.type = 'range';
-      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = input;
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput =
+        input;
 
       // The mock returns undefined, so it should use default and clamp
       (component as unknown as ComponentWithPrivate).loadCompanionDyesCount();
 
       // Should be clamped to valid range
-      expect((component as unknown as ComponentWithPrivate).companionDyesCount).toBeGreaterThanOrEqual(1);
+      expect(
+        (component as unknown as ComponentWithPrivate).companionDyesCount
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -840,8 +908,12 @@ describe('HarmonyGeneratorTool', () => {
       const expandedRadio = document.createElement('input');
       expandedRadio.type = 'radio';
 
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('simple', simpleRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('expanded', expandedRadio);
 
       (component as unknown as ComponentWithPrivate).loadSuggestionsMode();
 
@@ -855,7 +927,9 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Clear the radios map
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.clear();
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.clear();
 
       expect(() => {
         (component as unknown as ComponentWithPrivate).loadSuggestionsMode();
@@ -882,8 +956,12 @@ describe('HarmonyGeneratorTool', () => {
       simpleRadio.type = 'radio';
       simpleRadio.checked = false;
 
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('simple', simpleRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('expanded', expandedRadio);
 
       (component as unknown as ComponentWithPrivate).updateSuggestionsMode();
 
@@ -899,7 +977,9 @@ describe('HarmonyGeneratorTool', () => {
       simpleRadio.type = 'radio';
       simpleRadio.checked = true;
 
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('simple', simpleRadio);
 
       (component as unknown as ComponentWithPrivate).updateSuggestionsMode();
 
@@ -920,11 +1000,12 @@ describe('HarmonyGeneratorTool', () => {
       (component as unknown as ComponentWithPrivate).suggestionsMode = 'expanded';
       (component as unknown as ComponentWithPrivate).companionDyesCount = 100; // More than available dyes
 
-      const dyes = [
-        { dye: createDye({ id: 1, itemID: 1 }), deviance: 0.1 },
-      ];
+      const dyes = [{ dye: createDye({ id: 1, itemID: 1 }), deviance: 0.1 }];
 
-      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('complementary', dyes);
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode(
+        'complementary',
+        dyes
+      );
 
       // Should have original dye + available companions from mock pool (3 dyes)
       expect(result.length).toBeGreaterThan(0);
@@ -940,14 +1021,15 @@ describe('HarmonyGeneratorTool', () => {
       (component as unknown as ComponentWithPrivate).companionDyesCount = 2;
 
       // Use dye IDs that match the mock pool
-      const dyes = [
-        { dye: createDye({ id: 10, itemID: 10, name: 'Companion 1' }), deviance: 0.1 },
-      ];
+      const dyes = [{ dye: createDye({ id: 10, itemID: 10, name: 'Companion 1' }), deviance: 0.1 }];
 
-      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode('triadic', dyes);
+      const result = (component as unknown as ComponentWithPrivate).applySuggestionsMode(
+        'triadic',
+        dyes
+      );
 
       // Should not have duplicate itemIDs
-      const itemIDs = result.map(d => d.dye.itemID);
+      const itemIDs = result.map((d) => d.dye.itemID);
       const uniqueIDs = new Set(itemIDs);
       expect(uniqueIDs.size).toBe(itemIDs.length);
     });
@@ -1001,7 +1083,9 @@ describe('HarmonyGeneratorTool', () => {
       (component as unknown as ComponentWithPrivate).generateHarmonies();
 
       // Set some price data
-      (component as unknown as ComponentWithPrivate).priceData.set(1, { currentAverage: 5000 } as unknown as PriceData);
+      (component as unknown as ComponentWithPrivate).priceData.set(1, {
+        currentAverage: 5000,
+      } as unknown as PriceData);
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
       expect(() => {
@@ -1032,7 +1116,9 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+      await expect(
+        (component as unknown as { bindEvents: () => Promise<void> }).bindEvents()
+      ).resolves.not.toThrow();
     });
 
     it('should initialize dye selector during bindEvents', async () => {
@@ -1103,7 +1189,10 @@ describe('HarmonyGeneratorTool', () => {
       const generateBtn = document.createElement('button');
       (component as unknown as Record<string, HTMLElement>)._generateBtn = generateBtn;
 
-      const generateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'generateHarmonies');
+      const generateSpy = vi.spyOn(
+        component as unknown as ComponentWithPrivate,
+        'generateHarmonies'
+      );
 
       await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
 
@@ -1129,8 +1218,12 @@ describe('HarmonyGeneratorTool', () => {
       expandedRadio.name = 'suggestions-mode';
       expandedRadio.value = 'expanded';
 
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('simple', simpleRadio);
-      (component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }).suggestionsModeRadios.set('expanded', expandedRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('simple', simpleRadio);
+      (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios.set('expanded', expandedRadio);
 
       await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
 
@@ -1150,7 +1243,8 @@ describe('HarmonyGeneratorTool', () => {
       const companionInput = document.createElement('input');
       companionInput.type = 'range';
       companionInput.value = '5';
-      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput = companionInput;
+      (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput =
+        companionInput;
 
       await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
 
@@ -1189,10 +1283,14 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Set inputs to null
-      (component as unknown as Record<string, HTMLElement>)._hexInput = null as unknown as HTMLElement;
-      (component as unknown as Record<string, HTMLElement>)._colorPicker = null as unknown as HTMLElement;
+      (component as unknown as Record<string, HTMLElement>)._hexInput =
+        null as unknown as HTMLElement;
+      (component as unknown as Record<string, HTMLElement>)._colorPicker =
+        null as unknown as HTMLElement;
 
-      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+      await expect(
+        (component as unknown as { bindEvents: () => Promise<void> }).bindEvents()
+      ).resolves.not.toThrow();
     });
 
     it('should handle missing generateBtn gracefully', async () => {
@@ -1201,9 +1299,12 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Set button to null
-      (component as unknown as Record<string, HTMLElement>)._generateBtn = null as unknown as HTMLElement;
+      (component as unknown as Record<string, HTMLElement>)._generateBtn =
+        null as unknown as HTMLElement;
 
-      await expect((component as unknown as { bindEvents: () => Promise<void> }).bindEvents()).resolves.not.toThrow();
+      await expect(
+        (component as unknown as { bindEvents: () => Promise<void> }).bindEvents()
+      ).resolves.not.toThrow();
     });
   });
 
@@ -1227,12 +1328,15 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const generateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'generateHarmonies');
+      const generateSpy = vi.spyOn(
+        component as unknown as ComponentWithPrivate,
+        'generateHarmonies'
+      );
 
       component.onMount();
 
       // Wait for the setTimeout delay (100ms)
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(generateSpy).toHaveBeenCalled();
     });
@@ -1264,7 +1368,11 @@ describe('HarmonyGeneratorTool', () => {
       (component as unknown as { marketBoard: null }).marketBoard = null;
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
-      await expect((component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes()).resolves.not.toThrow();
+      await expect(
+        (
+          component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }
+        ).fetchPricesForCurrentDyes()
+      ).resolves.not.toThrow();
     });
 
     it('should return early when showPrices is false', async () => {
@@ -1278,9 +1386,12 @@ describe('HarmonyGeneratorTool', () => {
       const mockMarketBoard = {
         fetchPricesForDyes: vi.fn(),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
 
-      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+      await (
+        component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }
+      ).fetchPricesForCurrentDyes();
 
       expect(mockMarketBoard.fetchPricesForDyes).not.toHaveBeenCalled();
     });
@@ -1299,10 +1410,13 @@ describe('HarmonyGeneratorTool', () => {
       const mockMarketBoard = {
         fetchPricesForDyes: vi.fn().mockResolvedValue(mockPriceData),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
-      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+      await (
+        component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }
+      ).fetchPricesForCurrentDyes();
 
       expect(mockMarketBoard.fetchPricesForDyes).toHaveBeenCalled();
     });
@@ -1319,12 +1433,15 @@ describe('HarmonyGeneratorTool', () => {
       const mockMarketBoard = {
         fetchPricesForDyes: vi.fn().mockResolvedValue(mockPriceData),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
       const updateSpy = vi.spyOn(component as unknown as ComponentWithPrivate, 'updateAllDisplays');
 
-      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+      await (
+        component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }
+      ).fetchPricesForCurrentDyes();
 
       expect(updateSpy).toHaveBeenCalled();
     });
@@ -1344,13 +1461,16 @@ describe('HarmonyGeneratorTool', () => {
           return new Map<number, PriceData>();
         }),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
-      await (component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }).fetchPricesForCurrentDyes();
+      await (
+        component as unknown as { fetchPricesForCurrentDyes: () => Promise<void> }
+      ).fetchPricesForCurrentDyes();
 
       // Check that fetched dyes have unique itemIDs
-      const itemIDs = fetchedDyes.map(d => d.itemID);
+      const itemIDs = fetchedDyes.map((d) => d.itemID);
       const uniqueIDs = new Set(itemIDs);
       expect(uniqueIDs.size).toBe(itemIDs.length);
     });
@@ -1369,7 +1489,8 @@ describe('HarmonyGeneratorTool', () => {
       const mockDyeSelector = {
         destroy: vi.fn(),
       };
-      (component as unknown as { dyeSelector: typeof mockDyeSelector }).dyeSelector = mockDyeSelector;
+      (component as unknown as { dyeSelector: typeof mockDyeSelector }).dyeSelector =
+        mockDyeSelector;
 
       component.destroy();
 
@@ -1384,7 +1505,8 @@ describe('HarmonyGeneratorTool', () => {
       const mockMarketBoard = {
         destroy: vi.fn(),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
 
       component.destroy();
 
@@ -1399,7 +1521,8 @@ describe('HarmonyGeneratorTool', () => {
       const mockPaletteExporter = {
         destroy: vi.fn(),
       };
-      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter = mockPaletteExporter;
+      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter =
+        mockPaletteExporter;
 
       component.destroy();
 
@@ -1474,7 +1597,8 @@ describe('HarmonyGeneratorTool', () => {
       const mockMarketBoard = {
         fetchPricesForDyes: vi.fn().mockResolvedValue(new Map()),
       };
-      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard = mockMarketBoard;
+      (component as unknown as { marketBoard: typeof mockMarketBoard }).marketBoard =
+        mockMarketBoard;
       (component as unknown as ComponentWithPrivate).showPrices = true;
 
       (component as unknown as ComponentWithPrivate).generateHarmonies();
@@ -1491,7 +1615,8 @@ describe('HarmonyGeneratorTool', () => {
       const mockPaletteExporter = {
         update: vi.fn(),
       };
-      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter = mockPaletteExporter;
+      (component as unknown as { paletteExporter: typeof mockPaletteExporter }).paletteExporter =
+        mockPaletteExporter;
 
       (component as unknown as ComponentWithPrivate).generateHarmonies();
 
@@ -1504,7 +1629,9 @@ describe('HarmonyGeneratorTool', () => {
       component.render();
 
       // Clear harmony containers
-      (component as unknown as { harmonyContainers: Map<string, HTMLElement> }).harmonyContainers.clear();
+      (
+        component as unknown as { harmonyContainers: Map<string, HTMLElement> }
+      ).harmonyContainers.clear();
 
       expect(() => {
         (component as unknown as ComponentWithPrivate).generateHarmonies();
@@ -1542,7 +1669,8 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const containers = (component as unknown as { harmonyContainers: Map<string, HTMLElement> }).harmonyContainers;
+      const containers = (component as unknown as { harmonyContainers: Map<string, HTMLElement> })
+        .harmonyContainers;
       expect(containers.size).toBe(9); // 9 harmony types
     });
 
@@ -1551,7 +1679,8 @@ describe('HarmonyGeneratorTool', () => {
       const component = new HarmonyGeneratorTool(container);
       component.render();
 
-      const generateBtn = (component as unknown as Record<string, HTMLElement>)._generateBtn as HTMLButtonElement;
+      const generateBtn = (component as unknown as Record<string, HTMLElement>)
+        ._generateBtn as HTMLButtonElement;
 
       // Trigger mouseenter
       generateBtn.dispatchEvent(new MouseEvent('mouseenter'));
@@ -1571,4 +1700,3 @@ describe('HarmonyGeneratorTool', () => {
     });
   });
 });
-

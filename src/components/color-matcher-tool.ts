@@ -14,7 +14,13 @@ import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import { DyePreviewOverlay } from './dye-preview-overlay';
-import { ColorService, dyeService, APIService, LanguageService, AnnouncerService } from '@services/index';
+import {
+  ColorService,
+  dyeService,
+  APIService,
+  LanguageService,
+  AnnouncerService,
+} from '@services/index';
 import { StorageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
 
@@ -342,7 +348,7 @@ export class ColorMatcherTool extends BaseComponent {
         const customEvent = event as CustomEvent;
         this.showPrices = customEvent.detail?.showPrices ?? false;
         if (this.showPrices && this.matchedDyes.length > 0) {
-          this.fetchPricesForMatchedDyes();
+          void this.fetchPricesForMatchedDyes();
         } else {
           this.priceData.clear();
           this.refreshResults();
@@ -351,19 +357,19 @@ export class ColorMatcherTool extends BaseComponent {
 
       marketBoardContainer.addEventListener('server-changed', () => {
         if (this.showPrices && this.matchedDyes.length > 0) {
-          this.fetchPricesForMatchedDyes();
+          void this.fetchPricesForMatchedDyes();
         }
       });
 
       marketBoardContainer.addEventListener('categories-changed', () => {
         if (this.showPrices && this.matchedDyes.length > 0) {
-          this.fetchPricesForMatchedDyes();
+          void this.fetchPricesForMatchedDyes();
         }
       });
 
       marketBoardContainer.addEventListener('refresh-requested', () => {
         if (this.showPrices && this.matchedDyes.length > 0) {
-          this.fetchPricesForMatchedDyes();
+          void this.fetchPricesForMatchedDyes();
         }
       });
 
@@ -416,8 +422,7 @@ export class ColorMatcherTool extends BaseComponent {
     section.appendChild(hint);
 
     const privacyNotice = this.createElement('p', {
-      innerHTML:
-        `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
+      innerHTML: `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
       className: 'text-xs text-gray-500 dark:text-gray-400 mb-4',
     });
     section.appendChild(privacyNotice);
@@ -546,9 +551,13 @@ export class ColorMatcherTool extends BaseComponent {
     this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
 
     // Hide preview overlay when scrolling the canvas container
-    canvasContainer.addEventListener('scroll', () => {
-      this.previewOverlay?.hidePreview();
-    }, { passive: true });
+    canvasContainer.addEventListener(
+      'scroll',
+      () => {
+        this.previewOverlay?.hidePreview();
+      },
+      { passive: true }
+    );
 
     // Image interaction
     this.setupImageInteraction(canvas as HTMLCanvasElement, image);
@@ -953,13 +962,14 @@ export class ColorMatcherTool extends BaseComponent {
         // Find next closest non-excluded dye
         const allDyes = dyeService.getAllDyes();
         const filteredDyes = this.dyeFilters.filterDyes(allDyes);
-        closestDye = filteredDyes.length > 0
-          ? filteredDyes.reduce((best, dye) => {
-            const bestDist = ColorService.getColorDistance(hex, best.hex);
-            const dyeDist = ColorService.getColorDistance(hex, dye.hex);
-            return dyeDist < bestDist ? dye : best;
-          })
-          : null;
+        closestDye =
+          filteredDyes.length > 0
+            ? filteredDyes.reduce((best, dye) => {
+                const bestDist = ColorService.getColorDistance(hex, best.hex);
+                const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
+            : null;
       }
 
       // Filter within distance results
@@ -1012,7 +1022,9 @@ export class ColorMatcherTool extends BaseComponent {
       });
 
       const otherLabel = this.createElement('div', {
-        textContent: LanguageService.tInterpolate('matcher.similarDyesCount', { count: String(withinDistance.length) }),
+        textContent: LanguageService.tInterpolate('matcher.similarDyesCount', {
+          count: String(withinDistance.length),
+        }),
         className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
       });
       otherMatchesSection.appendChild(otherLabel);
@@ -1036,7 +1048,7 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard) {
-      this.fetchPricesForMatchedDyes();
+      void this.fetchPricesForMatchedDyes();
     }
   }
 
@@ -1105,8 +1117,7 @@ export class ColorMatcherTool extends BaseComponent {
     // Copy Hex button
     const copyButton = this.createElement('button', {
       textContent: LanguageService.t('matcher.copyHex'),
-      className:
-        'px-2 py-1 text-xs font-medium rounded transition-colors border cursor-pointer',
+      className: 'px-2 py-1 text-xs font-medium rounded transition-colors border cursor-pointer',
       attributes: {
         style:
           'background-color: var(--theme-background-secondary); color: var(--theme-text); border-color: var(--theme-border);',
@@ -1127,8 +1138,8 @@ export class ColorMatcherTool extends BaseComponent {
       try {
         await navigator.clipboard.writeText(dye.hex);
         this.showToast(`✓ Copied ${dye.hex} to clipboard`, 'success');
-      } catch (error) {
-        // Fallback for older browsers
+      } catch {
+        // Fallback for older browsers (clipboard API not available)
         const textArea = document.createElement('textarea');
         textArea.value = dye.hex;
         textArea.style.position = 'fixed';
@@ -1241,9 +1252,7 @@ export class ColorMatcherTool extends BaseComponent {
     const normalizedHex = hex.toUpperCase();
 
     // Remove if already exists (to move to front)
-    this.recentColors = this.recentColors.filter(
-      (c) => c.hex.toUpperCase() !== normalizedHex
-    );
+    this.recentColors = this.recentColors.filter((c) => c.hex.toUpperCase() !== normalizedHex);
 
     // Add to front
     this.recentColors.unshift({

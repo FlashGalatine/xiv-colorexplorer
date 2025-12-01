@@ -241,7 +241,11 @@ export class AnnouncerService {
    * @param value - New filter value or state
    * @param resultCount - Optional count of filtered results
    */
-  static announceFilterChange(filterName: string, value: string | boolean, resultCount?: number): void {
+  static announceFilterChange(
+    filterName: string,
+    value: string | boolean,
+    resultCount?: number
+  ): void {
     const valueText = typeof value === 'boolean' ? (value ? 'enabled' : 'disabled') : value;
     let message = `${filterName} filter ${valueText}`;
     if (resultCount !== undefined) {

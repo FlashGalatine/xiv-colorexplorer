@@ -195,7 +195,11 @@ export class DyeComparisonChart extends BaseComponent {
 
     // Draw axis names
     ctx.textAlign = 'center';
-    ctx.fillText(LanguageService.t('comparison.chart.hueAxis'), this.chartWidth / 2, this.chartHeight - 5);
+    ctx.fillText(
+      LanguageService.t('comparison.chart.hueAxis'),
+      this.chartWidth / 2,
+      this.chartHeight - 5
+    );
     ctx.save();
     ctx.translate(15, this.chartHeight / 2);
     ctx.rotate(-Math.PI / 2);
@@ -293,7 +297,11 @@ export class DyeComparisonChart extends BaseComponent {
 
     // Draw axis names
     ctx.textAlign = 'center';
-    ctx.fillText(LanguageService.t('comparison.chart.hueAxis'), this.chartWidth / 2, this.chartHeight - 5);
+    ctx.fillText(
+      LanguageService.t('comparison.chart.hueAxis'),
+      this.chartWidth / 2,
+      this.chartHeight - 5
+    );
     ctx.save();
     ctx.translate(15, this.chartHeight / 2);
     ctx.rotate(-Math.PI / 2);

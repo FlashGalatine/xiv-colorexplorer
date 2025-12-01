@@ -97,13 +97,13 @@ describe('AppLayout', () => {
 
       const picture = container.querySelector('picture');
       expect(picture).not.toBeNull();
-      
+
       const logo = container.querySelector('img[alt="XIV Dye Tools Logo"]') as HTMLImageElement;
       expect(logo).not.toBeNull();
       expect(logo.src).toContain('assets/icons/icon-192x192.png');
       expect(logo.getAttribute('title')).toBe('XIV Dye Tools');
       expect(logo.getAttribute('fetchpriority')).toBe('high');
-      
+
       const sources = picture?.querySelectorAll('source');
       expect(sources?.length).toBe(3); // mobile, tablet, default
     });
@@ -457,7 +457,8 @@ describe('AppLayout', () => {
       component = new AppLayout(container);
       component.init();
 
-      const listenerCount = component['listeners'].size;
+      // Verify listeners exist before destroy
+      expect(component['listeners'].size).toBeGreaterThan(0);
 
       component.destroy();
 

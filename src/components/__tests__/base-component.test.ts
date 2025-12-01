@@ -9,7 +9,6 @@ import { BaseComponent } from '../base-component';
 import {
   createTestContainer,
   cleanupTestContainer,
-  renderComponent,
   cleanupComponent,
   expectElement,
 } from './test-utils';

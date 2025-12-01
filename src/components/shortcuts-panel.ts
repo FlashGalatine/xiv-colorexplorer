@@ -30,24 +30,45 @@ function getShortcuts(): ShortcutGroup[] {
     {
       title: LanguageService.t('shortcuts.navigation') || 'Navigation',
       shortcuts: [
-        { keys: '1-5', description: LanguageService.t('shortcuts.switchTool') || 'Switch between tools' },
-        { keys: 'Esc', description: LanguageService.t('shortcuts.closeModal') || 'Close modal or dropdown' },
+        {
+          keys: '1-5',
+          description: LanguageService.t('shortcuts.switchTool') || 'Switch between tools',
+        },
+        {
+          keys: 'Esc',
+          description: LanguageService.t('shortcuts.closeModal') || 'Close modal or dropdown',
+        },
       ],
     },
     {
       title: LanguageService.t('shortcuts.quickActions') || 'Quick Actions',
       shortcuts: [
-        { keys: 'Shift + T', description: LanguageService.t('shortcuts.toggleTheme') || 'Toggle theme' },
-        { keys: 'Shift + L', description: LanguageService.t('shortcuts.cycleLanguage') || 'Cycle language' },
+        {
+          keys: 'Shift + T',
+          description: LanguageService.t('shortcuts.toggleTheme') || 'Toggle theme',
+        },
+        {
+          keys: 'Shift + L',
+          description: LanguageService.t('shortcuts.cycleLanguage') || 'Cycle language',
+        },
         { keys: '?', description: LanguageService.t('shortcuts.showHelp') || 'Show this panel' },
       ],
     },
     {
       title: LanguageService.t('shortcuts.dyeSelection') || 'Dye Selection',
       shortcuts: [
-        { keys: 'Tab', description: LanguageService.t('shortcuts.focusSelector') || 'Focus dye selector' },
-        { keys: '↑↓←→', description: LanguageService.t('shortcuts.navigateDyes') || 'Navigate between dyes' },
-        { keys: 'Enter', description: LanguageService.t('shortcuts.selectDye') || 'Select focused dye' },
+        {
+          keys: 'Tab',
+          description: LanguageService.t('shortcuts.focusSelector') || 'Focus dye selector',
+        },
+        {
+          keys: '↑↓←→',
+          description: LanguageService.t('shortcuts.navigateDyes') || 'Navigate between dyes',
+        },
+        {
+          keys: 'Enter',
+          description: LanguageService.t('shortcuts.selectDye') || 'Select focused dye',
+        },
       ],
     },
   ];

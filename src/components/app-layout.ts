@@ -219,8 +219,7 @@ export class AppLayout extends BaseComponent {
     // Copyright info
     const copyright = this.createElement('div', {
       className: 'text-center text-sm text-gray-600 dark:text-gray-400 mb-6',
-      innerHTML:
-        `${LanguageService.t('app.title')} v${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`,
+      innerHTML: `${LanguageService.t('app.title')} v${APP_VERSION}<br>Built with TypeScript, Vite, and Tailwind CSS`,
     });
     footerContent.appendChild(copyright);
 
@@ -266,8 +265,7 @@ export class AppLayout extends BaseComponent {
     const disclaimer = this.createElement('div', {
       className:
         'text-center text-xs text-gray-500 dark:text-gray-500 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700',
-      innerHTML:
-        `${LanguageService.t('footer.disclaimer')}<br>${LanguageService.t('footer.notAffiliated')}`,
+      innerHTML: `${LanguageService.t('footer.disclaimer')}<br>${LanguageService.t('footer.notAffiliated')}`,
     });
     footerContent.appendChild(disclaimer);
 
@@ -288,7 +286,9 @@ export class AppLayout extends BaseComponent {
    */
   onMount(): void {
     // Initialize language selector
-    const languageSelectorContainer = this.querySelector<HTMLElement>('#language-selector-container');
+    const languageSelectorContainer = this.querySelector<HTMLElement>(
+      '#language-selector-container'
+    );
     if (languageSelectorContainer) {
       this.languageSelector = new LanguageSelector(languageSelectorContainer);
       this.languageSelector.init();

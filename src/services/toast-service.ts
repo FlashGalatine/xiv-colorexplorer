@@ -102,7 +102,7 @@ export class ToastService {
       message,
       details: options.details,
       duration: options.duration ?? DEFAULT_DURATIONS[type],
-      dismissible: options.dismissible ?? (type === 'error'),
+      dismissible: options.dismissible ?? type === 'error',
       timestamp: Date.now(),
     };
 

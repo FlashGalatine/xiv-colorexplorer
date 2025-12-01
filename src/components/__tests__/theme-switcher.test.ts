@@ -9,14 +9,7 @@ import { ThemeService } from '@services/theme-service';
 import { StorageService, appStorage } from '@services/storage-service';
 import { STORAGE_KEYS } from '@shared/constants';
 import type { ThemeName } from '@shared/types';
-import {
-  createTestContainer,
-  cleanupTestContainer,
-  renderComponent,
-  cleanupComponent,
-  expectElement,
-  waitForComponent,
-} from './test-utils';
+import { renderComponent, cleanupComponent, expectElement, waitForComponent } from './test-utils';
 
 describe('ThemeSwitcher', () => {
   let container: HTMLElement;
@@ -256,9 +249,7 @@ describe('ThemeSwitcher', () => {
     it('should update component state after theme selection', () => {
       [component, container] = renderComponent(ThemeSwitcher);
 
-      const themeButton = container.querySelector(
-        '[data-theme="sugar-riot"]'
-      ) as HTMLButtonElement;
+      const themeButton = container.querySelector('[data-theme="sugar-riot"]') as HTMLButtonElement;
       themeButton.click();
 
       const state = component['getState']();

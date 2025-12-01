@@ -1,12 +1,8 @@
 import { DyeMixerTool } from '../dye-mixer-tool';
-import {
-  createTestContainer,
-  cleanupComponent,
-  setupMockLocalStorage,
-} from './test-utils';
+import { createTestContainer, cleanupComponent, setupMockLocalStorage } from './test-utils';
 import type { Dye } from '@shared/types';
 import type { LocaleCode } from '@shared/i18n-types';
-import { dyeService, ColorService, LanguageService } from '@services/index';
+import { dyeService, LanguageService } from '@services/index';
 import type { InterpolationStep } from '../color-interpolation-display';
 import type { PaletteData } from '../palette-exporter';
 import { vi } from 'vitest';
@@ -64,6 +60,7 @@ const paletteExporterDestroyMock = vi.fn();
 vi.mock('../dye-selector', () => {
   return {
     DyeSelector: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options: unknown) {}
       init(): void {
         dyeSelectorInitMock();
@@ -81,6 +78,7 @@ vi.mock('../dye-selector', () => {
 vi.mock('../color-interpolation-display', () => {
   return {
     ColorInterpolationDisplay: class {
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       constructor(
         _container: HTMLElement,
         _startColor: string,
@@ -88,6 +86,7 @@ vi.mock('../color-interpolation-display', () => {
         _steps: InterpolationStep[],
         _colorSpace: 'rgb' | 'hsv'
       ) {}
+      /* eslint-enable @typescript-eslint/no-unused-vars */
       init(): void {
         interpolationInitMock();
       }
@@ -114,6 +113,7 @@ vi.mock('../dye-filters', () => {
       onMount(): void {
         /* noop */
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       isDyeExcluded(_dye: Dye): boolean {
         return false;
       }
@@ -135,6 +135,7 @@ vi.mock('../dye-filters', () => {
 vi.mock('../palette-exporter', () => {
   return {
     PaletteExporter: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options: unknown) {}
       init(): void {
         paletteExporterInitMock();
@@ -208,7 +209,10 @@ describe('DyeMixerTool', () => {
   });
 
   it('updates step count value and triggers interpolation on slider input', () => {
-    const updateSpy = vi.spyOn(DyeMixerTool.prototype as any, 'updateInterpolation');
+    const updateSpy = vi.spyOn(
+      DyeMixerTool.prototype as unknown as { updateInterpolation: () => void },
+      'updateInterpolation'
+    );
     initComponent();
     updateSpy.mockClear();
 
@@ -225,7 +229,12 @@ describe('DyeMixerTool', () => {
 
   it('invokes interpolation when two dyes are selected', () => {
     const calcSpy = vi
-      .spyOn(DyeMixerTool.prototype as any, 'calculateInterpolation')
+      .spyOn(
+        DyeMixerTool.prototype as unknown as {
+          calculateInterpolation: () => InterpolationStep[];
+        },
+        'calculateInterpolation'
+      )
       .mockReturnValue([
         {
           position: 0,
@@ -235,7 +244,7 @@ describe('DyeMixerTool', () => {
         },
       ]);
 
-    const instance = initComponent();
+    initComponent();
     const selectorContainer = container.querySelector('#dye-selector-container')!;
 
     const start = mockDye('Start', '#ff0000');
@@ -674,27 +683,40 @@ describe('DyeMixerTool', () => {
     });
   });
 
-
   // ==========================================================================
   // Branch Coverage Tests - calculateInterpolation branches
   // ==========================================================================
 
   describe('calculateInterpolation branches', () => {
     it('should handle hue wraparound in HSV mode', () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 10, hex: '#888888' })
+      );
       const instance = initComponent();
       const startDye = createMockDye({ id: 1, hex: '#FF1A00' });
       const endDye = createMockDye({ id: 2, hex: '#FF0066' });
-      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 3, 'hsv');
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(
+        startDye,
+        endDye,
+        3,
+        'hsv'
+      );
       expect(steps).toHaveLength(3);
     });
 
     it('should handle single step case', () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 10, hex: '#888888' })
+      );
       const instance = initComponent();
       const startDye = createMockDye({ id: 1, hex: '#FF0000' });
       const endDye = createMockDye({ id: 2, hex: '#0000FF' });
-      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 1, 'rgb');
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(
+        startDye,
+        endDye,
+        1,
+        'rgb'
+      );
       expect(steps).toHaveLength(1);
       expect(steps[0].position).toBe(0);
     });
@@ -704,7 +726,12 @@ describe('DyeMixerTool', () => {
       const instance = initComponent();
       const startDye = createMockDye({ id: 1, hex: '#FF0000' });
       const endDye = createMockDye({ id: 2, hex: '#0000FF' });
-      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(startDye, endDye, 3, 'rgb');
+      const steps = (instance as unknown as ComponentWithPrivate).calculateInterpolation(
+        startDye,
+        endDye,
+        3,
+        'rgb'
+      );
       expect(steps[0].matchedDye).toBeNull();
       expect(steps[0].distance).toBe(0);
     });
@@ -726,7 +753,10 @@ describe('DyeMixerTool', () => {
     it('should return early when prompt cancelled', () => {
       vi.spyOn(window, 'prompt').mockReturnValue(null);
       const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({ id: 1 }), createMockDye({ id: 2 })];
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+      ];
       (instance as unknown as ComponentWithPrivate).saveGradient();
       const saved = JSON.parse(localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]');
       expect(saved).toHaveLength(0);
@@ -747,7 +777,12 @@ describe('DyeMixerTool', () => {
     });
 
     it('should show error when dye not found', () => {
-      localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify([{name:'Test',dye1Id:99999,dye2Id:88888,stepCount:10,colorSpace:'hsv'}]));
+      localStorage.setItem(
+        'xivdyetools_dyemixer_gradients',
+        JSON.stringify([
+          { name: 'Test', dye1Id: 99999, dye2Id: 88888, stepCount: 10, colorSpace: 'hsv' },
+        ])
+      );
       vi.spyOn(dyeService, 'getDyeById').mockReturnValue(null);
       const instance = initComponent();
       const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
@@ -792,13 +827,17 @@ describe('DyeMixerTool', () => {
     it('should handle toggleSavedGradientsPanel when container missing', () => {
       const instance = initComponent();
       container.querySelector('#saved-gradients-container')?.remove();
-      expect(() => (instance as unknown as ComponentWithPrivate).toggleSavedGradientsPanel()).not.toThrow();
+      expect(() =>
+        (instance as unknown as ComponentWithPrivate).toggleSavedGradientsPanel()
+      ).not.toThrow();
     });
 
     it('should handle updateInterpolation when container missing', () => {
       const instance = initComponent();
       container.querySelector('#interpolation-display-container')?.remove();
-      expect(() => (instance as unknown as ComponentWithPrivate).updateInterpolation()).not.toThrow();
+      expect(() =>
+        (instance as unknown as ComponentWithPrivate).updateInterpolation()
+      ).not.toThrow();
     });
   });
 
@@ -817,10 +856,18 @@ describe('DyeMixerTool', () => {
 
     it('should filter null matchedDye from steps', () => {
       const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye({id:1}), createMockDye({id:2})];
+      (instance as unknown as ComponentWithPrivate).selectedDyes = [
+        createMockDye({ id: 1 }),
+        createMockDye({ id: 2 }),
+      ];
       (instance as unknown as ComponentWithPrivate).currentSteps = [
         { position: 0, theoreticalColor: '#FF0000', matchedDye: null, distance: 0 },
-        { position: 0.5, theoreticalColor: '#00FF00', matchedDye: createMockDye({id:3}), distance: 5 },
+        {
+          position: 0.5,
+          theoreticalColor: '#00FF00',
+          matchedDye: createMockDye({ id: 3 }),
+          distance: 5,
+        },
       ];
       const paletteData = (instance as unknown as ComponentWithPrivate).getPaletteData();
       expect(paletteData.groups?.steps).toHaveLength(1);
@@ -850,7 +897,7 @@ describe('DyeMixerTool', () => {
 
       // Trigger the language change callback
       expect(languageCallback).not.toBeNull();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       languageCallback!('en');
 
       expect(updateSpy).toHaveBeenCalled();
@@ -858,7 +905,10 @@ describe('DyeMixerTool', () => {
 
     it('should call updateInterpolation after timeout', async () => {
       vi.useFakeTimers();
-      const updateSpy = vi.spyOn(DyeMixerTool.prototype as any, 'updateInterpolation');
+      const updateSpy = vi.spyOn(
+        DyeMixerTool.prototype as unknown as { updateInterpolation: () => void },
+        'updateInterpolation'
+      );
       initComponent();
 
       // Fast-forward timer
@@ -913,7 +963,7 @@ describe('DyeMixerTool', () => {
     });
 
     it('should bind toggle button click handler', () => {
-      const instance = initComponent();
+      initComponent();
       const toggleBtn = container.querySelector<HTMLButtonElement>('#toggle-saved-gradients');
       const savedContainer = container.querySelector<HTMLElement>('#saved-gradients-container');
 
@@ -945,7 +995,9 @@ describe('DyeMixerTool', () => {
     });
 
     it('should destroy interpolationDisplay when it exists', () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 10, hex: '#888888' })
+      );
       const instance = initComponent();
 
       // Trigger interpolation to create display
@@ -982,11 +1034,16 @@ describe('DyeMixerTool', () => {
       expect(saved).toHaveLength(1);
       expect(saved[0].name).toBe('My Test Gradient');
       expect(saved[0].stepCount).toBe(12);
-      expect(showToastSpy).toHaveBeenCalledWith(expect.stringContaining('My Test Gradient'), 'success');
+      expect(showToastSpy).toHaveBeenCalledWith(
+        expect.stringContaining('My Test Gradient'),
+        'success'
+      );
     });
 
     it('should append to existing gradients', () => {
-      const existingGradients = [{ name: 'Existing', dye1Id: 1, dye2Id: 2, stepCount: 10, colorSpace: 'hsv' }];
+      const existingGradients = [
+        { name: 'Existing', dye1Id: 1, dye2Id: 2, stepCount: 10, colorSpace: 'hsv' },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(existingGradients));
       vi.spyOn(window, 'prompt').mockReturnValue('New Gradient');
 
@@ -1011,20 +1068,20 @@ describe('DyeMixerTool', () => {
     it('should load gradient and set selected dyes', () => {
       const dye1 = createMockDye({ id: 101, name: 'Loaded Red' });
       const dye2 = createMockDye({ id: 102, name: 'Loaded Blue' });
-      vi.spyOn(dyeService, 'getDyeById')
-        .mockReturnValueOnce(dye1)
-        .mockReturnValueOnce(dye2);
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValueOnce(dye1).mockReturnValueOnce(dye2);
 
-      const gradients = [{
-        name: 'Saved Gradient',
-        dye1Id: 101,
-        dye2Id: 102,
-        dye1Name: 'Loaded Red',
-        dye2Name: 'Loaded Blue',
-        stepCount: 15,
-        colorSpace: 'rgb',
-        timestamp: new Date().toISOString(),
-      }];
+      const gradients = [
+        {
+          name: 'Saved Gradient',
+          dye1Id: 101,
+          dye2Id: 102,
+          dye1Name: 'Loaded Red',
+          dye2Name: 'Loaded Blue',
+          stepCount: 15,
+          colorSpace: 'rgb',
+          timestamp: new Date().toISOString(),
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
@@ -1036,23 +1093,26 @@ describe('DyeMixerTool', () => {
       expect((instance as unknown as ComponentWithPrivate).stepCount).toBe(15);
       expect((instance as unknown as ComponentWithPrivate).colorSpace).toBe('rgb');
       expect(dyeSelectorSetSelectedDyesMock).toHaveBeenCalledWith([dye1, dye2]);
-      expect(showToastSpy).toHaveBeenCalledWith(expect.stringContaining('Saved Gradient'), 'success');
+      expect(showToastSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Saved Gradient'),
+        'success'
+      );
     });
 
     it('should update step count input UI', () => {
       const dye1 = createMockDye({ id: 101 });
       const dye2 = createMockDye({ id: 102 });
-      vi.spyOn(dyeService, 'getDyeById')
-        .mockReturnValueOnce(dye1)
-        .mockReturnValueOnce(dye2);
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValueOnce(dye1).mockReturnValueOnce(dye2);
 
-      const gradients = [{
-        name: 'Test',
-        dye1Id: 101,
-        dye2Id: 102,
-        stepCount: 18,
-        colorSpace: 'hsv',
-      }];
+      const gradients = [
+        {
+          name: 'Test',
+          dye1Id: 101,
+          dye2Id: 102,
+          stepCount: 18,
+          colorSpace: 'hsv',
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
@@ -1065,17 +1125,17 @@ describe('DyeMixerTool', () => {
     it('should check color space radio button', () => {
       const dye1 = createMockDye({ id: 101 });
       const dye2 = createMockDye({ id: 102 });
-      vi.spyOn(dyeService, 'getDyeById')
-        .mockReturnValueOnce(dye1)
-        .mockReturnValueOnce(dye2);
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValueOnce(dye1).mockReturnValueOnce(dye2);
 
-      const gradients = [{
-        name: 'Test',
-        dye1Id: 101,
-        dye2Id: 102,
-        stepCount: 10,
-        colorSpace: 'rgb',
-      }];
+      const gradients = [
+        {
+          name: 'Test',
+          dye1Id: 101,
+          dye2Id: 102,
+          stepCount: 10,
+          colorSpace: 'rgb',
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
@@ -1088,15 +1148,15 @@ describe('DyeMixerTool', () => {
     it('should use default values when gradient missing stepCount/colorSpace', () => {
       const dye1 = createMockDye({ id: 101 });
       const dye2 = createMockDye({ id: 102 });
-      vi.spyOn(dyeService, 'getDyeById')
-        .mockReturnValueOnce(dye1)
-        .mockReturnValueOnce(dye2);
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValueOnce(dye1).mockReturnValueOnce(dye2);
 
-      const gradients = [{
-        name: 'Minimal',
-        dye1Id: 101,
-        dye2Id: 102,
-      }];
+      const gradients = [
+        {
+          name: 'Minimal',
+          dye1Id: 101,
+          dye2Id: 102,
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
@@ -1167,17 +1227,11 @@ describe('DyeMixerTool', () => {
 
       (instance as unknown as ComponentWithPrivate).copyShareUrl();
 
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(clipboardWriteMock).toHaveBeenCalledWith(
-        expect.stringContaining('dye1=100')
-      );
-      expect(clipboardWriteMock).toHaveBeenCalledWith(
-        expect.stringContaining('dye2=200')
-      );
-      expect(clipboardWriteMock).toHaveBeenCalledWith(
-        expect.stringContaining('steps=8')
-      );
+      expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('dye1=100'));
+      expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('dye2=200'));
+      expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('steps=8'));
       expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'success');
     });
 
@@ -1199,7 +1253,7 @@ describe('DyeMixerTool', () => {
 
       (instance as unknown as ComponentWithPrivate).copyShareUrl();
 
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
     });
@@ -1213,19 +1267,19 @@ describe('DyeMixerTool', () => {
     it('should load gradient when load button clicked', () => {
       const dye1 = createMockDye({ id: 101 });
       const dye2 = createMockDye({ id: 102 });
-      vi.spyOn(dyeService, 'getDyeById')
-        .mockReturnValueOnce(dye1)
-        .mockReturnValueOnce(dye2);
+      vi.spyOn(dyeService, 'getDyeById').mockReturnValueOnce(dye1).mockReturnValueOnce(dye2);
 
-      const gradients = [{
-        name: 'Clickable',
-        dye1Id: 101,
-        dye2Id: 102,
-        dye1Name: 'Red',
-        dye2Name: 'Blue',
-        stepCount: 10,
-        colorSpace: 'hsv',
-      }];
+      const gradients = [
+        {
+          name: 'Clickable',
+          dye1Id: 101,
+          dye2Id: 102,
+          dye1Name: 'Red',
+          dye2Name: 'Blue',
+          stepCount: 10,
+          colorSpace: 'hsv',
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
@@ -1239,13 +1293,15 @@ describe('DyeMixerTool', () => {
     });
 
     it('should delete gradient when delete button clicked', () => {
-      const gradients = [{
-        name: 'ToDelete',
-        dye1Id: 1,
-        dye2Id: 2,
-        dye1Name: 'Red',
-        dye2Name: 'Blue',
-      }];
+      const gradients = [
+        {
+          name: 'ToDelete',
+          dye1Id: 1,
+          dye2Id: 2,
+          dye1Name: 'Red',
+          dye2Name: 'Blue',
+        },
+      ];
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       initComponent();
@@ -1267,7 +1323,9 @@ describe('DyeMixerTool', () => {
 
   describe('updateInterpolation existing display destruction', () => {
     it('should destroy existing interpolation display before creating new one', () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 10, hex: '#888888' })
+      );
       const instance = initComponent();
 
       // First interpolation
@@ -1288,7 +1346,9 @@ describe('DyeMixerTool', () => {
     });
 
     it('should update paletteExporter after interpolation', () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 10, hex: '#888888' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 10, hex: '#888888' })
+      );
       const instance = initComponent();
 
       paletteExporterUpdateMock.mockClear();
@@ -1433,5 +1493,4 @@ describe('DyeMixerTool', () => {
       }).not.toThrow();
     });
   });
-
 });

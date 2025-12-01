@@ -511,7 +511,9 @@ describe('MarketBoard', () => {
       component = new MarketBoard(container);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('selectedServer');
       expect(state).toHaveProperty('showPrices');
@@ -648,7 +650,9 @@ describe('MarketBoard', () => {
 
     it('should return true for Allied Society Dye when alliedSocietyDyes enabled', () => {
       // Enable alliedSocietyDyes checkbox (default is false)
-      const alliedCheckbox = container.querySelector('#mb-price-alliedSocietyDyes') as HTMLInputElement;
+      const alliedCheckbox = container.querySelector(
+        '#mb-price-alliedSocietyDyes'
+      ) as HTMLInputElement;
       alliedCheckbox.checked = true;
       alliedCheckbox.dispatchEvent(new Event('change'));
 

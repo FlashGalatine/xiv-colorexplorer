@@ -87,9 +87,7 @@ export class LoadingSpinner extends BaseComponent {
     // Loading message (visible and for screen readers)
     if (this.options.message) {
       const message = this.createElement('span', {
-        className: this.options.inline
-          ? 'text-sm text-current'
-          : 'text-sm text-current opacity-75',
+        className: this.options.inline ? 'text-sm text-current' : 'text-sm text-current opacity-75',
         textContent: this.options.message,
       });
       wrapper.appendChild(message);
@@ -137,10 +135,7 @@ export class LoadingSpinner extends BaseComponent {
 /**
  * Create and render an inline spinner (for buttons, etc.)
  */
-export function createInlineSpinner(
-  container: HTMLElement,
-  message?: string
-): LoadingSpinner {
+export function createInlineSpinner(container: HTMLElement, message?: string): LoadingSpinner {
   const spinner = new LoadingSpinner(container, {
     size: 'sm',
     message,
@@ -152,10 +147,7 @@ export function createInlineSpinner(
 /**
  * Create and render a block spinner (for content areas)
  */
-export function createBlockSpinner(
-  container: HTMLElement,
-  message?: string
-): LoadingSpinner {
+export function createBlockSpinner(container: HTMLElement, message?: string): LoadingSpinner {
   const spinner = new LoadingSpinner(container, {
     size: 'md',
     message,

@@ -222,7 +222,9 @@ describe('ColorblindnessDisplay', () => {
       component.init();
 
       // Normal vision should show the original color
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
       const simulatedColors = state.simulatedColors as Record<string, string>;
 
       expect(simulatedColors.normal).toBe('#FF0000');
@@ -238,7 +240,9 @@ describe('ColorblindnessDisplay', () => {
       component = new ColorblindnessDisplay(container, '#00FF00');
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('originalColor', '#00FF00');
       expect(state).toHaveProperty('simulatedColors');
@@ -248,7 +252,9 @@ describe('ColorblindnessDisplay', () => {
       component = new ColorblindnessDisplay(container, '#FF0000');
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
       const simulatedColors = state.simulatedColors as Record<string, string>;
 
       expect(simulatedColors).toHaveProperty('normal');
@@ -293,7 +299,9 @@ describe('ColorblindnessDisplay', () => {
       component = new ColorblindnessDisplay(container, '#FF0000');
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
       const simulatedColors = state.simulatedColors as Record<string, string>;
 
       // Achromatopsia should produce a grayscale color

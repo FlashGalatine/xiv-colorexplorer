@@ -191,7 +191,8 @@ export class WelcomeModal {
     buttonContainer.className = 'flex justify-end gap-3 mt-4';
 
     const getStartedBtn = document.createElement('button');
-    getStartedBtn.className = 'px-6 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1';
+    getStartedBtn.className =
+      'px-6 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1';
     getStartedBtn.style.backgroundColor = 'var(--theme-primary)';
     getStartedBtn.style.color = 'var(--theme-text-header)';
     getStartedBtn.addEventListener('mouseenter', () => {

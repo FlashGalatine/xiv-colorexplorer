@@ -6,7 +6,6 @@
  * @module components/__tests__/test-utils
  */
 
-import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import type { BaseComponent } from '../base-component';
 import { vi } from 'vitest';
@@ -288,7 +287,9 @@ export function setupCanvasMocks(): void {
   } as unknown as CanvasRenderingContext2D;
 
   vi.spyOn(window.HTMLCanvasElement.prototype, 'getContext').mockReturnValue(mockContext);
-  vi.spyOn(window.HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/png;base64,mock');
+  vi.spyOn(window.HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue(
+    'data:image/png;base64,mock'
+  );
 }
 
 /**

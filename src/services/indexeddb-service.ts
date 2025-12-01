@@ -156,7 +156,7 @@ export class IndexedDBService {
 
         request.onsuccess = () => {
           const result = request.result;
-          resolve(result ? result.value ?? result : null);
+          resolve(result ? (result.value ?? result) : null);
         };
 
         request.onerror = () => {

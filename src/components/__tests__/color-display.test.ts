@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ColorDisplay } from '../color-display';
-import { createTestContainer, cleanupTestContainer, waitForComponent } from './test-utils';
+import { createTestContainer, cleanupTestContainer } from './test-utils';
 import type { Dye } from '@shared/types';
 
 // Mock dye data - use unique IDs to avoid conflicts with real dye database
@@ -285,7 +285,9 @@ describe('ColorDisplay', () => {
       component.init();
       component.setDye(mockDye);
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('displayDye');
       expect(state.displayDye).toEqual(mockDye);

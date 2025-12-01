@@ -11,16 +11,15 @@ import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
 import { HarmonyType, type HarmonyTypeInfo } from './harmony-type';
 import { MarketBoard } from './market-board';
-import { DyeFilters, type DyeFilterConfig } from './dye-filters';
+import { DyeFilters } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
-import { EmptyState, EMPTY_STATE_PRESETS } from './empty-state';
+import { EmptyState } from './empty-state';
 import { ICON_HARMONY } from '@shared/empty-state-icons';
 import { showSavedPalettesModal, showSavePaletteDialog } from './saved-palettes-modal';
 import { ColorService, DyeService, LanguageService, PaletteService } from '@services/index';
 import { appStorage } from '@services/storage-service';
 import {
   STORAGE_KEYS,
-  EXPENSIVE_DYE_IDS,
   COMPANION_DYES_MIN,
   COMPANION_DYES_MAX,
   COMPANION_DYES_DEFAULT,
@@ -276,8 +275,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     const generateBtn = this.createElement('button', {
       textContent: LanguageService.t('common.generate'),
-      className:
-        'px-6 py-2 rounded-lg transition-all duration-200 font-semibold w-full sm:w-auto',
+      className: 'px-6 py-2 rounded-lg transition-all duration-200 font-semibold w-full sm:w-auto',
       attributes: {
         style: 'background-color: var(--theme-primary); color: var(--theme-text-header);',
       },
@@ -306,8 +304,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
     const divider = this.createElement('div', {
       className: 'relative',
     });
-    divider.innerHTML =
-      `<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">${LanguageService.t('common.or')}</span></div>`;
+    divider.innerHTML = `<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">${LanguageService.t('common.or')}</span></div>`;
     inputMethods.appendChild(divider);
 
     // Dye selector
@@ -556,7 +553,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
         const customEvent = event as CustomEvent;
         this.showPrices = customEvent.detail?.showPrices ?? false;
         if (this.showPrices) {
-          this.fetchPricesForCurrentDyes();
+          void this.fetchPricesForCurrentDyes();
         } else {
           this.priceData.clear();
           this.updateAllDisplays();
@@ -565,19 +562,19 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
       marketBoardContainer.addEventListener('server-changed', () => {
         if (this.showPrices) {
-          this.fetchPricesForCurrentDyes();
+          void this.fetchPricesForCurrentDyes();
         }
       });
 
       marketBoardContainer.addEventListener('categories-changed', () => {
         if (this.showPrices) {
-          this.fetchPricesForCurrentDyes();
+          void this.fetchPricesForCurrentDyes();
         }
       });
 
       marketBoardContainer.addEventListener('refresh-requested', () => {
         if (this.showPrices) {
-          this.fetchPricesForCurrentDyes();
+          void this.fetchPricesForCurrentDyes();
         }
       });
 
@@ -685,9 +682,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
         : 'Unknown';
 
       // Get companion dye names
-      const companions = dyes.map(
-        (dye) => LanguageService.getDyeName(dye.itemID) || dye.name
-      );
+      const companions = dyes.map((dye) => LanguageService.getDyeName(dye.itemID) || dye.name);
 
       // Show save dialog
       showSavePaletteDialog(harmonyType, harmonyName, baseColor, baseDyeName, companions);
@@ -717,7 +712,6 @@ export class HarmonyGeneratorTool extends BaseComponent {
       });
     }
   }
-
 
   /**
    * Load suggestions mode from localStorage
@@ -787,11 +781,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
       // 2. Isn't already used
       // 3. Isn't Facewear
       for (const dye of allDyes) {
-        if (
-          usedDyeIds.has(dye.itemID) ||
-          dye.category === 'Facewear' ||
-          this.isDyeExcluded(dye)
-        ) {
+        if (usedDyeIds.has(dye.itemID) || dye.category === 'Facewear' || this.isDyeExcluded(dye)) {
           continue;
         }
 
@@ -951,7 +941,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             usedDyeIds.add(closestDye.itemID);
             expandedDyes.push({
               dye: closestDye,
-              deviance: this.calculateHueDeviance(this.baseColor, closestDye.hex, HARMONY_OFFSETS[harmonyId] || []),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                closestDye.hex,
+                HARMONY_OFFSETS[harmonyId] || []
+              ),
             });
           } else {
             // No more dyes available, stop looking for this harmony color
@@ -1020,7 +1014,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
           case 'complementary': {
             const dye = dyeService.findComplementaryPair(this.baseColor);
             if (dye) {
-              const deviance = this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.complementary);
+              const deviance = this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS.complementary
+              );
               matchedDyes = [{ dye, deviance }];
             }
             break;
@@ -1030,7 +1028,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const dyes = dyeService.findAnalogousDyes(this.baseColor, 30);
             matchedDyes = dyes.map((dye) => ({
               dye,
-              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.analogous),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS.analogous
+              ),
             }));
             break;
           }
@@ -1048,7 +1050,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const dyes = dyeService.findSplitComplementaryDyes(this.baseColor);
             matchedDyes = dyes.map((dye) => ({
               dye,
-              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS['split-complementary']),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS['split-complementary']
+              ),
             }));
             break;
           }
@@ -1057,7 +1063,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const dyes = dyeService.findTetradicDyes(this.baseColor);
             matchedDyes = dyes.map((dye) => ({
               dye,
-              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.tetradic),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS.tetradic
+              ),
             }));
             break;
           }
@@ -1075,7 +1085,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const monochromatic = dyeService.findMonochromaticDyes(this.baseColor);
             matchedDyes = monochromatic.map((dye) => ({
               dye,
-              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.monochromatic),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS.monochromatic
+              ),
             }));
             break;
           }
@@ -1084,7 +1098,11 @@ export class HarmonyGeneratorTool extends BaseComponent {
             const compound = dyeService.findCompoundDyes(this.baseColor);
             matchedDyes = compound.map((dye) => ({
               dye,
-              deviance: this.calculateHueDeviance(this.baseColor, dye.hex, HARMONY_OFFSETS.compound),
+              deviance: this.calculateHueDeviance(
+                this.baseColor,
+                dye.hex,
+                HARMONY_OFFSETS.compound
+              ),
             }));
             break;
           }
@@ -1134,7 +1152,7 @@ export class HarmonyGeneratorTool extends BaseComponent {
 
     // Fetch prices if enabled
     if (this.showPrices && this.marketBoard) {
-      this.fetchPricesForCurrentDyes();
+      void this.fetchPricesForCurrentDyes();
     }
 
     // Update palette exporter
@@ -1184,10 +1202,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Load companion dyes count from localStorage
    */
   private loadCompanionDyesCount(): void {
-    const saved = appStorage.getItem<number>(
-      STORAGE_KEYS.HARMONY_COMPANION_DYES,
-      COMPANION_DYES_DEFAULT
-    ) ?? COMPANION_DYES_DEFAULT;
+    const saved =
+      appStorage.getItem<number>(STORAGE_KEYS.HARMONY_COMPANION_DYES, COMPANION_DYES_DEFAULT) ??
+      COMPANION_DYES_DEFAULT;
     this.companionDyesCount = Math.max(COMPANION_DYES_MIN, Math.min(COMPANION_DYES_MAX, saved));
 
     // Update input and display
@@ -1222,7 +1239,9 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Toggle companion dyes section visibility based on suggestions mode
    */
   private toggleCompanionSection(): void {
-    const section = (this as unknown as Record<string, HTMLElement>)._companionDyesSection as HTMLElement | undefined;
+    const section = (this as unknown as Record<string, HTMLElement>)._companionDyesSection as
+      | HTMLElement
+      | undefined;
     if (!section) return;
 
     if (this.suggestionsMode === 'expanded') {

@@ -56,7 +56,8 @@ export const EMPTY_STATE_PRESETS = {
   allFilteredOut: (onReset?: () => void): EmptyStateOptions => ({
     icon: ICON_PALETTE,
     title: 'All suggestions were filtered out',
-    description: 'Your current filters are hiding all matching dyes. Try adjusting your filter settings.',
+    description:
+      'Your current filters are hiding all matching dyes. Try adjusting your filter settings.',
     actionLabel: 'Reset filters',
     onAction: onReset,
   }),
@@ -64,7 +65,8 @@ export const EMPTY_STATE_PRESETS = {
   noPriceData: (onTryAnother?: () => void): EmptyStateOptions => ({
     icon: ICON_COINS,
     title: 'No price data available',
-    description: 'This dye may not be tradeable or Universalis doesn\'t have recent data for this server.',
+    description:
+      "This dye may not be tradeable or Universalis doesn't have recent data for this server.",
     actionLabel: 'Try different server',
     onAction: onTryAnother,
   }),
@@ -218,10 +220,7 @@ export class EmptyState extends BaseComponent {
 /**
  * Create an empty state from a preset
  */
-export function createEmptyState(
-  container: HTMLElement,
-  preset: EmptyStateOptions
-): EmptyState {
+export function createEmptyState(container: HTMLElement, preset: EmptyStateOptions): EmptyState {
   const emptyState = new EmptyState(container, preset);
   return emptyState.init();
 }

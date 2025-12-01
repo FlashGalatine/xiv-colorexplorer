@@ -137,7 +137,10 @@ export class PaletteService {
   /**
    * Update an existing palette
    */
-  static updatePalette(id: string, updates: Partial<Omit<SavedPalette, 'id' | 'dateCreated'>>): boolean {
+  static updatePalette(
+    id: string,
+    updates: Partial<Omit<SavedPalette, 'id' | 'dateCreated'>>
+  ): boolean {
     try {
       const palettes = this.getPalettes();
       const index = palettes.findIndex((p) => p.id === id);

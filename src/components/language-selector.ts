@@ -32,7 +32,8 @@ export class LanguageSelector extends BaseComponent {
     const isLightText = ColorService.getOptimalTextColor(themeObject.palette.primary) === '#FFFFFF';
 
     // Get current locale display info
-    const currentLocaleInfo = LOCALE_DISPLAY_INFO.find(l => l.code === this.currentLocale) || LOCALE_DISPLAY_INFO[0];
+    const currentLocaleInfo =
+      LOCALE_DISPLAY_INFO.find((l) => l.code === this.currentLocale) || LOCALE_DISPLAY_INFO[0];
 
     // Create button to toggle dropdown
     const button = this.createElement('button', {
@@ -51,7 +52,9 @@ export class LanguageSelector extends BaseComponent {
 
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
-      button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+      button.style.backgroundColor = isLightText
+        ? 'rgba(255, 255, 255, 0.15)'
+        : 'rgba(0, 0, 0, 0.15)';
     });
     button.addEventListener('mouseleave', () => {
       button.style.backgroundColor = 'transparent';
@@ -222,7 +225,9 @@ export class LanguageSelector extends BaseComponent {
   private toggleDropdown(button: HTMLButtonElement, dropdown: HTMLDivElement): void {
     if (!this.isDropdownOpen) {
       // Close other dropdowns (Tools dropdown, Theme switcher)
-      document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'language' } }));
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'language' } })
+      );
     }
 
     this.isDropdownOpen = !this.isDropdownOpen;

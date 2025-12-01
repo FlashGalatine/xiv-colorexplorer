@@ -338,7 +338,8 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const swatch = this.createElement('div', {
-      className: 'dye-swatch w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className:
+        'dye-swatch w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.hex}`,
       },
@@ -444,12 +445,12 @@ export class AccessibilityCheckerTool extends BaseComponent {
       key: keyof typeof result.colorblindnessSimulations;
       localeKey: string;
     }> = [
-        { key: 'normal', localeKey: 'normal' },
-        { key: 'deuteranopia', localeKey: 'deuteranopia' },
-        { key: 'protanopia', localeKey: 'protanopia' },
-        { key: 'tritanopia', localeKey: 'tritanopia' },
-        { key: 'achromatopsia', localeKey: 'achromatopsia' },
-      ];
+      { key: 'normal', localeKey: 'normal' },
+      { key: 'deuteranopia', localeKey: 'deuteranopia' },
+      { key: 'protanopia', localeKey: 'protanopia' },
+      { key: 'tritanopia', localeKey: 'tritanopia' },
+      { key: 'achromatopsia', localeKey: 'achromatopsia' },
+    ];
 
     for (const visionType of visionTypes) {
       const simCard = this.createElement('div', {
@@ -498,7 +499,8 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'flex-1 flex items-center gap-2',
     });
     const leftSwatch = this.createElement('div', {
-      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className:
+        'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.dye1Hex}`,
       },
@@ -527,7 +529,8 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'text-sm font-medium text-gray-900 dark:text-white truncate text-right',
     });
     const rightSwatch = this.createElement('div', {
-      className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
+      className:
+        'dye-swatch w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex-shrink-0',
       attributes: {
         style: `background-color: ${result.dye2Hex}`,
       },
@@ -710,7 +713,9 @@ export class AccessibilityCheckerTool extends BaseComponent {
       className: 'text-xl font-bold text-gray-900 dark:text-white',
     });
     const description = this.createElement('p', {
-      textContent: LanguageService.tInterpolate('accessibility.overallScoreDesc', { count: this.dyeResults.length.toString() }),
+      textContent: LanguageService.tInterpolate('accessibility.overallScoreDesc', {
+        count: this.dyeResults.length.toString(),
+      }),
       className: 'text-sm text-gray-600 dark:text-gray-400 mt-1',
     });
     titleSection.appendChild(title);

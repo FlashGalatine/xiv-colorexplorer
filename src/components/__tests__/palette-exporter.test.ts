@@ -42,9 +42,7 @@ const mockPaletteData: PaletteData = {
       createMockDye(2, 'Coral Pink', '#FF8080'),
       createMockDye(3, 'Rose Pink', '#FF6699'),
     ],
-    complementary: [
-      createMockDye(4, 'Sky Blue', '#87CEEB'),
-    ],
+    complementary: [createMockDye(4, 'Sky Blue', '#87CEEB')],
   },
   metadata: {
     generator: 'XIV Dye Tools',
@@ -456,7 +454,9 @@ describe('PaletteExporter', () => {
       });
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('title', 'Test Title');
       expect(state).toHaveProperty('enabled', true);

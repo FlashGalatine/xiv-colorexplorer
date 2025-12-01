@@ -76,6 +76,7 @@ const imageUploadInitMock = vi.fn();
 vi.mock('../image-upload-display', () => {
   return {
     ImageUploadDisplay: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement) {}
       init(): void {
         imageUploadInitMock();
@@ -91,10 +92,12 @@ const colorPickerInitMock = vi.fn();
 vi.mock('../color-picker-display', () => {
   return {
     ColorPickerDisplay: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement) {}
       init(): void {
         colorPickerInitMock();
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setColorFromImage(_canvas: HTMLCanvasElement, _x: number, _y: number, _size: number): void {
         /* noop */
       }
@@ -198,13 +201,11 @@ describe('ColorMatcherTool', () => {
     const uploadContainer = container.querySelector('#image-upload-container')!;
     const image = document.createElement('img');
 
-    uploadContainer!.dispatchEvent(
-      new CustomEvent('image-loaded', { detail: { image } })
-    );
+    uploadContainer!.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
-    expect(
-      (component as unknown as { currentImage: HTMLImageElement | null }).currentImage
-    ).toBe(image);
+    expect((component as unknown as { currentImage: HTMLImageElement | null }).currentImage).toBe(
+      image
+    );
     expect(container.textContent).toContain('Privacy:');
   });
 
@@ -654,7 +655,9 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should render other matches when present', async () => {
-      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(createMockDye({ id: 1, name: 'Best Dye' }));
+      vi.spyOn(dyeService, 'findClosestDye').mockReturnValue(
+        createMockDye({ id: 1, name: 'Best Dye' })
+      );
       vi.spyOn(dyeService, 'findDyesWithinDistance').mockReturnValue([
         createMockDye({ id: 2, name: 'Similar 1' }),
         createMockDye({ id: 3, name: 'Similar 2' }),
@@ -717,7 +720,6 @@ describe('ColorMatcherTool', () => {
       const resultsContainer = container.querySelector('#results-container');
       expect(resultsContainer?.textContent).toContain('Only Dye');
       // Should not have "Similar" section
-      const sections = resultsContainer?.querySelectorAll('.space-y-2');
       // The section count confirms no similar dyes section was added
       expect(resultsContainer?.textContent).not.toContain('Similar (');
     });
@@ -837,7 +839,7 @@ describe('ColorMatcherTool', () => {
       await copyButton?.click();
 
       // Give time for async click handler
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(writeTextMock).toHaveBeenCalledWith('#AABBCC');
     });
@@ -861,7 +863,7 @@ describe('ColorMatcherTool', () => {
       await copyButton?.click();
 
       // Give time for async click handler
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(execCommandMock).toHaveBeenCalledWith('copy');
     });
@@ -964,9 +966,7 @@ describe('ColorMatcherTool', () => {
 
       document.getElementById('toast-container')?.remove();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('error', { detail: {} })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('error', { detail: {} }));
 
       // Should show default error message
       const toastContainer = document.getElementById('toast-container');
@@ -995,9 +995,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       // Should have canvas element
       const canvas = container.querySelector('#image-canvas');
@@ -1009,9 +1007,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       // Should have zoom buttons
       expect(container.querySelector('#zoom-fit-btn')).not.toBeNull();
@@ -1027,9 +1023,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       expect((instance as unknown as { currentImage: HTMLImageElement }).currentImage).toBe(image);
     });
@@ -1042,9 +1036,7 @@ describe('ColorMatcherTool', () => {
       (instance as unknown as ComponentWithPrivate).zoomLevel = 150;
 
       const image = createMockImage();
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBe(100);
     });
@@ -1054,9 +1046,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage(300, 200);
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
       expect(canvas.getAttribute('width')).toBe('300');
@@ -1073,7 +1063,9 @@ describe('ColorMatcherTool', () => {
       // Call showImageOverlay directly
       const image = createMockImage();
       expect(() => {
-        (instance as unknown as { showImageOverlay: (img: HTMLImageElement) => void }).showImageOverlay(image);
+        (
+          instance as unknown as { showImageOverlay: (img: HTMLImageElement) => void }
+        ).showImageOverlay(image);
       }).not.toThrow();
     });
   });
@@ -1097,18 +1089,18 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Simulate mousedown
-      canvas.dispatchEvent(new MouseEvent('mousedown', {
-        clientX: 50,
-        clientY: 50,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousedown', {
+          clientX: 50,
+          clientY: 50,
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1119,25 +1111,27 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Start drag
-      canvas.dispatchEvent(new MouseEvent('mousedown', {
-        clientX: 50,
-        clientY: 50,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousedown', {
+          clientX: 50,
+          clientY: 50,
+          bubbles: true,
+        })
+      );
 
       // Move mouse
-      canvas.dispatchEvent(new MouseEvent('mousemove', {
-        clientX: 100,
-        clientY: 100,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousemove', {
+          clientX: 100,
+          clientY: 100,
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1148,24 +1142,26 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Start and finish drag
-      canvas.dispatchEvent(new MouseEvent('mousedown', {
-        clientX: 50,
-        clientY: 50,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousedown', {
+          clientX: 50,
+          clientY: 50,
+          bubbles: true,
+        })
+      );
 
-      canvas.dispatchEvent(new MouseEvent('mouseup', {
-        clientX: 100,
-        clientY: 100,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mouseup', {
+          clientX: 100,
+          clientY: 100,
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1176,23 +1172,25 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Start drag
-      canvas.dispatchEvent(new MouseEvent('mousedown', {
-        clientX: 50,
-        clientY: 50,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousedown', {
+          clientX: 50,
+          clientY: 50,
+          bubbles: true,
+        })
+      );
 
       // Leave canvas while dragging
-      canvas.dispatchEvent(new MouseEvent('mouseleave', {
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mouseleave', {
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1203,18 +1201,18 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Move mouse without mousedown (not dragging)
-      canvas.dispatchEvent(new MouseEvent('mousemove', {
-        clientX: 100,
-        clientY: 100,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mousemove', {
+          clientX: 100,
+          clientY: 100,
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1225,18 +1223,18 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Mouseup without prior mousedown
-      canvas.dispatchEvent(new MouseEvent('mouseup', {
-        clientX: 100,
-        clientY: 100,
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mouseup', {
+          clientX: 100,
+          clientY: 100,
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1247,16 +1245,16 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
 
       // Leave canvas without dragging
-      canvas.dispatchEvent(new MouseEvent('mouseleave', {
-        bubbles: true,
-      }));
+      canvas.dispatchEvent(
+        new MouseEvent('mouseleave', {
+          bubbles: true,
+        })
+      );
 
       // Should not throw
       expect(canvas).not.toBeNull();
@@ -1282,9 +1280,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const zoomInBtn = container.querySelector('#zoom-in-btn');
       zoomInBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -1297,9 +1293,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const zoomOutBtn = container.querySelector('#zoom-out-btn');
       zoomOutBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -1312,9 +1306,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       // First zoom in
       (instance as unknown as ComponentWithPrivate).zoomLevel = 150;
@@ -1330,15 +1322,13 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage(400, 300);
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const fitBtn = container.querySelector('#zoom-fit-btn');
       fitBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
       // Wait for requestAnimationFrame
-      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       // Zoom should be adjusted (not necessarily 100)
       expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeGreaterThan(0);
@@ -1349,15 +1339,13 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage(400, 300);
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const widthBtn = container.querySelector('#zoom-width-btn');
       widthBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
       // Wait for requestAnimationFrame
-      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
       // Zoom should be adjusted
       expect((instance as unknown as ComponentWithPrivate).zoomLevel).toBeGreaterThan(0);
@@ -1368,9 +1356,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       // Set to near maximum
       (instance as unknown as ComponentWithPrivate).zoomLevel = 400;
@@ -1387,9 +1373,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       // Set to minimum
       (instance as unknown as ComponentWithPrivate).zoomLevel = 10;
@@ -1406,9 +1390,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvasContainer = container.querySelector('#canvas-container');
 
@@ -1429,9 +1411,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvasContainer = container.querySelector('#canvas-container');
       const initialZoom = (instance as unknown as ComponentWithPrivate).zoomLevel;
@@ -1453,9 +1433,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const zoomInBtn = container.querySelector('#zoom-in-btn');
       zoomInBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -1469,9 +1447,7 @@ describe('ColorMatcherTool', () => {
       const uploadContainer = container.querySelector('#image-upload-container');
       const image = createMockImage();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('image-loaded', { detail: { image } })
-      );
+      uploadContainer?.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
 
       const canvasContainer = container.querySelector('#canvas-container');
 
@@ -1556,4 +1532,3 @@ describe('ColorMatcherTool', () => {
     });
   });
 });
-

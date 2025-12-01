@@ -205,7 +205,9 @@ describe('OutfitSlotSelector', () => {
       component = new OutfitSlotSelector(container, true);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('slotCount', 6);
       expect(state).toHaveProperty('selectedSlotCount', 0);
@@ -346,7 +348,9 @@ describe('OutfitSlotSelector', () => {
       toggle.dispatchEvent(new Event('change', { bubbles: true }));
 
       // Component should re-render with dual dyes enabled
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
       expect(state.dualDyesEnabled).toBe(true);
     });
 
@@ -400,10 +404,13 @@ describe('OutfitSlotSelector', () => {
       });
       primaryContainer?.dispatchEvent(event);
 
-      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
-        slotId: 'head',
-        primary: mockDye,
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'slot-changed',
+        expect.objectContaining({
+          slotId: 'head',
+          primary: mockDye,
+        })
+      );
     });
 
     it('should handle empty selection on primary container', () => {
@@ -422,10 +429,13 @@ describe('OutfitSlotSelector', () => {
       });
       primaryContainer?.dispatchEvent(event);
 
-      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
-        slotId: 'head',
-        primary: null,
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'slot-changed',
+        expect.objectContaining({
+          slotId: 'head',
+          primary: null,
+        })
+      );
     });
 
     it('should handle selection-changed without detail', () => {
@@ -441,10 +451,13 @@ describe('OutfitSlotSelector', () => {
       const event = new CustomEvent('selection-changed', { bubbles: true });
       primaryContainer?.dispatchEvent(event);
 
-      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
-        slotId: 'head',
-        primary: null,
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'slot-changed',
+        expect.objectContaining({
+          slotId: 'head',
+          primary: null,
+        })
+      );
     });
   });
 
@@ -479,10 +492,13 @@ describe('OutfitSlotSelector', () => {
       });
       secondaryContainer?.dispatchEvent(event);
 
-      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
-        slotId: 'head',
-        secondary: mockDye,
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'slot-changed',
+        expect.objectContaining({
+          slotId: 'head',
+          secondary: mockDye,
+        })
+      );
     });
 
     it('should handle empty selection on secondary container', () => {
@@ -501,10 +517,13 @@ describe('OutfitSlotSelector', () => {
       });
       secondaryContainer?.dispatchEvent(event);
 
-      expect(emitSpy).toHaveBeenCalledWith('slot-changed', expect.objectContaining({
-        slotId: 'head',
-        secondary: null,
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'slot-changed',
+        expect.objectContaining({
+          slotId: 'head',
+          secondary: null,
+        })
+      );
     });
   });
 
@@ -592,7 +611,11 @@ describe('OutfitSlotSelector', () => {
 
       // Access private slots and set a primary dye
       const comp = component as unknown as ComponentWithSlots;
-      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as { id: number; name: string; hex: string };
+      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as {
+        id: number;
+        name: string;
+        hex: string;
+      };
 
       // Re-render
       component.update();
@@ -608,7 +631,11 @@ describe('OutfitSlotSelector', () => {
 
       // Access private slots and set a secondary dye
       const comp = component as unknown as ComponentWithSlots;
-      comp.slots[0].secondary = { id: 2, name: 'Blue Dye', hex: '#0000FF' } as unknown as { id: number; name: string; hex: string };
+      comp.slots[0].secondary = { id: 2, name: 'Blue Dye', hex: '#0000FF' } as unknown as {
+        id: number;
+        name: string;
+        hex: string;
+      };
 
       // Re-render
       component.update();
@@ -624,15 +651,19 @@ describe('OutfitSlotSelector', () => {
 
       // Access private slots and set a primary dye
       const comp = component as unknown as ComponentWithSlots;
-      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as { id: number; name: string; hex: string };
+      comp.slots[0].primary = { id: 1, name: 'Red Dye', hex: '#FF0000' } as unknown as {
+        id: number;
+        name: string;
+        hex: string;
+      };
 
       // Re-render
       component.update();
 
       // Check for element with the background color style
       const swatches = container.querySelectorAll('[style*="background-color"]');
-      const swatchStyles = Array.from(swatches).map(s => s.getAttribute('style'));
-      const hasRedSwatch = swatchStyles.some(s => s?.includes('#FF0000'));
+      const swatchStyles = Array.from(swatches).map((s) => s.getAttribute('style'));
+      const hasRedSwatch = swatchStyles.some((s) => s?.includes('#FF0000'));
       expect(hasRedSwatch).toBe(true);
     });
   });
@@ -666,10 +697,15 @@ describe('OutfitSlotSelector', () => {
 
       // Set primary dye directly
       const comp = component as unknown as ComponentWithSlots;
-      comp.slots[0].primary = mockDye as unknown as { id: number; itemID: number; name: string; hex: string };
+      comp.slots[0].primary = mockDye as unknown as {
+        id: number;
+        itemID: number;
+        name: string;
+        hex: string;
+      };
 
       const slots = component.getSelectedSlots();
-      const headSlot = slots.find(s => s.id === 'head');
+      const headSlot = slots.find((s) => s.id === 'head');
 
       // Should be a copy, not the same object reference
       expect(headSlot?.primary).not.toBe(mockDye);

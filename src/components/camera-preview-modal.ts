@@ -32,7 +32,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
   // Status indicator
   const statusBar = document.createElement('div');
-  statusBar.className = 'flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-lg';
+  statusBar.className =
+    'flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-800 rounded-lg';
 
   const statusText = document.createElement('span');
   statusText.className = 'text-sm text-gray-600 dark:text-gray-400';
@@ -43,7 +44,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   const cameras = cameraService.getAvailableCameras();
   if (cameras.length > 1) {
     const selector = document.createElement('select');
-    selector.className = 'text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white';
+    selector.className =
+      'text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white';
     selector.id = 'camera-selector';
 
     cameras.forEach((camera, index) => {
@@ -60,7 +62,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
   // Video preview container
   const previewContainer = document.createElement('div');
-  previewContainer.className = 'relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden';
+  previewContainer.className =
+    'relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden';
 
   // Video element
   const video = cameraService.createVideoElement();
@@ -74,7 +77,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   loadingOverlay.id = 'camera-loading-overlay';
 
   const loadingSpinner = document.createElement('div');
-  loadingSpinner.className = 'w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin';
+  loadingSpinner.className =
+    'w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin';
   loadingOverlay.appendChild(loadingSpinner);
 
   previewContainer.appendChild(loadingOverlay);
@@ -84,13 +88,16 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
   // Instructions
   const instructions = document.createElement('p');
   instructions.className = 'text-sm text-gray-600 dark:text-gray-400 text-center';
-  instructions.textContent = LanguageService.t('camera.instructions') || 'Position your subject and click capture';
+  instructions.textContent =
+    LanguageService.t('camera.instructions') || 'Position your subject and click capture';
   content.appendChild(instructions);
 
   // Privacy notice
   const privacyNotice = document.createElement('p');
   privacyNotice.className = 'text-xs text-center opacity-60 mt-1';
-  privacyNotice.textContent = LanguageService.t('camera.privacyNotice') || 'Your camera stream is processed locally. No images are sent to our servers.';
+  privacyNotice.textContent =
+    LanguageService.t('camera.privacyNotice') ||
+    'Your camera stream is processed locally. No images are sent to our servers.';
   content.appendChild(privacyNotice);
 
   // Action buttons
@@ -99,7 +106,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
   // Capture button - inline SVG for theme color inheritance
   const captureBtn = document.createElement('button');
-  captureBtn.className = 'px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2';
+  captureBtn.className =
+    'px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2';
   captureBtn.innerHTML = `<span class="w-5 h-5" aria-hidden="true">${ICON_CAMERA}</span> ${LanguageService.t('camera.capture') || 'Capture'}`;
   captureBtn.disabled = true;
   captureBtn.id = 'camera-capture-btn';
@@ -107,7 +115,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
   // Cancel button
   const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium';
+  cancelBtn.className =
+    'px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium';
   cancelBtn.textContent = LanguageService.t('common.cancel') || 'Cancel';
   buttons.appendChild(cancelBtn);
 
@@ -207,7 +216,8 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
       loadingOverlay.style.display = 'flex';
       loadingOverlay.innerHTML = '';
       const spinner = document.createElement('div');
-      spinner.className = 'w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin';
+      spinner.className =
+        'w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin';
       loadingOverlay.appendChild(spinner);
 
       captureBtn.disabled = true;
@@ -215,7 +225,7 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
       // Switch camera
       cameraService.stopStream();
-      startCamera(selector.value);
+      void startCamera(selector.value);
     });
   }
 
@@ -234,6 +244,6 @@ export async function showCameraPreviewModal(onCapture: OnCaptureCallback): Prom
 
   // Start camera after modal is displayed
   setTimeout(() => {
-    startCamera();
+    void startCamera();
   }, 100);
 }

@@ -808,10 +808,7 @@ describe('Promise Utilities', () => {
     });
 
     it('should retry on failure', async () => {
-      const fn = vi
-        .fn()
-        .mockRejectedValueOnce(new Error('fail'))
-        .mockResolvedValue('success');
+      const fn = vi.fn().mockRejectedValueOnce(new Error('fail')).mockResolvedValue('success');
 
       const result = await retry(fn, 3, 10);
       expect(result).toBe('success');

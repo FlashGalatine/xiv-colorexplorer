@@ -247,7 +247,7 @@ export class ColorDisplay extends BaseComponent {
     distanceLabel.appendChild(distanceStrong);
     distanceLabel.appendChild(document.createTextNode(` ${distance.toFixed(2)} (0-441.67 scale)`));
     distanceDiv.appendChild(distanceLabel);
-    
+
     const progressContainer = this.createElement('div', {
       className: 'mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2',
     });
@@ -274,7 +274,7 @@ export class ColorDisplay extends BaseComponent {
     const wcagDiv = this.createElement('div', {
       className: 'text-sm text-blue-800 dark:text-blue-200',
     });
-    
+
     const wcagAADiv = this.createElement('div', {});
     wcagAADiv.appendChild(document.createTextNode('WCAG AA: '));
     const wcagAASpan = this.createElement('span', {
@@ -283,7 +283,7 @@ export class ColorDisplay extends BaseComponent {
     });
     wcagAADiv.appendChild(wcagAASpan);
     wcagDiv.appendChild(wcagAADiv);
-    
+
     const wcagAAADiv = this.createElement('div', {});
     wcagAAADiv.appendChild(document.createTextNode('WCAG AAA: '));
     const wcagAAASpan = this.createElement('span', {

@@ -8,7 +8,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockInstance } from 'vitest';
-import { logger, perf, initErrorTracking, __setTestEnvironment, type ErrorTracker } from '../logger';
+import {
+  logger,
+  perf,
+  initErrorTracking,
+  __setTestEnvironment,
+  type ErrorTracker,
+} from '../logger';
 
 describe('Logger Module', () => {
   // Store original console methods
@@ -678,10 +684,7 @@ describe('Production Mode Error Tracking', () => {
     it('should capture non-Error messages with captureMessage', () => {
       logger.error('string error message');
 
-      expect(mockTracker.captureMessage).toHaveBeenCalledWith(
-        'string error message',
-        'error'
-      );
+      expect(mockTracker.captureMessage).toHaveBeenCalledWith('string error message', 'error');
       expect(mockTracker.captureException).not.toHaveBeenCalled();
     });
 

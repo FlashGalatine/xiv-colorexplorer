@@ -1,6 +1,6 @@
 import { ColorWheelDisplay } from '../color-wheel-display';
 import { createTestContainer, cleanupComponent } from './test-utils';
-import type { Dye } from '@shared/types';
+import type { Dye, ThemePalette } from '@shared/types';
 import { ThemeService } from '@services/index';
 
 describe('ColorWheelDisplay', () => {
@@ -37,7 +37,7 @@ describe('ColorWheelDisplay', () => {
     container = createTestContainer();
     vi.spyOn(ThemeService, 'getCurrentThemeObject').mockReturnValue({
       name: 'standard-light',
-      palette: {} as any,
+      palette: {} as unknown as ThemePalette,
       isDark: false,
     });
   });
@@ -174,7 +174,7 @@ describe('ColorWheelDisplay', () => {
     it('renders with light theme styling', () => {
       vi.spyOn(ThemeService, 'getCurrentThemeObject').mockReturnValue({
         name: 'standard-light',
-        palette: {} as any,
+        palette: {} as unknown as ThemePalette,
         isDark: false,
       });
 
@@ -191,7 +191,7 @@ describe('ColorWheelDisplay', () => {
     it('renders with dark theme styling', () => {
       vi.spyOn(ThemeService, 'getCurrentThemeObject').mockReturnValue({
         name: 'standard-dark',
-        palette: {} as any,
+        palette: {} as unknown as ThemePalette,
         isDark: true,
       });
 
@@ -208,7 +208,7 @@ describe('ColorWheelDisplay', () => {
     it('applies correct dot stroke color for light theme', () => {
       vi.spyOn(ThemeService, 'getCurrentThemeObject').mockReturnValue({
         name: 'standard-light',
-        palette: {} as any,
+        palette: {} as unknown as ThemePalette,
         isDark: false,
       });
 
@@ -225,7 +225,7 @@ describe('ColorWheelDisplay', () => {
     it('applies correct dot stroke color for dark theme', () => {
       vi.spyOn(ThemeService, 'getCurrentThemeObject').mockReturnValue({
         name: 'standard-dark',
-        palette: {} as any,
+        palette: {} as unknown as ThemePalette,
         isDark: true,
       });
 
@@ -233,9 +233,7 @@ describe('ColorWheelDisplay', () => {
 
       // Find a circle with stroke attribute
       const circles = container.querySelectorAll('circle[stroke]');
-      const hasDarkStroke = Array.from(circles).some(
-        (c) => c.getAttribute('stroke') === '#333333'
-      );
+      const hasDarkStroke = Array.from(circles).some((c) => c.getAttribute('stroke') === '#333333');
       expect(hasDarkStroke).toBe(true);
     });
   });
@@ -302,7 +300,9 @@ describe('ColorWheelDisplay', () => {
 
       // Glow should be larger and more opaque
       expect(Number(glowCircle.getAttribute('r'))).toBeGreaterThan(Number(initialGlowRadius));
-      expect(Number(glowCircle.getAttribute('opacity'))).toBeGreaterThan(Number(initialGlowOpacity));
+      expect(Number(glowCircle.getAttribute('opacity'))).toBeGreaterThan(
+        Number(initialGlowOpacity)
+      );
     });
 
     it('restores glow circle on mouseleave', () => {
@@ -402,4 +402,3 @@ describe('ColorWheelDisplay', () => {
     });
   });
 });
-

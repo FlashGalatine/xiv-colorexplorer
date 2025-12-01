@@ -323,6 +323,7 @@ describe('LocalStorageCacheBackend Direct Methods', () => {
     it('should store data successfully', () => {
       const testData = { data: { minPrice: 200 }, timestamp: Date.now() };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cacheBackend.set('test-key', testData as any);
 
       const stored = localStorage.getItem(keyPrefix + 'test-key');
@@ -340,6 +341,7 @@ describe('LocalStorageCacheBackend Direct Methods', () => {
 
       // Should not throw externally
       expect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         cacheBackend.set('test-key', { data: {}, timestamp: Date.now() } as any);
       }).not.toThrow();
 

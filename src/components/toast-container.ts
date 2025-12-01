@@ -180,7 +180,9 @@ export class ToastContainer extends BaseComponent {
         flex flex-col gap-2
         max-sm:items-stretch
         items-end
-      `.replace(/\s+/g, ' ').trim(),
+      `
+        .replace(/\s+/g, ' ')
+        .trim(),
       attributes: {
         'aria-label': 'Notifications',
       },

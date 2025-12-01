@@ -35,8 +35,7 @@ export class ThemeSwitcher extends BaseComponent {
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'theme-switcher-btn',
-      className:
-        'p-2 rounded-lg border transition-colors',
+      className: 'p-2 rounded-lg border transition-colors',
       attributes: {
         'aria-label': 'Toggle theme switcher',
         'aria-haspopup': 'true',
@@ -50,7 +49,9 @@ export class ThemeSwitcher extends BaseComponent {
 
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
-      button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+      button.style.backgroundColor = isLightText
+        ? 'rgba(255, 255, 255, 0.15)'
+        : 'rgba(0, 0, 0, 0.15)';
     });
     button.addEventListener('mouseleave', () => {
       button.style.backgroundColor = 'transparent';
@@ -59,8 +60,7 @@ export class ThemeSwitcher extends BaseComponent {
     // Create dropdown menu container - use theme CSS variables for background
     const dropdown = this.createElement('div', {
       id: 'theme-dropdown',
-      className:
-        'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-48',
+      className: 'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-48',
       attributes: {
         style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
       },
@@ -97,8 +97,7 @@ export class ThemeSwitcher extends BaseComponent {
 
     for (const theme of themes) {
       const themeBtn = this.createElement('button', {
-        className:
-          'px-4 py-2 text-left text-sm rounded transition-colors flex items-center gap-2',
+        className: 'px-4 py-2 text-left text-sm rounded transition-colors flex items-center gap-2',
         attributes: {
           'data-theme': theme.name,
           style: 'color: var(--theme-text);',
@@ -127,7 +126,9 @@ export class ThemeSwitcher extends BaseComponent {
 
       // Convert theme name (kebab-case) to locale key (camelCase)
       // e.g., "standard-light" -> "standardLight", "og-classic-dark" -> "ogClassicDark"
-      const localeKey = theme.name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+      const localeKey = theme.name.replace(/-([a-z])/g, (_, letter: string) =>
+        letter.toUpperCase()
+      );
       const displayName = LanguageService.t(`themes.${localeKey}`);
       themeBtn.appendChild(this.createElement('span', { textContent: displayName }));
 
@@ -229,7 +230,9 @@ export class ThemeSwitcher extends BaseComponent {
   private toggleDropdown(button: HTMLButtonElement, dropdown: HTMLDivElement): void {
     if (!this.isDropdownOpen) {
       // Close other dropdowns (Tools dropdown)
-      document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'theme' } }));
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'theme' } })
+      );
     }
 
     this.isDropdownOpen = !this.isDropdownOpen;

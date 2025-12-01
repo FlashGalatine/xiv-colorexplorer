@@ -95,7 +95,9 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('secure', 'original');
 
       // Manually tamper with the stored entry
-      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('secure');
+      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'secure'
+      );
       if (entry) {
         entry.value = 'tampered';
         StorageService.setItem('secure', entry);
@@ -239,9 +241,9 @@ describe('SecureStorage', () => {
 
       // Store entries with different timestamps
       await SecureStorage.setItem('old1', 'value1');
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       await SecureStorage.setItem('old2', 'value2');
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       await SecureStorage.setItem('new', 'value3');
 
       // Simulate cache exceeding limit on next write
@@ -264,11 +266,11 @@ describe('SecureStorage', () => {
       StorageService.clear();
 
       // Store entries with explicit timestamps
-      const now = Date.now();
+      // const now = Date.now();
       await SecureStorage.setItem('entry1', 'value1');
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       await SecureStorage.setItem('entry2', 'value2');
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       await SecureStorage.setItem('entry3', 'value3');
 
       // All entries should be retrievable
@@ -290,12 +292,16 @@ describe('SecureStorage', () => {
       }
 
       await SecureStorage.setItem('checksum1', 'test_data');
-      const entry1 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('checksum1');
+      const entry1 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'checksum1'
+      );
 
       StorageService.clear();
 
       await SecureStorage.setItem('checksum2', 'test_data');
-      const entry2 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('checksum2');
+      const entry2 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'checksum2'
+      );
 
       expect(entry1?.checksum).toBe(entry2?.checksum);
     });
@@ -309,8 +315,12 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('data1', 'value1');
       await SecureStorage.setItem('data2', 'value2');
 
-      const entry1 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('data1');
-      const entry2 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('data2');
+      const entry1 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'data1'
+      );
+      const entry2 = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'data2'
+      );
 
       expect(entry1?.checksum).not.toBe(entry2?.checksum);
     });
@@ -343,7 +353,9 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('integrity', 'original');
 
       // Tamper with checksum
-      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('integrity');
+      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'integrity'
+      );
       if (entry) {
         entry.checksum = 'invalid_checksum';
         StorageService.setItem('integrity', entry);
@@ -389,7 +401,11 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('obj_integrity', obj);
 
       // Tamper with object
-      const entry = StorageService.getItem<{ value: typeof obj; checksum: string; timestamp: number }>('obj_integrity');
+      const entry = StorageService.getItem<{
+        value: typeof obj;
+        checksum: string;
+        timestamp: number;
+      }>('obj_integrity');
       if (entry) {
         entry.value.name = 'tampered';
         StorageService.setItem('obj_integrity', entry);
@@ -518,7 +534,9 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('corrupt', 'original');
 
       // Corrupt the checksum
-      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('corrupt');
+      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>(
+        'corrupt'
+      );
       if (entry) {
         entry.checksum = 'corrupted';
         StorageService.setItem('corrupt', entry);
@@ -601,7 +619,7 @@ describe('SecureStorage', () => {
       await SecureStorage.setItem('verify', 'test');
 
       // Mock crypto to throw during verification
-      const originalCrypto = window.crypto;
+      // const originalCrypto = window.crypto;
       const originalSubtle = window.crypto.subtle;
 
       Object.defineProperty(window.crypto, 'subtle', {
@@ -720,9 +738,9 @@ describe('SecureStorage', () => {
 
       // Mock getSize to return a value above limit initially
       const originalGetSize = StorageService.getSize;
-      let sizeMockCallCount = 0;
+      // let sizeMockCallCount = 0;
       StorageService.getSize = () => {
-        sizeMockCallCount++;
+        // sizeMockCallCount++;
         // Return over-limit only on first call
         return 6 * 1024 * 1024; // 6MB (over 5MB limit)
       };
@@ -834,4 +852,3 @@ describe('SecureStorage', () => {
     });
   });
 });
-

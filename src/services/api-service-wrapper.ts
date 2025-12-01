@@ -7,7 +7,7 @@ import {
   APIService as CoreAPIService,
   type ICacheBackend,
   type PriceData,
-  type CachedData
+  type CachedData,
 } from 'xivdyetools-core';
 import { indexedDBService, STORES } from './indexeddb-service';
 import { logger } from '@shared/logger';
@@ -132,7 +132,7 @@ export class LocalStorageCacheBackend implements ICacheBackend {
           keysToDelete.push(key);
         }
       }
-      keysToDelete.forEach(key => localStorage.removeItem(key));
+      keysToDelete.forEach((key) => localStorage.removeItem(key));
     } catch {
       // Ignore errors
     }
@@ -174,7 +174,7 @@ export class APIService {
       logger.info('✅ APIService initialized from xivdyetools-core with IndexedDB cache');
 
       // Initialize cache backend asynchronously (won't block)
-      APIService.cacheBackend.initialize().then(() => {
+      void APIService.cacheBackend.initialize().then(() => {
         APIService.initialized = true;
         logger.debug('IndexedDB cache backend initialized');
       });

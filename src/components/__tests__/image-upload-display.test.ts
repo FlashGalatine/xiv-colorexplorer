@@ -172,7 +172,9 @@ describe('ImageUploadDisplay', () => {
       component = new ImageUploadDisplay(container);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state).toHaveProperty('hasImage');
       expect(state.hasImage).toBe(false);
@@ -412,7 +414,9 @@ describe('ImageUploadDisplay', () => {
         0: file,
         length: 1,
         item: (index: number) => (index === 0 ? file : null),
-        [Symbol.iterator]: function* () { yield file; },
+        [Symbol.iterator]: function* () {
+          yield file;
+        },
       };
 
       Object.defineProperty(fileInput, 'files', {
@@ -422,7 +426,7 @@ describe('ImageUploadDisplay', () => {
 
       fileInput.dispatchEvent(new Event('change'));
       await waitForComponent();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       expect(errorSpy).toHaveBeenCalled();
 
@@ -473,7 +477,9 @@ describe('ImageUploadDisplay', () => {
         0: file,
         length: 1,
         item: (index: number) => (index === 0 ? file : null),
-        [Symbol.iterator]: function* () { yield file; },
+        [Symbol.iterator]: function* () {
+          yield file;
+        },
       };
 
       Object.defineProperty(fileInput, 'files', {
@@ -483,7 +489,7 @@ describe('ImageUploadDisplay', () => {
 
       fileInput.dispatchEvent(new Event('change'));
       await waitForComponent();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(errorSpy).toHaveBeenCalled();
 
@@ -523,7 +529,9 @@ describe('ImageUploadDisplay', () => {
         0: file,
         length: 1,
         item: (index: number) => (index === 0 ? file : null),
-        [Symbol.iterator]: function* () { yield file; },
+        [Symbol.iterator]: function* () {
+          yield file;
+        },
       };
 
       Object.defineProperty(fileInput, 'files', {
@@ -533,7 +541,7 @@ describe('ImageUploadDisplay', () => {
 
       fileInput.dispatchEvent(new Event('change'));
       await waitForComponent();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       expect(errorSpy).toHaveBeenCalled();
 
@@ -698,7 +706,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       mockImage.width = 100;
       mockImage.height = 100;
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       // Mock canvas.getContext to return null
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
@@ -721,7 +730,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       mockImage.width = 100;
       mockImage.height = 100;
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       // First mock getContext for getImageCanvas call (returns valid context)
       // Then mock for samplePixel call (returns null)
@@ -754,7 +764,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       mockImage.width = 100;
       mockImage.height = 100;
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       // Mock getContext to return null on the second call
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
@@ -790,7 +801,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       Object.defineProperty(mockImage, 'width', { value: 100 });
       Object.defineProperty(mockImage, 'height', { value: 100 });
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       // Mock canvas with getContext that returns valid ImageData
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
@@ -818,7 +830,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       Object.defineProperty(mockImage, 'width', { value: 100 });
       Object.defineProperty(mockImage, 'height', { value: 100 });
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
       const mockCtx = {
@@ -845,7 +858,8 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       Object.defineProperty(mockImage, 'width', { value: 100 });
       Object.defineProperty(mockImage, 'height', { value: 100 });
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
       const canvas = container.querySelector('#image-canvas') as HTMLCanvasElement;
       const mockCtx = {
@@ -902,7 +916,9 @@ describe('ImageUploadDisplay', () => {
         0: file,
         length: 1,
         item: (index: number) => (index === 0 ? file : null),
-        [Symbol.iterator]: function* () { yield file; },
+        [Symbol.iterator]: function* () {
+          yield file;
+        },
       };
 
       Object.defineProperty(cameraInput, 'files', {
@@ -947,9 +963,12 @@ describe('ImageUploadDisplay', () => {
       const mockImage = new Image();
       Object.defineProperty(mockImage, 'width', { value: 800 });
       Object.defineProperty(mockImage, 'height', { value: 600 });
-      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage = mockImage;
+      (component as unknown as { uploadedImage: HTMLImageElement | null }).uploadedImage =
+        mockImage;
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.hasImage).toBe(true);
       expect(state.imageDimensions).toEqual({ width: 800, height: 600 });

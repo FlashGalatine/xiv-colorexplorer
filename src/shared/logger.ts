@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * XIV Dye Tools v2.0.4 - Centralized Logger
  *

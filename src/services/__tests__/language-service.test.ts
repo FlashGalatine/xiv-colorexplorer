@@ -567,92 +567,87 @@ describe('LanguageService getCurrentLocaleDisplay', () => {
 // The code structure ensures the app continues to work even when locale resources fail.
 
 describe('LanguageService Error Handling', () => {
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
-  let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.spyOn(console, 'info').mockImplementation(() => {});
+});
 
-  beforeEach(() => {
-    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
-  });
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+describe('navigator access error handling', () => {
+  it('should handle navigator throwing during language detection', async () => {
+    const originalNavigator = global.navigator;
 
-  describe('navigator access error handling', () => {
-    it('should handle navigator throwing during language detection', async () => {
-      const originalNavigator = global.navigator;
+    // Create a navigator that throws when language is accessed
+    Object.defineProperty(global, 'navigator', {
+      get() {
+        throw new Error('Navigator access denied');
+      },
+      configurable: true,
+    });
 
-      // Create a navigator that throws when language is accessed
+    // Service should handle the error gracefully
+    // We can't directly trigger detectBrowserLocale, but we can verify
+    // the service doesn't crash when navigator is problematic
+    try {
+      // This won't directly call detectBrowserLocale, but verifies resilience
+      await LanguageService.setLocale('en');
+      expect(LanguageService.getCurrentLocale()).toBe('en');
+    } finally {
+      // Restore navigator
       Object.defineProperty(global, 'navigator', {
-        get() {
-          throw new Error('Navigator access denied');
-        },
+        value: originalNavigator,
         configurable: true,
       });
+    }
+  });
+});
 
-      // Service should handle the error gracefully
-      // We can't directly trigger detectBrowserLocale, but we can verify
-      // the service doesn't crash when navigator is problematic
-      try {
-        // This won't directly call detectBrowserLocale, but verifies resilience
-        await LanguageService.setLocale('en');
-        expect(LanguageService.getCurrentLocale()).toBe('en');
-      } finally {
-        // Restore navigator
-        Object.defineProperty(global, 'navigator', {
-          value: originalNavigator,
-          configurable: true,
-        });
-      }
-    });
+describe('unsupported language handling', () => {
+  it('should log info when browser language is not supported', async () => {
+    // This tests the path where isValidLocale returns false
+    // We verify by checking that the service falls back gracefully
+    await LanguageService.setLocale('en');
+
+    // Service should be at English (default fallback for unsupported)
+    expect(LanguageService.getCurrentLocale()).toBe('en');
+  });
+});
+
+describe('translation loading resilience', () => {
+  it('should continue working even after clearCache', async () => {
+    // Load Japanese first
+    await LanguageService.setLocale('ja');
+    expect(LanguageService.getCurrentLocale()).toBe('ja');
+
+    // Clear the cache
+    LanguageService.clearCache();
+
+    // Should be able to switch locales after clearing
+    await LanguageService.setLocale('de');
+    expect(LanguageService.getCurrentLocale()).toBe('de');
+
+    // Restore
+    await LanguageService.setLocale('en');
   });
 
-  describe('unsupported language handling', () => {
-    it('should log info when browser language is not supported', async () => {
-      // This tests the path where isValidLocale returns false
-      // We verify by checking that the service falls back gracefully
-      await LanguageService.setLocale('en');
+  it('should handle rapid locale switching', async () => {
+    // Rapidly switch between locales
+    const promises = [
+      LanguageService.setLocale('ja'),
+      LanguageService.setLocale('de'),
+      LanguageService.setLocale('fr'),
+    ];
 
-      // Service should be at English (default fallback for unsupported)
-      expect(LanguageService.getCurrentLocale()).toBe('en');
-    });
-  });
+    await Promise.all(promises);
 
-  describe('translation loading resilience', () => {
-    it('should continue working even after clearCache', async () => {
-      // Load Japanese first
-      await LanguageService.setLocale('ja');
-      expect(LanguageService.getCurrentLocale()).toBe('ja');
+    // Should end up at one of the locales (last one wins)
+    const current = LanguageService.getCurrentLocale();
+    expect(['ja', 'de', 'fr']).toContain(current);
 
-      // Clear the cache
-      LanguageService.clearCache();
-
-      // Should be able to switch locales after clearing
-      await LanguageService.setLocale('de');
-      expect(LanguageService.getCurrentLocale()).toBe('de');
-
-      // Restore
-      await LanguageService.setLocale('en');
-    });
-
-    it('should handle rapid locale switching', async () => {
-      // Rapidly switch between locales
-      const promises = [
-        LanguageService.setLocale('ja'),
-        LanguageService.setLocale('de'),
-        LanguageService.setLocale('fr'),
-      ];
-
-      await Promise.all(promises);
-
-      // Should end up at one of the locales (last one wins)
-      const current = LanguageService.getCurrentLocale();
-      expect(['ja', 'de', 'fr']).toContain(current);
-
-      // Restore
-      await LanguageService.setLocale('en');
-    });
+    // Restore
+    await LanguageService.setLocale('en');
   });
 });
 
@@ -718,14 +713,10 @@ describe('LanguageService Subscription Edge Cases', () => {
 // ==========================================================================
 
 describe('LanguageService Translation Loading Failures', () => {
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
-  let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-
   beforeEach(async () => {
-    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
     // Ensure we start with English loaded
     await LanguageService.setLocale('en');
   });
@@ -785,13 +776,13 @@ describe('LanguageService Translation Loading Failures', () => {
 
 describe('LanguageService Browser Locale Detection Branches', () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+
   let originalNavigator: typeof navigator;
 
   beforeEach(() => {
     originalNavigator = global.navigator;
     consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
-    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {

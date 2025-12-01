@@ -36,7 +36,10 @@ interface ComponentWithPrivate {
     warnings: string[];
     colorblindnessSimulations: Record<string, string>;
   };
-  analyzePair: (dye1: Dye, dye2: Dye) => {
+  analyzePair: (
+    dye1: Dye,
+    dye2: Dye
+  ) => {
     dye1Id: number;
     dye2Id: number;
     distinguishability: number;
@@ -652,7 +655,9 @@ describe('AccessibilityCheckerTool Component', () => {
       component.init();
 
       (component as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       expect(score).toBe(100);
     });
@@ -662,7 +667,9 @@ describe('AccessibilityCheckerTool Component', () => {
       component.init();
 
       (component as unknown as ComponentWithPrivate).selectedDyes = [];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       expect(score).toBe(100);
     });
@@ -675,7 +682,9 @@ describe('AccessibilityCheckerTool Component', () => {
         createMockDye({ id: 1, hex: '#FF0000' }),
         createMockDye({ id: 2, hex: '#00FF00' }),
       ];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       expect(score).toBeGreaterThanOrEqual(0);
       expect(score).toBeLessThanOrEqual(100);
@@ -1316,7 +1325,9 @@ describe('AccessibilityCheckerTool Component', () => {
         createMockDye({ id: 1, hex: '#FF0000' }),
         createMockDye({ id: 2, hex: '#FF0505' }),
       ];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       expect(score).toBeLessThan(100);
     });
@@ -1329,7 +1340,9 @@ describe('AccessibilityCheckerTool Component', () => {
         createMockDye({ id: 1, hex: '#FF0000' }), // Red
         createMockDye({ id: 2, hex: '#00FF00' }), // Green
       ];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       // Score should account for colorblindness simulations
       expect(score).toBeGreaterThanOrEqual(0);
@@ -1348,7 +1361,9 @@ describe('AccessibilityCheckerTool Component', () => {
         createMockDye({ id: 4, hex: '#FF0003' }),
         createMockDye({ id: 5, hex: '#FF0004' }),
       ];
-      const score = (component as unknown as ComponentWithPrivate).calculateOverallAccessibilityScore();
+      const score = (
+        component as unknown as ComponentWithPrivate
+      ).calculateOverallAccessibilityScore();
 
       expect(score).toBeGreaterThanOrEqual(0);
     });

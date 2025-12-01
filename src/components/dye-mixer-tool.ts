@@ -451,7 +451,6 @@ export class DyeMixerTool extends BaseComponent {
     }
   }
 
-
   /**
    * Update interpolation display
    */
@@ -553,16 +552,17 @@ export class DyeMixerTool extends BaseComponent {
       if (this.dyeFilters && matchedDye && this.dyeFilters.isDyeExcluded(matchedDye)) {
         // Find next closest non-excluded dye
         const allDyes = dyeService.getAllDyes();
-        const filteredDyes = this.dyeFilters.filterDyes(allDyes).filter(
-          (dye) => !excludeIds.includes(dye.id) && dye.category !== 'Facewear'
-        );
-        matchedDye = filteredDyes.length > 0
-          ? filteredDyes.reduce((best, dye) => {
-            const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-            const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-            return dyeDist < bestDist ? dye : best;
-          })
-          : null;
+        const filteredDyes = this.dyeFilters
+          .filterDyes(allDyes)
+          .filter((dye) => !excludeIds.includes(dye.id) && dye.category !== 'Facewear');
+        matchedDye =
+          filteredDyes.length > 0
+            ? filteredDyes.reduce((best, dye) => {
+                const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+                const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
+            : null;
       }
 
       const distance = matchedDye
@@ -621,7 +621,7 @@ export class DyeMixerTool extends BaseComponent {
           this.updateInterpolation();
         }
       }, 150);
-    } catch (error) {
+    } catch {
       // Silently ignore parsing errors
     }
   }
@@ -708,7 +708,10 @@ export class DyeMixerTool extends BaseComponent {
       ) as (typeof gradient)[];
       savedGradients.push(gradient);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.gradientSavedSuccess', { name: gradientName })}`, 'success');
+      this.showToast(
+        `✓ ${LanguageService.tInterpolate('mixer.gradientSavedSuccess', { name: gradientName })}`,
+        'success'
+      );
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error saving gradient:', error);
@@ -771,7 +774,10 @@ export class DyeMixerTool extends BaseComponent {
       }
 
       this.updateInterpolation();
-      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.loadedGradient', { name: gradient.name })}`, 'success');
+      this.showToast(
+        `✓ ${LanguageService.tInterpolate('mixer.loadedGradient', { name: gradient.name })}`,
+        'success'
+      );
     } catch (error) {
       logger.error('Error loading gradient:', error);
       this.showToast(LanguageService.t('mixer.loadFailed'), 'error');
@@ -795,7 +801,10 @@ export class DyeMixerTool extends BaseComponent {
       const gradientName = savedGradients[index].name;
       savedGradients.splice(index, 1);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(`✓ ${LanguageService.tInterpolate('mixer.gradientDeleted', { name: gradientName })}`, 'success');
+      this.showToast(
+        `✓ ${LanguageService.tInterpolate('mixer.gradientDeleted', { name: gradientName })}`,
+        'success'
+      );
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error deleting gradient:', error);

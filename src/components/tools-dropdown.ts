@@ -51,8 +51,7 @@ export class ToolsDropdown extends BaseComponent {
     const button = this.createElement('button', {
       id: 'tools-dropdown-btn',
       className:
-        'p-2 rounded-lg border transition-colors ' +
-        'hidden md:inline-flex items-center gap-2',
+        'p-2 rounded-lg border transition-colors ' + 'hidden md:inline-flex items-center gap-2',
       attributes: {
         'aria-label': 'Toggle tools menu',
         'aria-haspopup': 'true',
@@ -66,7 +65,9 @@ export class ToolsDropdown extends BaseComponent {
 
     // Add hover effect using theme colors
     button.addEventListener('mouseenter', () => {
-      button.style.backgroundColor = isLightText ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+      button.style.backgroundColor = isLightText
+        ? 'rgba(255, 255, 255, 0.15)'
+        : 'rgba(0, 0, 0, 0.15)';
     });
     button.addEventListener('mouseleave', () => {
       button.style.backgroundColor = 'transparent';
@@ -75,8 +76,7 @@ export class ToolsDropdown extends BaseComponent {
     // Create dropdown menu container - use theme CSS variables for background
     const dropdown = this.createElement('div', {
       id: 'tools-dropdown-menu',
-      className:
-        'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-56',
+      className: 'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-56',
       attributes: {
         style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
       },
@@ -90,8 +90,7 @@ export class ToolsDropdown extends BaseComponent {
     // Add tool buttons
     for (const tool of this.tools) {
       const toolBtn = this.createElement('button', {
-        className:
-          'px-4 py-3 text-left text-sm rounded transition-colors flex items-center gap-3',
+        className: 'px-4 py-3 text-left text-sm rounded transition-colors flex items-center gap-3',
         attributes: {
           'data-tool-id': tool.id,
           title: tool.description,
@@ -258,7 +257,9 @@ export class ToolsDropdown extends BaseComponent {
 
     if (dropdown && button) {
       // Close other dropdowns (Theme switcher)
-      document.dispatchEvent(new CustomEvent('close-other-dropdowns', { detail: { source: 'tools' } }));
+      document.dispatchEvent(
+        new CustomEvent('close-other-dropdowns', { detail: { source: 'tools' } })
+      );
 
       dropdown.classList.remove('hidden');
       button.setAttribute('aria-expanded', 'true');

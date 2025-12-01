@@ -38,7 +38,9 @@ export function createInfoIcon(options: InfoTooltipOptions): HTMLElement {
     rounded-full
     cursor-help
     transition-colors
-  `.replace(/\s+/g, ' ').trim();
+  `
+    .replace(/\s+/g, ' ')
+    .trim();
 
   icon.textContent = 'ⓘ';
   icon.setAttribute('aria-label', options.ariaLabel || 'More information');
@@ -103,25 +105,36 @@ export function addInfoIconTo(
  */
 export const TOOLTIP_CONTENT = {
   // Harmony Generator tooltips
-  deviance: 'How closely the dye matches the ideal harmony color. Lower degrees mean a closer match to the color wheel position.',
-  harmonyComplementary: 'Complementary: Two colors directly opposite on the color wheel (180°). Creates high contrast.',
-  harmonyAnalogous: 'Analogous: Three colors adjacent on the color wheel. Creates harmonious, low-contrast palettes.',
-  harmonyTriadic: 'Triadic: Three colors equally spaced on the color wheel (120° apart). Bold and vibrant.',
-  harmonySplitComplementary: 'Split-Complementary: Base color plus two colors adjacent to its complement. Balanced contrast.',
+  deviance:
+    'How closely the dye matches the ideal harmony color. Lower degrees mean a closer match to the color wheel position.',
+  harmonyComplementary:
+    'Complementary: Two colors directly opposite on the color wheel (180°). Creates high contrast.',
+  harmonyAnalogous:
+    'Analogous: Three colors adjacent on the color wheel. Creates harmonious, low-contrast palettes.',
+  harmonyTriadic:
+    'Triadic: Three colors equally spaced on the color wheel (120° apart). Bold and vibrant.',
+  harmonySplitComplementary:
+    'Split-Complementary: Base color plus two colors adjacent to its complement. Balanced contrast.',
   harmonyTetradic: 'Tetradic: Four colors forming a rectangle on the wheel. Rich and complex.',
   harmonySquare: 'Square: Four colors equally spaced (90° apart). Offers variety with balance.',
-  harmonyMonochromatic: 'Monochromatic: Variations of a single hue with different saturations and values.',
+  harmonyMonochromatic:
+    'Monochromatic: Variations of a single hue with different saturations and values.',
   harmonyCompound: 'Compound: Combination of complementary and analogous colors.',
   harmonyShades: 'Shades: Progressively darker versions of the base color.',
 
   // Color Matcher tooltips
-  sampleSize: 'Larger samples average more pixels for better accuracy on textured or patterned areas. Smaller samples are more precise for solid colors.',
+  sampleSize:
+    'Larger samples average more pixels for better accuracy on textured or patterned areas. Smaller samples are more precise for solid colors.',
 
   // Accessibility tooltips
-  dualDyeMode: 'Compare two dyes per outfit slot to see how different color combinations look together.',
-  wcagContrast: 'Web Content Accessibility Guidelines contrast rating. AAA = excellent (7:1+), AA = good (4.5:1+), Fail = poor contrast.',
-  visionSimulation: 'Simulates how the color palette appears to people with different types of color vision deficiency.',
+  dualDyeMode:
+    'Compare two dyes per outfit slot to see how different color combinations look together.',
+  wcagContrast:
+    'Web Content Accessibility Guidelines contrast rating. AAA = excellent (7:1+), AA = good (4.5:1+), Fail = poor contrast.',
+  visionSimulation:
+    'Simulates how the color palette appears to people with different types of color vision deficiency.',
 
   // Dye Comparison tooltips
-  colorDistance: 'Euclidean distance in RGB color space. Lower values indicate more similar colors.',
+  colorDistance:
+    'Euclidean distance in RGB color space. Lower values indicate more similar colors.',
 } as const;

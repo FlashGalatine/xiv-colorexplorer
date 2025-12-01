@@ -7,7 +7,13 @@
  * @module components/saved-palettes-modal
  */
 
-import { ModalService, PaletteService, LanguageService, ToastService, dyeService } from '@services/index';
+import {
+  ModalService,
+  PaletteService,
+  LanguageService,
+  ToastService,
+  dyeService,
+} from '@services/index';
 import type { SavedPalette } from '@services/palette-service';
 import { ICON_FOLDER } from '@shared/empty-state-icons';
 
@@ -42,11 +48,15 @@ export function showSavedPalettesModal(onLoad?: OnPaletteLoadCallback): void {
 
   // Header with count and actions
   const header = document.createElement('div');
-  header.className = 'flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700';
+  header.className =
+    'flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700';
 
   const countText = document.createElement('span');
   countText.className = 'text-sm text-gray-600 dark:text-gray-400';
-  countText.textContent = LanguageService.t('palette.savedCount').replace('{count}', palettes.length.toString());
+  countText.textContent = LanguageService.t('palette.savedCount').replace(
+    '{count}',
+    palettes.length.toString()
+  );
   header.appendChild(countText);
 
   const actionsDiv = document.createElement('div');
@@ -260,7 +270,9 @@ function triggerImport(container: HTMLElement, onLoad?: OnPaletteLoadCallback): 
       const count = PaletteService.importPalettes(data, true);
 
       if (count > 0) {
-        ToastService.success(LanguageService.t('palette.imported').replace('{count}', count.toString()));
+        ToastService.success(
+          LanguageService.t('palette.imported').replace('{count}', count.toString())
+        );
         // Refresh modal
         ModalService.dismissTop();
         showSavedPalettesModal(onLoad);
@@ -341,7 +353,8 @@ export function showSavePaletteDialog(
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.className = 'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+  input.className =
+    'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
   input.placeholder = PaletteService.generateDefaultName();
   input.value = `${harmonyName} - ${baseDyeName}`;
   inputGroup.appendChild(input);
@@ -353,7 +366,8 @@ export function showSavePaletteDialog(
   buttons.className = 'flex justify-end gap-2 pt-2';
 
   const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors';
+  cancelBtn.className =
+    'px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors';
   cancelBtn.textContent = LanguageService.t('common.cancel');
   cancelBtn.addEventListener('click', () => {
     ModalService.dismissTop();
@@ -361,11 +375,18 @@ export function showSavePaletteDialog(
   buttons.appendChild(cancelBtn);
 
   const saveBtn = document.createElement('button');
-  saveBtn.className = 'px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors';
+  saveBtn.className =
+    'px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors';
   saveBtn.textContent = LanguageService.t('common.save');
   saveBtn.addEventListener('click', () => {
     const name = input.value.trim() || PaletteService.generateDefaultName();
-    const result = PaletteService.savePalette(name, baseColor, baseDyeName, harmonyType, companions);
+    const result = PaletteService.savePalette(
+      name,
+      baseColor,
+      baseDyeName,
+      harmonyType,
+      companions
+    );
 
     if (result) {
       ToastService.success(LanguageService.t('palette.saveSuccess'));

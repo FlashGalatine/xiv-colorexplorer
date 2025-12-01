@@ -73,6 +73,7 @@ const dyeSelectorInitMock = vi.fn();
 vi.mock('../dye-selector', () => {
   return {
     DyeSelector: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _options: unknown) {}
       init(): void {
         dyeSelectorInitMock();
@@ -85,8 +86,10 @@ vi.mock('../dye-selector', () => {
 vi.mock('../color-distance-matrix', () => {
   return {
     ColorDistanceMatrix: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _dyes: Dye[]) {}
       init(): void {}
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       updateDyes(_dyes: Dye[]): void {}
       update(): void {}
       destroy(): void {}
@@ -97,8 +100,10 @@ vi.mock('../color-distance-matrix', () => {
 vi.mock('../dye-comparison-chart', () => {
   return {
     DyeComparisonChart: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement, _type: string, _dyes: Dye[]) {}
       init(): void {}
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       updateDyes(_dyes: Dye[]): void {}
       update(): void {}
       destroy(): void {}
@@ -646,7 +651,10 @@ describe('DyeComparisonTool Component', () => {
     it('should include label text', async () => {
       const instance = await createComponent();
 
-      const card = (instance as unknown as ComponentWithPrivate).renderStatCard('Saturation', '80%');
+      const card = (instance as unknown as ComponentWithPrivate).renderStatCard(
+        'Saturation',
+        '80%'
+      );
 
       expect(card.textContent).toContain('Saturation');
     });
@@ -654,7 +662,10 @@ describe('DyeComparisonTool Component', () => {
     it('should include value text', async () => {
       const instance = await createComponent();
 
-      const card = (instance as unknown as ComponentWithPrivate).renderStatCard('Brightness', '90%');
+      const card = (instance as unknown as ComponentWithPrivate).renderStatCard(
+        'Brightness',
+        '90%'
+      );
 
       expect(card.textContent).toContain('90%');
     });
@@ -945,7 +956,9 @@ describe('DyeComparisonTool Component', () => {
       (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
 
       // Access private method
-      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+      await (
+        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
+      ).fetchPricesForSelectedDyes();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });
@@ -957,7 +970,9 @@ describe('DyeComparisonTool Component', () => {
       (instance as unknown as ComponentWithPrivate).showPrices = false;
       (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
 
-      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+      await (
+        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
+      ).fetchPricesForSelectedDyes();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });
@@ -969,7 +984,9 @@ describe('DyeComparisonTool Component', () => {
       (instance as unknown as ComponentWithPrivate).showPrices = true;
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
 
-      await (instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }).fetchPricesForSelectedDyes();
+      await (
+        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
+      ).fetchPricesForSelectedDyes();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });
@@ -1242,9 +1259,7 @@ describe('DyeComparisonTool Component', () => {
       const instance = await createComponent();
       const selectorContainer = container.querySelector('#dye-selector-container');
 
-      selectorContainer?.dispatchEvent(
-        new CustomEvent('selection-changed', { detail: {} })
-      );
+      selectorContainer?.dispatchEvent(new CustomEvent('selection-changed', { detail: {} }));
 
       expect((instance as unknown as ComponentWithPrivate).selectedDyes).toHaveLength(0);
     });

@@ -10,7 +10,12 @@
 import { LocalizationService } from 'xivdyetools-core';
 import type { LocaleCode, LocaleDisplay, LocaleChangeListener } from '@shared/i18n-types';
 import { StorageService } from './storage-service';
-import { STORAGE_KEYS, DEFAULT_LOCALE, SUPPORTED_LOCALES, LOCALE_DISPLAY_INFO } from '@shared/constants';
+import {
+  STORAGE_KEYS,
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  LOCALE_DISPLAY_INFO,
+} from '@shared/constants';
 import { logger } from '@shared/logger';
 
 // ============================================================================
@@ -80,7 +85,7 @@ export class LanguageService {
    * Get current locale display info
    */
   static getCurrentLocaleDisplay(): LocaleDisplay {
-    return LOCALE_DISPLAY_INFO.find(l => l.code === this.currentLocale) || LOCALE_DISPLAY_INFO[0];
+    return LOCALE_DISPLAY_INFO.find((l) => l.code === this.currentLocale) || LOCALE_DISPLAY_INFO[0];
   }
 
   /**
@@ -108,7 +113,7 @@ export class LanguageService {
       StorageService.setItem(STORAGE_KEYS.LOCALE, locale);
 
       // Notify all listeners
-      this.listeners.forEach(listener => {
+      this.listeners.forEach((listener) => {
         try {
           listener(locale);
         } catch (error) {
@@ -215,14 +220,18 @@ export class LanguageService {
    * Get localized harmony type from core library
    */
   static getHarmonyType(key: string): string {
-    return LocalizationService.getHarmonyType(key as Parameters<typeof LocalizationService.getHarmonyType>[0]);
+    return LocalizationService.getHarmonyType(
+      key as Parameters<typeof LocalizationService.getHarmonyType>[0]
+    );
   }
 
   /**
    * Get localized vision type from core library
    */
   static getVisionType(key: string): string {
-    return LocalizationService.getVisionType(key as Parameters<typeof LocalizationService.getVisionType>[0]);
+    return LocalizationService.getVisionType(
+      key as Parameters<typeof LocalizationService.getVisionType>[0]
+    );
   }
 
   /**
@@ -256,7 +265,8 @@ export class LanguageService {
   private static detectBrowserLocale(): LocaleCode {
     try {
       // Get browser language (e.g., "en-US", "ja", "de-DE")
-      const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage || 'en';
+      const browserLang =
+        navigator.language || (navigator as { userLanguage?: string }).userLanguage || 'en';
 
       // Extract language code (first 2 characters)
       const langCode = browserLang.split('-')[0].toLowerCase();
@@ -324,8 +334,8 @@ export class LanguageService {
    */
   static async preloadLocales(locales: LocaleCode[]): Promise<void> {
     const loadPromises = locales
-      .filter(locale => !webAppTranslations.has(locale))
-      .map(locale => this.loadWebAppTranslations(locale));
+      .filter((locale) => !webAppTranslations.has(locale))
+      .map((locale) => this.loadWebAppTranslations(locale));
 
     await Promise.all(loadPromises);
   }

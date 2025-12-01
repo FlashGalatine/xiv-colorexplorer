@@ -425,7 +425,9 @@ describe('HarmonyType Component', () => {
       priceData.set(mockDye1.itemID, { currentAverage: 5000 });
 
       expect(() => {
-        component.setPriceData(priceData as unknown as Map<number, import('@shared/types').PriceData>);
+        component.setPriceData(
+          priceData as unknown as Map<number, import('@shared/types').PriceData>
+        );
       }).not.toThrow();
     });
 
@@ -436,7 +438,9 @@ describe('HarmonyType Component', () => {
 
       const priceData = new Map<number, { currentAverage: number }>();
       priceData.set(mockDye1.itemID, { currentAverage: 5000 });
-      component.setPriceData(priceData as unknown as Map<number, import('@shared/types').PriceData>);
+      component.setPriceData(
+        priceData as unknown as Map<number, import('@shared/types').PriceData>
+      );
 
       expect(container.textContent).toContain('5,000');
     });
@@ -447,7 +451,9 @@ describe('HarmonyType Component', () => {
       component.init();
 
       const priceData = new Map<number, { currentAverage: number }>();
-      component.setPriceData(priceData as unknown as Map<number, import('@shared/types').PriceData>);
+      component.setPriceData(
+        priceData as unknown as Map<number, import('@shared/types').PriceData>
+      );
 
       expect(container.textContent).toContain('N/A');
     });
@@ -537,7 +543,9 @@ describe('HarmonyType Component', () => {
       component.init();
 
       // Access protected method
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.harmonyType).toBe('complementary');
       expect(state.baseColor).toBe('#FF0000');
@@ -548,7 +556,9 @@ describe('HarmonyType Component', () => {
       component = new HarmonyType(container, mockHarmonyInfo, '#FF0000', []);
       component.init();
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.dyeCount).toBe(0);
     });
@@ -563,7 +573,9 @@ describe('HarmonyType Component', () => {
       ];
       component.updateDyes(newDyes);
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.dyeCount).toBe(2);
     });
@@ -574,7 +586,9 @@ describe('HarmonyType Component', () => {
 
       component.updateBaseColor('#00FF00');
 
-      const state = (component as unknown as { getState: () => Record<string, unknown> }).getState();
+      const state = (
+        component as unknown as { getState: () => Record<string, unknown> }
+      ).getState();
 
       expect(state.baseColor).toBe('#00FF00');
     });

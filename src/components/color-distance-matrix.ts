@@ -144,7 +144,9 @@ export class ColorDistanceMatrix extends BaseComponent {
       });
 
       const name = this.createElement('span', {
-        textContent: (LanguageService.getDyeName(this.dyes[i].itemID) || this.dyes[i].name).substring(0, 12),
+        textContent: (
+          LanguageService.getDyeName(this.dyes[i].itemID) || this.dyes[i].name
+        ).substring(0, 12),
         className: 'truncate',
       });
 
