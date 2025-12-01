@@ -221,7 +221,7 @@ export class ModalContainer extends BaseComponent {
           </svg>
         `,
       });
-      closeBtn.addEventListener('click', () => ModalService.dismiss(modal.id));
+      this.on(closeBtn, 'click', () => ModalService.dismiss(modal.id));
       header.appendChild(closeBtn);
     }
 
@@ -263,7 +263,7 @@ export class ModalContainer extends BaseComponent {
           attributes: { type: 'button' },
           textContent: modal.cancelText || 'Cancel',
         });
-        cancelBtn.addEventListener('click', () => ModalService.dismiss(modal.id));
+        this.on(cancelBtn, 'click', () => ModalService.dismiss(modal.id));
         footer.appendChild(cancelBtn);
       }
 
@@ -280,7 +280,7 @@ export class ModalContainer extends BaseComponent {
           attributes: { type: 'button' },
           textContent: modal.confirmText || 'Confirm',
         });
-        confirmBtn.addEventListener('click', () => {
+        this.on(confirmBtn, 'click', () => {
           if (modal.onConfirm) {
             modal.onConfirm();
           }
@@ -295,7 +295,7 @@ export class ModalContainer extends BaseComponent {
     backdrop.appendChild(dialog);
 
     // Handle backdrop click
-    backdrop.addEventListener('click', (e) => this.handleBackdropClick(e, modal));
+    this.on(backdrop, 'click', (e) => this.handleBackdropClick(e, modal));
 
     return backdrop;
   }
