@@ -410,7 +410,20 @@ export class HarmonyType extends BaseComponent {
     return {
       harmonyType: this.harmonyInfo.id,
       baseColor: this.baseColor,
-      dyeCount: this.matchedDyes.length,
+      matchedDyesCount: this.matchedDyes.length,
+      showPrices: this.showPrices,
     };
+  }
+
+  /**
+   * Cleanup component resources
+   */
+  destroy(): void {
+    // Clear Maps and arrays to release references
+    this.priceData.clear();
+    this.matchedDyes = [];
+
+    // Call parent destroy for BaseComponent cleanup
+    super.destroy();
   }
 }

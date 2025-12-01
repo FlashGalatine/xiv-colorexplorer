@@ -1291,18 +1291,44 @@ export class HarmonyGeneratorTool extends BaseComponent {
    * Cleanup child components
    */
   destroy(): void {
+    // Destroy all child components
     if (this.dyeSelector) {
       this.dyeSelector.destroy();
+      this.dyeSelector = null;
     }
     if (this.marketBoard) {
       this.marketBoard.destroy();
+      this.marketBoard = null;
     }
     if (this.paletteExporter) {
       this.paletteExporter.destroy();
+      this.paletteExporter = null;
     }
+    if (this.dyeFilters) {
+      this.dyeFilters.destroy();
+      this.dyeFilters = null;
+    }
+    if (this.emptyStateElement) {
+      this.emptyStateElement.destroy();
+      this.emptyStateElement = null;
+    }
+
+    // Destroy all harmony displays
     for (const display of this.harmonyDisplays.values()) {
       display.destroy();
     }
+
+    // Clear all Maps to release references
+    this.harmonyDisplays.clear();
+    this.priceData.clear();
+    this.harmonyContainers.clear();
+    this.suggestionsModeRadios.clear();
+
+    // Null out element references
+    this.harmoniesGridElement = null;
+    this.companionDyesInput = null;
+
+    // Call parent destroy
     super.destroy();
   }
 }
