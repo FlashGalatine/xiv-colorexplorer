@@ -20,6 +20,7 @@ import {
   APIService,
   LanguageService,
   AnnouncerService,
+  ToastService,
 } from '@services/index';
 import { StorageService } from '@services/index';
 import type { Dye, PriceData } from '@shared/types';
@@ -38,6 +39,7 @@ interface RecentColor {
 interface DyeWithDistance extends Dye {
   distance: number;
 }
+import { CARD_CLASSES, CARD_CLASSES_COMPACT } from '@shared/constants';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
@@ -290,7 +292,7 @@ export class ColorMatcherTool extends BaseComponent {
         const { image } = customEvent.detail;
 
         // Show success toast
-        this.showToast('✓ Image loaded successfully', 'success');
+        ToastService.success('✓ Image loaded successfully');
 
         // Show overlay for image interaction
         this.showImageOverlay(image);
@@ -300,7 +302,7 @@ export class ColorMatcherTool extends BaseComponent {
         const customEvent = event as CustomEvent;
         const message = customEvent.detail?.message || 'Failed to load image';
         logger.error('Image upload error:', customEvent.detail);
-        this.showToast(message, 'error');
+        ToastService.error(message);
       });
     }
 
@@ -378,7 +380,7 @@ export class ColorMatcherTool extends BaseComponent {
           });
 
           // Get initial showPrices state
-          this.showPrices = this.marketBoard.getShowPrices();
+          this.showPrices = this.marketBoard?.getShowPrices() ?? false;
         }
       });
     }
@@ -561,13 +563,10 @@ export class ColorMatcherTool extends BaseComponent {
     this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
 
     // Hide preview overlay when scrolling the canvas container
-    canvasContainer.addEventListener(
-      'scroll',
-      () => {
-        this.previewOverlay?.hidePreview();
-      },
-      { passive: true }
-    );
+    // Hide preview overlay when scrolling the canvas container
+    this.on(canvasContainer, 'scroll', () => {
+      this.previewOverlay?.hidePreview();
+    });
 
     // Image interaction
     this.setupImageInteraction(canvas as HTMLCanvasElement, image);
@@ -1033,8 +1032,7 @@ export class ColorMatcherTool extends BaseComponent {
 
     // Results section
     const section = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6',
+      className: `${CARD_CLASSES} space-y-6`,
     });
     section.setAttribute('data-results-section', 'true');
 
@@ -1101,8 +1099,7 @@ export class ColorMatcherTool extends BaseComponent {
    */
   private renderDyeCard(dye: Dye, sampledColor: string): HTMLElement {
     const card = this.createElement('div', {
-      className:
-        'flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600',
+      className: `${CARD_CLASSES_COMPACT} flex items-center gap-3`,
     });
 
     // Swatches
@@ -1185,7 +1182,7 @@ export class ColorMatcherTool extends BaseComponent {
     copyButton.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(dye.hex);
-        this.showToast(`✓ Copied ${dye.hex} to clipboard`, 'success');
+        ToastService.success(`✓ Copied ${dye.hex} to clipboard`);
       } catch {
         // Fallback for older browsers (clipboard API not available)
         const textArea = document.createElement('textarea');
@@ -1196,9 +1193,9 @@ export class ColorMatcherTool extends BaseComponent {
         textArea.select();
         try {
           document.execCommand('copy');
-          this.showToast(`✓ Copied ${dye.hex} to clipboard`, 'success');
+          ToastService.success(`✓ Copied ${dye.hex} to clipboard`);
         } catch {
-          this.showToast('Failed to copy hex code', 'error');
+          ToastService.error('Failed to copy hex code');
         } finally {
           document.body.removeChild(textArea);
         }
@@ -1442,76 +1439,5 @@ export class ColorMatcherTool extends BaseComponent {
     this.canvasRef = null;
 
     super.destroy();
-  }
-
-  /**
-   * Show toast notification
-   */
-  private showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-      toastContainer = document.createElement('div');
-      toastContainer.id = 'toast-container';
-      toastContainer.style.cssText =
-        'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
-      document.body.appendChild(toastContainer);
-    }
-
-    // Create toast element
-    const toast = document.createElement('div');
-    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
-    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
-
-    toast.style.cssText = `
-      background-color: ${bgColor};
-      color: white;
-      padding: 12px 16px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      font-size: 14px;
-      font-weight: 500;
-      max-width: 300px;
-      word-wrap: break-word;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.3s ease-out;
-      pointer-events: auto;
-      cursor: pointer;
-    `;
-
-    toast.textContent = `${icon} ${message}`;
-
-    toastContainer.appendChild(toast);
-
-    // Trigger animation
-    setTimeout(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    }, 10);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
-      setTimeout(() => {
-        toast.remove();
-        if (toastContainer && toastContainer.children.length === 0) {
-          toastContainer.remove();
-        }
-      }, 300);
-    }, 3000);
-
-    // Allow manual dismiss on click
-    toast.addEventListener('click', () => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
-      setTimeout(() => {
-        toast.remove();
-        if (toastContainer && toastContainer.children.length === 0) {
-          toastContainer.remove();
-        }
-      }, 300);
-    });
   }
 }

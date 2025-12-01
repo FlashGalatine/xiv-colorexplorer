@@ -260,6 +260,15 @@ export const COLOR_DISTANCE_MAX = Math.sqrt(255 ** 2 + 255 ** 2 + 255 ** 2); // 
 // ============================================================================
 
 /**
+ * Common card styling classes
+ */
+export const CARD_CLASSES =
+  'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6';
+
+export const CARD_CLASSES_COMPACT =
+  'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4';
+
+/**
  * Color Matcher image sampling configurations
  */
 export const SAMPLE_SIZE_MIN = 1;
