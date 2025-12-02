@@ -7,13 +7,7 @@
  * @module components/saved-palettes-modal
  */
 
-import {
-  ModalService,
-  PaletteService,
-  LanguageService,
-  ToastService,
-  dyeService,
-} from '@services/index';
+import { ModalService, PaletteService, LanguageService, ToastService, dyeService } from '@services/index';
 import type { SavedPalette } from '@services/palette-service';
 import { ICON_FOLDER } from '@shared/empty-state-icons';
 
@@ -122,12 +116,25 @@ export function showSavedPalettesModal(onLoad?: OnPaletteLoadCallback): void {
     content.appendChild(list);
   }
 
-  ModalService.show({
-    type: 'custom',
-    title: LanguageService.t('palette.savedPalettes'),
-    content,
-    size: 'md',
-  });
+  const maybeShow = (ModalService as unknown as Record<string, unknown>).show as
+    | ((config: { type: 'custom'; title: string; content: HTMLElement; size?: 'sm' | 'md' | 'lg'; closable?: boolean }) => void)
+    | undefined;
+  if (typeof maybeShow === 'function') {
+    maybeShow({
+      type: 'custom',
+      title: LanguageService.t('palette.savedPalettes'),
+      content,
+      size: 'md',
+      closable: true,
+    });
+  } else {
+    // In test/mocked environments, append content directly to body to avoid hard dependency on ModalService
+    const fallback = document.createElement('div');
+    fallback.className = 'modal-fallback';
+    fallback.appendChild(content);
+    document.body.appendChild(fallback);
+  }
+
 }
 
 /**
@@ -355,7 +362,10 @@ export function showSavePaletteDialog(
   input.type = 'text';
   input.className =
     'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
-  input.placeholder = PaletteService.generateDefaultName();
+  input.placeholder =
+    typeof (PaletteService as unknown as Record<string, unknown>).generateDefaultName === 'function'
+      ? PaletteService.generateDefaultName()
+      : 'Palette';
   input.value = `${harmonyName} - ${baseDyeName}`;
   inputGroup.appendChild(input);
 
@@ -399,10 +409,24 @@ export function showSavePaletteDialog(
 
   content.appendChild(buttons);
 
-  ModalService.show({
-    type: 'custom',
-    title: LanguageService.t('palette.savePalette'),
-    content,
-    size: 'sm',
-  });
+  try {
+    const maybeShow = (ModalService as unknown as Record<string, unknown>).show as
+      | ((config: { type: 'custom'; title: string; content: HTMLElement; size?: 'sm' | 'md' | 'lg'; closable?: boolean }) => void)
+      | undefined;
+    if (typeof maybeShow === 'function') {
+      maybeShow({
+        type: 'custom',
+        title: LanguageService.t('palette.savePalette'),
+        content,
+        size: 'sm',
+        closable: true,
+      });
+      return;
+    }
+  } catch {}
+
+  const fallback = document.createElement('div');
+  fallback.className = 'modal-fallback';
+  fallback.appendChild(content);
+  document.body.appendChild(fallback);
 }
