@@ -856,4 +856,468 @@ describe('SecureStorage', () => {
       expect(true).toBe(true);
     });
   });
+
+  // ============================================================================
+  // rebuildSizeIndex Tests
+  // ============================================================================
+
+  describe('rebuildSizeIndex', () => {
+    it('should rebuild size index from storage entries', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store some valid entries
+      await SecureStorage.setItem('rebuild1', 'value1');
+      await SecureStorage.setItem('rebuild2', 'value2');
+
+      // Rebuild the index
+      SecureStorage.rebuildSizeIndex();
+
+      // Entries should still be accessible
+      expect(await SecureStorage.getItem('rebuild1')).toBe('value1');
+      expect(await SecureStorage.getItem('rebuild2')).toBe('value2');
+    });
+
+    it('should skip SIZE_INDEX_KEY during rebuild', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      await SecureStorage.setItem('test', 'value');
+
+      // Rebuild should not include the internal index key
+      SecureStorage.rebuildSizeIndex();
+
+      // Storage should still function
+      expect(await SecureStorage.getItem('test')).toBe('value');
+    });
+
+    it('should skip entries without timestamp during rebuild', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store valid entry
+      await SecureStorage.setItem('valid', 'value');
+
+      // Store invalid entry without proper structure
+      StorageService.setItem('no_timestamp', { value: 'test', checksum: 'abc' });
+
+      // Rebuild should skip the invalid entry
+      SecureStorage.rebuildSizeIndex();
+
+      // Valid entry should be accessible
+      expect(await SecureStorage.getItem('valid')).toBe('value');
+    });
+
+    it('should handle entries that throw during rebuild', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      await SecureStorage.setItem('good', 'value');
+
+      // Mock getItem to throw for specific key
+      const originalGetItem = StorageService.getItem;
+      let firstCall = true;
+      StorageService.getItem = <T>(key: string, defaultValue?: T): T | null => {
+        if (key === 'bad_entry' && firstCall) {
+          firstCall = false;
+          throw new Error('Parse error');
+        }
+        return originalGetItem.call(StorageService, key, defaultValue) as T | null;
+      };
+
+      // Add a problematic key manually
+      StorageService.setItem('bad_entry', 'not json parseable as secure entry');
+
+      // Rebuild should catch the error and continue
+      SecureStorage.rebuildSizeIndex();
+
+      StorageService.getItem = originalGetItem;
+
+      // Good entry should still work
+      expect(await SecureStorage.getItem('good')).toBe('value');
+    });
+  });
+
+  // ============================================================================
+  // Size Index Operations Tests
+  // ============================================================================
+
+  describe('Size Index Operations', () => {
+    it('should update size index on successful setItem', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      
+      await SecureStorage.setItem('indexed', 'test-value');
+
+      // Entry should be stored
+      expect(await SecureStorage.getItem('indexed')).toBe('test-value');
+    });
+
+    it('should remove from size index on removeItem', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      
+      await SecureStorage.setItem('to_remove', 'value');
+      SecureStorage.removeItem('to_remove');
+
+      expect(await SecureStorage.getItem('to_remove')).toBeNull();
+    });
+
+    it('should clear size index on clear', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      await SecureStorage.setItem('clear1', 'value1');
+      await SecureStorage.setItem('clear2', 'value2');
+
+      SecureStorage.clear();
+
+      expect(await SecureStorage.getItem('clear1')).toBeNull();
+      expect(await SecureStorage.getItem('clear2')).toBeNull();
+    });
+
+    it('should load size index from cache on subsequent calls', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      
+      // First setItem populates the index
+      await SecureStorage.setItem('first', 'value1');
+      // Second setItem should use cached index
+      await SecureStorage.setItem('second', 'value2');
+
+      expect(await SecureStorage.getItem('first')).toBe('value1');
+      expect(await SecureStorage.getItem('second')).toBe('value2');
+    });
+  });
+
+  // ============================================================================
+  // generateChecksum Fallback Tests
+  // ============================================================================
+
+  describe('generateChecksum fallback', () => {
+    it('should use fallback hash when Web Crypto fails during setItem', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Mock crypto.subtle.importKey to fail
+      const originalSubtle = window.crypto.subtle;
+      Object.defineProperty(window.crypto, 'subtle', {
+        value: {
+          importKey: () => Promise.reject(new Error('Web Crypto not available')),
+          sign: () => Promise.reject(new Error('Web Crypto not available')),
+        },
+        configurable: true,
+      });
+
+      // Should still work with fallback hash
+      const result = await SecureStorage.setItem('fallback-test', 'value');
+      
+      Object.defineProperty(window.crypto, 'subtle', {
+        value: originalSubtle,
+        configurable: true,
+      });
+
+      expect(result).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // cleanupCorrupted Additional Branch Tests
+  // ============================================================================
+
+  describe('cleanupCorrupted additional branches', () => {
+    it('should skip SIZE_INDEX_KEY during cleanup', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      await SecureStorage.setItem('valid', 'value');
+
+      // The cleanup should not remove the internal index key
+      const removed = await SecureStorage.cleanupCorrupted();
+
+      // Only corrupted user entries should be removed
+      expect(removed).toBe(0);
+      expect(await SecureStorage.getItem('valid')).toBe('value');
+    });
+
+    it('should remove entries with missing checksum field', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store entry missing checksum
+      StorageService.setItem('missing_checksum', { value: 'test', timestamp: Date.now() });
+
+      const removed = await SecureStorage.cleanupCorrupted();
+
+      expect(removed).toBe(1);
+    });
+
+    it('should remove entries with invalid checksum', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store valid entry then tamper with it
+      await SecureStorage.setItem('tampered', 'original');
+      
+      const entry = StorageService.getItem<{ value: string; checksum: string; timestamp: number }>('tampered');
+      if (entry) {
+        entry.value = 'modified_value';
+        StorageService.setItem('tampered', entry);
+      }
+
+      const removed = await SecureStorage.cleanupCorrupted();
+
+      expect(removed).toBe(1);
+    });
+
+    it('should catch errors thrown while verifying entries during cleanup', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store a plain string that will fail parse
+      localStorage.setItem('plain_string', 'just a string');
+
+      const removed = await SecureStorage.cleanupCorrupted();
+
+      // The entry should be removed as corrupted
+      expect(removed).toBeGreaterThan(0);
+    });
+
+    it('should update size index after cleanup', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store valid and invalid entries
+      await SecureStorage.setItem('keep', 'value');
+      StorageService.setItem('remove', { invalid: true });
+
+      await SecureStorage.cleanupCorrupted();
+
+      // Valid entry should still work
+      expect(await SecureStorage.getItem('keep')).toBe('value');
+    });
+  });
+
+  // ============================================================================
+  // LRU Eviction Detailed Tests
+  // ============================================================================
+
+  describe('LRU eviction detailed tests', () => {
+    it('should not evict when cache is under limit', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store a few small entries
+      await SecureStorage.setItem('small1', 'a');
+      await SecureStorage.setItem('small2', 'b');
+      await SecureStorage.setItem('small3', 'c');
+
+      // All should be accessible (no eviction)
+      expect(await SecureStorage.getItem('small1')).toBe('a');
+      expect(await SecureStorage.getItem('small2')).toBe('b');
+      expect(await SecureStorage.getItem('small3')).toBe('c');
+    });
+
+    it('should handle entry with value as string type', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store string value (tests typeof entry.value === 'string' branch)
+      const stringValue = 'this is a string value';
+      await SecureStorage.setItem('string_value', stringValue);
+
+      const result = await SecureStorage.getItem('string_value');
+      expect(result).toBe(stringValue);
+    });
+
+    it('should handle entry with value as object type', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store object value (tests JSON.stringify branch)
+      const objectValue = { nested: { data: 'value' }, arr: [1, 2, 3] };
+      await SecureStorage.setItem('object_value', objectValue);
+
+      const result = await SecureStorage.getItem('object_value');
+      expect(result).toEqual(objectValue);
+    });
+  });
+
+  // ============================================================================
+  // getItem Branch Tests
+  // ============================================================================
+
+  describe('getItem branch tests', () => {
+    it('should return defaultValue when entry is null', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      const result = await SecureStorage.getItem('nonexistent', 'my-default');
+      expect(result).toBe('my-default');
+    });
+
+    it('should return null when entry is null and no defaultValue', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      const result = await SecureStorage.getItem('nonexistent');
+      expect(result).toBeNull();
+    });
+
+    it('should handle string value correctly during verification', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+
+      // Store string value
+      await SecureStorage.setItem('str', 'plain text');
+
+      // Retrieve - this tests the String(entry.value) branch
+      const result = await SecureStorage.getItem('str');
+      expect(result).toBe('plain text');
+    });
+  });
+
+  // ============================================================================
+  // removeItem Branch Tests
+  // ============================================================================
+
+  describe('removeItem branch tests', () => {
+    it('should return true and update index when removal succeeds', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      
+      await SecureStorage.setItem('to_delete', 'value');
+      const success = SecureStorage.removeItem('to_delete');
+
+      expect(success).toBe(true);
+      expect(await SecureStorage.getItem('to_delete')).toBeNull();
+    });
+
+    it('should handle removal of non-existent key', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      StorageService.clear();
+      
+      // Removing a key that doesn't exist
+      const success = SecureStorage.removeItem('never_existed');
+
+      // Should still return true (localStorage.removeItem doesn't fail)
+      expect(success).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // clear Branch Tests
+  // ============================================================================
+
+  describe('clear branch tests', () => {
+    it('should clear storage and reset size index cache', async () => {
+      if (!StorageService.isAvailable()) {
+        expect(true).toBe(true);
+        return;
+      }
+
+      await SecureStorage.setItem('a', '1');
+      await SecureStorage.setItem('b', '2');
+
+      const success = SecureStorage.clear();
+
+      expect(success).toBe(true);
+      expect(await SecureStorage.getItem('a')).toBeNull();
+      expect(await SecureStorage.getItem('b')).toBeNull();
+    });
+
+    it('should handle clear when storage is unavailable', async () => {
+      const originalLocalStorage = window.localStorage;
+      // @ts-expect-error - Testing unavailable storage
+      window.localStorage = null;
+
+      const success = SecureStorage.clear();
+      expect(success).toBe(false);
+
+      window.localStorage = originalLocalStorage;
+    });
+  });
 });

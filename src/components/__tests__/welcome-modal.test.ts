@@ -328,6 +328,135 @@ describe('WelcomeModal', () => {
 
       expect(toolCard.title).toBe('Find harmonious dye combinations');
     });
+
+    it('should change background on hover enter', () => {
+      modal.show();
+
+      const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const grid = content.querySelector('.grid');
+      const toolCard = grid?.firstElementChild as HTMLElement;
+
+      // Trigger mouseenter
+      toolCard.dispatchEvent(new MouseEvent('mouseenter'));
+      expect(toolCard.style.backgroundColor).toBe('var(--theme-card-hover)');
+    });
+
+    it('should reset background on hover leave', () => {
+      modal.show();
+
+      const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const grid = content.querySelector('.grid');
+      const toolCard = grid?.firstElementChild as HTMLElement;
+
+      // Trigger mouseenter then mouseleave
+      toolCard.dispatchEvent(new MouseEvent('mouseenter'));
+      toolCard.dispatchEvent(new MouseEvent('mouseleave'));
+      expect(toolCard.style.backgroundColor).toBe('var(--theme-card-background)');
+    });
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - Get Started Button Hover Effects
+// ==========================================================================
+
+describe('WelcomeModal Get Started Button Effects', () => {
+  let modal: WelcomeModal;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    modal = new WelcomeModal();
+  });
+
+  it('should brighten button on hover enter', () => {
+    modal.show();
+
+    const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+    const content = call.content as HTMLElement;
+    const getStartedBtn = Array.from(content.querySelectorAll('button')).find(
+      (b) => b.textContent === 'Get Started'
+    ) as HTMLButtonElement;
+
+    getStartedBtn.dispatchEvent(new MouseEvent('mouseenter'));
+    expect(getStartedBtn.style.filter).toBe('brightness(1.1)');
+  });
+
+  it('should reset filter on hover leave', () => {
+    modal.show();
+
+    const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+    const content = call.content as HTMLElement;
+    const getStartedBtn = Array.from(content.querySelectorAll('button')).find(
+      (b) => b.textContent === 'Get Started'
+    ) as HTMLButtonElement;
+
+    getStartedBtn.dispatchEvent(new MouseEvent('mouseenter'));
+    getStartedBtn.dispatchEvent(new MouseEvent('mouseleave'));
+    expect(getStartedBtn.style.filter).toBe('');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - Checkbox State on Modal Close
+// ==========================================================================
+
+describe('WelcomeModal Checkbox Close Behavior', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should NOT mark as seen when modal closed without checkbox checked', () => {
+    const modal = new WelcomeModal();
+    modal.show();
+
+    const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+
+    // Close modal without checking checkbox
+    call.onClose?.();
+
+    // setItem should NOT have been called for welcome_seen
+    expect(StorageService.setItem).not.toHaveBeenCalledWith('xivdye_welcome_seen', true);
+  });
+
+  it('should mark as seen when modal closed with checkbox checked', () => {
+    const modal = new WelcomeModal();
+    modal.show();
+
+    const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+    const content = call.content as HTMLElement;
+    const checkbox = content.querySelector('#welcome-dont-show') as HTMLInputElement;
+
+    // Check the checkbox
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+
+    // Close modal
+    call.onClose?.();
+
+    expect(StorageService.setItem).toHaveBeenCalledWith('xivdye_welcome_seen', true);
+  });
+
+  it('should reset modalId on close callback', () => {
+    const modal = new WelcomeModal();
+    modal.show();
+
+    const call = vi.mocked(ModalService.showWelcome).mock.calls[0][0];
+
+    // Close modal
+    call.onClose?.();
+
+    // Now showing again should work (new call)
+    vi.mocked(ModalService.showWelcome).mockClear();
+    modal.show();
+
+    expect(ModalService.showWelcome).toHaveBeenCalled();
   });
 });
 

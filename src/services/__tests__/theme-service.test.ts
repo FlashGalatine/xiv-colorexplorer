@@ -357,3 +357,282 @@ describe('ThemeService Integration', () => {
     });
   });
 });
+
+// ==========================================================================
+// Branch Coverage Tests - High Contrast Themes
+// ==========================================================================
+
+describe('ThemeService High Contrast Themes', () => {
+  beforeEach(() => {
+    if (StorageService.isAvailable()) {
+      StorageService.clear();
+    }
+  });
+
+  it('should support high-contrast-light theme', () => {
+    expect(() => {
+      ThemeService.setTheme('high-contrast-light' as ThemeName);
+    }).not.toThrow();
+
+    expect(ThemeService.getCurrentTheme()).toBe('high-contrast-light');
+    expect(ThemeService.isDarkMode()).toBe(false);
+  });
+
+  it('should support high-contrast-dark theme', () => {
+    expect(() => {
+      ThemeService.setTheme('high-contrast-dark' as ThemeName);
+    }).not.toThrow();
+
+    expect(ThemeService.getCurrentTheme()).toBe('high-contrast-dark');
+    expect(ThemeService.isDarkMode()).toBe(true);
+  });
+
+  it('should toggle between high contrast themes', () => {
+    ThemeService.setTheme('high-contrast-light' as ThemeName);
+    ThemeService.toggleDarkMode();
+    expect(ThemeService.getCurrentTheme()).toBe('high-contrast-dark');
+
+    ThemeService.toggleDarkMode();
+    expect(ThemeService.getCurrentTheme()).toBe('high-contrast-light');
+  });
+
+  it('should get high contrast theme variants', () => {
+    const variants = ThemeService.getThemeVariants('high-contrast');
+    expect(variants).toContain('high-contrast-light');
+    expect(variants).toContain('high-contrast-dark');
+    expect(variants.length).toBe(2);
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - Toggle Dark Mode Edge Cases
+// ==========================================================================
+
+describe('ThemeService toggleDarkMode Edge Cases', () => {
+  beforeEach(() => {
+    if (StorageService.isAvailable()) {
+      StorageService.clear();
+    }
+  });
+
+  it('should handle themes without light/dark variants gracefully', () => {
+    // cotton-candy doesn't have a -dark variant
+    ThemeService.setTheme('cotton-candy' as ThemeName);
+
+    // This should log a warning and not change the theme
+    ThemeService.toggleDarkMode();
+
+    // cotton-candy-dark doesn't exist, so it should stay as cotton-candy
+    // (or fall back depending on implementation)
+    const current = ThemeService.getCurrentTheme();
+    // The theme should not have changed to an invalid theme
+    expect(current).toBe('cotton-candy');
+  });
+
+  it('should handle sugar-riot theme toggle (no light variant)', () => {
+    ThemeService.setTheme('sugar-riot' as ThemeName);
+
+    // sugar-riot doesn't have -light or -dark suffix
+    ThemeService.toggleDarkMode();
+
+    // Should try to go to sugar-riot-light which doesn't exist
+    const current = ThemeService.getCurrentTheme();
+    expect(current).toBe('sugar-riot');
+  });
+
+  it('should handle og-classic-dark theme toggle', () => {
+    ThemeService.setTheme('og-classic-dark' as ThemeName);
+
+    // og-classic-dark -> og-classic-light (which doesn't exist)
+    ThemeService.toggleDarkMode();
+
+    // Should stay on og-classic-dark since there's no light variant
+    expect(ThemeService.getCurrentTheme()).toBe('og-classic-dark');
+  });
+
+  it('should handle hydaelyn-light theme toggle', () => {
+    ThemeService.setTheme('hydaelyn-light' as ThemeName);
+
+    // hydaelyn-light -> hydaelyn-dark (which doesn't exist)
+    ThemeService.toggleDarkMode();
+
+    // Should stay on hydaelyn-light since there's no dark variant
+    expect(ThemeService.getCurrentTheme()).toBe('hydaelyn-light');
+  });
+
+  it('should handle parchment-light theme toggle', () => {
+    ThemeService.setTheme('parchment-light' as ThemeName);
+
+    // parchment-light -> parchment-dark (which doesn't exist)
+    ThemeService.toggleDarkMode();
+
+    // Should stay on parchment-light since there's no dark variant
+    expect(ThemeService.getCurrentTheme()).toBe('parchment-light');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - isDarkMode Special Cases
+// ==========================================================================
+
+describe('ThemeService isDarkMode Special Cases', () => {
+  it('should correctly identify sugar-riot as dark mode', () => {
+    ThemeService.setTheme('sugar-riot' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(true);
+  });
+
+  it('should correctly identify cotton-candy as light mode', () => {
+    ThemeService.setTheme('cotton-candy' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(false);
+  });
+
+  it('should correctly identify themes ending with -dark', () => {
+    ThemeService.setTheme('standard-dark' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(true);
+
+    ThemeService.setTheme('grayscale-dark' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(true);
+
+    ThemeService.setTheme('og-classic-dark' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(true);
+  });
+
+  it('should correctly identify themes ending with -light', () => {
+    ThemeService.setTheme('standard-light' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(false);
+
+    ThemeService.setTheme('grayscale-light' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(false);
+
+    ThemeService.setTheme('hydaelyn-light' as ThemeName);
+    expect(ThemeService.isDarkMode()).toBe(false);
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - getTheme Error Handling
+// ==========================================================================
+
+describe('ThemeService getTheme Error Handling', () => {
+  it('should throw AppError for invalid theme name', () => {
+    expect(() => {
+      ThemeService.getTheme('completely-invalid-theme' as ThemeName);
+    }).toThrow();
+  });
+
+  it('should throw error with correct error code', () => {
+    try {
+      ThemeService.getTheme('not-a-theme' as ThemeName);
+      expect.fail('Should have thrown');
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - getLightVariant / getDarkVariant
+// ==========================================================================
+
+describe('ThemeService Variant Helpers', () => {
+  it('should get light variant from dark theme', () => {
+    const light = ThemeService.getLightVariant('grayscale-dark');
+    expect(light).toBe('grayscale-light');
+  });
+
+  it('should get light variant from light theme (unchanged base)', () => {
+    const light = ThemeService.getLightVariant('grayscale-light');
+    expect(light).toBe('grayscale-light');
+  });
+
+  it('should get dark variant from light theme', () => {
+    const dark = ThemeService.getDarkVariant('grayscale-light');
+    expect(dark).toBe('grayscale-dark');
+  });
+
+  it('should get dark variant from dark theme (unchanged base)', () => {
+    const dark = ThemeService.getDarkVariant('grayscale-dark');
+    expect(dark).toBe('grayscale-dark');
+  });
+
+  it('should handle theme without suffix', () => {
+    // sugar-riot has no suffix
+    const light = ThemeService.getLightVariant('sugar-riot' as ThemeName);
+    expect(light).toBe('sugar-riot-light');
+
+    const dark = ThemeService.getDarkVariant('sugar-riot' as ThemeName);
+    expect(dark).toBe('sugar-riot-dark');
+  });
+
+  it('should handle cotton-candy (no suffix)', () => {
+    const light = ThemeService.getLightVariant('cotton-candy' as ThemeName);
+    expect(light).toBe('cotton-candy-light');
+
+    const dark = ThemeService.getDarkVariant('cotton-candy' as ThemeName);
+    expect(dark).toBe('cotton-candy-dark');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - getThemeVariants Edge Cases
+// ==========================================================================
+
+describe('ThemeService getThemeVariants', () => {
+  it('should return empty array for non-matching prefix', () => {
+    const variants = ThemeService.getThemeVariants('nonexistent');
+    expect(variants).toEqual([]);
+  });
+
+  it('should return single theme for unique prefix', () => {
+    const variants = ThemeService.getThemeVariants('sugar');
+    expect(variants).toContain('sugar-riot');
+    expect(variants.length).toBe(1);
+  });
+
+  it('should return multiple themes for matching prefix', () => {
+    const variants = ThemeService.getThemeVariants('grayscale');
+    expect(variants.length).toBe(2);
+    expect(variants).toContain('grayscale-light');
+    expect(variants).toContain('grayscale-dark');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - Initialize with Various Storage States
+// ==========================================================================
+
+describe('ThemeService Initialize Edge Cases', () => {
+  beforeEach(() => {
+    if (StorageService.isAvailable()) {
+      StorageService.clear();
+    }
+  });
+
+  it('should initialize with saved valid theme', () => {
+    // Set a valid theme in storage using the correct key
+    StorageService.setItem('xivdyetools_xivdyetools_theme', 'sugar-riot');
+
+    ThemeService.initialize();
+
+    expect(ThemeService.getCurrentTheme()).toBe('sugar-riot');
+  });
+
+  it('should initialize with default when storage has invalid theme', () => {
+    StorageService.setItem('xivdyetools_xivdyetools_theme', 'not-a-real-theme');
+
+    ThemeService.initialize();
+
+    // Should fall back to default
+    const current = ThemeService.getCurrentTheme();
+    expect(current).toBeDefined();
+  });
+
+  it('should initialize with default when storage is empty', () => {
+    StorageService.clear();
+
+    ThemeService.initialize();
+
+    const current = ThemeService.getCurrentTheme();
+    expect(current).toBeDefined();
+  });
+});

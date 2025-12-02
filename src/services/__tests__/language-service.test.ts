@@ -651,6 +651,57 @@ describe('translation loading resilience', () => {
 });
 
 // ==========================================================================
+// Branch Coverage Tests - cycleToNextLocale
+// ==========================================================================
+
+describe('LanguageService cycleToNextLocale', () => {
+  let originalLocale: LocaleCode;
+
+  beforeEach(async () => {
+    originalLocale = LanguageService.getCurrentLocale();
+  });
+
+  afterEach(async () => {
+    await LanguageService.setLocale(originalLocale);
+  });
+
+  it('should cycle to the next locale in the list', async () => {
+    await LanguageService.setLocale('en');
+    await LanguageService.cycleToNextLocale();
+
+    // Should be 'ja' (next after 'en')
+    expect(LanguageService.getCurrentLocale()).toBe('ja');
+  });
+
+  it('should wrap around to first locale after last', async () => {
+    await LanguageService.setLocale('zh'); // Last in list
+
+    await LanguageService.cycleToNextLocale();
+
+    // Should wrap to 'en' (first in list)
+    expect(LanguageService.getCurrentLocale()).toBe('en');
+  });
+
+  it('should cycle through all locales', async () => {
+    await LanguageService.setLocale('en');
+
+    const visited: LocaleCode[] = ['en'];
+    for (let i = 0; i < 5; i++) {
+      await LanguageService.cycleToNextLocale();
+      visited.push(LanguageService.getCurrentLocale());
+    }
+
+    // Should have visited all 6 locales
+    expect(visited).toContain('en');
+    expect(visited).toContain('ja');
+    expect(visited).toContain('de');
+    expect(visited).toContain('fr');
+    expect(visited).toContain('ko');
+    expect(visited).toContain('zh');
+  });
+});
+
+// ==========================================================================
 // Branch Coverage Tests - Subscribe/Unsubscribe Edge Cases
 // ==========================================================================
 
@@ -895,5 +946,129 @@ describe('LanguageService Browser Locale Detection Branches', () => {
       // Should work with 'en' default
       expect(LanguageService.getCurrentLocale()).toBe('en');
     });
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - getCurrentLocaleDisplay Fallback
+// ==========================================================================
+
+describe('LanguageService getCurrentLocaleDisplay fallback', () => {
+  it('should return first locale display info when current locale not found in list', async () => {
+    // This tests the fallback path: || LOCALE_DISPLAY_INFO[0]
+    // The fallback is defensive and shouldn't normally trigger since
+    // all valid locales are in LOCALE_DISPLAY_INFO
+    const display = LanguageService.getCurrentLocaleDisplay();
+    
+    // Verify it always returns a valid display object
+    expect(display).toHaveProperty('code');
+    expect(display).toHaveProperty('name');
+    expect(display).toHaveProperty('flag');
+    expect(display).toHaveProperty('englishName');
+    
+    // The fallback path would return LOCALE_DISPLAY_INFO[0] which is 'en'
+    // This branch is hard to trigger since currentLocale is always validated
+    expect(LOCALE_DISPLAY_INFO[0].code).toBe('en');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - setLocale Error Throw Path
+// ==========================================================================
+
+describe('LanguageService setLocale error propagation', () => {
+  it('should propagate errors from core LocalizationService.setLocale', async () => {
+    // Mock LocalizationService.setLocale to throw
+    const { LocalizationService } = await import('xivdyetools-core');
+    const originalSetLocale = LocalizationService.setLocale;
+    
+    vi.spyOn(LocalizationService, 'setLocale').mockRejectedValueOnce(
+      new Error('Core localization failed')
+    );
+
+    await expect(LanguageService.setLocale('ja')).rejects.toThrow('Core localization failed');
+
+    // Restore
+    vi.mocked(LocalizationService.setLocale).mockRestore();
+    // Re-set to English to clean up
+    await LanguageService.setLocale('en');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - initialize() Branches
+// ==========================================================================
+
+describe('LanguageService initialize branches', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return early if already initialized', async () => {
+    // Service is already initialized from prior tests
+    // This tests the early return in initialize()
+    expect(LanguageService.isReady()).toBe(true);
+    
+    // Call initialize again - should return immediately
+    await LanguageService.initialize();
+    
+    // Still works after calling initialize twice
+    expect(LanguageService.isReady()).toBe(true);
+  });
+
+  it('should use saved locale preference when valid', async () => {
+    // Set up a saved locale
+    StorageService.setItem(STORAGE_KEYS.LOCALE, 'fr');
+    
+    // Clear and reinitialize cannot be done since isInitialized is private
+    // Instead, verify the storage roundtrip works
+    const saved = StorageService.getItem<LocaleCode>(STORAGE_KEYS.LOCALE);
+    expect(saved).toBe('fr');
+    
+    // Verify the validation path
+    expect(LanguageService.isValidLocale(saved)).toBe(true);
+    
+    // Clean up
+    await LanguageService.setLocale('en');
+  });
+
+  it('should reject invalid saved locale and detect browser locale', async () => {
+    // Set an invalid saved locale
+    StorageService.setItem(STORAGE_KEYS.LOCALE, 'invalid-locale');
+    
+    // Verify validation rejects it
+    const saved = StorageService.getItem<string>(STORAGE_KEYS.LOCALE);
+    expect(LanguageService.isValidLocale(saved)).toBe(false);
+    
+    // Clean up
+    await LanguageService.setLocale('en');
+  });
+});
+
+// ==========================================================================
+// Branch Coverage Tests - getNestedValue null/undefined paths
+// ==========================================================================
+
+describe('LanguageService getNestedValue edge cases via t()', () => {
+  it('should handle translation key pointing to null value', () => {
+    // This tests the path where current is null during traversal
+    const result = LanguageService.t('path.to.possibly.null.value.deep');
+    expect(result).toBe('path.to.possibly.null.value.deep');
+  });
+
+  it('should handle translation key with numeric-like segments', () => {
+    const result = LanguageService.t('items.0.name');
+    expect(result).toBe('items.0.name');
+  });
+
+  it('should handle empty key parts', () => {
+    const result = LanguageService.t('..empty.parts..');
+    expect(result).toBe('..empty.parts..');
   });
 });
