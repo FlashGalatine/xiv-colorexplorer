@@ -37,17 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Track settings display
   - Video loadedmetadata/playing events
   - Video play failures
-  - Capture failure handling
-  - Modal close during camera initialization
-
 **Saved Palettes Modal** (`saved-palettes-modal.ts`)
 - **Before**: 76.92% function coverage → **After**: 92.3% (+15.38%)
-- Added 7 new tests covering:
-  - File import trigger and handling
   - Import with no files selected
   - Warning when import returns 0 palettes
-  - Error on invalid JSON file
-  - getDyeHexByName for known dyes
   - getDyeHexByName fallback for unknown dyes
 
 **Recent Colors Panel** (`recent-colors-panel.ts`)
@@ -56,8 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Storage error when loading/saving
   - Invalid storage data handling
   - Color re-ordering to front
-  - Hex color normalization
-  - Data-index attribute updates
   - Custom storage key and max colors options
   - State retrieval
   - Section and title rendering
@@ -65,8 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Other Component Enhancements**
 - `empty-state.test.ts` - Added 6 preset tests
 - `color-matcher-tool.test.ts` - Added 12 tests for updateLocalizedText, hover callbacks
-- `harmony-generator-tool.test.ts` - Added 13 tests for destroy, updateLocalizedText, event handlers
-- `dye-comparison-tool.test.ts` - Added checkPendingDye and showTutorial tests
 
 #### Files Modified ✅
 - `src/components/__tests__/camera-preview-modal.test.ts`
@@ -76,41 +65,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/components/__tests__/color-matcher-tool.test.ts`
 - `src/components/__tests__/harmony-generator-tool.test.ts`
 - `src/components/__tests__/dye-comparison-tool.test.ts`
-
-#### Statistics ✅
-- **New Tests Added**: 203
-- **Files Created**: 2
 - **Files Modified**: 10+
-- **Version Bump**: 2.4.8 → 2.4.9
-
----
-
-## [2.4.8] - 2025-12-01
-
-### 🧹 Code Cleanup & UI Consistency
-
 **Status**: ✅ COMPLETE
 **Focus**: ESLint error fixes and UI consistency improvements.
 
 #### ESLint Fixes ✅
 
-**17 Lint Errors Resolved**
-- Fixed unused variable errors across 6 files
-- Replaced `any` types with proper TypeScript interfaces
 - Added eslint-disable comments for intentionally unused mock parameters
-- Removed unused imports
-
-**Files Modified**:
-- `src/components/__tests__/color-matcher-tool.test.ts` - 8 unused variable fixes
-- `src/components/__tests__/image-zoom-controller.test.ts` - 4 fixes (unused imports + any type)
-- `src/components/dye-card-renderer.ts` - Removed unused `ToastService` import
-- `src/components/dye-grid.ts` - Renamed `isFocused` to `_isFocused`
-- `src/components/image-zoom-controller.ts` - Removed unused `logger` import
 - `src/services/pricing-mixin.ts` - Replaced `any` casts with typed interface
 
-#### UI Consistency Fix ✅
-
-**Accessibility Checker H2 Header**
 - Fixed oversized H2 header in Accessibility Checker tool
 - Changed from `text-3xl` to `text-2xl` to match other tools using `ToolHeader` component
 - Updated color styling from inline CSS variables to Tailwind dark mode classes
