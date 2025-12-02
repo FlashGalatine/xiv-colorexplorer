@@ -14,7 +14,7 @@ import type { InterpolationStep } from './color-interpolation-display';
 import { DyeFilters } from './dye-filters';
 import { PaletteExporter, type PaletteData } from './palette-exporter';
 import { ToolHeader } from './tool-header';
-import { ColorService, dyeService, LanguageService } from '@services/index';
+import { ColorService, dyeService, LanguageService, ToastService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -708,7 +708,7 @@ export class DyeMixerTool extends BaseComponent {
    */
   private saveGradient(): void {
     if (this.selectedDyes.length < 2) {
-      this.showToast(LanguageService.t('mixer.selectDyesToSave'), 'error');
+      ToastService.error(LanguageService.t('mixer.selectDyesToSave'));
       return;
     }
 
@@ -732,14 +732,13 @@ export class DyeMixerTool extends BaseComponent {
       ) as (typeof gradient)[];
       savedGradients.push(gradient);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(
-        `✓ ${LanguageService.tInterpolate('mixer.gradientSavedSuccess', { name: gradientName })}`,
-        'success'
+      ToastService.success(
+        LanguageService.tInterpolate('mixer.gradientSavedSuccess', { name: gradientName })
       );
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error saving gradient:', error);
-      this.showToast(LanguageService.t('mixer.saveFailed'), 'error');
+      ToastService.error(LanguageService.t('mixer.saveFailed'));
     }
   }
 
@@ -759,7 +758,7 @@ export class DyeMixerTool extends BaseComponent {
       }>;
 
       if (!savedGradients[index]) {
-        this.showToast('Gradient not found', 'error');
+        ToastService.error('Gradient not found');
         return;
       }
 
@@ -770,7 +769,7 @@ export class DyeMixerTool extends BaseComponent {
       const dye2 = dyeService.getDyeById(gradient.dye2Id);
 
       if (!dye1 || !dye2) {
-        this.showToast(LanguageService.t('mixer.dyeNotFoundInDb'), 'error');
+        ToastService.error(LanguageService.t('mixer.dyeNotFoundInDb'));
         return;
       }
 
@@ -798,13 +797,12 @@ export class DyeMixerTool extends BaseComponent {
       }
 
       this.updateInterpolation();
-      this.showToast(
-        `✓ ${LanguageService.tInterpolate('mixer.loadedGradient', { name: gradient.name })}`,
-        'success'
+      ToastService.success(
+        LanguageService.tInterpolate('mixer.loadedGradient', { name: gradient.name })
       );
     } catch (error) {
       logger.error('Error loading gradient:', error);
-      this.showToast(LanguageService.t('mixer.loadFailed'), 'error');
+      ToastService.error(LanguageService.t('mixer.loadFailed'));
     }
   }
 
@@ -818,21 +816,20 @@ export class DyeMixerTool extends BaseComponent {
       ) as Array<{ name: string }>;
 
       if (!savedGradients[index]) {
-        this.showToast(LanguageService.t('mixer.gradientNotFound'), 'error');
+        ToastService.error(LanguageService.t('mixer.gradientNotFound'));
         return;
       }
 
       const gradientName = savedGradients[index].name;
       savedGradients.splice(index, 1);
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(savedGradients));
-      this.showToast(
-        `✓ ${LanguageService.tInterpolate('mixer.gradientDeleted', { name: gradientName })}`,
-        'success'
+      ToastService.success(
+        LanguageService.tInterpolate('mixer.gradientDeleted', { name: gradientName })
       );
       this.displaySavedGradients();
     } catch (error) {
       logger.error('Error deleting gradient:', error);
-      this.showToast(LanguageService.t('mixer.deleteFailed'), 'error');
+      ToastService.error(LanguageService.t('mixer.deleteFailed'));
     }
   }
 
@@ -930,7 +927,7 @@ export class DyeMixerTool extends BaseComponent {
    */
   private copyShareUrl(): void {
     if (this.selectedDyes.length < 2) {
-      this.showToast(LanguageService.t('mixer.selectDyesToShare'), 'error');
+      ToastService.error(LanguageService.t('mixer.selectDyesToShare'));
       return;
     }
 
@@ -946,83 +943,13 @@ export class DyeMixerTool extends BaseComponent {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        this.showToast(`✓ ${LanguageService.t('mixer.urlCopied')}`, 'success');
+        ToastService.success(LanguageService.t('mixer.urlCopied'));
         logger.info('Share URL copied:', url);
       })
       .catch((error: Error) => {
         logger.error('Failed to copy URL:', error);
-        this.showToast(LanguageService.t('mixer.copyUrlFailed'), 'error');
+        ToastService.error(LanguageService.t('mixer.copyUrlFailed'));
       });
   }
 
-  /**
-   * Show toast notification
-   */
-  private showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-      toastContainer = document.createElement('div');
-      toastContainer.id = 'toast-container';
-      toastContainer.style.cssText =
-        'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
-      document.body.appendChild(toastContainer);
-    }
-
-    // Create toast element
-    const toast = document.createElement('div');
-    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
-    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
-
-    toast.style.cssText = `
-      background-color: ${bgColor};
-      color: white;
-      padding: 12px 16px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      font-size: 14px;
-      font-weight: 500;
-      max-width: 300px;
-      word-wrap: break-word;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.3s ease-out;
-      pointer-events: auto;
-      cursor: pointer;
-    `;
-
-    toast.textContent = `${icon} ${message}`;
-
-    toastContainer.appendChild(toast);
-
-    // Trigger animation
-    setTimeout(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    }, 10);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
-      setTimeout(() => {
-        toast.remove();
-        if (toastContainer && toastContainer.children.length === 0) {
-          toastContainer.remove();
-        }
-      }, 300);
-    }, 3000);
-
-    // Allow manual dismiss on click
-    toast.addEventListener('click', () => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
-      setTimeout(() => {
-        toast.remove();
-        if (toastContainer && toastContainer.children.length === 0) {
-          toastContainer.remove();
-        }
-      }, 300);
-    });
-  }
 }

@@ -43,6 +43,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   private previewOverlay: DyePreviewOverlay | null = null;
   private samplePosition: { x: number; y: number } = { x: 0, y: 0 };
 
+  // Cached DOM references for performance
+  private sampleSizeDisplay: HTMLElement | null = null;
+
   // Sub-components
   private imageZoomController: ImageZoomController | null = null;
   private recentColorsPanel: RecentColorsPanel | null = null;
@@ -50,8 +53,6 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   private languageUnsubscribe: (() => void) | null = null;
 
   // PricingMixin implementation
-  showPrices: boolean = false;
-  priceData: Map<number, PriceData> = new Map();
   onPricesLoaded?: () => void;
   initMarketBoard!: (container: HTMLElement) => Promise<void>;
   setupMarketBoardListeners!: (container: HTMLElement) => void;
@@ -333,13 +334,13 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       });
     }
 
-    // Sample size slider
+    // Sample size slider - cache DOM reference for performance
     if (sampleInput) {
+      this.sampleSizeDisplay = this.querySelector<HTMLElement>('#sample-size-value');
       this.on(sampleInput, 'input', () => {
         this.sampleSize = parseInt(sampleInput.value, 10);
-        const valueDisplay = this.querySelector<HTMLElement>('#sample-size-value');
-        if (valueDisplay) {
-          valueDisplay.textContent = String(this.sampleSize);
+        if (this.sampleSizeDisplay) {
+          this.sampleSizeDisplay.textContent = String(this.sampleSize);
         }
       });
     }
@@ -732,7 +733,15 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
    * Cleanup child components and references
    */
   destroy(): void {
-    // Destroy child components
+    // Unsubscribe from language changes
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+
+    // Cleanup market board
+    this.cleanupMarketBoard?.();
+
     // Destroy child components
     if (this.imageUpload) {
       this.imageUpload.destroy();
@@ -743,10 +752,8 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       this.colorPicker = null;
     }
     if (this.dyeFilters) {
-      if (this.dyeFilters) {
-        this.dyeFilters.destroy();
-        this.dyeFilters = null;
-      }
+      this.dyeFilters.destroy();
+      this.dyeFilters = null;
     }
     if (this.imageZoomController) {
       this.imageZoomController.destroy();
@@ -760,6 +767,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     // Clear arrays and Maps
     this.matchedDyes = [];
     this.priceData.clear();
+
+    // Clear cached DOM references
+    this.sampleSizeDisplay = null;
 
     super.destroy();
   }

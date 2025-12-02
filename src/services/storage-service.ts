@@ -381,6 +381,11 @@ export const appStorage = StorageService.createNamespace('xivdyetools');
 const MAX_CACHE_SIZE = 5 * 1024 * 1024;
 
 /**
+ * Key for storing the size index metadata
+ */
+const SIZE_INDEX_KEY = '__secure_storage_size_index__';
+
+/**
  * Storage entry with integrity check
  */
 interface SecureStorageEntry<T> {
@@ -388,6 +393,19 @@ interface SecureStorageEntry<T> {
   checksum: string;
   timestamp: number;
 }
+
+/**
+ * Metadata for tracking entry sizes (stored separately for efficient LRU)
+ */
+interface SizeIndexEntry {
+  size: number;
+  timestamp: number;
+}
+
+/**
+ * Size index for efficient LRU eviction
+ */
+type SizeIndex = Record<string, SizeIndexEntry>;
 
 /**
  * Generate HMAC checksum for data integrity
@@ -438,6 +456,59 @@ async function verifyChecksum(data: string, checksum: string): Promise<boolean> 
  * Secure storage methods with integrity checks and size limits
  */
 export class SecureStorage {
+  /** In-memory cache of the size index for fast lookups */
+  private static sizeIndexCache: SizeIndex | null = null;
+
+  /**
+   * Load the size index from storage (with caching)
+   */
+  private static loadSizeIndex(): SizeIndex {
+    if (this.sizeIndexCache !== null) {
+      return this.sizeIndexCache;
+    }
+
+    const index = StorageService.getItem<SizeIndex>(SIZE_INDEX_KEY);
+    this.sizeIndexCache = index || {};
+    return this.sizeIndexCache;
+  }
+
+  /**
+   * Save the size index to storage
+   */
+  private static saveSizeIndex(): void {
+    if (this.sizeIndexCache !== null) {
+      StorageService.setItem(SIZE_INDEX_KEY, this.sizeIndexCache);
+    }
+  }
+
+  /**
+   * Update the size index for a key
+   */
+  private static updateSizeIndex(key: string, size: number, timestamp: number): void {
+    const index = this.loadSizeIndex();
+    index[key] = { size, timestamp };
+    this.sizeIndexCache = index;
+    this.saveSizeIndex();
+  }
+
+  /**
+   * Remove a key from the size index
+   */
+  private static removeFromSizeIndex(key: string): void {
+    const index = this.loadSizeIndex();
+    delete index[key];
+    this.sizeIndexCache = index;
+    this.saveSizeIndex();
+  }
+
+  /**
+   * Get total cached size from the index
+   */
+  private static getCachedTotalSize(): number {
+    const index = this.loadSizeIndex();
+    return Object.values(index).reduce((sum, entry) => sum + entry.size, 0);
+  }
+
   /**
    * Store item with integrity check
    */
@@ -449,6 +520,7 @@ export class SecureStorage {
 
       const serialized = typeof value === 'string' ? value : JSON.stringify(value);
       const checksum = await generateChecksum(serialized);
+      const timestamp = Date.now();
 
       // Check cache size after checksum generation to avoid race conditions
       await this.enforceSizeLimit();
@@ -456,10 +528,18 @@ export class SecureStorage {
       const entry: SecureStorageEntry<T> = {
         value,
         checksum,
-        timestamp: Date.now(),
+        timestamp,
       };
 
-      return StorageService.setItem(key, entry);
+      const success = StorageService.setItem(key, entry);
+
+      // Update size index if successful
+      if (success) {
+        const entrySize = key.length + JSON.stringify(entry).length;
+        this.updateSizeIndex(key, entrySize, timestamp);
+      }
+
+      return success;
     } catch (error) {
       logger.error(`Failed to set secure item: ${key}`, error);
       return false;
@@ -501,54 +581,65 @@ export class SecureStorage {
    * Remove item
    */
   static removeItem(key: string): boolean {
-    return StorageService.removeItem(key);
+    const success = StorageService.removeItem(key);
+    if (success) {
+      this.removeFromSizeIndex(key);
+    }
+    return success;
   }
 
   /**
    * Clear all secure storage
    */
   static clear(): boolean {
-    return StorageService.clear();
+    const success = StorageService.clear();
+    if (success) {
+      this.sizeIndexCache = {};
+    }
+    return success;
   }
 
   /**
-   * Enforce maximum cache size using LRU eviction
+   * Enforce maximum cache size using LRU eviction (optimized with size index)
    */
   private static async enforceSizeLimit(): Promise<void> {
     try {
-      const currentSize = StorageService.getSize();
+      // Use cached size from index for fast check
+      const currentSize = this.getCachedTotalSize();
 
       if (currentSize < MAX_CACHE_SIZE) {
         return; // Within limits
       }
 
-      // Get all keys with timestamps for LRU eviction
-      const keys = StorageService.getKeys();
-      const entries: Array<{ key: string; timestamp: number; size: number }> = [];
-
-      for (const key of keys) {
-        const entry = StorageService.getItem<SecureStorageEntry<unknown>>(key);
-        if (entry && entry.timestamp) {
-          const value = StorageService.getItem(key);
-          const size = key.length + (value ? JSON.stringify(value).length : 0);
-          entries.push({ key, timestamp: entry.timestamp, size });
-        }
-      }
+      // Use the size index for LRU eviction (no need to read all entries)
+      const index = this.loadSizeIndex();
+      const entries = Object.entries(index)
+        .filter(([key]) => key !== SIZE_INDEX_KEY) // Don't evict the index itself
+        .map(([key, data]) => ({
+          key,
+          timestamp: data.timestamp,
+          size: data.size,
+        }));
 
       // Sort by timestamp (oldest first)
       entries.sort((a, b) => a.timestamp - b.timestamp);
 
       // Remove oldest entries until under limit
       let freed = 0;
+      let totalSize = currentSize;
       for (const entry of entries) {
-        if (currentSize - freed < MAX_CACHE_SIZE) {
+        if (totalSize - freed < MAX_CACHE_SIZE) {
           break;
         }
         StorageService.removeItem(entry.key);
+        delete index[entry.key];
         freed += entry.size;
       }
 
+      // Update the index cache and persist
       if (freed > 0) {
+        this.sizeIndexCache = index;
+        this.saveSizeIndex();
         logger.info(`LRU eviction: Freed ${freed} bytes from cache`);
       }
     } catch (error) {
@@ -571,18 +662,51 @@ export class SecureStorage {
   }
 
   /**
+   * Rebuild size index from actual storage (for recovery/sync)
+   */
+  static rebuildSizeIndex(): void {
+    const keys = StorageService.getKeys();
+    const newIndex: SizeIndex = {};
+
+    for (const key of keys) {
+      // Skip the size index key itself
+      if (key === SIZE_INDEX_KEY) continue;
+
+      try {
+        const entry = StorageService.getItem<SecureStorageEntry<unknown>>(key);
+        if (entry && entry.timestamp) {
+          const value = StorageService.getItem(key);
+          const size = key.length + (value ? JSON.stringify(value).length : 0);
+          newIndex[key] = { size, timestamp: entry.timestamp };
+        }
+      } catch {
+        // Skip invalid entries
+      }
+    }
+
+    this.sizeIndexCache = newIndex;
+    this.saveSizeIndex();
+    logger.info(`Size index rebuilt with ${Object.keys(newIndex).length} entries`);
+  }
+
+  /**
    * Clean up corrupted entries
    */
   static async cleanupCorrupted(): Promise<number> {
     let removed = 0;
     const keys = StorageService.getKeys();
+    const index = this.loadSizeIndex();
 
     for (const key of keys) {
+      // Skip the size index key itself
+      if (key === SIZE_INDEX_KEY) continue;
+
       try {
         const entry = StorageService.getItem<SecureStorageEntry<unknown>>(key);
         if (!entry || !entry.checksum || !entry.timestamp) {
           // Invalid structure
           StorageService.removeItem(key);
+          delete index[key];
           removed++;
           continue;
         }
@@ -594,16 +718,21 @@ export class SecureStorage {
 
         if (!isValid) {
           StorageService.removeItem(key);
+          delete index[key];
           removed++;
         }
       } catch {
         // Entry is corrupted, remove it
         StorageService.removeItem(key);
+        delete index[key];
         removed++;
       }
     }
 
+    // Update the size index
     if (removed > 0) {
+      this.sizeIndexCache = index;
+      this.saveSizeIndex();
       logger.info(`Cleanup: Removed ${removed} corrupted entries`);
     }
 

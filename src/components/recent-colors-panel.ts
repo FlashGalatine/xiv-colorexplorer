@@ -68,29 +68,133 @@ export class RecentColorsPanel extends BaseComponent {
   }
 
   /**
-   * Add a color to recent history
+   * Add a color to recent history with incremental DOM update
    */
   addRecentColor(hex: string): void {
     // Normalize hex to uppercase
     const normalizedHex = hex.toUpperCase();
 
-    // Remove if already exists (to move to front)
-    this.recentColors = this.recentColors.filter((c) => c.hex.toUpperCase() !== normalizedHex);
+    // Check if color already exists
+    const existingIndex = this.recentColors.findIndex(
+      (c) => c.hex.toUpperCase() === normalizedHex
+    );
 
-    // Add to front
-    this.recentColors.unshift({
-      hex: normalizedHex,
-      timestamp: Date.now(),
-    });
-
-    // Trim to max size
-    if (this.recentColors.length > this.maxRecentColors) {
-      this.recentColors = this.recentColors.slice(0, this.maxRecentColors);
+    if (existingIndex !== -1) {
+      // Remove existing and re-add at front - need full re-render for reorder
+      this.recentColors = this.recentColors.filter((c) => c.hex.toUpperCase() !== normalizedHex);
+      this.recentColors.unshift({
+        hex: normalizedHex,
+        timestamp: Date.now(),
+      });
+      this.saveRecentColors();
+      this.renderRecentColors();
+      return;
     }
 
-    // Save and re-render
+    // New color - use incremental update
+    const newColor: RecentColor = {
+      hex: normalizedHex,
+      timestamp: Date.now(),
+    };
+
+    // Add to data array
+    this.recentColors.unshift(newColor);
+
+    // Handle DOM incrementally
+    if (this.containerRef) {
+      // Show section if it was hidden
+      if (this.container.style.display === 'none') {
+        this.container.style.display = 'block';
+      }
+
+      // Create new swatch element
+      const swatch = this.createColorSwatch(newColor, 0);
+
+      // Insert at the beginning (before first child, or before clear button)
+      const firstChild = this.containerRef.firstChild;
+      if (firstChild) {
+        this.containerRef.insertBefore(swatch, firstChild);
+      } else {
+        this.containerRef.appendChild(swatch);
+        // Add clear button if this is the first color
+        this.containerRef.appendChild(this.createClearButton());
+      }
+
+      // Update data-recent-index attributes for existing swatches
+      const swatches = this.containerRef.querySelectorAll('[data-recent-index]');
+      swatches.forEach((el, index) => {
+        el.setAttribute('data-recent-index', String(index));
+      });
+
+      // Trim if over max size
+      if (this.recentColors.length > this.maxRecentColors) {
+        this.recentColors = this.recentColors.slice(0, this.maxRecentColors);
+        // Remove last swatch (the one before the clear button)
+        const allSwatches = this.containerRef.querySelectorAll('[data-recent-index]');
+        if (allSwatches.length > this.maxRecentColors) {
+          const lastSwatch = allSwatches[allSwatches.length - 1];
+          lastSwatch.remove();
+        }
+      }
+    }
+
     this.saveRecentColors();
-    this.renderRecentColors();
+  }
+
+  /**
+   * Create a color swatch button element
+   */
+  private createColorSwatch(color: RecentColor, index: number): HTMLButtonElement {
+    const swatch = this.createElement('button', {
+      className:
+        'w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer ' +
+        'hover:scale-110 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'transition-transform',
+      attributes: {
+        style: `background-color: ${color.hex};`,
+        title: `${color.hex} - Click to re-match`,
+        'aria-label': `Recent color ${color.hex}, click to match`,
+        'data-recent-index': String(index),
+        type: 'button',
+      },
+    }) as HTMLButtonElement;
+
+    // Click to re-match
+    this.on(swatch, 'click', () => {
+      if (this.onColorSelected) {
+        this.onColorSelected(color.hex);
+      }
+      AnnouncerService.announce(`Re-matching color ${color.hex}`);
+    });
+
+    return swatch;
+  }
+
+  /**
+   * Create the clear button element
+   */
+  private createClearButton(): HTMLButtonElement {
+    const clearBtn = this.createElement('button', {
+      className:
+        'px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
+        'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 ' +
+        'hover:bg-red-50 hover:border-red-300 hover:text-red-600 ' +
+        'dark:hover:bg-red-900/20 dark:hover:border-red-700 dark:hover:text-red-400 ' +
+        'transition-colors ml-2',
+      textContent: LanguageService.t('matcher.clearHistory') || 'Clear',
+      attributes: {
+        title: 'Clear recent colors history',
+        'aria-label': 'Clear recent colors history',
+        type: 'button',
+        'data-clear-button': 'true',
+      },
+    }) as HTMLButtonElement;
+
+    this.on(clearBtn, 'click', () => {
+      this.clearRecentColors();
+    });
+
+    return clearBtn;
   }
 
   /**
@@ -130,7 +234,7 @@ export class RecentColorsPanel extends BaseComponent {
   }
 
   /**
-   * Render the recent colors UI
+   * Render the recent colors UI (full rebuild - used for initial load and reordering)
    */
   private renderRecentColors(): void {
     if (!this.containerRef) return;
@@ -147,54 +251,14 @@ export class RecentColorsPanel extends BaseComponent {
     // Show section
     this.container.style.display = 'block';
 
-    // Render swatches
+    // Render swatches using helper method
     this.recentColors.forEach((color, index) => {
-      const swatch = this.createElement('button', {
-        className:
-          'w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer ' +
-          'hover:scale-110 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
-          'transition-transform',
-        attributes: {
-          style: `background-color: ${color.hex};`,
-          title: `${color.hex} - Click to re-match`,
-          'aria-label': `Recent color ${color.hex}, click to match`,
-          'data-recent-index': String(index),
-          type: 'button',
-        },
-      });
-
-      // Click to re-match
-      this.on(swatch, 'click', () => {
-        if (this.onColorSelected) {
-          this.onColorSelected(color.hex);
-        }
-        AnnouncerService.announce(`Re-matching color ${color.hex}`);
-      });
-
+      const swatch = this.createColorSwatch(color, index);
       this.containerRef?.appendChild(swatch);
     });
 
-    // Add clear button
-    const clearBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 ' +
-        'hover:bg-red-50 hover:border-red-300 hover:text-red-600 ' +
-        'dark:hover:bg-red-900/20 dark:hover:border-red-700 dark:hover:text-red-400 ' +
-        'transition-colors ml-2',
-      textContent: LanguageService.t('matcher.clearHistory') || 'Clear',
-      attributes: {
-        title: 'Clear recent colors history',
-        'aria-label': 'Clear recent colors history',
-        type: 'button',
-      },
-    });
-
-    this.on(clearBtn, 'click', () => {
-      this.clearRecentColors();
-    });
-
-    this.containerRef.appendChild(clearBtn);
+    // Add clear button using helper method
+    this.containerRef.appendChild(this.createClearButton());
   }
 
   getState(): Record<string, unknown> {

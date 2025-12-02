@@ -33,6 +33,7 @@ import {
   VALUE_MAX,
   PATTERNS,
 } from './constants';
+import { logger } from './logger';
 
 // ============================================================================
 // Math Utilities
@@ -431,7 +432,7 @@ export function clearContainer(element: HTMLElement): void {
         elementWithCleanup.__cleanup();
       } catch (error) {
         // Log but don't throw - cleanup errors shouldn't break the app
-        console.warn('Error during element cleanup:', error);
+        logger.warn('Error during element cleanup:', error);
       }
     }
   }
@@ -495,15 +496,31 @@ export function isValidURL(url: string): boolean {
 // ============================================================================
 
 /**
+ * Result of creating a debounced or throttled function
+ */
+export interface DebouncedFunction<T extends (...args: never[]) => void> {
+  /** The debounced/throttled function to call */
+  fn: (...args: Parameters<T>) => void;
+  /** Cleanup function to cancel any pending execution */
+  cleanup: () => void;
+}
+
+/**
  * Debounce a function to delay its execution
+ * Returns both the debounced function and a cleanup function to cancel pending executions
+ *
+ * @example
+ * const { fn: debouncedSearch, cleanup } = debounce(search, 300);
+ * // In onUnmount:
+ * cleanup();
  */
 export function debounce<T extends (...args: never[]) => void>(
   fn: T,
   delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout | null = null;
+): DebouncedFunction<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  return (...args: Parameters<T>) => {
+  const debouncedFn = (...args: Parameters<T>) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
@@ -512,24 +529,62 @@ export function debounce<T extends (...args: never[]) => void>(
       timeoutId = null;
     }, delay);
   };
+
+  const cleanup = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return { fn: debouncedFn, cleanup };
 }
 
 /**
  * Throttle a function to limit its execution frequency
+ * Returns both the throttled function and a cleanup function
+ *
+ * @example
+ * const { fn: throttledResize, cleanup } = throttle(handleResize, 100);
+ * // In onUnmount:
+ * cleanup();
  */
 export function throttle<T extends (...args: never[]) => void>(
   fn: T,
   delay: number
-): (...args: Parameters<T>) => void {
+): DebouncedFunction<T> {
   let lastCall = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  return (...args: Parameters<T>) => {
+  const throttledFn = (...args: Parameters<T>) => {
     const now = Date.now();
-    if (now - lastCall >= delay) {
+    const remaining = delay - (now - lastCall);
+
+    if (remaining <= 0) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       fn(...args);
       lastCall = now;
+    } else if (!timeoutId) {
+      // Schedule trailing call
+      timeoutId = setTimeout(() => {
+        fn(...args);
+        lastCall = Date.now();
+        timeoutId = null;
+      }, remaining);
     }
   };
+
+  const cleanup = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return { fn: throttledFn, cleanup };
 }
 
 // ============================================================================

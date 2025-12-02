@@ -61,6 +61,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
   private dyePairs: [Dye, Dye][] = [];
   private dyeResults: DyeAccessibilityResult[] = [];
   private pairResults: DyePairResult[] = [];
+  private languageUnsubscribe: (() => void) | null = null;
 
   /**
    * Render the tool component

@@ -734,9 +734,9 @@ describe('Debounce and Throttle', () => {
   describe('debounce', () => {
     it('should delay function execution', () => {
       const fn = vi.fn();
-      const debounced = debounce(fn, 100);
+      const { fn: debouncedFn } = debounce(fn, 100);
 
-      debounced();
+      debouncedFn();
       expect(fn).not.toHaveBeenCalled();
 
       vi.advanceTimersByTime(100);
@@ -745,39 +745,69 @@ describe('Debounce and Throttle', () => {
 
     it('should only call function once for rapid calls', () => {
       const fn = vi.fn();
-      const debounced = debounce(fn, 100);
+      const { fn: debouncedFn } = debounce(fn, 100);
 
-      debounced();
-      debounced();
-      debounced();
+      debouncedFn();
+      debouncedFn();
+      debouncedFn();
 
       vi.advanceTimersByTime(100);
       expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should provide cleanup function to cancel pending execution', () => {
+      const fn = vi.fn();
+      const { fn: debouncedFn, cleanup } = debounce(fn, 100);
+
+      debouncedFn();
+      expect(fn).not.toHaveBeenCalled();
+
+      // Cleanup before timeout
+      cleanup();
+      vi.advanceTimersByTime(100);
+
+      // Function should not have been called because cleanup was called
+      expect(fn).not.toHaveBeenCalled();
     });
   });
 
   describe('throttle', () => {
     it('should call function immediately on first call', () => {
       const fn = vi.fn();
-      const throttled = throttle(fn, 100);
+      const { fn: throttledFn } = throttle(fn, 100);
 
-      throttled();
+      throttledFn();
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
     it('should limit function calls', () => {
       const fn = vi.fn();
-      const throttled = throttle(fn, 100);
+      const { fn: throttledFn } = throttle(fn, 100);
 
-      throttled();
-      throttled();
-      throttled();
+      throttledFn();
+      throttledFn();
+      throttledFn();
 
       expect(fn).toHaveBeenCalledTimes(1);
 
       vi.advanceTimersByTime(100);
-      throttled();
+      throttledFn();
       expect(fn).toHaveBeenCalledTimes(2);
+    });
+
+    it('should provide cleanup function to cancel trailing call', () => {
+      const fn = vi.fn();
+      const { fn: throttledFn, cleanup } = throttle(fn, 100);
+
+      throttledFn(); // Immediate call
+      expect(fn).toHaveBeenCalledTimes(1);
+
+      throttledFn(); // Scheduled trailing call
+      cleanup(); // Cancel trailing call
+
+      vi.advanceTimersByTime(100);
+      // Should still only be 1 call (the immediate one)
+      expect(fn).toHaveBeenCalledTimes(1);
     });
   });
 });
