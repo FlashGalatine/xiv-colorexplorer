@@ -179,8 +179,7 @@ describe('ColorPickerDisplay', () => {
 
     it('should not show eyedropper button if not supported', () => {
       // Remove EyeDropper
-      // @ts-expect-error Deleting optional property
-      delete window.EyeDropper;
+      delete (window as { EyeDropper?: unknown }).EyeDropper;
 
       [component, container] = renderComponent(ColorPickerDisplay);
       const btn = container.querySelector('#eyedropper-btn');
@@ -268,8 +267,7 @@ describe('ColorPickerDisplay', () => {
       const btn = container.querySelector('#eyedropper-btn') as HTMLButtonElement;
 
       // Now delete EyeDropper to simulate unsupported
-      // @ts-expect-error Deleting optional property
-      delete window.EyeDropper;
+      delete (window as { EyeDropper?: unknown }).EyeDropper;
 
       // Manually call the method to test the error path
       await component['activateEyedropper']();
@@ -436,8 +434,7 @@ describe('ColorPickerDisplay', () => {
     });
 
     it('should return eyedropperSupported as false when not available', () => {
-      // @ts-expect-error Deleting optional property
-      delete window.EyeDropper;
+      delete (window as { EyeDropper?: unknown }).EyeDropper;
 
       [component, container] = renderComponent(ColorPickerDisplay);
 

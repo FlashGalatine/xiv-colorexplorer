@@ -16,7 +16,7 @@ const mockPalettes: SavedPalette[] = [
     baseDyeName: 'Dalamud Red',
     harmonyType: 'complementary',
     companions: ['Snow White', 'Jet Black'],
-    dateCreated: Date.now() - 1000,
+    dateCreated: new Date(Date.now() - 1000).toISOString(),
   },
   {
     id: 'palette-2',
@@ -25,7 +25,7 @@ const mockPalettes: SavedPalette[] = [
     baseDyeName: 'Celeste Green',
     harmonyType: 'triadic',
     companions: ['Rose Pink', 'Sky Blue', 'Sunset Orange', 'Pure White', 'Soot Black'],
-    dateCreated: Date.now(),
+    dateCreated: new Date().toISOString(),
   },
 ];
 
@@ -40,7 +40,7 @@ vi.mock('@services/index', () => ({
   },
   PaletteService: {
     getPalettesSortedByDate: vi.fn(() => mockPalettes),
-    savePalette: vi.fn(() => true),
+    savePalette: vi.fn(() => ({ id: 'new-palette', name: 'Test', baseColor: '#FF0000', baseDyeName: 'Red', harmonyType: 'complementary', companions: [], dateCreated: new Date().toISOString() })),
     deletePalette: vi.fn(),
     downloadPalettes: vi.fn(),
     importPalettes: vi.fn(() => 2),
@@ -480,7 +480,7 @@ describe('showSavedPalettesModal', () => {
           baseDyeName: 'Red',
           harmonyType: 'complementary',
           companions: ['Unknown Dye Name'],
-          dateCreated: Date.now(),
+          dateCreated: new Date().toISOString(),
         },
       ]);
 
@@ -690,7 +690,7 @@ describe('showSavePaletteDialog', () => {
     });
 
     it('should show error toast if save fails', () => {
-      vi.mocked(PaletteService.savePalette).mockReturnValue(false);
+      vi.mocked(PaletteService.savePalette).mockReturnValue(null);
 
       showSavePaletteDialog('complementary', 'Complementary', '#FF0000', 'Red', ['Blue']);
 

@@ -3,9 +3,6 @@ import { Dye } from '@shared/types';
 import {
   createTestContainer,
   cleanupTestContainer,
-  createComponent,
-  cleanupComponent,
-  expectElement,
   mockDyeData,
 } from './test-utils';
 
@@ -26,6 +23,23 @@ vi.mock('@services/index', async () => {
   };
 });
 
+/**
+ * Helper to create DyeCardRenderer instance
+ */
+function createDyeCardRenderer(): [DyeCardRenderer, HTMLElement] {
+  const container = createTestContainer();
+  const component = new DyeCardRenderer(container);
+  return [component, container];
+}
+
+/**
+ * Cleanup helper for DyeCardRenderer
+ */
+function cleanupDyeCardRenderer(component: DyeCardRenderer, container: HTMLElement): void {
+  component.destroy();
+  cleanupTestContainer(container);
+}
+
 describe('DyeCardRenderer', () => {
   let container: HTMLElement;
   let component: DyeCardRenderer;
@@ -37,7 +51,7 @@ describe('DyeCardRenderer', () => {
 
   afterEach(() => {
     if (component && container) {
-      cleanupComponent(component, container);
+      cleanupDyeCardRenderer(component, container);
     } else {
       cleanupTestContainer(container);
     }
@@ -45,7 +59,7 @@ describe('DyeCardRenderer', () => {
 
   describe('Rendering', () => {
     it('should render basic dye card', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({ dye: mockDye });
       container.appendChild(card);
 
@@ -55,7 +69,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render sampled color swatch', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({
         dye: mockDye,
         sampledColor: '#FF0000',
@@ -67,7 +81,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render distance info', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({
         dye: mockDye,
         sampledColor: '#FF0000',
@@ -78,11 +92,11 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render price when enabled', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({
         dye: mockDye,
         showPrice: true,
-        price: { currentAverage: 500, lastUpdate: 0, world: 'Test' },
+        price: { itemID: mockDye.itemID, currentAverage: 500, currentMinPrice: 400, currentMaxPrice: 600, lastUpdate: 0 },
       });
       container.appendChild(card);
 
@@ -91,7 +105,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render N/A price when missing data', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({
         dye: mockDye,
         showPrice: true,
@@ -103,7 +117,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render extra info string', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const card = component.render({
         dye: mockDye,
         extraInfo: 'Extra Info',
@@ -114,7 +128,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render extra info element', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const extraEl = document.createElement('span');
       extraEl.textContent = 'Element Info';
 
@@ -128,7 +142,7 @@ describe('DyeCardRenderer', () => {
     });
 
     it('should render actions', () => {
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
       const actionBtn = document.createElement('button');
       actionBtn.textContent = 'Action';
 
@@ -145,7 +159,7 @@ describe('DyeCardRenderer', () => {
   describe('Events', () => {
     it('should handle hover events', () => {
       const onHover = vi.fn();
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
 
       const card = component.render({
         dye: mockDye,
@@ -162,7 +176,7 @@ describe('DyeCardRenderer', () => {
 
     it('should handle click events', () => {
       const onClick = vi.fn();
-      [component, container] = createComponent(DyeCardRenderer);
+      [component, container] = createDyeCardRenderer();
 
       const card = component.render({
         dye: mockDye,

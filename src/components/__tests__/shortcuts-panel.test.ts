@@ -106,14 +106,14 @@ describe('showShortcutsPanel', () => {
     it('should have shortcuts-panel class', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
-      expect(call.content.className).toContain('shortcuts-panel');
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      expect((call.content as HTMLElement).className).toContain('shortcuts-panel');
     });
 
     it('should contain three shortcut groups', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
       const groups = content.querySelectorAll('.shortcut-group');
 
@@ -123,7 +123,7 @@ describe('showShortcutsPanel', () => {
     it('should have Navigation group with shortcuts', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
 
       expect(content.textContent).toContain('Navigation');
@@ -134,7 +134,7 @@ describe('showShortcutsPanel', () => {
     it('should have Quick Actions group with shortcuts', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
 
       expect(content.textContent).toContain('Quick Actions');
@@ -146,7 +146,7 @@ describe('showShortcutsPanel', () => {
     it('should have Dye Selection group with shortcuts', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
 
       expect(content.textContent).toContain('Dye Selection');
@@ -158,7 +158,7 @@ describe('showShortcutsPanel', () => {
     it('should have keyboard badges with kbd element', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
       const kbdElements = content.querySelectorAll('kbd');
 
@@ -168,7 +168,7 @@ describe('showShortcutsPanel', () => {
     it('should include platform hint', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
 
       expect(content.textContent).toContain('Tip');
@@ -179,7 +179,7 @@ describe('showShortcutsPanel', () => {
     it('should show appropriate modifier key hint', () => {
       showShortcutsPanel();
 
-      const call = ModalService.show.mock.calls[0][0];
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
       const content = call.content as HTMLElement;
 
       // On non-Mac platforms, should show Ctrl

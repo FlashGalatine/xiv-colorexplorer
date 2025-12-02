@@ -32,6 +32,10 @@ const createMockDye = (id: number, name: string, hex: string): Dye => ({
   category: 'Gray',
   acquisition: 'Vendor',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 });
 
 // Mock palette data

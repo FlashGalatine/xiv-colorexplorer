@@ -77,8 +77,10 @@ describe('showCameraPreviewModal', () => {
     vi.mocked(cameraService.hasCameraAvailable).mockReturnValue(true);
     vi.mocked(cameraService.startStream).mockResolvedValue({} as MediaStream);
     vi.mocked(cameraService.captureFrame).mockResolvedValue({
-      blob: new Blob(),
+      image: new Image(),
       dataUrl: 'data:image/png;base64,',
+      width: 640,
+      height: 480,
     });
 
     const onCapture = vi.fn();
@@ -114,8 +116,8 @@ describe('showCameraPreviewModal', () => {
   it('should handle multiple cameras', async () => {
     vi.mocked(cameraService.hasCameraAvailable).mockReturnValue(true);
     vi.mocked(cameraService.getAvailableCameras).mockReturnValue([
-      { deviceId: 'cam1', label: 'Camera 1', kind: 'videoinput', groupId: '1', toJSON: () => {} },
-      { deviceId: 'cam2', label: 'Camera 2', kind: 'videoinput', groupId: '2', toJSON: () => {} },
+      { deviceId: 'cam1', label: 'Camera 1', groupId: '1' },
+      { deviceId: 'cam2', label: 'Camera 2', groupId: '2' },
     ]);
 
     await showCameraPreviewModal(vi.fn());

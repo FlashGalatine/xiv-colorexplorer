@@ -18,6 +18,10 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   category: 'Red',
   acquisition: 'Vendor',
   cost: 100,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
   ...overrides,
 });
 
@@ -197,6 +201,10 @@ describe('DyeMixerTool', () => {
     category: 'Test',
     acquisition: 'Test',
     cost: 10,
+    isMetallic: false,
+    isPastel: false,
+    isDark: false,
+    isCosmic: false,
   });
 
   it('shows instruction message when updateInterpolation runs without two dyes', () => {

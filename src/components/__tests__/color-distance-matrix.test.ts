@@ -22,6 +22,10 @@ const createMockDye = (id: number, name: string, hex: string): Dye => ({
   category: 'Test',
   acquisition: 'Test',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 });
 
 const mockDyes = [

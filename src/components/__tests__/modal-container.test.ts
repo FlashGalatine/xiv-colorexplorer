@@ -1,5 +1,5 @@
 import { ModalContainer } from '../modal-container';
-import { ModalService, Modal } from '@services/modal-service';
+import { ModalService, Modal, ModalType } from '@services/modal-service';
 import {
   createTestContainer,
   cleanupTestContainer,
@@ -7,6 +7,13 @@ import {
   cleanupComponent,
   expectElement,
 } from './test-utils';
+
+// Helper to create a modal with required fields
+const createModal = (overrides: Partial<Modal> & { id: string; title: string }): Modal => ({
+  type: 'custom' as ModalType,
+  timestamp: Date.now(),
+  ...overrides,
+});
 
 // Mock ModalService
 vi.mock('@services/modal-service', () => {
@@ -79,13 +86,13 @@ describe('ModalContainer', () => {
     it('should render a modal when added', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test Modal',
         content: 'Modal Content',
         closable: true,
-        type: 'default',
-      };
+        type: 'custom',
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -99,11 +106,11 @@ describe('ModalContainer', () => {
     it('should lock body scroll when modal is open', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test',
         content: 'Content',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -114,11 +121,11 @@ describe('ModalContainer', () => {
     it('should unlock body scroll when modal closes', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test',
         content: 'Content',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -134,12 +141,12 @@ describe('ModalContainer', () => {
     it('should dismiss modal on close button click', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test',
         content: 'Content',
         closable: true,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -153,13 +160,13 @@ describe('ModalContainer', () => {
     it('should dismiss modal on backdrop click if allowed', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test',
         content: 'Content',
         closable: true,
         closeOnBackdrop: true,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -173,13 +180,13 @@ describe('ModalContainer', () => {
     it('should NOT dismiss modal on backdrop click if NOT allowed', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'test-modal',
         title: 'Test',
         content: 'Content',
         closable: true,
         closeOnBackdrop: false,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -197,13 +204,13 @@ describe('ModalContainer', () => {
       [component, container] = renderComponent(ModalContainer);
       const onConfirm = vi.fn();
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'confirm-modal',
         title: 'Confirm',
         content: 'Are you sure?',
         type: 'confirm',
         onConfirm,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -222,13 +229,13 @@ describe('ModalContainer', () => {
     it('should dismiss modal on Escape key if allowed', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'escape-modal',
         title: 'Test',
         content: 'Content',
         closable: true,
         closeOnEscape: true,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -244,13 +251,13 @@ describe('ModalContainer', () => {
       [component, container] = renderComponent(ModalContainer);
       vi.clearAllMocks();
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'no-escape-modal',
         title: 'Test',
         content: 'Content',
         closable: false,
         closeOnEscape: true,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -264,13 +271,13 @@ describe('ModalContainer', () => {
     it('should NOT dismiss on Escape if closeOnEscape is false', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'no-escape-modal',
         title: 'Test',
         content: 'Content',
         closable: true,
         closeOnEscape: false,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -284,13 +291,13 @@ describe('ModalContainer', () => {
     it('should trap focus within modal on Tab', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'focus-modal',
         title: 'Focus Test',
         content: '<button id="inner-btn">Inner</button>',
         closable: true,
         type: 'confirm',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -303,13 +310,13 @@ describe('ModalContainer', () => {
     it('should wrap focus from last to first element on Tab', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'focus-modal',
         title: 'Focus Test',
         content: 'Content',
         closable: true,
         type: 'confirm',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -346,13 +353,13 @@ describe('ModalContainer', () => {
     it('should wrap focus from first to last element on Shift+Tab', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'focus-modal',
         title: 'Focus Test',
         content: 'Content',
         closable: true,
         type: 'confirm',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -389,7 +396,7 @@ describe('ModalContainer', () => {
     it('should handle Tab key but not trap if focus is in the middle', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'focus-modal',
         title: 'Focus Test',
         content: 'Content',
@@ -397,7 +404,7 @@ describe('ModalContainer', () => {
         type: 'confirm',
         confirmText: 'OK',
         cancelText: 'Cancel',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -432,13 +439,13 @@ describe('ModalContainer', () => {
     it('should call handleFocusTrap on Tab when modals exist', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'tab-modal',
         title: 'Tab Test',
         content: 'Content',
         closable: true,
         type: 'confirm',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -474,11 +481,11 @@ describe('ModalContainer', () => {
     it('should use default md size when not specified', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'size-modal',
         title: 'Size Test',
         content: 'Content',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -490,12 +497,12 @@ describe('ModalContainer', () => {
     it('should use sm size when specified', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'size-modal',
         title: 'Size Test',
         content: 'Content',
         size: 'sm',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -507,12 +514,12 @@ describe('ModalContainer', () => {
     it('should use lg size when specified', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'size-modal',
         title: 'Size Test',
         content: 'Content',
         size: 'lg',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -529,11 +536,11 @@ describe('ModalContainer', () => {
 
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'motion-modal',
         title: 'Motion Test',
         content: 'Content',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -551,8 +558,8 @@ describe('ModalContainer', () => {
       [component, container] = renderComponent(ModalContainer);
 
       const modals: Modal[] = [
-        { id: 'modal-1', title: 'Modal 1', content: 'Content 1' },
-        { id: 'modal-2', title: 'Modal 2', content: 'Content 2' },
+        { id: 'modal-1', title: 'Modal 1', content: 'Content 1', type: 'custom', timestamp: Date.now() },
+        { id: 'modal-2', title: 'Modal 2', content: 'Content 2', type: 'custom', timestamp: Date.now() + 1 },
       ];
 
       // @ts-ignore
@@ -566,8 +573,8 @@ describe('ModalContainer', () => {
       [component, container] = renderComponent(ModalContainer);
 
       const modals: Modal[] = [
-        { id: 'modal-1', title: 'Modal 1', content: 'Content 1' },
-        { id: 'modal-2', title: 'Modal 2', content: 'Content 2' },
+        createModal({ id: 'modal-1', title: 'Modal 1', content: 'Content 1' }),
+        createModal({ id: 'modal-2', title: 'Modal 2', content: 'Content 2' }),
       ];
 
       // @ts-ignore
@@ -587,11 +594,11 @@ describe('ModalContainer', () => {
     it('should render string content as HTML', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'html-modal',
         title: 'HTML Test',
         content: '<strong>Bold content</strong>',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -607,11 +614,11 @@ describe('ModalContainer', () => {
       contentElement.textContent = 'Element content';
       contentElement.id = 'custom-content';
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'element-modal',
         title: 'Element Test',
         content: contentElement,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -642,11 +649,11 @@ describe('ModalContainer', () => {
 
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'focus-restore-modal',
         title: 'Focus Test',
         content: 'Content',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -665,12 +672,12 @@ describe('ModalContainer', () => {
     it('should render cancel button with custom text', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'custom-btn-modal',
         title: 'Custom Button Test',
         content: 'Content',
         cancelText: 'No Thanks',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -684,12 +691,12 @@ describe('ModalContainer', () => {
     it('should render confirm button with custom text', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'custom-btn-modal',
         title: 'Custom Button Test',
         content: 'Content',
         confirmText: 'Yes Please',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -703,12 +710,12 @@ describe('ModalContainer', () => {
     it('should handle cancel button click', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'cancel-modal',
         title: 'Cancel Test',
         content: 'Content',
         cancelText: 'Cancel',
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);
@@ -745,11 +752,11 @@ describe('ModalContainer', () => {
     it('should not add aria-describedby when no content', () => {
       [component, container] = renderComponent(ModalContainer);
 
-      const modal: Modal = {
+      const modal: Modal = createModal({
         id: 'no-content-modal',
         title: 'No Content',
         content: undefined,
-      };
+      });
 
       // @ts-ignore
       ModalService._updateModals([modal]);

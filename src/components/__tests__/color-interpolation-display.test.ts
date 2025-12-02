@@ -22,6 +22,10 @@ const createMockDye = (hex: string, name: string): Dye => ({
   category: 'Gray',
   acquisition: 'Vendor',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 });
 
 // Create mock interpolation steps

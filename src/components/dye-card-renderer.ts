@@ -1,4 +1,3 @@
-import { BaseComponent } from './base-component';
 import { Dye, DyeWithDistance, PriceData } from '@shared/types';
 import { LanguageService, ColorService, APIService } from '@services/index';
 import { CARD_CLASSES_COMPACT } from '@shared/constants';
@@ -14,7 +13,46 @@ export interface DyeCardOptions {
   onClick?: (dye: Dye) => void;
 }
 
-export class DyeCardRenderer extends BaseComponent {
+/**
+ * Utility class for rendering dye cards
+ * Does not extend BaseComponent as it's a stateless renderer
+ */
+export class DyeCardRenderer {
+  private container: HTMLElement;
+
+  constructor(container: HTMLElement) {
+    this.container = container;
+  }
+
+  /**
+   * Create an HTML element with options
+   */
+  private createElement<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    options?: {
+      className?: string;
+      textContent?: string;
+      attributes?: Record<string, string>;
+    }
+  ): HTMLElementTagNameMap[K] {
+    const element = document.createElement(tagName);
+    if (options?.className) element.className = options.className;
+    if (options?.textContent) element.textContent = options.textContent;
+    if (options?.attributes) {
+      for (const [key, value] of Object.entries(options.attributes)) {
+        element.setAttribute(key, value);
+      }
+    }
+    return element;
+  }
+
+  /**
+   * Destroy the renderer (cleanup)
+   */
+  destroy(): void {
+    // No cleanup needed for stateless renderer
+  }
+
   render(options: DyeCardOptions): HTMLElement {
     const { dye, sampledColor, price, showPrice, extraInfo, actions, onHover, onClick } = options;
 

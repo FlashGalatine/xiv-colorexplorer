@@ -15,6 +15,10 @@ const createDye = (overrides: Partial<Dye> = {}): Dye => {
     category: overrides.category ?? 'Test',
     acquisition: overrides.acquisition ?? 'Test',
     cost: overrides.cost ?? 0,
+    isMetallic: overrides.isMetallic ?? false,
+    isPastel: overrides.isPastel ?? false,
+    isDark: overrides.isDark ?? false,
+    isCosmic: overrides.isCosmic ?? false,
   };
 };
 

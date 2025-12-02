@@ -126,6 +126,10 @@ export const mockDyeData = [
     category: 'Neutral',
     acquisition: 'Weaver',
     cost: 0,
+    isMetallic: false,
+    isPastel: false,
+    isDark: true,
+    isCosmic: false,
   },
   {
     itemID: 2,
@@ -137,6 +141,10 @@ export const mockDyeData = [
     category: 'Neutral',
     acquisition: 'Weaver',
     cost: 0,
+    isMetallic: false,
+    isPastel: false,
+    isDark: false,
+    isCosmic: false,
   },
   {
     itemID: 3,
@@ -148,6 +156,10 @@ export const mockDyeData = [
     category: 'Red',
     acquisition: 'Weaver',
     cost: 100,
+    isMetallic: false,
+    isPastel: true,
+    isDark: false,
+    isCosmic: false,
   },
   {
     itemID: 4,
@@ -159,6 +171,10 @@ export const mockDyeData = [
     category: 'Blue',
     acquisition: 'Weaver',
     cost: 100,
+    isMetallic: false,
+    isPastel: true,
+    isDark: false,
+    isCosmic: false,
   },
 ];
 

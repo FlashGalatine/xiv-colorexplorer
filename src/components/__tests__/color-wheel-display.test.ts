@@ -19,6 +19,10 @@ describe('ColorWheelDisplay', () => {
       category: 'Green',
       acquisition: 'Test',
       cost: 1,
+      isMetallic: false,
+      isPastel: false,
+      isDark: false,
+      isCosmic: false,
     },
     {
       id: 3,
@@ -30,6 +34,10 @@ describe('ColorWheelDisplay', () => {
       category: 'Blue',
       acquisition: 'Test',
       cost: 1,
+      isMetallic: false,
+      isPastel: false,
+      isDark: false,
+      isCosmic: false,
     },
   ];
 

@@ -15,6 +15,10 @@ describe('DyeSelectionContext', () => {
     category: 'Neutral',
     acquisition: 'Shop',
     cost: 216,
+    isMetallic: false,
+    isPastel: false,
+    isDark: false,
+    isCosmic: false,
   };
 
   beforeEach(() => {

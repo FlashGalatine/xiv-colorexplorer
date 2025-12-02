@@ -21,6 +21,10 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   category: 'Red',
   acquisition: 'Vendor',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
   ...overrides,
 });
 

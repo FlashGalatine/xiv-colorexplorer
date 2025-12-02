@@ -3,7 +3,7 @@
  * Tests for interactive tutorial system
  */
 
-import { TutorialService, type TutorialTool, type TutorialState } from '../tutorial-service';
+import { TutorialService, type TutorialTool } from '../tutorial-service';
 import { StorageService } from '../storage-service';
 import { LanguageService } from '../language-service';
 import { ModalService } from '../modal-service';

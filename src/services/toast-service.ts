@@ -27,8 +27,8 @@ export interface Toast {
   message: string;
   details?: string;
   duration: number;
-  dismissible: boolean;
-  timestamp: number;
+  dismissible?: boolean;
+  timestamp?: number;
 }
 
 /**
