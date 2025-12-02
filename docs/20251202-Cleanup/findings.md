@@ -5,8 +5,8 @@
 
 ## High Priority Issues
 - **[RESOLVED] [BUG-H01] `ThemeService.toggleDarkMode` Crash**: Fixed by adding validation check before toggling. The method now checks if the target theme variant exists using `isValidThemeName()` and logs a warning if the theme doesn't have a light/dark variant, preventing crashes.
-- **[BUG-H02] `DyeFilters` Localization Failure**: The `DyeFilters` component uses hardcoded English string checks (e.g., `startsWith('dark')`, `includes('Metallic')`) to filter dyes. This logic will fail for non-English locales where dye names do not follow these specific English patterns.
-- **[BUG-H03] `MarketBoard` Price Fetching Localization Failure**: `MarketBoard.shouldFetchPrice` relies on matching `dye.acquisition` against English constants defined in `PRICE_CATEGORIES`. If `dye.acquisition` values are localized in the dye database, this check will fail, preventing price fetching for valid dyes in non-English locales.
+- **[DEFERRED] [BUG-H02] `DyeFilters` Localization Failure**: Requires xivdyetools-core package to export locale-independent dye type IDs (metallicDyeIds, pastelDyeIds, darkDyeIds). Current implementation uses `dye.name.includes('Metallic')` which fails in non-English locales. Recommended fix: Add these ID arrays to xivdyetools-core similar to how `metallicDyeIds` was added for Discord bot.
+- **[VERIFIED-OK] [BUG-H03] `MarketBoard` Price Fetching Localization Failure**: After code review, the `dye.acquisition` and `dye.category` fields appear to be locale-independent keys (English strings) in the xivdyetools-core database, not localized values. The current implementation should work correctly across all locales. Recommend manual testing with non-English locales to confirm.
 
 ## Medium Priority Issues
 - **[BUG-M01] `IndexedDBService.set` Schema Incompatibility**: The `IndexedDBService.set` method stores data by wrapping it in an object `{ key, value }`. However, the `STORES.PALETTES` object store is configured with `keyPath: 'id'`. This creates a schema mismatch, as palette objects are expected to have an `id` property at their root.
