@@ -72,8 +72,9 @@ export const PricingMixin = {
     // DyeComparisonTool: fetchPricesForSelectedDyes()
 
     // We can define a standard method name like `updatePrices()` that the component must implement.
-    if (typeof (this as any).updatePrices === 'function') {
-      await (this as any).updatePrices();
+    const self = this as BaseComponent & PricingState & { updatePrices?: () => Promise<void> };
+    if (typeof self.updatePrices === 'function') {
+      await self.updatePrices();
     }
   },
 

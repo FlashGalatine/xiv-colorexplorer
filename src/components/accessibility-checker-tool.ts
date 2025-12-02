@@ -78,10 +78,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     const heading = this.createElement('h2', {
       textContent: LanguageService.t('tools.accessibility.title'),
-      className: 'text-3xl font-bold',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
+      className: 'text-2xl font-bold text-gray-900 dark:text-white',
     });
 
     const subtitle = this.createElement('p', {

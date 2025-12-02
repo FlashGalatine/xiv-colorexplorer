@@ -1,11 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ImageZoomController } from '../image-zoom-controller';
-import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
-import { LanguageService } from '@services/language-service';
 
 vi.mock('@services/language-service', () => ({
   LanguageService: {
-    t: vi.fn((key) => key),
+    t: vi.fn((key: string) => key),
   },
 }));
 
@@ -25,7 +23,7 @@ describe('ImageZoomController', () => {
         height: 1,
         colorSpace: 'srgb',
       })),
-    })) as any;
+    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 
     container = document.createElement('div');
     document.body.appendChild(container);

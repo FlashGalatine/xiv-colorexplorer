@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.8] - 2025-12-01
+
+### 🧹 Code Cleanup & UI Consistency
+
+**Status**: ✅ COMPLETE
+**Focus**: ESLint error fixes and UI consistency improvements.
+
+#### ESLint Fixes ✅
+
+**17 Lint Errors Resolved**
+- Fixed unused variable errors across 6 files
+- Replaced `any` types with proper TypeScript interfaces
+- Added eslint-disable comments for intentionally unused mock parameters
+- Removed unused imports
+
+**Files Modified**:
+- `src/components/__tests__/color-matcher-tool.test.ts` - 8 unused variable fixes
+- `src/components/__tests__/image-zoom-controller.test.ts` - 4 fixes (unused imports + any type)
+- `src/components/dye-card-renderer.ts` - Removed unused `ToastService` import
+- `src/components/dye-grid.ts` - Renamed `isFocused` to `_isFocused`
+- `src/components/image-zoom-controller.ts` - Removed unused `logger` import
+- `src/services/pricing-mixin.ts` - Replaced `any` casts with typed interface
+
+#### UI Consistency Fix ✅
+
+**Accessibility Checker H2 Header**
+- Fixed oversized H2 header in Accessibility Checker tool
+- Changed from `text-3xl` to `text-2xl` to match other tools using `ToolHeader` component
+- Updated color styling from inline CSS variables to Tailwind dark mode classes
+
+#### Statistics ✅
+- **Lint Errors Fixed**: 17
+- **Files Modified**: 7
+- **Version Bump**: 2.4.7 → 2.4.8
+
+---
+
 ## [2.4.7] - 2025-12-01
 
 ### ♻️ Refactoring & Test Fixes

@@ -133,6 +133,7 @@ const imageZoomControllerSetImageMock = vi.fn();
 vi.mock('../image-zoom-controller', () => {
   return {
     ImageZoomController: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement) {}
       init() {
         imageZoomControllerInitMock();
@@ -156,6 +157,7 @@ const recentColorsPanelAddColorMock = vi.fn();
 vi.mock('../recent-colors-panel', () => {
   return {
     RecentColorsPanel: class {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       constructor(_container: HTMLElement) {}
       init() {
         recentColorsPanelInitMock();
@@ -266,7 +268,7 @@ describe('ColorMatcherTool', () => {
   });
 
   it('delegates to ImageZoomController when image-loaded event fires', async () => {
-    const instance = await createComponent();
+    await createComponent();
     const uploadContainer = container.querySelector('#image-upload-container')!;
     const image = document.createElement('img');
 
@@ -451,7 +453,7 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should create toast container if not exists', async () => {
-      const instance = await createComponent();
+      await createComponent();
 
       ToastService.success('Test message');
       expect(toastServiceSuccessMock).toHaveBeenCalledWith('Test message');
@@ -460,7 +462,7 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should display success toast with green background', async () => {
-      const instance = await createComponent();
+      await createComponent();
 
       ToastService.success('Success!');
       expect(toastServiceSuccessMock).toHaveBeenCalledWith('Success!');
@@ -468,7 +470,7 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should display error toast with red background', async () => {
-      const instance = await createComponent();
+      await createComponent();
 
       ToastService.error('Error!');
       expect(toastServiceErrorMock).toHaveBeenCalledWith('Error!');
@@ -476,7 +478,7 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should display info toast with blue background', async () => {
-      const instance = await createComponent();
+      await createComponent();
 
       ToastService.info('Info message');
       expect(toastServiceInfoMock).toHaveBeenCalledWith('Info message');
@@ -484,7 +486,7 @@ describe('ColorMatcherTool', () => {
     });
 
     it('should include message text in toast', async () => {
-      const instance = await createComponent();
+      await createComponent();
 
       ToastService.success('Custom toast message');
       expect(toastServiceSuccessMock).toHaveBeenCalledWith('Custom toast message');

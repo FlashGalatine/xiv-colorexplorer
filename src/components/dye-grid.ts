@@ -85,7 +85,7 @@ export class DyeGrid extends BaseComponent {
       wrapper.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'p-8');
     } else {
       this.dyes.forEach((dye, i) => {
-        const isFocused = i === this.focusedIndex || (this.focusedIndex === -1 && i === 0);
+        const _isFocused = i === this.focusedIndex || (this.focusedIndex === -1 && i === 0);
         const isSelected = this.selectedDyes.some((d) => d.id === dye.id);
 
         const btn = this.createElement('button', {

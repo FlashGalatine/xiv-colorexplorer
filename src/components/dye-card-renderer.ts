@@ -1,6 +1,6 @@
 import { BaseComponent } from './base-component';
 import { Dye, DyeWithDistance, PriceData } from '@shared/types';
-import { LanguageService, ColorService, APIService, ToastService } from '@services/index';
+import { LanguageService, ColorService, APIService } from '@services/index';
 import { CARD_CLASSES_COMPACT } from '@shared/constants';
 
 export interface DyeCardOptions {

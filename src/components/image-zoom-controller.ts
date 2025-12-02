@@ -9,7 +9,6 @@
 
 import { BaseComponent } from './base-component';
 import { LanguageService } from '@services/language-service';
-import { logger } from '@shared/logger';
 import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
 import { clearContainer } from '@shared/utils';
 
