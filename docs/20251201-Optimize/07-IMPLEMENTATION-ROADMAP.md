@@ -399,7 +399,7 @@ Use this template to track progress:
 ### Phase 3: Larger Refactors
 - [x] Split ColorMatcherTool
 - [x] Create DyeSelectionContext
-- [ ] Refactor DyeSelector
+- [x] Refactor DyeSelector
 
 ### Phase 4: Long-term
 - [ ] Fix 93 failing tests

@@ -11,6 +11,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.7] - 2025-12-01
+
+### ♻️ Refactoring & Test Fixes
+
+**Status**: ✅ COMPLETE
+**Focus**: Refactoring `DyeSelector` for better maintainability and fixing associated tests.
+
+#### Refactoring ✅
+
+**DyeSelector Component Split**
+- Split `DyeSelector` into smaller, focused components:
+  - `DyeSearchBox`: Handles search input, category filtering, and sorting.
+  - `DyeGrid`: Handles the display of dye cards and selection logic.
+- Improved separation of concerns and code organization.
+- **Files**:
+  - `src/components/dye-selector.ts`
+  - `src/components/dye-search-box.ts` (New)
+  - `src/components/dye-grid.ts` (New)
+
+#### Bug Fixes & Improvements ✅
+
+**Event Handling**
+- Improved event propagation between `DyeSelector`, `DyeSearchBox`, and `DyeGrid`.
+- Fixed issues with event listeners not being properly attached or cleaned up.
+- Added direct event listening on `gridContainer` to ensure reliable event capture.
+
+**Testing**
+- Updated tests to reflect the new component structure.
+- Added specific IDs (`dye-selector-clear-btn`, `dye-selector-sort`, `dye-grid-container`) to elements for better testability.
+- Addressed test failures related to element selection and event handling.
+
+**Linting**
+- Resolved numerous linting errors (whitespace, unused variables, etc.) in the new components.
+
+#### Statistics ✅
+- **Files Modified**: 4
+- **New Components**: 2
+- **Version Bump**: 2.4.6 -> 2.4.7
+
+---
+
 ## [2.4.6] - 2025-12-01
 
 ### 🐛 Localization & Rendering Fixes
