@@ -14,6 +14,7 @@ import {
   cleanupComponent,
   expectElement,
 } from './test-utils';
+import { logger } from '@shared/logger';
 
 // ============================================================================
 // Tests
@@ -677,13 +678,13 @@ describe('AppLayout', () => {
       component = new AppLayout(container);
       component.init();
 
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       // Try to init again
       component.init();
 
-      expect(consoleSpy).toHaveBeenCalledWith('Component already initialized');
-      consoleSpy.mockRestore();
+      expect(loggerSpy).toHaveBeenCalledWith('Component already initialized');
+      loggerSpy.mockRestore();
     });
 
     it('should handle setting content with element containing script tags', () => {

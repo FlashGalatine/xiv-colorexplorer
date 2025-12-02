@@ -35,6 +35,10 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   category: 'Red',
   acquisition: 'Vendor',
   cost: 100,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
   ...overrides,
 });
 
@@ -97,7 +101,7 @@ vi.mock('../image-upload-display', () => {
   return {
     ImageUploadDisplay: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) {}
+      constructor(_container: HTMLElement) { }
       init(): void {
         imageUploadInitMock();
       }
@@ -113,7 +117,7 @@ vi.mock('../color-picker-display', () => {
   return {
     ColorPickerDisplay: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) {}
+      constructor(_container: HTMLElement) { }
       init(): void {
         colorPickerInitMock();
       }
@@ -134,14 +138,14 @@ vi.mock('../image-zoom-controller', () => {
   return {
     ImageZoomController: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) {}
+      constructor(_container: HTMLElement) { }
       init() {
         imageZoomControllerInitMock();
       }
       setImage(img: HTMLImageElement) {
         imageZoomControllerSetImageMock(img);
       }
-      destroy() {}
+      destroy() { }
       getCanvasContainer() {
         return document.createElement('div');
       }
@@ -158,14 +162,14 @@ vi.mock('../recent-colors-panel', () => {
   return {
     RecentColorsPanel: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) {}
+      constructor(_container: HTMLElement) { }
       init() {
         recentColorsPanelInitMock();
       }
       addRecentColor(hex: string) {
         recentColorsPanelAddColorMock(hex);
       }
-      destroy() {}
+      destroy() { }
       getState() {
         return { recentColorsCount: 0 };
       }
@@ -238,7 +242,7 @@ describe('ColorMatcherTool', () => {
 
     expect(marketContainer).not.toBeNull();
 
-    const fakeDye: Dye = {
+    const fakeDye: Dye = createMockDye({
       id: 1,
       itemID: 1,
       name: 'Test Dye',
@@ -248,7 +252,7 @@ describe('ColorMatcherTool', () => {
       category: 'Test',
       acquisition: 'Test',
       cost: 10,
-    };
+    });
 
     (instance as unknown as { matchedDyes: Dye[] }).matchedDyes = [fakeDye];
 
@@ -272,7 +276,7 @@ describe('ColorMatcherTool', () => {
     const uploadContainer = container.querySelector('#image-upload-container')!;
     const image = document.createElement('img');
 
-    uploadContainer!.dispatchEvent(new CustomEvent('image-loaded', { detail: { image } }));
+    uploadContainer!.dispatchEvent(new CustomEvent('image-loaded', { detail: { image }, bubbles: true }));
 
     expect(imageZoomControllerSetImageMock).toHaveBeenCalledWith(image);
   });
@@ -596,7 +600,7 @@ describe('ColorMatcherTool', () => {
       const pickerContainer = container.querySelector('#color-picker-container');
 
       pickerContainer?.dispatchEvent(
-        new CustomEvent('color-selected', { detail: { color: '#AABBCC' } })
+        new CustomEvent('color-selected', { detail: { color: '#AABBCC' }, bubbles: true })
       );
 
       expect(dyeService.findClosestDye).toHaveBeenCalledWith('#AABBCC');
@@ -989,13 +993,14 @@ describe('ColorMatcherTool', () => {
   describe('image error handling branch coverage', () => {
     it('should handle error event from image upload', async () => {
       await createComponent();
-      const uploadContainer = container.querySelector('#image-upload-container');
 
       // Clean up existing toasts
       document.getElementById('toast-container')?.remove();
 
-      uploadContainer?.dispatchEvent(
-        new CustomEvent('error', { detail: { message: 'Test error message' } })
+      // Dispatch error event on the image upload container - will bubble up to component element
+      const uploadContainer = container.querySelector('#image-upload-container');
+      uploadContainer!.dispatchEvent(
+        new CustomEvent('error', { detail: { message: 'Test error message' }, bubbles: true })
       );
 
       // Should show error toast
@@ -1006,11 +1011,11 @@ describe('ColorMatcherTool', () => {
 
     it('should handle error event without message', async () => {
       await createComponent();
+
+      // Dispatch error event on the image upload container - will bubble up to component element
       const uploadContainer = container.querySelector('#image-upload-container');
+      uploadContainer!.dispatchEvent(new CustomEvent('error', { detail: {}, bubbles: true }));
 
-      uploadContainer?.dispatchEvent(new CustomEvent('error', { detail: {} }));
-
-      // Should show default error message
       // Should show default error message
       await waitFor(() => {
         expect(toastServiceErrorMock).toHaveBeenCalledWith('Failed to load image');

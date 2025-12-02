@@ -28,6 +28,10 @@ const mockDye1: Dye = {
   category: 'Neutral',
   acquisition: 'Weaver',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 };
 
 const mockDye2: Dye = {
@@ -40,6 +44,10 @@ const mockDye2: Dye = {
   category: 'Neutral',
   acquisition: 'Weaver',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 };
 
 describe('HarmonyType Component', () => {
@@ -549,10 +557,10 @@ describe('HarmonyType Component', () => {
 
       expect(state.harmonyType).toBe('complementary');
       expect(state.baseColor).toBe('#FF0000');
-      expect(state.dyeCount).toBe(1);
+      expect(state.matchedDyesCount).toBe(1);
     });
 
-    it('should return 0 dyeCount when no dyes', () => {
+    it('should return 0 matchedDyesCount when no dyes', () => {
       component = new HarmonyType(container, mockHarmonyInfo, '#FF0000', []);
       component.init();
 
@@ -560,7 +568,7 @@ describe('HarmonyType Component', () => {
         component as unknown as { getState: () => Record<string, unknown> }
       ).getState();
 
-      expect(state.dyeCount).toBe(0);
+      expect(state.matchedDyesCount).toBe(0);
     });
 
     it('should update state after updating dyes', () => {
@@ -577,7 +585,7 @@ describe('HarmonyType Component', () => {
         component as unknown as { getState: () => Record<string, unknown> }
       ).getState();
 
-      expect(state.dyeCount).toBe(2);
+      expect(state.matchedDyesCount).toBe(2);
     });
 
     it('should update state after updating base color', () => {

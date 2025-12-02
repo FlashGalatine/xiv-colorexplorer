@@ -22,6 +22,10 @@ const mockDye: Dye = {
   category: 'Black',
   acquisition: 'Market Board',
   cost: 500,
+  isMetallic: false,
+  isPastel: false,
+  isDark: true,
+  isCosmic: false,
 };
 
 const mockComparisonDye: Dye = {
@@ -34,6 +38,10 @@ const mockComparisonDye: Dye = {
   category: 'White',
   acquisition: 'Market Board',
   cost: 500,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
 };
 
 describe('ColorDisplay', () => {

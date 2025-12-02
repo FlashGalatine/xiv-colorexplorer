@@ -30,6 +30,10 @@ const createMockDye = (overrides: Partial<Dye> = {}): Dye => ({
   category: 'Red',
   acquisition: 'Vendor',
   cost: 0,
+  isMetallic: false,
+  isPastel: false,
+  isDark: false,
+  isCosmic: false,
   ...overrides,
 });
 
@@ -193,8 +197,8 @@ describe('DyeFilters', () => {
       // First checkbox is excludeMetallic
       await enableCheckbox(component, container, 0);
 
-      const metallicDye = createMockDye({ name: 'Metallic Red' });
-      const regularDye = createMockDye({ name: 'Dalamud Red' });
+      const metallicDye = createMockDye({ name: 'Metallic Red', isMetallic: true });
+      const regularDye = createMockDye({ name: 'Dalamud Red', isMetallic: false });
 
       expect(component.isDyeExcluded(metallicDye)).toBe(true);
       expect(component.isDyeExcluded(regularDye)).toBe(false);
@@ -207,8 +211,8 @@ describe('DyeFilters', () => {
       // Second checkbox is excludePastel
       await enableCheckbox(component, container, 1);
 
-      const pastelDye = createMockDye({ name: 'Pastel Pink' });
-      const regularDye = createMockDye({ name: 'Coral Pink' });
+      const pastelDye = createMockDye({ name: 'Pastel Pink', isPastel: true });
+      const regularDye = createMockDye({ name: 'Coral Pink', isPastel: false });
 
       expect(component.isDyeExcluded(pastelDye)).toBe(true);
       expect(component.isDyeExcluded(regularDye)).toBe(false);
@@ -221,8 +225,8 @@ describe('DyeFilters', () => {
       // Third checkbox is excludeDark
       await enableCheckbox(component, container, 2);
 
-      const darkDye = createMockDye({ name: 'Dark Red' });
-      const regularDye = createMockDye({ name: 'Blood Red' });
+      const darkDye = createMockDye({ name: 'Dark Red', isDark: true });
+      const regularDye = createMockDye({ name: 'Blood Red', isDark: false });
 
       expect(component.isDyeExcluded(darkDye)).toBe(true);
       expect(component.isDyeExcluded(regularDye)).toBe(false);
@@ -235,9 +239,9 @@ describe('DyeFilters', () => {
       // Fourth checkbox is excludeCosmic
       await enableCheckbox(component, container, 3);
 
-      const cosmicExploreDye = createMockDye({ acquisition: 'Cosmic Exploration' });
-      const cosmicFortuneDye = createMockDye({ acquisition: 'Cosmic Fortunes' });
-      const regularDye = createMockDye({ acquisition: 'Vendor' });
+      const cosmicExploreDye = createMockDye({ acquisition: 'Cosmic Exploration', isCosmic: true });
+      const cosmicFortuneDye = createMockDye({ acquisition: 'Cosmic Fortunes', isCosmic: true });
+      const regularDye = createMockDye({ acquisition: 'Vendor', isCosmic: false });
 
       expect(component.isDyeExcluded(cosmicExploreDye)).toBe(true);
       expect(component.isDyeExcluded(cosmicFortuneDye)).toBe(true);
@@ -283,10 +287,10 @@ describe('DyeFilters', () => {
       await waitForComponent();
 
       const dyes = [
-        createMockDye({ id: 1, name: 'Metallic Red' }),
-        createMockDye({ id: 2, name: 'Regular Red' }),
-        createMockDye({ id: 3, name: 'Metallic Blue' }),
-        createMockDye({ id: 4, name: 'Regular Blue' }),
+        createMockDye({ id: 1, name: 'Metallic Red', isMetallic: true }),
+        createMockDye({ id: 2, name: 'Regular Red', isMetallic: false }),
+        createMockDye({ id: 3, name: 'Metallic Blue', isMetallic: true }),
+        createMockDye({ id: 4, name: 'Regular Blue', isMetallic: false }),
       ];
 
       const filtered = component.filterDyes(dyes);

@@ -2,7 +2,7 @@ import { DyeMixerTool } from '../dye-mixer-tool';
 import { createTestContainer, cleanupComponent, setupMockLocalStorage } from './test-utils';
 import type { Dye } from '@shared/types';
 import type { LocaleCode } from '@shared/i18n-types';
-import { dyeService, LanguageService } from '@services/index';
+import { dyeService, LanguageService, ToastService } from '@services/index';
 import type { InterpolationStep } from '../color-interpolation-display';
 import type { PaletteData } from '../palette-exporter';
 import { vi } from 'vitest';
@@ -43,7 +43,6 @@ interface ComponentWithPrivate {
   displaySavedGradients: () => void;
   toggleSavedGradientsPanel: () => void;
   copyShareUrl: () => void;
-  showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 const dyeSelectorInitMock = vi.fn();
@@ -61,7 +60,7 @@ vi.mock('../dye-selector', () => {
   return {
     DyeSelector: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement, _options: unknown) {}
+      constructor(_container: HTMLElement, _options: unknown) { }
       init(): void {
         dyeSelectorInitMock();
       }
@@ -85,7 +84,7 @@ vi.mock('../color-interpolation-display', () => {
         _endColor: string,
         _steps: InterpolationStep[],
         _colorSpace: 'rgb' | 'hsv'
-      ) {}
+      ) { }
       /* eslint-enable @typescript-eslint/no-unused-vars */
       init(): void {
         interpolationInitMock();
@@ -136,7 +135,7 @@ vi.mock('../palette-exporter', () => {
   return {
     PaletteExporter: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement, _options: unknown) {}
+      constructor(_container: HTMLElement, _options: unknown) { }
       init(): void {
         paletteExporterInitMock();
       }
@@ -558,36 +557,11 @@ describe('DyeMixerTool', () => {
   });
 
   // ==========================================================================
-  // Business Logic Tests - showToast
+  // Business Logic Tests - Toast notifications (using ToastService)
   // ==========================================================================
+  // Note: The showToast method was removed in favor of ToastService.
+  // Toast-related tests are now handled via ToastService spies in other test blocks.
 
-  describe('showToast method', () => {
-    beforeEach(() => {
-      document.getElementById('toast-container')?.remove();
-    });
-
-    afterEach(() => {
-      document.getElementById('toast-container')?.remove();
-    });
-
-    it('should create toast container', () => {
-      const instance = initComponent();
-
-      (instance as unknown as ComponentWithPrivate).showToast('Test message', 'info');
-
-      const toastContainer = document.getElementById('toast-container');
-      expect(toastContainer).not.toBeNull();
-    });
-
-    it('should display message in toast', () => {
-      const instance = initComponent();
-
-      (instance as unknown as ComponentWithPrivate).showToast('Custom message', 'success');
-
-      const toastContainer = document.getElementById('toast-container');
-      expect(toastContainer?.textContent).toContain('Custom message');
-    });
-  });
 
   // ==========================================================================
   // Business Logic Tests - displaySavedGradients
@@ -744,10 +718,11 @@ describe('DyeMixerTool', () => {
   describe('saveGradient branches', () => {
     it('should show error when less than 2 dyes', () => {
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
       (instance as unknown as ComponentWithPrivate).saveGradient();
-      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
 
     it('should return early when prompt cancelled', () => {
@@ -771,9 +746,10 @@ describe('DyeMixerTool', () => {
     it('should show error for invalid index', () => {
       localStorage.setItem('xivdyetools_dyemixer_gradients', '[]');
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
       (instance as unknown as ComponentWithPrivate).loadSavedGradient(999);
-      expect(showToastSpy).toHaveBeenCalledWith('Gradient not found', 'error');
+      expect(toastErrorSpy).toHaveBeenCalledWith('Gradient not found');
     });
 
     it('should show error when dye not found', () => {
@@ -785,9 +761,10 @@ describe('DyeMixerTool', () => {
       );
       vi.spyOn(dyeService, 'getDyeById').mockReturnValue(null);
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
       (instance as unknown as ComponentWithPrivate).loadSavedGradient(0);
-      expect(showToastSpy).toHaveBeenCalled();
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -799,9 +776,10 @@ describe('DyeMixerTool', () => {
     it('should show error for invalid index', () => {
       localStorage.setItem('xivdyetools_dyemixer_gradients', '[]');
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
       (instance as unknown as ComponentWithPrivate).deleteSavedGradient(999);
-      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -812,10 +790,11 @@ describe('DyeMixerTool', () => {
   describe('copyShareUrl branches', () => {
     it('should show error when less than 2 dyes', () => {
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
       (instance as unknown as ComponentWithPrivate).copyShareUrl();
-      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -885,22 +864,25 @@ describe('DyeMixerTool', () => {
       expect(subscribeSpy).toHaveBeenCalled();
     });
 
-    it('should call update when language changes', () => {
+    it('should call updateLocalizedText when language changes', () => {
       let languageCallback: ((locale: LocaleCode) => void) | null = null;
       vi.spyOn(LanguageService, 'subscribe').mockImplementation((cb) => {
         languageCallback = cb;
-        return () => {};
+        return () => { };
       });
 
       const instance = initComponent();
-      const updateSpy = vi.spyOn(instance, 'update');
+      const updateLocalizedTextSpy = vi.spyOn(
+        instance as unknown as { updateLocalizedText: () => void },
+        'updateLocalizedText'
+      );
 
       // Trigger the language change callback
       expect(languageCallback).not.toBeNull();
 
       languageCallback!('en');
 
-      expect(updateSpy).toHaveBeenCalled();
+      expect(updateLocalizedTextSpy).toHaveBeenCalled();
     });
 
     it('should call updateInterpolation after timeout', async () => {
@@ -943,23 +925,25 @@ describe('DyeMixerTool', () => {
     it('should bind save button click handler', () => {
       const instance = initComponent();
       const saveBtn = container.querySelector<HTMLButtonElement>('#save-gradient-btn');
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
       saveBtn?.click();
 
-      expect(showToastSpy).toHaveBeenCalled();
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
 
     it('should bind share button click handler', () => {
       const instance = initComponent();
       const shareBtn = container.querySelector<HTMLButtonElement>('#copy-url-btn');
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
       shareBtn?.click();
 
-      expect(showToastSpy).toHaveBeenCalled();
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
 
     it('should bind toggle button click handler', () => {
@@ -1019,7 +1003,8 @@ describe('DyeMixerTool', () => {
     it('should save gradient to localStorage when valid', () => {
       vi.spyOn(window, 'prompt').mockReturnValue('My Test Gradient');
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).selectedDyes = [
         createMockDye({ id: 1, name: 'Red Dye' }),
@@ -1034,9 +1019,8 @@ describe('DyeMixerTool', () => {
       expect(saved).toHaveLength(1);
       expect(saved[0].name).toBe('My Test Gradient');
       expect(saved[0].stepCount).toBe(12);
-      expect(showToastSpy).toHaveBeenCalledWith(
-        expect.stringContaining('My Test Gradient'),
-        'success'
+      expect(toastSuccessSpy).toHaveBeenCalledWith(
+        expect.stringContaining('My Test Gradient')
       );
     });
 
@@ -1085,7 +1069,8 @@ describe('DyeMixerTool', () => {
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).loadSavedGradient(0);
 
@@ -1093,9 +1078,8 @@ describe('DyeMixerTool', () => {
       expect((instance as unknown as ComponentWithPrivate).stepCount).toBe(15);
       expect((instance as unknown as ComponentWithPrivate).colorSpace).toBe('rgb');
       expect(dyeSelectorSetSelectedDyesMock).toHaveBeenCalledWith([dye1, dye2]);
-      expect(showToastSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Saved Gradient'),
-        'success'
+      expect(toastSuccessSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Saved Gradient')
       );
     });
 
@@ -1180,14 +1164,15 @@ describe('DyeMixerTool', () => {
       localStorage.setItem('xivdyetools_dyemixer_gradients', JSON.stringify(gradients));
 
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).deleteSavedGradient(0);
 
       const saved = JSON.parse(localStorage.getItem('xivdyetools_dyemixer_gradients') || '[]');
       expect(saved).toHaveLength(1);
       expect(saved[0].name).toBe('Second');
-      expect(showToastSpy).toHaveBeenCalledWith(expect.stringContaining('First'), 'success');
+      expect(toastSuccessSpy).toHaveBeenCalledWith(expect.stringContaining('First'));
     });
 
     it('should refresh display after deletion', () => {
@@ -1216,7 +1201,8 @@ describe('DyeMixerTool', () => {
       });
 
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).selectedDyes = [
         createMockDye({ id: 100 }),
@@ -1232,7 +1218,7 @@ describe('DyeMixerTool', () => {
       expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('dye1=100'));
       expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('dye2=200'));
       expect(clipboardWriteMock).toHaveBeenCalledWith(expect.stringContaining('steps=8'));
-      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'success');
+      expect(toastSuccessSpy).toHaveBeenCalled();
     });
 
     it('should show error when clipboard fails', async () => {
@@ -1244,7 +1230,8 @@ describe('DyeMixerTool', () => {
       });
 
       const instance = initComponent();
-      const showToastSpy = vi.spyOn(instance as unknown as ComponentWithPrivate, 'showToast');
+      const toastErrorSpy = vi.spyOn(ToastService, 'error');
+      const toastSuccessSpy = vi.spyOn(ToastService, 'success');
 
       (instance as unknown as ComponentWithPrivate).selectedDyes = [
         createMockDye({ id: 100 }),
@@ -1255,7 +1242,7 @@ describe('DyeMixerTool', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(showToastSpy).toHaveBeenCalledWith(expect.any(String), 'error');
+      expect(toastErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -1363,76 +1350,10 @@ describe('DyeMixerTool', () => {
   });
 
   // ==========================================================================
-  // Function Coverage Tests - showToast variations
+  // Function Coverage Tests - Toast notifications (using ToastService)
   // ==========================================================================
-
-  describe('showToast variations', () => {
-    beforeEach(() => {
-      document.getElementById('toast-container')?.remove();
-    });
-
-    afterEach(() => {
-      document.getElementById('toast-container')?.remove();
-    });
-
-    it('should use green for success toast', () => {
-      const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).showToast('Success!', 'success');
-
-      const toast = document.getElementById('toast-container')?.firstElementChild as HTMLElement;
-      expect(toast?.style.backgroundColor).toContain('rgb(16, 185, 129)');
-    });
-
-    it('should use red for error toast', () => {
-      const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).showToast('Error!', 'error');
-
-      const toast = document.getElementById('toast-container')?.firstElementChild as HTMLElement;
-      expect(toast?.style.backgroundColor).toContain('rgb(239, 68, 68)');
-    });
-
-    it('should use existing toast container if present', () => {
-      const existingContainer = document.createElement('div');
-      existingContainer.id = 'toast-container';
-      document.body.appendChild(existingContainer);
-
-      const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).showToast('Test', 'info');
-
-      const containers = document.querySelectorAll('#toast-container');
-      expect(containers).toHaveLength(1);
-    });
-
-    it('should allow click to dismiss toast', async () => {
-      vi.useFakeTimers();
-      const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).showToast('Dismissible', 'info');
-
-      const toast = document.getElementById('toast-container')?.firstElementChild as HTMLElement;
-      toast?.click();
-
-      vi.advanceTimersByTime(350);
-
-      // Container is removed when empty, so check it doesn't exist OR has no children
-      const toastContainer = document.getElementById('toast-container');
-      expect(toastContainer === null || toastContainer.children.length === 0).toBe(true);
-      vi.useRealTimers();
-    });
-
-    it('should auto-remove toast after timeout', async () => {
-      vi.useFakeTimers();
-      const instance = initComponent();
-      (instance as unknown as ComponentWithPrivate).showToast('Auto remove', 'info');
-
-      // Wait for auto-remove (3000ms + 300ms animation)
-      vi.advanceTimersByTime(3500);
-
-      // Container is removed when empty, so check it doesn't exist OR has no children
-      const toastContainer = document.getElementById('toast-container');
-      expect(toastContainer === null || toastContainer.children.length === 0).toBe(true);
-      vi.useRealTimers();
-    });
-  });
+  // Note: The showToast method was removed in favor of ToastService.
+  // These tests verify that ToastService is called appropriately.
 
   // ==========================================================================
   // Function Coverage Tests - share button hover events
@@ -1494,3 +1415,4 @@ describe('DyeMixerTool', () => {
     });
   });
 });
+

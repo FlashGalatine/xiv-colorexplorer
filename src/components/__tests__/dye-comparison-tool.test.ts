@@ -957,8 +957,8 @@ describe('DyeComparisonTool Component', () => {
 
       // Access private method
       await (
-        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
-      ).fetchPricesForSelectedDyes();
+        instance as unknown as { updatePrices: () => Promise<void> }
+      ).updatePrices();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });
@@ -971,8 +971,8 @@ describe('DyeComparisonTool Component', () => {
       (instance as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
 
       await (
-        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
-      ).fetchPricesForSelectedDyes();
+        instance as unknown as { updatePrices: () => Promise<void> }
+      ).updatePrices();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });
@@ -985,8 +985,8 @@ describe('DyeComparisonTool Component', () => {
       (instance as unknown as ComponentWithPrivate).selectedDyes = [];
 
       await (
-        instance as unknown as { fetchPricesForSelectedDyes: () => Promise<void> }
-      ).fetchPricesForSelectedDyes();
+        instance as unknown as { updatePrices: () => Promise<void> }
+      ).updatePrices();
 
       expect(mockFetchPrices).not.toHaveBeenCalled();
     });

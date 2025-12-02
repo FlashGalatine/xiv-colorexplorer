@@ -12,6 +12,7 @@ import {
   cleanupComponent,
   expectElement,
 } from './test-utils';
+import { logger } from '@shared/logger';
 
 // ============================================================================
 // Test Component Implementation
@@ -125,12 +126,12 @@ describe('BaseComponent', () => {
       const firstRenderCount = component.getRenderCount();
 
       // Try to init again (should warn and return early)
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
       component.init();
 
       expect(component.getRenderCount()).toBe(firstRenderCount);
-      expect(consoleSpy).toHaveBeenCalledWith('Component already initialized');
-      consoleSpy.mockRestore();
+      expect(loggerSpy).toHaveBeenCalledWith('Component already initialized');
+      loggerSpy.mockRestore();
     });
 
     it('should call onMount lifecycle hook', () => {
@@ -167,12 +168,12 @@ describe('BaseComponent', () => {
 
     it('should warn when update() called before init()', () => {
       component = new TestComponent(container);
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       component.update();
 
-      expect(consoleSpy).toHaveBeenCalledWith('Component not initialized');
-      consoleSpy.mockRestore();
+      expect(loggerSpy).toHaveBeenCalledWith('Component not initialized');
+      loggerSpy.mockRestore();
     });
 
     it('should destroy component and clean up', () => {
@@ -523,12 +524,12 @@ describe('BaseComponent', () => {
     });
 
     it('should log debug info', () => {
-      const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'info').mockImplementation(() => {});
 
       component.debug();
 
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('TestComponent Debug Info'));
-      consoleSpy.mockRestore();
+      expect(loggerSpy).toHaveBeenCalledWith(expect.stringContaining('TestComponent Debug Info'));
+      loggerSpy.mockRestore();
     });
   });
 
@@ -743,8 +744,9 @@ describe('BaseComponent', () => {
       // Should have added one more listener
       expect(component.getListeners().size).toBe(initialListenerCount + 1);
 
-      // Should be stored with custom_ prefix
-      expect(component.getListeners().has('custom_stored-event')).toBe(true);
+      // Should be stored with custom_ prefix (key format: custom_${eventName}_${timestamp}_${size})
+      const keys = Array.from(component.getListeners().keys());
+      expect(keys.some(key => key.startsWith('custom_stored-event_'))).toBe(true);
     });
 
     it('should clean up custom event listeners on destroy', () => {
@@ -752,8 +754,9 @@ describe('BaseComponent', () => {
 
       component.testOnCustom('cleanup-event', customHandler);
 
-      // Verify listener is added
-      expect(component.getListeners().has('custom_cleanup-event')).toBe(true);
+      // Verify listener is added (key format: custom_${eventName}_${timestamp}_${size})
+      const keys = Array.from(component.getListeners().keys());
+      expect(keys.some(key => key.startsWith('custom_cleanup-event_'))).toBe(true);
 
       // Destroy component
       component.destroy();
