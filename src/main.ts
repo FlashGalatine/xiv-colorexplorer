@@ -25,8 +25,6 @@ import {
   type MobileToolDef,
   ToolsDropdown,
   type ToolDef,
-  showWelcomeIfFirstVisit,
-  showChangelogIfUpdated,
   offlineBanner,
 } from '@components/index';
 
@@ -447,8 +445,13 @@ async function initializeApp(): Promise<void> {
     logger.info('📦 Phase 12: All 5 tools integrated and ready');
 
     // Show welcome modal for first-time visitors, or changelog for returning users
-    showWelcomeIfFirstVisit();
-    showChangelogIfUpdated();
+    // Lazy-load modals to reduce initial bundle size (they're only shown once typically)
+    void (async () => {
+      const { showWelcomeIfFirstVisit } = await import('@components/welcome-modal');
+      const { showChangelogIfUpdated } = await import('@components/changelog-modal');
+      showWelcomeIfFirstVisit();
+      showChangelogIfUpdated();
+    })();
 
     // Initialize offline banner for network status detection
     offlineBanner.initialize();

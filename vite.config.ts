@@ -64,6 +64,14 @@ export default defineConfig({
             return 'tool-mixer';
           }
 
+          // Modal chunks (lazy-loaded, only shown once per user typically)
+          if (
+            id.includes('src/components/welcome-modal.ts') ||
+            id.includes('src/components/changelog-modal.ts')
+          ) {
+            return 'modals';
+          }
+
           // Note: Shared services stay in main bundle (BaseComponent, ThemeSwitcher, etc.)
           // These are needed immediately and used by all tools, so main bundle is optimal
           // Services: DyeService, ColorService, APIService, ThemeService, StorageService

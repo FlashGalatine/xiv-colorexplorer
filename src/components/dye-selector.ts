@@ -127,17 +127,15 @@ export class DyeSelector extends BaseComponent {
     // Listen for events from DyeGrid
     // We listen on gridContainer directly to ensure we catch the event
     const gridContainer = this.element.querySelector('#dye-grid-container');
-    console.error('DyeSelector bindEvents gridContainer:', gridContainer);
 
     if (gridContainer) {
       this.on(gridContainer as HTMLElement, 'dye-selected', (e) => {
-        console.error('DyeSelector received dye-selected');
         const event = e as CustomEvent<Dye>;
         e.stopPropagation(); // Stop propagation to avoid double handling if bubbling works
         this.handleDyeSelection(event.detail);
       });
     } else {
-      console.error('DyeSelector: gridContainer not found for dye-selected event listener.');
+      logger.warn('DyeSelector: gridContainer not found for dye-selected event listener.');
     }
 
     // Listen for events from DyeSearchBox (bubbled)
@@ -178,7 +176,6 @@ export class DyeSelector extends BaseComponent {
   }
 
   private handleDyeSelection(dye: Dye): void {
-    console.log('handleDyeSelection', dye.name);
     if (this.options.allowMultiple) {
       if (this.allowDuplicates) {
         if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
@@ -292,8 +289,6 @@ export class DyeSelector extends BaseComponent {
   private getFilteredDyes(): Dye[] {
     const dyeService = DyeService.getInstance();
     let dyes = dyeService.getAllDyes();
-
-    // console.log('getFilteredDyes', { query: this.searchQuery, totalDyes: dyes.length });
 
     if (this.options.excludeFacewear) {
       dyes = dyes.filter((d) => d.category !== 'Facewear');

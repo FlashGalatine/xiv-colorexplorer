@@ -41,6 +41,13 @@ import { logger } from './logger';
 
 /**
  * Clamp a number between min and max values
+ *
+ * @example
+ * ```typescript
+ * clamp(150, 0, 100);  // Returns 100 (clamped to max)
+ * clamp(-5, 0, 100);   // Returns 0 (clamped to min)
+ * clamp(50, 0, 100);   // Returns 50 (already within range)
+ * ```
  */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -48,6 +55,14 @@ export function clamp(value: number, min: number, max: number): number {
 
 /**
  * Linear interpolation between two values
+ *
+ * @example
+ * ```typescript
+ * lerp(0, 100, 0.5);   // Returns 50 (midpoint)
+ * lerp(0, 100, 0);     // Returns 0 (start)
+ * lerp(0, 100, 1);     // Returns 100 (end)
+ * lerp(10, 20, 0.25);  // Returns 12.5
+ * ```
  */
 export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -104,6 +119,15 @@ export function isOdd(num: number): boolean {
 
 /**
  * Escape HTML special characters to prevent XSS
+ *
+ * @example
+ * ```typescript
+ * escapeHTML('<script>alert("xss")</script>');
+ * // Returns '&lt;script&gt;alert("xss")&lt;/script&gt;'
+ *
+ * escapeHTML('Hello & Goodbye');  // Returns 'Hello &amp; Goodbye'
+ * escapeHTML('Normal text');      // Returns 'Normal text'
+ * ```
  */
 export function escapeHTML(text: string): string {
   const div = document.createElement('div');
@@ -179,6 +203,18 @@ export function unique<T>(array: T[]): T[] {
 
 /**
  * Group array items by a key function
+ *
+ * @example
+ * ```typescript
+ * const dyes = [
+ *   { name: 'Snow White', category: 'white' },
+ *   { name: 'Jet Black', category: 'black' },
+ *   { name: 'Soot Black', category: 'black' },
+ * ];
+ *
+ * groupBy(dyes, dye => dye.category);
+ * // Returns: { white: [...], black: [...] }
+ * ```
  */
 export function groupBy<T, K extends string | number>(
   array: T[],
@@ -264,7 +300,17 @@ export function intersection<T>(array1: T[], array2: T[]): T[] {
 // ============================================================================
 
 /**
- * Deep clone an object
+ * Deep clone an object (handles Date, Array, Map, Set, and plain objects)
+ *
+ * @example
+ * ```typescript
+ * const original = { colors: ['red', 'blue'], meta: { count: 2 } };
+ * const cloned = deepClone(original);
+ *
+ * cloned.colors.push('green');
+ * console.log(original.colors);  // ['red', 'blue'] - unchanged
+ * console.log(cloned.colors);    // ['red', 'blue', 'green']
+ * ```
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') return obj;
@@ -350,6 +396,18 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 
 /**
  * Create an HTML element with optional attributes
+ *
+ * @example
+ * ```typescript
+ * // Create a div with class and text
+ * const card = createElement('div', {
+ *   className: 'card bg-white p-4',
+ *   textContent: 'Hello World'
+ * });
+ *
+ * // Create a button with ID
+ * const btn = createElement('button', { id: 'submit-btn' });
+ * ```
  */
 export function createElement<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
@@ -448,7 +506,16 @@ export function clearContainer(element: HTMLElement): void {
 // ============================================================================
 
 /**
- * Validate a hexadecimal color string
+ * Validate a hexadecimal color string (3, 4, 6, or 8 digit formats)
+ *
+ * @example
+ * ```typescript
+ * isValidHexColor('#FF5733');   // true (6-digit)
+ * isValidHexColor('#F53');      // true (3-digit shorthand)
+ * isValidHexColor('#FF5733FF'); // true (8-digit with alpha)
+ * isValidHexColor('FF5733');    // false (missing #)
+ * isValidHexColor('#GGGGGG');   // false (invalid characters)
+ * ```
  */
 export function isValidHexColor(hex: string): boolean {
   return PATTERNS.HEX_COLOR.test(hex);
@@ -600,6 +667,16 @@ export function sleep(ms: number): Promise<void> {
 
 /**
  * Retry a function n times with exponential backoff
+ *
+ * @example
+ * ```typescript
+ * // Retry API call up to 3 times with exponential backoff
+ * const data = await retry(
+ *   () => fetch('/api/prices').then(r => r.json()),
+ *   3,    // maxAttempts
+ *   1000  // initial delay (1s, 2s, 4s)
+ * );
+ * ```
  */
 export async function retry<T>(
   fn: () => Promise<T>,
