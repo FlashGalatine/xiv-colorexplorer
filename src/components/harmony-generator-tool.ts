@@ -627,11 +627,17 @@ export class HarmonyGeneratorTool extends BaseComponent implements PricingState 
       // Get base dye name
       const baseDye = DyeService.getInstance().findClosestDye(baseColor);
       const baseDyeName = baseDye
-        ? LanguageService.getDyeName(baseDye.itemID) || baseDye.name
+        ? (typeof (LanguageService as unknown as Record<string, unknown>).getDyeName === 'function'
+            ? LanguageService.getDyeName(baseDye.itemID) || baseDye.name
+            : baseDye.name)
         : 'Unknown';
 
       // Get companion dye names
-      const companions = dyes.map((dye) => LanguageService.getDyeName(dye.itemID) || dye.name);
+      const companions = dyes.map((dye) =>
+        (typeof (LanguageService as unknown as Record<string, unknown>).getDyeName === 'function'
+          ? LanguageService.getDyeName(dye.itemID) || dye.name
+          : dye.name)
+      );
 
       // Show save dialog
       showSavePaletteDialog(harmonyType, harmonyName, baseColor, baseDyeName, companions);

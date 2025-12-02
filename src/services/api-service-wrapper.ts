@@ -212,7 +212,15 @@ export class APIService {
       // Initialize cache backend asynchronously (won't block)
       void APIService.cacheBackend.initialize().then(() => {
         APIService.initialized = true;
-        logger.debug('IndexedDB cache backend initialized');
+        const dbg = (logger as unknown as Record<string, unknown>).debug as
+          | ((...args: unknown[]) => void)
+          | undefined;
+        if (typeof dbg === 'function') {
+          dbg('IndexedDB cache backend initialized');
+        } else {
+          // Fallback to console in test/mocked environments
+          console.debug('IndexedDB cache backend initialized');
+        }
       });
     }
     return APIService.instance;

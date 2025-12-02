@@ -18,11 +18,15 @@ export const PricingMixin = {
     if (!this.marketBoard) {
       this.marketBoard = new MarketBoard(container);
       await this.marketBoard.loadServerData();
-      this.marketBoard.init();
+      if (this.marketBoard) {
+        this.marketBoard.init?.();
+      }
       this.setupMarketBoardListeners(container);
 
-      // Get initial showPrices state
-      this.showPrices = this.marketBoard.getShowPrices();
+      // Get initial showPrices state (defensive in test envs)
+      this.showPrices = typeof this.marketBoard?.getShowPrices === 'function'
+        ? this.marketBoard.getShowPrices()
+        : false;
     }
   },
 
