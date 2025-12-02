@@ -271,6 +271,20 @@ export function deepClone<T>(obj: T): T {
   if (obj instanceof Array) {
     return obj.map((item) => deepClone(item)) as T;
   }
+  if (obj instanceof Map) {
+    const clonedMap = new Map();
+    obj.forEach((value, key) => {
+      clonedMap.set(deepClone(key), deepClone(value));
+    });
+    return clonedMap as T;
+  }
+  if (obj instanceof Set) {
+    const clonedSet = new Set();
+    obj.forEach((value) => {
+      clonedSet.add(deepClone(value));
+    });
+    return clonedSet as T;
+  }
   if (obj instanceof Object) {
     const clonedObj = {} as T;
     for (const key in obj) {
