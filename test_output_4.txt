@@ -1,0 +1,341 @@
+
+> xivdyetools@2.4.6 test
+> vitest src/components/__tests__/color-matcher-tool.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.13 [39m[90mC:/Users/DrawF/OneDrive/Projects/CodingProjects/XIVProjects/xivdyetools-web-app[39m
+
+[2m7:41:48 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate member "showPrices" in class body[33m
+56 |  
+57 |    // PricingMixin implementation
+58 |    showPrices: boolean = false;
+   |    ^
+59 |    priceData: Map<number, PriceData> = new Map();
+60 |    onPricesLoaded?: () => void;
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36mC:/Users/DrawF/OneDrive/Projects/CodingProjects/XIVProjects/xivdyetools-web-app/src/components/color-matcher-tool.ts[39m
+[2m7:41:48 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate member "priceData" in class body[33m
+57 |    // PricingMixin implementation
+58 |    showPrices: boolean = false;
+59 |    priceData: Map<number, PriceData> = new Map();
+   |    ^
+60 |    onPricesLoaded?: () => void;
+61 |    initMarketBoard!: (container: HTMLElement) => Promise<void>;
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36mC:/Users/DrawF/OneDrive/Projects/CodingProjects/XIVProjects/xivdyetools-web-app/src/components/color-matcher-tool.ts[39m
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39m✅ Theme service initialized: standard-light
+
+[90mstderr[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mIndexedDB is not supported in this browser
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39m✅ APIService initialized from xivdyetools-core with IndexedDB cache
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mIndexedDB cache backend initialized
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39m✅ Dye database loaded: 136 dyes
+✅ DyeService initialized from xivdyetools-core
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mDetected browser locale: en
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mLoaded web app translations for: en
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mLocale changed to: en
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts
+[22m[39mLanguage service initialized: en
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenders key sections after initialization
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mupdates sample size value on slider input
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mhandles toggle-prices events and updates internal state
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdelegates to ImageZoomController when image-loaded event fires
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdelegates to ImageZoomController when image-loaded event fires
+[22m[39mDEBUG: test body html: <div id="test-container"><div class="space-y-8"><div class="space-y-4 text-center mb-8"><h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">Color Matcher</h2><p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Upload an image or select a color to find the closest matching FFXIV dyes.</p></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Image Upload</h3><div id="image-upload-container"></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Manual Color Input</h3><div id="color-picker-container"></div></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sample Settings</h3><div class="space-y-2"><label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sample Size (for image color averaging)<button type="button" class="info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors" aria-label="More information" tabindex="0" data-tooltip-id="tooltip_1764636109157_ysrjc2m" aria-describedby="tooltip_1764636109157_ysrjc2m">ⓘ</button></label><div class="flex items-center gap-4"><input class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" type="range" min="1" max="64" value="5" id="sample-size-input" style="accent-color: var(--theme-primary);"><div class="text-lg font-bold text-gray-900 dark:text-white w-12 text-center" id="sample-size-value">5</div></div><p class="text-xs text-gray-600 dark:text-gray-400">Larger sizes produce more accurate color matching but ignore fine details</p></div></div><div id="recent-colors-wrapper"></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="colormatcher-filters-container"><div class="space-y-3"><button class="w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors" type="button"><label class="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">Advanced Dye Filters</label><span class="text-gray-400 dark:text-gray-500 text-xs transition-transform" id="colormatcher-filters-container-toggle-chevron" style="transform: rotate(-90deg); transition: transform 300ms ease-in-out;">▼</span></button><div class="space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out" id="colormatcher-filters-container-checkboxes-container" style="max-height: 0px; opacity: 0; margin-top: 0px; transition: max-height 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out;"><div class="flex items-start gap-3"><input class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer" type="checkbox" id="colormatcher-filters-container-excludeMetallic"><label class="cursor-pointer flex-1" for="colormatcher-filters-container-excludeMetallic"><div class="text-sm font-medium text-gray-700 dark:text-gray-300">Exclude Metallic Dyes</div><div class="text-xs text-gray-500 dark:text-gray-400">Hide dyes with "Metallic" in the name</div></label></div><div class="flex items-start gap-3"><input class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer" type="checkbox" id="colormatcher-filters-container-excludePastel"><label class="cursor-pointer flex-1" for="colormatcher-filters-container-excludePastel"><div class="text-sm font-medium text-gray-700 dark:text-gray-300">Exclude Pastel Dyes</div><div class="text-xs text-gray-500 dark:text-gray-400">Hide dyes with "Pastel" in the name</div></label></div><div class="flex items-start gap-3"><input class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer" type="checkbox" id="colormatcher-filters-container-excludeDark"><label class="cursor-pointer flex-1" for="colormatcher-filters-container-excludeDark"><div class="text-sm font-medium text-gray-700 dark:text-gray-300">Exclude Dark Dyes</div><div class="text-xs text-gray-500 dark:text-gray-400">Hide dyes that begin with "Dark"</div></label></div><div class="flex items-start gap-3"><input class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer" type="checkbox" id="colormatcher-filters-container-excludeCosmic"><label class="cursor-pointer flex-1" for="colormatcher-filters-container-excludeCosmic"><div class="text-sm font-medium text-gray-700 dark:text-gray-300">Exclude Cosmic Dyes</div><div class="text-xs text-gray-500 dark:text-gray-400">Hide dyes from Cosmic Exploration &amp; Cosmic Fortunes</div></label></div><div class="flex items-start gap-3"><input class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer" type="checkbox" id="colormatcher-filters-container-excludeExpensive"><label class="cursor-pointer flex-1" for="colormatcher-filters-container-excludeExpensive"><div class="text-sm font-medium text-gray-700 dark:text-gray-300">Exclude Expensive Dyes</div><div class="text-xs text-gray-500 dark:text-gray-400">Hide Jet Black &amp; Pure White</div></label></div></div></div></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="market-board-container"></div></div><div id="results-container"></div></div></div>
+DEBUG: image-loaded event received
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould populate matchedDyes array after matching
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould store lastSampledColor when matching
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould display best match section in results
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould display similar dyes count
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould handle no closest dye found
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould call findClosestDye with correct hex
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould create card element with dye info
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould include sampled color swatch
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould include dye color swatch
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould include category badge
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould include copy hex button
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould display price when showPrices is true and price exists
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard method[2m > [22m[2mshould display N/A when showPrices is true but no price data
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mshowToast method[2m > [22m[2mshould create toast container if not exists
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mshowToast method[2m > [22m[2mshould display success toast with green background
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mshowToast method[2m > [22m[2mshould display error toast with red background
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mshowToast method[2m > [22m[2mshould display info toast with blue background
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mshowToast method[2m > [22m[2mshould include message text in toast
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mgetState method[2m > [22m[2mshould return matchedDyeCount
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mgetState method[2m > [22m[2mshould return sampleSize
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mgetState method[2m > [22m[2mshould return 0 for empty matchedDyes
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handling[2m > [22m[2mshould handle server-changed event
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handling[2m > [22m[2mshould handle categories-changed event
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handling[2m > [22m[2mshould handle refresh-requested event
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handling[2m > [22m[2mshould not fetch prices when showPrices is false
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handling[2m > [22m[2mshould handle color-selected event from color picker
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould initialize all child components
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould cleanup on destroy
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould cleanup on destroy
+[22m[39mDEBUG: render started
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould handle update cycle
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould handle update cycle
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+DEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2medge cases[2m > [22m[2mshould handle empty results container gracefully
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2medge cases[2m > [22m[2mshould handle matchColor without results container
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrefreshResults branch coverage[2m > [22m[2mshould handle empty matchedDyes gracefully
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrefreshResults branch coverage[2m > [22m[2mshould handle missing results section
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrefreshResults branch coverage[2m > [22m[2mshould render other matches when present
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrefreshResults branch coverage[2m > [22m[2mshould use lastSampledColor for refreshing
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor filter branch coverage[2m > [22m[2mshould match without filters when dyeFilters is null
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor filter branch coverage[2m > [22m[2mshould handle no similar dyes found
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mfetchPricesForMatchedDyes branch coverage[2m > [22m[2mshould return early when marketBoard is null
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mfetchPricesForMatchedDyes branch coverage[2m > [22m[2mshould return early when showPrices is false
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mfetchPricesForMatchedDyes branch coverage[2m > [22m[2mshould return early when matchedDyes is empty
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mtoggle-prices event branch coverage[2m > [22m[2mshould clear priceData when showPrices is toggled off
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mtoggle-prices event branch coverage[2m > [22m[2mshould not fetch prices when matchedDyes is empty
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard branch coverage[2m > [22m[2mshould not render price section when showPrices is false
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard branch coverage[2m > [22m[2mshould handle copy button click with clipboard API
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mrenderDyeCard branch coverage[2m > [22m[2mshould use fallback when clipboard API fails
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handler branch coverage[2m > [22m[2mshould not fetch prices on server-changed when matchedDyes is empty
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handler branch coverage[2m > [22m[2mshould not fetch prices on categories-changed when matchedDyes is empty
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mevent handler branch coverage[2m > [22m[2mshould not fetch prices on refresh-requested when matchedDyes is empty
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2msample size slider branch coverage[2m > [22m[2mshould handle missing value display element
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mimage error handling branch coverage[2m > [22m[2mshould handle error event from image upload
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstderr[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mimage error handling branch coverage[2m > [22m[2mshould handle error event from image upload
+[22m[39mImage upload error: { message: [32m'Test error message'[39m }
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mimage error handling branch coverage[2m > [22m[2mshould handle error event without message
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstderr[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mimage error handling branch coverage[2m > [22m[2mshould handle error event without message
+[22m[39mImage upload error: {}
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2monMount function coverage[2m > [22m[2mshould call onMount without throwing
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2monMount function coverage[2m > [22m[2mshould subscribe to language changes
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdestroy with child components[2m > [22m[2mshould destroy imageUpload if exists
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdestroy with child components[2m > [22m[2mshould destroy colorPicker if exists
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdestroy with child components[2m > [22m[2mshould destroy marketBoard if exists
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdestroy with child components[2m > [22m[2mshould handle destroy when child components are null
+[22m[39mDEBUG: bindEvents imageUploadContainer found: [33mtrue[39m
+
+ [32m✓[39m src/components/__tests__/color-matcher-tool.test.ts [2m([22m[2m61 tests[22m[2m)[22m[33m 378[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 4 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'entries')[39m
+[36m [2m❯[22m ColorMatcherTool.fetchPricesForMatchedDyes src/components/color-matcher-tool.ts:[2m415:38[22m[39m
+    [90m413| [39m
+    [90m414| [39m    [35mthis[39m[33m.[39mpriceData[33m.[39m[34mclear[39m()[33m;[39m
+    [90m415| [39m    [35mfor[39m ([35mconst[39m [id[33m,[39m price] [35mof[39m prices[33m.[39m[34mentries[39m()) {
+    [90m   | [39m                                     [31m^[39m
+    [90m416| [39m      [35mthis[39m[33m.[39mpriceData[33m.[39m[35mset[39m(id[33m,[39m price)[33m;[39m
+    [90m417| [39m    }
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m105:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.updatePrices src/components/color-matcher-tool.ts:[2m426:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.fetchPrices src/services/pricing-mixin.ts:[2m76:13[22m[39m
+
+[31mThis error originated in "[1msrc/components/__tests__/color-matcher-tool.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mshould handle copy button click with clipboard API[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'entries')[39m
+[36m [2m❯[22m ColorMatcherTool.fetchPricesForMatchedDyes src/components/color-matcher-tool.ts:[2m415:38[22m[39m
+    [90m413| [39m
+    [90m414| [39m    [35mthis[39m[33m.[39mpriceData[33m.[39m[34mclear[39m()[33m;[39m
+    [90m415| [39m    [35mfor[39m ([35mconst[39m [id[33m,[39m price] [35mof[39m prices[33m.[39m[34mentries[39m()) {
+    [90m   | [39m                                     [31m^[39m
+    [90m416| [39m      [35mthis[39m[33m.[39mpriceData[33m.[39m[35mset[39m(id[33m,[39m price)[33m;[39m
+    [90m417| [39m    }
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m105:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.updatePrices src/components/color-matcher-tool.ts:[2m426:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.fetchPrices src/services/pricing-mixin.ts:[2m76:13[22m[39m
+
+[31mThis error originated in "[1msrc/components/__tests__/color-matcher-tool.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mshould handle copy button click with clipboard API[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'entries')[39m
+[36m [2m❯[22m ColorMatcherTool.fetchPricesForMatchedDyes src/components/color-matcher-tool.ts:[2m415:38[22m[39m
+    [90m413| [39m
+    [90m414| [39m    [35mthis[39m[33m.[39mpriceData[33m.[39m[34mclear[39m()[33m;[39m
+    [90m415| [39m    [35mfor[39m ([35mconst[39m [id[33m,[39m price] [35mof[39m prices[33m.[39m[34mentries[39m()) {
+    [90m   | [39m                                     [31m^[39m
+    [90m416| [39m      [35mthis[39m[33m.[39mpriceData[33m.[39m[35mset[39m(id[33m,[39m price)[33m;[39m
+    [90m417| [39m    }
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m105:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.updatePrices src/components/color-matcher-tool.ts:[2m426:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.fetchPrices src/services/pricing-mixin.ts:[2m76:13[22m[39m
+
+[31mThis error originated in "[1msrc/components/__tests__/color-matcher-tool.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mshould handle copy button click with clipboard API[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'entries')[39m
+[36m [2m❯[22m ColorMatcherTool.fetchPricesForMatchedDyes src/components/color-matcher-tool.ts:[2m415:38[22m[39m
+    [90m413| [39m
+    [90m414| [39m    [35mthis[39m[33m.[39mpriceData[33m.[39m[34mclear[39m()[33m;[39m
+    [90m415| [39m    [35mfor[39m ([35mconst[39m [id[33m,[39m price] [35mof[39m prices[33m.[39m[34mentries[39m()) {
+    [90m   | [39m                                     [31m^[39m
+    [90m416| [39m      [35mthis[39m[33m.[39mpriceData[33m.[39m[35mset[39m(id[33m,[39m price)[33m;[39m
+    [90m417| [39m    }
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m105:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.updatePrices src/components/color-matcher-tool.ts:[2m426:5[22m[39m
+[90m [2m❯[22m ColorMatcherTool.fetchPrices src/services/pricing-mixin.ts:[2m76:13[22m[39m
+
+[31mThis error originated in "[1msrc/components/__tests__/color-matcher-tool.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mshould handle copy button click with clipboard API[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m61 passed[39m[22m[90m (61)[39m
+[2m     Errors [22m [1m[31m4 errors[39m[22m
+[2m   Start at [22m 19:41:46
+[2m   Duration [22m 3.20s[2m (transform 497ms, setup 176ms, collect 801ms, tests 378ms, environment 1.10s, prepare 21ms)[22m
+

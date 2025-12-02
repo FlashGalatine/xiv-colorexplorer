@@ -45,6 +45,9 @@
 [90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdelegates to ImageZoomController when image-loaded event fires
 [22m[39mDEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdelegates to ImageZoomController when image-loaded event fires
+[22m[39mDEBUG: test body html: <div id="test-container"><div class="space-y-8"><div class="space-y-4 text-center mb-8"><h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">Color Matcher</h2><p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Upload an image or select a color to find the closest matching FFXIV dyes.</p></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Image Upload</h3><div id="image-upload-container"></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Manual Color Input</h3><div id="color-picker-container"></div></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sample Settings</h3><div class="space-y-2"><label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sample Size (for image color averaging)<button type="button" class="info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors" aria-label="More information" tabindex="0" data-tooltip-id="tooltip_1764635676097_ghg6rp1" aria-describedby="tooltip_1764635676097_ghg6rp1">ⓘ</button></label><div class="flex items-center gap-4"><input class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" type="range" min="1" max="64" value="5" id="sample-size-input" style="accent-color: var(--theme-primary);"><div class="text-lg font-bold text-gray-900 dark:text-white w-12 text-center" id="sample-size-value">5</div></div><p class="text-xs text-gray-600 dark:text-gray-400">Larger sizes produce more accurate color matching but ignore fine details</p></div></div><div id="recent-colors-wrapper"></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="colormatcher-filters-container"></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="market-board-container"></div></div><div id="results-container"></div></div></div><div id="test-container"><div class="space-y-8"><div class="space-y-4 text-center mb-8"><h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">Color Matcher</h2><p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Upload an image or select a color to find the closest matching FFXIV dyes.</p></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Image Upload</h3><div id="image-upload-container"></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Manual Color Input</h3><div id="color-picker-container"></div></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sample Settings</h3><div class="space-y-2"><label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sample Size (for image color averaging)<button type="button" class="info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors" aria-label="More information" tabindex="0" data-tooltip-id="tooltip_1764635676125_5yf671h" aria-describedby="tooltip_1764635676125_5yf671h">ⓘ</button></label><div class="flex items-center gap-4"><input class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none" type="range" min="1" max="64" value="5" id="sample-size-input" style="accent-color: var(--theme-primary);"><div class="text-lg font-bold text-gray-900 dark:text-white w-12 text-center" id="sample-size-value">5</div></div><p class="text-xs text-gray-600 dark:text-gray-400">Larger sizes produce more accurate color matching but ignore fine details</p></div></div><div id="recent-colors-wrapper"></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="colormatcher-filters-container"></div></div><div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"><div id="market-board-container"></div></div><div id="results-container"></div></div></div>
+
 [90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mmatchColor method[2m > [22m[2mshould populate matchedDyes array after matching
 [22m[39mDEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 
@@ -128,6 +131,9 @@
 
 [90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould cleanup on destroy
 [22m[39mDEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
+
+[90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould cleanup on destroy
+[22m[39mDEBUG: render started
 
 [90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mlifecycle[2m > [22m[2mshould handle update cycle
 [22m[39mDEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
@@ -220,26 +226,26 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 [90mstdout[2m | src/components/__tests__/color-matcher-tool.test.ts[2m > [22m[2mColorMatcherTool[2m > [22m[2mdestroy with child components[2m > [22m[2mshould handle destroy when child components are null
 [22m[39mDEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 
- [31m❯[39m src/components/__tests__/color-matcher-tool.test.ts [2m([22m[2m61 tests[22m[2m | [22m[31m28 failed[39m[2m)[22m[33m 2325[2mms[22m[39m
-     [32m✓[39m renders key sections after initialization[32m 29[2mms[22m[39m
+ [31m❯[39m src/components/__tests__/color-matcher-tool.test.ts [2m([22m[2m61 tests[22m[2m | [22m[31m28 failed[39m[2m)[22m[33m 2351[2mms[22m[39m
+     [32m✓[39m renders key sections after initialization[32m 35[2mms[22m[39m
      [32m✓[39m updates sample size value on slider input[32m 10[2mms[22m[39m
-[31m     [31m×[31m handles toggle-prices events and updates internal state[39m[32m 14[2mms[22m[39m
-[31m     [31m×[31m delegates to ImageZoomController when image-loaded event fires[39m[32m 4[2mms[22m[39m
-[31m       [31m×[31m should populate matchedDyes array after matching[39m[32m 9[2mms[22m[39m
-[31m       [31m×[31m should store lastSampledColor when matching[39m[32m 5[2mms[22m[39m
-[31m       [31m×[31m should display best match section in results[39m[32m 4[2mms[22m[39m
-[31m       [31m×[31m should display similar dyes count[39m[32m 4[2mms[22m[39m
-[31m       [31m×[31m should handle no closest dye found[39m[32m 4[2mms[22m[39m
-[31m       [31m×[31m should call findClosestDye with correct hex[39m[32m 4[2mms[22m[39m
-       [32m✓[39m should create card element with dye info[32m 16[2mms[22m[39m
-       [32m✓[39m should include sampled color swatch[32m 6[2mms[22m[39m
-       [32m✓[39m should include dye color swatch[32m 4[2mms[22m[39m
+[31m     [31m×[31m handles toggle-prices events and updates internal state[39m[32m 28[2mms[22m[39m
+[31m     [31m×[31m delegates to ImageZoomController when image-loaded event fires[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m should populate matchedDyes array after matching[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should store lastSampledColor when matching[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should display best match section in results[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should display similar dyes count[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should handle no closest dye found[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should call findClosestDye with correct hex[39m[32m 3[2mms[22m[39m
+       [32m✓[39m should create card element with dye info[32m 13[2mms[22m[39m
+       [32m✓[39m should include sampled color swatch[32m 4[2mms[22m[39m
+       [32m✓[39m should include dye color swatch[32m 3[2mms[22m[39m
        [32m✓[39m should include category badge[32m 3[2mms[22m[39m
-       [32m✓[39m should include copy hex button[32m 6[2mms[22m[39m
-       [32m✓[39m should display price when showPrices is true and price exists[32m 22[2mms[22m[39m
+       [32m✓[39m should include copy hex button[32m 3[2mms[22m[39m
+       [32m✓[39m should display price when showPrices is true and price exists[32m 23[2mms[22m[39m
        [32m✓[39m should display N/A when showPrices is true but no price data[32m 3[2mms[22m[39m
 [31m       [31m×[31m should create toast container if not exists[39m[32m 2[2mms[22m[39m
-[31m       [31m×[31m should display success toast with green background[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should display success toast with green background[39m[32m 5[2mms[22m[39m
 [31m       [31m×[31m should display error toast with red background[39m[32m 2[2mms[22m[39m
 [31m       [31m×[31m should display info toast with blue background[39m[32m 2[2mms[22m[39m
 [31m       [31m×[31m should include message text in toast[39m[32m 3[2mms[22m[39m
@@ -247,17 +253,17 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
        [32m✓[39m should return sampleSize[32m 2[2mms[22m[39m
        [32m✓[39m should return 0 for empty matchedDyes[32m 2[2mms[22m[39m
 [31m       [31m×[31m should handle server-changed event[39m[32m 2[2mms[22m[39m
-[31m       [31m×[31m should handle categories-changed event[39m[32m 2[2mms[22m[39m
-[31m       [31m×[31m should handle refresh-requested event[39m[32m 2[2mms[22m[39m
-       [32m✓[39m should not fetch prices when showPrices is false[32m 2[2mms[22m[39m
+[31m       [31m×[31m should handle categories-changed event[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should handle refresh-requested event[39m[32m 3[2mms[22m[39m
+       [32m✓[39m should not fetch prices when showPrices is false[32m 3[2mms[22m[39m
 [31m       [31m×[31m should handle color-selected event from color picker[39m[32m 2[2mms[22m[39m
-[31m       [31m×[31m should initialize all child components[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m should initialize all child components[39m[32m 2[2mms[22m[39m
        [32m✓[39m should cleanup on destroy[32m 2[2mms[22m[39m
-       [32m✓[39m should handle update cycle[32m 6[2mms[22m[39m
+       [32m✓[39m should handle update cycle[32m 5[2mms[22m[39m
        [32m✓[39m should handle empty results container gracefully[32m 2[2mms[22m[39m
        [32m✓[39m should handle matchColor without results container[32m 2[2mms[22m[39m
        [32m✓[39m should handle empty matchedDyes gracefully[32m 2[2mms[22m[39m
-       [32m✓[39m should handle missing results section[32m 2[2mms[22m[39m
+       [32m✓[39m should handle missing results section[32m 6[2mms[22m[39m
 [31m       [31m×[31m should render other matches when present[39m[32m 2[2mms[22m[39m
 [31m       [31m×[31m should use lastSampledColor for refreshing[39m[32m 4[2mms[22m[39m
        [32m✓[39m should match without filters when dyeFilters is null[32m 2[2mms[22m[39m
@@ -268,14 +274,14 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 [31m       [31m×[31m should clear priceData when showPrices is toggled off[39m[32m 2[2mms[22m[39m
        [32m✓[39m should not fetch prices when matchedDyes is empty[32m 2[2mms[22m[39m
        [32m✓[39m should not render price section when showPrices is false[32m 3[2mms[22m[39m
-       [32m✓[39m should handle copy button click with clipboard API[32m 27[2mms[22m[39m
-       [32m✓[39m should use fallback when clipboard API fails[32m 15[2mms[22m[39m
+       [32m✓[39m should handle copy button click with clipboard API[32m 22[2mms[22m[39m
+       [32m✓[39m should use fallback when clipboard API fails[32m 16[2mms[22m[39m
        [32m✓[39m should not fetch prices on server-changed when matchedDyes is empty[32m 2[2mms[22m[39m
        [32m✓[39m should not fetch prices on categories-changed when matchedDyes is empty[32m 2[2mms[22m[39m
-       [32m✓[39m should not fetch prices on refresh-requested when matchedDyes is empty[32m 2[2mms[22m[39m
-[31m       [31m×[31m should handle missing value display element[39m[32m 2[2mms[22m[39m
-[31m       [31m×[31m should handle error event from image upload[39m[33m 1013[2mms[22m[39m
-[31m       [31m×[31m should handle error event without message[39m[33m 1016[2mms[22m[39m
+       [32m✓[39m should not fetch prices on refresh-requested when matchedDyes is empty[32m 4[2mms[22m[39m
+[31m       [31m×[31m should handle missing value display element[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should handle error event from image upload[39m[33m 1026[2mms[22m[39m
+[31m       [31m×[31m should handle error event without message[39m[33m 1018[2mms[22m[39m
        [32m✓[39m should call onMount without throwing[32m 2[2mms[22m[39m
        [32m✓[39m should subscribe to language changes[32m 2[2mms[22m[39m
        [32m✓[39m should destroy imageUpload if exists[32m 2[2mms[22m[39m
@@ -295,19 +301,19 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
     [90m764| [39m
     [90m765| [39m    [35msuper[39m[33m.[39m[34mdestroy[39m()[33m;[39m
 [90m [2m❯[22m Module.cleanupComponent src/components/__tests__/test-utils.ts:[2m60:13[22m[39m
-[90m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m171:7[22m[39m
+[90m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m179:7[22m[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mdelegates to ImageZoomController when image-loaded event fires
 [31m[1mTypeError[22m: Cannot read properties of null (reading 'dispatchEvent')[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m249:22[22m[39m
-    [90m247| [39m    [35mconst[39m image [33m=[39m document[33m.[39m[34mcreateElement[39m([32m'img'[39m)[33m;[39m
-    [90m248| [39m
-    [90m249| [39m    uploadContainer!.dispatchEvent(new CustomEvent('image-loaded', { d…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m258:22[22m[39m
+    [90m256| [39m    [35mconst[39m image [33m=[39m document[33m.[39m[34mcreateElement[39m([32m'img'[39m)[33m;[39m
+    [90m257| [39m
+    [90m258| [39m    uploadContainer!.dispatchEvent(new CustomEvent('image-loaded', { d…
     [90m   | [39m                     [31m^[39m
-    [90m250| [39m
-    [90m251| [39m    expect(imageZoomControllerSetImageMock).toHaveBeenCalledWith(image…
+    [90m259| [39m
+    [90m260| [39m    expect(imageZoomControllerSetImageMock).toHaveBeenCalledWith(image…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/28]⎯[22m[39m
 
@@ -320,13 +326,13 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 [32m- 3[39m
 [31m+ 0[39m
 
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m279:27[22m[39m
-    [90m277| [39m
-    [90m278| [39m      const matchedDyes = (instance as unknown as ComponentWithPrivate…
-    [90m279| [39m      [34mexpect[39m(matchedDyes)[33m.[39m[34mtoHaveLength[39m([34m3[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m288:27[22m[39m
+    [90m286| [39m
+    [90m287| [39m      const matchedDyes = (instance as unknown as ComponentWithPrivate…
+    [90m288| [39m      [34mexpect[39m(matchedDyes)[33m.[39m[34mtoHaveLength[39m([34m3[39m)[33m;[39m
     [90m   | [39m                          [31m^[39m
-    [90m280| [39m      [34mexpect[39m(matchedDyes[[34m0[39m][33m.[39mname)[33m.[39m[34mtoBe[39m([32m'Closest Dye'[39m)[33m;[39m
-    [90m281| [39m    })[33m;[39m
+    [90m289| [39m      [34mexpect[39m(matchedDyes[[34m0[39m][33m.[39mname)[33m.[39m[34mtoBe[39m([32m'Closest Dye'[39m)[33m;[39m
+    [90m290| [39m    })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/28]⎯[22m[39m
 
@@ -338,49 +344,49 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 
 [32m- #ABCDEF[39m
 
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m288:78[22m[39m
-    [90m286| [39m      (instance as unknown as ComponentWithPrivate).matchColor('#ABCDE…
-    [90m287| [39m
-    [90m288| [39m      expect((instance as unknown as ComponentWithPrivate).lastSampled…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m297:78[22m[39m
+    [90m295| [39m      (instance as unknown as ComponentWithPrivate).matchColor('#ABCDE…
+    [90m296| [39m
+    [90m297| [39m      expect((instance as unknown as ComponentWithPrivate).lastSampled…
     [90m   | [39m                                                                             [31m^[39m
-    [90m289| [39m    })[33m;[39m
-    [90m290| [39m
+    [90m298| [39m    })[33m;[39m
+    [90m299| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mmatchColor method[2m > [22mshould display best match section in results
 [31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m297:45[22m[39m
-    [90m295| [39m
-    [90m296| [39m      const resultsContainer = container.querySelector('#results-conta…
-    [90m297| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Best Match'[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m306:45[22m[39m
+    [90m304| [39m
+    [90m305| [39m      const resultsContainer = container.querySelector('#results-conta…
+    [90m306| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Best Match'[39m)[33m;[39m
     [90m   | [39m                                            [31m^[39m
-    [90m298| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Closest Dye'[39m)[33m;[39m
-    [90m299| [39m    })[33m;[39m
+    [90m307| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Closest Dye'[39m)[33m;[39m
+    [90m308| [39m    })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mmatchColor method[2m > [22mshould display similar dyes count
 [31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m307:45[22m[39m
-    [90m305| [39m
-    [90m306| [39m      const resultsContainer = container.querySelector('#results-conta…
-    [90m307| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Similar'[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m316:45[22m[39m
+    [90m314| [39m
+    [90m315| [39m      const resultsContainer = container.querySelector('#results-conta…
+    [90m316| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Similar'[39m)[33m;[39m
     [90m   | [39m                                            [31m^[39m
-    [90m308| [39m    })[33m;[39m
-    [90m309| [39m
+    [90m317| [39m    })[33m;[39m
+    [90m318| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mmatchColor method[2m > [22mshould handle no closest dye found
 [31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m317:45[22m[39m
-    [90m315| [39m
-    [90m316| [39m      const resultsContainer = container.querySelector('#results-conta…
-    [90m317| [39m      expect(resultsContainer?.textContent).toContain('No matching dye…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m326:45[22m[39m
+    [90m324| [39m
+    [90m325| [39m      const resultsContainer = container.querySelector('#results-conta…
+    [90m326| [39m      expect(resultsContainer?.textContent).toContain('No matching dye…
     [90m   | [39m                                            [31m^[39m
-    [90m318| [39m    })[33m;[39m
-    [90m319| [39m
+    [90m327| [39m    })[33m;[39m
+    [90m328| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/28]⎯[22m[39m
 
@@ -389,109 +395,109 @@ DEBUG: bindEvents imageUploadContainer found: [33mfalse[39m
 
 Number of calls: [1m0[22m
 [31m[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m326:19[22m[39m
-    [90m324| [39m      (instance as unknown as ComponentWithPrivate).matchColor('#AABBC…
-    [90m325| [39m
-    [90m326| [39m      [34mexpect[39m(spy)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'#AABBCC'[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m335:19[22m[39m
+    [90m333| [39m      (instance as unknown as ComponentWithPrivate).matchColor('#AABBC…
+    [90m334| [39m
+    [90m335| [39m      [34mexpect[39m(spy)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'#AABBCC'[39m)[33m;[39m
     [90m   | [39m                  [31m^[39m
-    [90m327| [39m    })[33m;[39m
-    [90m328| [39m  })[33m;[39m
+    [90m336| [39m    })[33m;[39m
+    [90m337| [39m  })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mshowToast method[2m > [22mshould create toast container if not exists
 [31m[1mTypeError[22m: instance.showToast is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m432:53[22m[39m
-    [90m430| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
-    [90m431| [39m
-    [90m432| [39m      (instance as unknown as ComponentWithPrivate).showToast('Test me…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m441:53[22m[39m
+    [90m439| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
+    [90m440| [39m
+    [90m441| [39m      (instance as unknown as ComponentWithPrivate).showToast('Test me…
     [90m   | [39m                                                    [31m^[39m
-    [90m433| [39m
-    [90m434| [39m      const toastContainer = document.getElementById('toast-container'…
+    [90m442| [39m
+    [90m443| [39m      const toastContainer = document.getElementById('toast-container'…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mshowToast method[2m > [22mshould display success toast with green background
 [31m[1mTypeError[22m: instance.showToast is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m441:53[22m[39m
-    [90m439| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
-    [90m440| [39m
-    [90m441| [39m      (instance as unknown as ComponentWithPrivate).showToast('Success…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m450:53[22m[39m
+    [90m448| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
+    [90m449| [39m
+    [90m450| [39m      (instance as unknown as ComponentWithPrivate).showToast('Success…
     [90m   | [39m                                                    [31m^[39m
-    [90m442| [39m
-    [90m443| [39m      const toastContainer = document.getElementById('toast-container'…
+    [90m451| [39m
+    [90m452| [39m      const toastContainer = document.getElementById('toast-container'…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mshowToast method[2m > [22mshould display error toast with red background
 [31m[1mTypeError[22m: instance.showToast is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m452:53[22m[39m
-    [90m450| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
-    [90m451| [39m
-    [90m452| [39m      (instance as unknown as ComponentWithPrivate).showToast('Error!'…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m461:53[22m[39m
+    [90m459| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
+    [90m460| [39m
+    [90m461| [39m      (instance as unknown as ComponentWithPrivate).showToast('Error!'…
     [90m   | [39m                                                    [31m^[39m
-    [90m453| [39m
-    [90m454| [39m      const toastContainer = document.getElementById('toast-container'…
+    [90m462| [39m
+    [90m463| [39m      const toastContainer = document.getElementById('toast-container'…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mshowToast method[2m > [22mshould display info toast with blue background
 [31m[1mTypeError[22m: instance.showToast is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m463:53[22m[39m
-    [90m461| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
-    [90m462| [39m
-    [90m463| [39m      (instance as unknown as ComponentWithPrivate).showToast('Info me…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m472:53[22m[39m
+    [90m470| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
+    [90m471| [39m
+    [90m472| [39m      (instance as unknown as ComponentWithPrivate).showToast('Info me…
     [90m   | [39m                                                    [31m^[39m
-    [90m464| [39m
-    [90m465| [39m      const toastContainer = document.getElementById('toast-container'…
+    [90m473| [39m
+    [90m474| [39m      const toastContainer = document.getElementById('toast-container'…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mshowToast method[2m > [22mshould include message text in toast
 [31m[1mTypeError[22m: instance.showToast is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m474:53[22m[39m
-    [90m472| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
-    [90m473| [39m
-    [90m474| [39m      (instance as unknown as ComponentWithPrivate).showToast('Custom …
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m483:53[22m[39m
+    [90m481| [39m      [35mconst[39m instance [33m=[39m [35mawait[39m [34mcreateComponent[39m()[33m;[39m
+    [90m482| [39m
+    [90m483| [39m      (instance as unknown as ComponentWithPrivate).showToast('Custom …
     [90m   | [39m                                                    [31m^[39m
-    [90m475| [39m
-    [90m476| [39m      const toastContainer = document.getElementById('toast-container'…
+    [90m484| [39m
+    [90m485| [39m      const toastContainer = document.getElementById('toast-container'…
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mevent handling[2m > [22mshould handle server-changed event
 [31m[1mAssertionError[22m: expected "vi.fn()" to be called at least once[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m535:31[22m[39m
-    [90m533| [39m
-    [90m534| [39m      [90m// Should trigger price fetch (async)[39m
-    [90m535| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m544:31[22m[39m
+    [90m542| [39m
+    [90m543| [39m      [90m// Should trigger price fetch (async)[39m
+    [90m544| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
     [90m   | [39m                              [31m^[39m
-    [90m536| [39m    })[33m;[39m
-    [90m537| [39m
+    [90m545| [39m    })[33m;[39m
+    [90m546| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mevent handling[2m > [22mshould handle categories-changed event
 [31m[1mAssertionError[22m: expected "vi.fn()" to be called at least once[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m547:31[22m[39m
-    [90m545| [39m      marketContainer?.dispatchEvent(new CustomEvent('categories-chang…
-    [90m546| [39m
-    [90m547| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m556:31[22m[39m
+    [90m554| [39m      marketContainer?.dispatchEvent(new CustomEvent('categories-chang…
+    [90m555| [39m
+    [90m556| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
     [90m   | [39m                              [31m^[39m
-    [90m548| [39m    })[33m;[39m
-    [90m549| [39m
+    [90m557| [39m    })[33m;[39m
+    [90m558| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mevent handling[2m > [22mshould handle refresh-requested event
 [31m[1mAssertionError[22m: expected "vi.fn()" to be called at least once[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m559:31[22m[39m
-    [90m557| [39m      marketContainer?.dispatchEvent(new CustomEvent('refresh-requeste…
-    [90m558| [39m
-    [90m559| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m568:31[22m[39m
+    [90m566| [39m      marketContainer?.dispatchEvent(new CustomEvent('refresh-requeste…
+    [90m567| [39m
+    [90m568| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
     [90m   | [39m                              [31m^[39m
-    [90m560| [39m    })[33m;[39m
-    [90m561| [39m
+    [90m569| [39m    })[33m;[39m
+    [90m570| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/28]⎯[22m[39m
 
@@ -500,37 +506,37 @@ Number of calls: [1m0[22m
 
 Number of calls: [1m0[22m
 [31m[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m586:41[22m[39m
-    [90m584| [39m      )[33m;[39m
-    [90m585| [39m
-    [90m586| [39m      expect(dyeService.findClosestDye).toHaveBeenCalledWith('#AABBCC'…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m595:41[22m[39m
+    [90m593| [39m      )[33m;[39m
+    [90m594| [39m
+    [90m595| [39m      expect(dyeService.findClosestDye).toHaveBeenCalledWith('#AABBCC'…
     [90m   | [39m                                        [31m^[39m
-    [90m587| [39m    })[33m;[39m
-    [90m588| [39m  })[33m;[39m
+    [90m596| [39m    })[33m;[39m
+    [90m597| [39m  })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mlifecycle[2m > [22mshould initialize all child components
 [31m[1mAssertionError[22m: expected "vi.fn()" to be called at least once[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m600:34[22m[39m
-    [90m598| [39m      [34mexpect[39m(imageUploadInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
-    [90m599| [39m      [34mexpect[39m(colorPickerInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
-    [90m600| [39m      [34mexpect[39m(loadServerDataMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m609:34[22m[39m
+    [90m607| [39m      [34mexpect[39m(imageUploadInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m608| [39m      [34mexpect[39m(colorPickerInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m609| [39m      [34mexpect[39m(loadServerDataMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
     [90m   | [39m                                 [31m^[39m
-    [90m601| [39m      [34mexpect[39m(imageZoomControllerInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
-    [90m602| [39m      [34mexpect[39m(recentColorsPanelInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m610| [39m      [34mexpect[39m(imageZoomControllerInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m611| [39m      [34mexpect[39m(recentColorsPanelInitMock)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mrefreshResults branch coverage[2m > [22mshould render other matches when present
 [31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m705:45[22m[39m
-    [90m703| [39m
-    [90m704| [39m      const resultsContainer = container.querySelector('#results-conta…
-    [90m705| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Similar'[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m716:45[22m[39m
+    [90m714| [39m
+    [90m715| [39m      const resultsContainer = container.querySelector('#results-conta…
+    [90m716| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Similar'[39m)[33m;[39m
     [90m   | [39m                                            [31m^[39m
-    [90m706| [39m    })[33m;[39m
-    [90m707| [39m
+    [90m717| [39m    })[33m;[39m
+    [90m718| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/28]⎯[22m[39m
 
@@ -540,61 +546,61 @@ Number of calls: [1m0[22m
 Expected: [32m"#[7mFF0000[27m"[39m
 Received: [31m"#[7mABCDEF[27m"[39m
 
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m719:78[22m[39m
-    [90m717| [39m
-    [90m718| [39m      [90m// Should not throw[39m
-    [90m719| [39m      expect((instance as unknown as ComponentWithPrivate).lastSampled…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m730:78[22m[39m
+    [90m728| [39m
+    [90m729| [39m      [90m// Should not throw[39m
+    [90m730| [39m      expect((instance as unknown as ComponentWithPrivate).lastSampled…
     [90m   | [39m                                                                             [31m^[39m
-    [90m720| [39m    })[33m;[39m
-    [90m721| [39m  })[33m;[39m
+    [90m731| [39m    })[33m;[39m
+    [90m732| [39m  })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mmatchColor filter branch coverage[2m > [22mshould handle no similar dyes found
 [31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m751:45[22m[39m
-    [90m749| [39m
-    [90m750| [39m      const resultsContainer = container.querySelector('#results-conta…
-    [90m751| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Only Dye'[39m)[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m762:45[22m[39m
+    [90m760| [39m
+    [90m761| [39m      const resultsContainer = container.querySelector('#results-conta…
+    [90m762| [39m      [34mexpect[39m(resultsContainer[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Only Dye'[39m)[33m;[39m
     [90m   | [39m                                            [31m^[39m
-    [90m752| [39m      [90m// Should not have "Similar" section[39m
-    [90m753| [39m      [90m// The section count confirms no similar dyes section was added[39m
+    [90m763| [39m      [90m// Should not have "Similar" section[39m
+    [90m764| [39m      [90m// The section count confirms no similar dyes section was added[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mfetchPricesForMatchedDyes branch coverage[2m > [22mshould return early when marketBoard is null
 [31m[1mTypeError[22m: instance.fetchPricesForMatchedDyes is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m772:59[22m[39m
-    [90m770| [39m      (instance as unknown as ComponentWithPrivate).matchedDyes = [cre…
-    [90m771| [39m
-    [90m772| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m783:59[22m[39m
+    [90m781| [39m      (instance as unknown as ComponentWithPrivate).matchedDyes = [cre…
+    [90m782| [39m
+    [90m783| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
     [90m   | [39m                                                          [31m^[39m
-    [90m773| [39m
-    [90m774| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m784| [39m
+    [90m785| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mfetchPricesForMatchedDyes branch coverage[2m > [22mshould return early when showPrices is false
 [31m[1mTypeError[22m: instance.fetchPricesForMatchedDyes is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m784:59[22m[39m
-    [90m782| [39m      (instance as unknown as ComponentWithPrivate).matchedDyes = [cre…
-    [90m783| [39m
-    [90m784| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m795:59[22m[39m
+    [90m793| [39m      (instance as unknown as ComponentWithPrivate).matchedDyes = [cre…
+    [90m794| [39m
+    [90m795| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
     [90m   | [39m                                                          [31m^[39m
-    [90m785| [39m
-    [90m786| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m796| [39m
+    [90m797| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/28]⎯[22m[39m
 
 [41m[1m FAIL [22m[49m src/components/__tests__/color-matcher-tool.test.ts[2m > [22mColorMatcherTool[2m > [22mfetchPricesForMatchedDyes branch coverage[2m > [22mshould return early when matchedDyes is empty
 [31m[1mTypeError[22m: instance.fetchPricesForMatchedDyes is not a function[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m796:59[22m[39m
-    [90m794| [39m      (instance [35mas[39m unknown [35mas[39m [33mComponentWithPrivate[39m)[33m.[39mmatchedDyes [33m=[39m [][33m;[39m
-    [90m795| [39m
-    [90m796| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m807:59[22m[39m
+    [90m805| [39m      (instance [35mas[39m unknown [35mas[39m [33mComponentWithPrivate[39m)[33m.[39mmatchedDyes [33m=[39m [][33m;[39m
+    [90m806| [39m
+    [90m807| [39m      await (instance as unknown as ComponentWithPrivate).fetchPricesF…
     [90m   | [39m                                                          [31m^[39m
-    [90m797| [39m
-    [90m798| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m808| [39m
+    [90m809| [39m      [34mexpect[39m(mockFetchPrices)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/28]⎯[22m[39m
 
@@ -607,13 +613,13 @@ Received: [31m"#[7mABCDEF[27m"[39m
 [32m- 0[39m
 [31m+ 1[39m
 
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m820:76[22m[39m
-    [90m818| [39m      )[33m;[39m
-    [90m819| [39m
-    [90m820| [39m      expect((instance as unknown as ComponentWithPrivate).priceData.s…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m831:76[22m[39m
+    [90m829| [39m      )[33m;[39m
+    [90m830| [39m
+    [90m831| [39m      expect((instance as unknown as ComponentWithPrivate).priceData.s…
     [90m   | [39m                                                                           [31m^[39m
-    [90m821| [39m    })[33m;[39m
-    [90m822| [39m
+    [90m832| [39m    })[33m;[39m
+    [90m833| [39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/28]⎯[22m[39m
 
@@ -626,13 +632,13 @@ undefined
 [31m+ Received:[39m 
 "TypeError: Cannot set properties of null (setting 'value')"
 
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m965:14[22m[39m
-    [90m963| [39m        slider[33m![39m[33m.[39mvalue [33m=[39m [32m'20'[39m[33m;[39m
-    [90m964| [39m        slider[33m![39m[33m.[39m[34mdispatchEvent[39m([35mnew[39m [33mEvent[39m([32m'input'[39m))[33m;[39m
-    [90m965| [39m      })[33m.[39mnot[33m.[39m[34mtoThrow[39m()[33m;[39m
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m976:14[22m[39m
+    [90m974| [39m        slider[33m![39m[33m.[39mvalue [33m=[39m [32m'20'[39m[33m;[39m
+    [90m975| [39m        slider[33m![39m[33m.[39m[34mdispatchEvent[39m([35mnew[39m [33mEvent[39m([32m'input'[39m))[33m;[39m
+    [90m976| [39m      })[33m.[39mnot[33m.[39m[34mtoThrow[39m()[33m;[39m
     [90m   | [39m             [31m^[39m
-    [90m966| [39m    })[33m;[39m
-    [90m967| [39m  })[33m;[39m
+    [90m977| [39m    })[33m;[39m
+    [90m978| [39m  })[33m;[39m
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/28]⎯[22m[39m
 
@@ -713,10 +719,10 @@ Ignored nodes: comments, script, style
             [36m>[39m
               [0mSample Size (for image color averaging)[0m
               [36m<button[39m
-                [33maria-describedby[39m=[32m"tooltip_1764635556696_ig21ner"[39m
+                [33maria-describedby[39m=[32m"tooltip_1764635676097_ghg6rp1"[39m
                 [33maria-label[39m=[32m"More information"[39m
                 [33mclass[39m=[32m"info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors"[39m
-                [33mdata-tooltip-id[39m=[32m"tooltip_1764635556696_ig21ner"[39m
+                [33mdata-tooltip-id[39m=[32m"tooltip_1764635676097_ghg6rp1"[39m
                 [33mtabindex[39m=[32m"0"[39m
                 [33mtype[39m=[32m"button"[39m
               [36m>[39m
@@ -835,10 +841,10 @@ Ignored nodes: comments, script, style
             [36m>[39m
               [0mSample Size (for image color averaging)[0m
               [36m<button[39m
-                [33maria-describedby[39m=[32m"tooltip_1764635556928_1rfco0d"[39m
+                [33maria-describedby[39m=[32m"tooltip_1764635676335_399kvsu"[39m
                 [33maria-label[39m=[32m"More information"[39m
                 [33mclass[39m=[32m"info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors"[39m
-                [33mdata-tooltip-id[39m=[32m"tooltip_1764635556928_1rfco0d"[39m
+                [33mdata-tooltip-id[39m=[32m"tooltip_1764635676335_399kvsu"[39m
                 [33mtabindex[39m=[32m"0"[39m
                 [33mtype[39m=[32m"button"[39m
               [36m>[39m
@@ -895,13 +901,13 @@ Ignored nodes: comments, script, style
     [36m</div>[39m
   [36m</body>[39m
 [36m</html>[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m987:39[22m[39m
-    [90m985| [39m      [90m// Should show error toast[39m
-    [90m986| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
-    [90m987| [39m        expect(toastServiceErrorMock).toHaveBeenCalledWith('Test error…
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m998:39[22m[39m
+    [90m996| [39m      [90m// Should show error toast[39m
+    [90m997| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m998| [39m        expect(toastServiceErrorMock).toHaveBeenCalledWith('Test error…
     [90m   | [39m                                      [31m^[39m
-    [90m988| [39m      })[33m;[39m
-    [90m989| [39m    })[33m;[39m
+    [90m999| [39m      })[33m;[39m
+    [90m1000| [39m    })[33m;[39m
 [90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
 [90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
 [90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
@@ -985,10 +991,10 @@ Ignored nodes: comments, script, style
             [36m>[39m
               [0mSample Size (for image color averaging)[0m
               [36m<button[39m
-                [33maria-describedby[39m=[32m"tooltip_1764635556696_ig21ner"[39m
+                [33maria-describedby[39m=[32m"tooltip_1764635676097_ghg6rp1"[39m
                 [33maria-label[39m=[32m"More information"[39m
                 [33mclass[39m=[32m"info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors"[39m
-                [33mdata-tooltip-id[39m=[32m"tooltip_1764635556696_ig21ner"[39m
+                [33mdata-tooltip-id[39m=[32m"tooltip_1764635676097_ghg6rp1"[39m
                 [33mtabindex[39m=[32m"0"[39m
                 [33mtype[39m=[32m"button"[39m
               [36m>[39m
@@ -1107,10 +1113,10 @@ Ignored nodes: comments, script, style
             [36m>[39m
               [0mSample Size (for image color averaging)[0m
               [36m<button[39m
-                [33maria-describedby[39m=[32m"tooltip_1764635557942_mpe08f1"[39m
+                [33maria-describedby[39m=[32m"tooltip_1764635677361_dymu5vm"[39m
                 [33maria-label[39m=[32m"More information"[39m
                 [33mclass[39m=[32m"info-tooltip-icon inline-flex items-center justify-center w-4 h-4 ml-1 text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full cursor-help transition-colors"[39m
-                [33mdata-tooltip-id[39m=[32m"tooltip_1764635557942_mpe08f1"[39m
+                [33mdata-tooltip-id[39m=[32m"tooltip_1764635677361_dymu5vm"[39m
                 [33mtabindex[39m=[32m"0"[39m
                 [33mtype[39m=[32m"button"[39m
               [36m>[39m
@@ -1167,13 +1173,13 @@ Ignored nodes: comments, script, style
     [36m</div>[39m
   [36m</body>[39m
 [36m</html>[39m
-[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m1000:39[22m[39m
-    [90m998| [39m      [90m// Should show default error message[39m
-    [90m999| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
-    [90m1000| [39m        expect(toastServiceErrorMock).toHaveBeenCalledWith('Failed to …
+[36m [2m❯[22m src/components/__tests__/color-matcher-tool.test.ts:[2m1011:39[22m[39m
+    [90m1009| [39m      [90m// Should show default error message[39m
+    [90m1010| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m1011| [39m        expect(toastServiceErrorMock).toHaveBeenCalledWith('Failed to …
     [90m   | [39m                                      [31m^[39m
-    [90m1001| [39m      })[33m;[39m
-    [90m1002| [39m    })[33m;[39m
+    [90m1012| [39m      })[33m;[39m
+    [90m1013| [39m    })[33m;[39m
 [90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
 [90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
 [90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
@@ -1183,6 +1189,6 @@ Ignored nodes: comments, script, style
 
 [2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
 [2m      Tests [22m [1m[31m28 failed[39m[22m[2m | [22m[1m[32m33 passed[39m[22m[90m (61)[39m
-[2m   Start at [22m 19:32:33
-[2m   Duration [22m 5.08s[2m (transform 452ms, setup 172ms, collect 770ms, tests 2.32s, environment 1.06s, prepare 19ms)[22m
+[2m   Start at [22m 19:34:33
+[2m   Duration [22m 5.16s[2m (transform 461ms, setup 186ms, collect 788ms, tests 2.35s, environment 1.08s, prepare 21ms)[22m
 

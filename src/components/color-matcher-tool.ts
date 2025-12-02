@@ -17,27 +17,19 @@ import { DyePreviewOverlay } from './dye-preview-overlay';
 import {
   dyeService,
   LanguageService,
-  StorageService,
   ColorService,
   ToastService,
-  AnnouncerService,
 } from '@services/index';
 import type { PriceData, DyeWithDistance } from '@shared/types';
 import { PricingMixin, type PricingState } from '@services/pricing-mixin';
 import { ToolHeader } from './tool-header';
 import { DyeCardRenderer } from './dye-card-renderer';
 
-/**
- * Recent color entry for history (T5)
- */
-interface RecentColor {
-  hex: string;
-  timestamp: number;
-}
 import { CARD_CLASSES } from '@shared/constants';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
-import { ICON_ZOOM_FIT, ICON_ZOOM_WIDTH } from '@shared/ui-icons';
+import { ImageZoomController } from './image-zoom-controller';
+import { RecentColorsPanel } from './recent-colors-panel';
 
 /**
  * Color Matcher Tool Component
@@ -52,21 +44,19 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   priceData: Map<number, PriceData> = new Map();
   showPrices: boolean = false;
   private sampleSize: number = 5;
-  private zoomLevel: number = 100;
-  private currentImage: HTMLImageElement | null = null;
   private lastSampledColor: string = '';
   private previewOverlay: DyePreviewOverlay | null = null;
   private samplePosition: { x: number; y: number } = { x: 0, y: 0 };
-  private canvasContainerRef: HTMLElement | null = null;
-  private canvasRef: HTMLCanvasElement | null = null;
 
-  // Recent Colors History (T5)
-  private recentColors: RecentColor[] = [];
-  private readonly maxRecentColors = 10;
-  private readonly recentColorsStorageKey = 'colormatcher_recent_colors';
+  // Sub-components
+  private imageZoomController: ImageZoomController | null = null;
+  private recentColorsPanel: RecentColorsPanel | null = null;
+
   private languageUnsubscribe: (() => void) | null = null;
 
   // PricingMixin implementation
+  showPrices: boolean = false;
+  priceData: Map<number, PriceData> = new Map();
   onPricesLoaded?: () => void;
   initMarketBoard!: (container: HTMLElement) => Promise<void>;
   setupMarketBoardListeners!: (container: HTMLElement) => void;
@@ -201,28 +191,10 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     wrapper.appendChild(settingsSection);
 
     // Recent Colors History section (T5)
-    const recentColorsSection = this.createElement('div', {
-      id: 'recent-colors-section',
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
-      attributes: {
-        style: 'display: none;', // Hidden until there are recent colors
-      },
+    const recentColorsWrapper = this.createElement('div', {
+      id: 'recent-colors-wrapper',
     });
-
-    const recentColorsTitle = this.createElement('h3', {
-      textContent: LanguageService.t('matcher.recentColors') || 'Recent Picks',
-      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-3',
-    });
-    recentColorsSection.appendChild(recentColorsTitle);
-
-    const recentColorsContainer = this.createElement('div', {
-      id: 'recent-colors-container',
-      className: 'flex flex-wrap items-center gap-2',
-    });
-    recentColorsSection.appendChild(recentColorsContainer);
-
-    wrapper.appendChild(recentColorsSection);
+    wrapper.appendChild(recentColorsWrapper);
 
     // Dye Filters section
     const filtersSection = this.createElement('div', {
@@ -284,10 +256,75 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         ToastService.success('✓ Image loaded successfully');
 
         // Show overlay for image interaction
-        this.showImageOverlay(image);
+        if (this.imageZoomController) {
+          this.imageZoomController.setImage(image);
+        }
       });
 
       imageUploadContainer.addEventListener('error', (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const message = customEvent.detail?.message || 'Failed to load image';
+        logger.error('Image upload error:', customEvent.detail);
+        ToastService.error(message);
+      });
+    }
+
+    // Initialize RecentColorsPanel
+    const recentColorsWrapper = this.querySelector<HTMLElement>('#recent-colors-wrapper');
+    if (recentColorsWrapper && !this.recentColorsPanel) {
+      this.recentColorsPanel = new RecentColorsPanel(recentColorsWrapper, {
+        onColorSelected: (hex) => this.matchColor(hex),
+      });
+      this.recentColorsPanel.init();
+    }
+
+    // Initialize ImageZoomController
+    const resultsContainer = this.querySelector<HTMLElement>('#results-container');
+    if (resultsContainer && !this.imageZoomController) {
+      this.imageZoomController = new ImageZoomController(resultsContainer, {
+        onColorSampled: (hex, x, y) => {
+          this.samplePosition = { x, y };
+          // Manually trigger matching
+          this.matchColor(hex);
+        },
+      });
+      this.imageZoomController.init();
+    }
+
+    // Initialize image upload
+    if (imageUploadContainer && !this.imageUpload) {
+      this.imageUpload = new ImageUploadDisplay(imageUploadContainer);
+      this.imageUpload.init();
+
+      imageUploadContainer.addEventListener('image-loaded', (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const { image } = customEvent.detail;
+
+        // Show success toast
+        ToastService.success('✓ Image loaded successfully');
+
+        // Show overlay for image interaction via ImageZoomController
+        if (this.imageZoomController) {
+          this.imageZoomController.setImage(image);
+
+          // Update preview overlay references
+          if (this.previewOverlay) {
+            const canvasContainer = this.imageZoomController.getCanvasContainer();
+            const canvas = this.imageZoomController.getCanvas();
+            if (canvasContainer && canvas) {
+              this.previewOverlay.setCanvasContainer(canvasContainer, canvas);
+
+              // Hide preview overlay when scrolling
+              this.on(canvasContainer, 'scroll', () => {
+                this.previewOverlay?.hidePreview();
+              });
+            }
+          }
+        }
+      });
+
+      imageUploadContainer.addEventListener('error', (event: Event) => {
+        console.log('DEBUG: error event received');
         const customEvent = event as CustomEvent;
         const message = customEvent.detail?.message || 'Failed to load image';
         logger.error('Image upload error:', customEvent.detail);
@@ -359,470 +396,35 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     }
   }
 
-  /**
-   * Show image overlay for eyedropper
-   */
-  private showImageOverlay(image: HTMLImageElement): void {
-    const resultsContainer = this.querySelector<HTMLElement>('#results-container');
-    if (!resultsContainer) return;
 
-    clearContainer(resultsContainer);
-
-    // Store current image for zoom interactions
-    this.currentImage = image;
-    this.zoomLevel = 100;
-
-    const section = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4',
-    });
-
-    const sectionTitle = this.createElement('h3', {
-      textContent: LanguageService.t('matcher.imageColorPicker'),
-      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-2',
-    });
-    section.appendChild(sectionTitle);
-
-    const hint = this.createElement('p', {
-      textContent: LanguageService.t('matcher.clickToSample'),
-      className: 'text-sm text-gray-600 dark:text-gray-400',
-    });
-    section.appendChild(hint);
-
-    const privacyNotice = this.createElement('p', {
-      innerHTML: `🔒 <strong>${LanguageService.t('matcher.privacyNoteFull')}</strong> (<a class="underline" href="https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Guide</a>).`,
-      className: 'text-xs text-gray-500 dark:text-gray-400 mb-4',
-    });
-    section.appendChild(privacyNotice);
-
-    // Create zoom controls container
-    const zoomControls = this.createElement('div', {
-      className: 'flex flex-wrap gap-2 mb-4',
-    });
-
-    // Fit button - inline SVG for theme color inheritance
-    const fitBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      innerHTML: `<span class="inline-block w-4 h-4 mr-1" aria-hidden="true">${ICON_ZOOM_FIT}</span> ${LanguageService.t('matcher.zoomFit')}`,
-      attributes: {
-        title: LanguageService.t('matcher.zoomFit'),
-        id: 'zoom-fit-btn',
-      },
-    });
-    zoomControls.appendChild(fitBtn);
-
-    // Width button - inline SVG for theme color inheritance
-    const widthBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      innerHTML: `<span class="inline-block w-4 h-4 mr-1" aria-hidden="true">${ICON_ZOOM_WIDTH}</span> ${LanguageService.t('matcher.zoomWidth')}`,
-      attributes: {
-        title: LanguageService.t('matcher.zoomWidth'),
-        id: 'zoom-width-btn',
-      },
-    });
-    zoomControls.appendChild(widthBtn);
-
-    // Zoom out button
-    const zoomOutBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: '−',
-      attributes: {
-        title: 'Zoom out (10%)',
-        id: 'zoom-out-btn',
-      },
-    });
-    zoomControls.appendChild(zoomOutBtn);
-
-    // Zoom level display
-    const zoomDisplay = this.createElement('div', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white min-w-20 text-center',
-      textContent: '100%',
-      attributes: {
-        id: 'zoom-level-display',
-      },
-    });
-    zoomControls.appendChild(zoomDisplay);
-
-    // Zoom in button
-    const zoomInBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: '+',
-      attributes: {
-        title: 'Zoom in (10%)',
-        id: 'zoom-in-btn',
-      },
-    });
-    zoomControls.appendChild(zoomInBtn);
-
-    // Reset button
-    const resetBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors',
-      textContent: `↺ ${LanguageService.t('matcher.zoomReset')}`,
-      attributes: {
-        title: LanguageService.t('matcher.zoomReset'),
-        id: 'zoom-reset-btn',
-      },
-    });
-    zoomControls.appendChild(resetBtn);
-
-    section.appendChild(zoomControls);
-
-    // Create canvas container for scrolling
-    const canvasContainer = this.createElement('div', {
-      className:
-        'w-full max-h-96 overflow-auto rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900',
-      attributes: {
-        id: 'canvas-container',
-      },
-    });
-
-    // Create canvas for image display
-    const canvas = this.createElement('canvas', {
-      className: 'cursor-crosshair block',
-      attributes: {
-        width: String(image.width),
-        height: String(image.height),
-        id: 'image-canvas',
-      },
-    });
-
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(image, 0, 0);
-    }
-
-    canvasContainer.appendChild(canvas);
-    section.appendChild(canvasContainer);
-
-    // Store references for preview overlay
-    this.canvasContainerRef = canvasContainer;
-    this.canvasRef = canvas as HTMLCanvasElement;
-
-    // Initialize preview overlay
-    if (!this.previewOverlay) {
-      const overlayContainer = document.createElement('div');
-      this.previewOverlay = new DyePreviewOverlay(overlayContainer);
-      this.previewOverlay.init();
-    }
-    this.previewOverlay.setCanvasContainer(canvasContainer, canvas as HTMLCanvasElement);
-
-    // Hide preview overlay when scrolling the canvas container
-    this.on(canvasContainer, 'scroll', () => {
-      this.previewOverlay?.hidePreview();
-    });
-
-    // Image interaction
-    this.setupImageInteraction(canvas as HTMLCanvasElement, image);
-
-    resultsContainer.appendChild(section);
-
-    // Setup zoom controls
-    this.setupZoomControls(
-      canvas,
-      image,
-      canvasContainer,
-      fitBtn,
-      widthBtn,
-      zoomOutBtn,
-      zoomInBtn,
-      resetBtn,
-      zoomDisplay
-    );
-  }
-
-  /**
-   * Setup image click/drag interaction
-   */
-  private setupImageInteraction(canvas: HTMLCanvasElement, image: HTMLImageElement): void {
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-
-    this.on(canvas, 'mousedown', (e: Event) => {
-      const mouseEvent = e as MouseEvent;
-      const rect = canvas.getBoundingClientRect();
-      startX = (mouseEvent.clientX - rect.left) * (canvas.width / rect.width);
-      startY = (mouseEvent.clientY - rect.top) * (canvas.height / rect.height);
-      isDragging = true;
-    });
-
-    this.on(canvas, 'mousemove', (e: Event) => {
-      if (!isDragging) return;
-
-      const mouseEvent = e as MouseEvent;
-      const rect = canvas.getBoundingClientRect();
-      const currentX = (mouseEvent.clientX - rect.left) * (canvas.width / rect.width);
-      const currentY = (mouseEvent.clientY - rect.top) * (canvas.height / rect.height);
-
-      // Redraw canvas with selection rectangle
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(image, 0, 0);
-
-        // Draw selection rectangle
-        ctx.strokeStyle = '#3B82F6';
-        ctx.lineWidth = 2;
-        const width = currentX - startX;
-        const height = currentY - startY;
-        ctx.strokeRect(startX, startY, width, height);
-      }
-    });
-
-    this.on(canvas, 'mouseup', (e: Event) => {
-      if (!isDragging) return;
-      isDragging = false;
-
-      const mouseEvent = e as MouseEvent;
-      const rect = canvas.getBoundingClientRect();
-      const endX = (mouseEvent.clientX - rect.left) * (canvas.width / rect.width);
-      const endY = (mouseEvent.clientY - rect.top) * (canvas.height / rect.height);
-
-      // Sample color from region
-      const centerX = (startX + endX) / 2;
-      const centerY = (startY + endY) / 2;
-      const size = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-
-      // Store sample position for preview overlay
-      this.samplePosition = { x: centerX, y: centerY };
-
-      if (this.colorPicker) {
-        this.colorPicker.setColorFromImage(canvas, centerX, centerY, Math.max(1, size));
-        // Manually trigger matching since setColorFromImage doesn't fire color-selected event
-        const sampledHex = this.colorPicker.getColor();
-        if (sampledHex) {
-          this.matchColor(sampledHex);
-        }
-      }
-
-      // Redraw original image
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(image, 0, 0);
-      }
-    });
-
-    this.on(canvas, 'mouseleave', () => {
-      if (isDragging) {
-        isDragging = false;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(image, 0, 0);
-        }
-      }
-    });
-  }
-
-  /**
-   * Setup zoom controls for image
-   */
-  private setupZoomControls(
-    canvas: HTMLCanvasElement,
-    image: HTMLImageElement,
-    canvasContainer: HTMLElement,
-    fitBtn: HTMLElement,
-    widthBtn: HTMLElement,
-    zoomOutBtn: HTMLElement,
-    zoomInBtn: HTMLElement,
-    resetBtn: HTMLElement,
-    zoomDisplay: HTMLElement
-  ): void {
-    const MIN_ZOOM = 10;
-    const MAX_ZOOM = 400;
-    const MIN_CONTAINER_DIMENSION = 50; // Minimum valid container dimension in pixels
-
-    /**
-     * Get container dimensions with fallbacks for mobile reliability
-     */
-    const getContainerDimensions = (): { width: number; height: number } => {
-      // Try clientWidth/clientHeight first (most accurate for content area)
-      let width = canvasContainer.clientWidth;
-      let height = canvasContainer.clientHeight;
-
-      // If clientWidth/clientHeight are invalid, try offsetWidth/offsetHeight
-      if (width <= 0 || height <= 0) {
-        width = canvasContainer.offsetWidth;
-        height = canvasContainer.offsetHeight;
-      }
-
-      // If still invalid, try getBoundingClientRect as final fallback
-      if (width <= 0 || height <= 0) {
-        const rect = canvasContainer.getBoundingClientRect();
-        width = rect.width;
-        height = rect.height;
-      }
-
-      // If still invalid, use viewport dimensions as last resort
-      if (width <= 0 || height <= 0) {
-        width = window.innerWidth - 32; // Account for padding/margins
-        height = window.innerHeight * 0.4; // Use 40% of viewport height as reasonable default
-        logger.warn('Color Matcher: Using fallback container dimensions', { width, height });
-      }
-
-      // Ensure minimum dimensions
-      width = Math.max(width, MIN_CONTAINER_DIMENSION);
-      height = Math.max(height, MIN_CONTAINER_DIMENSION);
-
-      // Account for padding/borders (16px total)
-      return {
-        width: Math.max(width - 16, MIN_CONTAINER_DIMENSION),
-        height: Math.max(height - 16, MIN_CONTAINER_DIMENSION),
-      };
-    };
-
-    const updateZoom = (newZoom: number): void => {
-      this.zoomLevel = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-      const scale = this.zoomLevel / 100;
-
-      // Update canvas size
-      canvas.style.transform = `scale(${scale})`;
-      canvas.style.transformOrigin = 'top left';
-      canvas.style.cursor = this.zoomLevel > 100 ? 'move' : 'crosshair';
-
-      // Update display
-      zoomDisplay.textContent = `${this.zoomLevel}%`;
-
-      // Update button states - use boolean property, not string attribute
-      (zoomOutBtn as HTMLButtonElement).disabled = this.zoomLevel <= MIN_ZOOM;
-      (zoomInBtn as HTMLButtonElement).disabled = this.zoomLevel >= MAX_ZOOM;
-
-      // Update button styling based on disabled state
-      if (this.zoomLevel <= MIN_ZOOM) {
-        zoomOutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        zoomOutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-
-      if (this.zoomLevel >= MAX_ZOOM) {
-        zoomInBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        zoomInBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-    };
-
-    const fitToContainer = (): void => {
-      // Use requestAnimationFrame to ensure layout is complete on mobile
-      requestAnimationFrame(() => {
-        const container = getContainerDimensions();
-        // Use naturalWidth/naturalHeight for reliable image dimensions (handles EXIF orientation)
-        const imageWidth = image.naturalWidth || image.width;
-        const imageHeight = image.naturalHeight || image.height;
-
-        // Validate image dimensions
-        if (imageWidth <= 0 || imageHeight <= 0) {
-          logger.warn('Color Matcher: Invalid image dimensions', { imageWidth, imageHeight });
-          return;
-        }
-
-        const zoomX = (container.width / imageWidth) * 100;
-        const zoomY = (container.height / imageHeight) * 100;
-        const newZoom = Math.min(zoomX, zoomY, 100); // Cap at 100% to avoid upscaling
-
-        // Ensure minimum zoom threshold
-        const finalZoom = Math.max(newZoom, MIN_ZOOM);
-        updateZoom(finalZoom);
-      });
-    };
-
-    const zoomToWidth = (): void => {
-      // Use requestAnimationFrame to ensure layout is complete on mobile
-      requestAnimationFrame(() => {
-        const container = getContainerDimensions();
-        // Use naturalWidth for reliable image dimensions (handles EXIF orientation)
-        const imageWidth = image.naturalWidth || image.width;
-
-        // Validate image dimensions
-        if (imageWidth <= 0) {
-          logger.warn('Color Matcher: Invalid image width', { imageWidth });
-          return;
-        }
-
-        const newZoom = (container.width / imageWidth) * 100;
-
-        // Ensure minimum zoom threshold and respect max zoom
-        const finalZoom = Math.max(Math.min(newZoom, MAX_ZOOM), MIN_ZOOM);
-        updateZoom(finalZoom);
-      });
-    };
-
-    // Setup button listeners
-    this.on(fitBtn, 'click', fitToContainer);
-    this.on(widthBtn, 'click', zoomToWidth);
-    this.on(zoomOutBtn, 'click', () => {
-      if (this.zoomLevel > MIN_ZOOM) {
-        updateZoom(this.zoomLevel - 10);
-      }
-    });
-    this.on(zoomInBtn, 'click', () => {
-      if (this.zoomLevel < MAX_ZOOM) {
-        updateZoom(this.zoomLevel + 10);
-      }
-    });
-    this.on(resetBtn, 'click', () => {
-      updateZoom(100);
-    });
-
-    // Allow mouse wheel zoom
-    this.on(canvasContainer, 'wheel', (e: Event) => {
-      const wheelEvent = e as WheelEvent;
-      if (!wheelEvent.shiftKey) {
-        return;
-      }
-
-      wheelEvent.preventDefault();
-      const delta = wheelEvent.deltaY > 0 ? -10 : 10;
-      updateZoom(this.zoomLevel + delta);
-    });
-
-    // Allow keyboard shortcuts (using this.on for proper cleanup)
-    this.on(document, 'keydown', (e: Event) => {
-      const keyEvent = e as KeyboardEvent;
-      if (
-        document.activeElement === document.body ||
-        document.activeElement?.contains(canvasContainer)
-      ) {
-        if (keyEvent.key === '+' || keyEvent.key === '=') {
-          keyEvent.preventDefault();
-          if (this.zoomLevel < MAX_ZOOM) {
-            updateZoom(this.zoomLevel + 10);
-          }
-        } else if (keyEvent.key === '-') {
-          keyEvent.preventDefault();
-          if (this.zoomLevel > MIN_ZOOM) {
-            updateZoom(this.zoomLevel - 10);
-          }
-        } else if (keyEvent.key === '0') {
-          keyEvent.preventDefault();
-          updateZoom(100);
-        }
-      }
-    });
-  }
 
   /**
    * Fetch prices for matched dyes
-   * Renamed to updatePrices to satisfy PricingMixin
    */
-  async updatePrices(): Promise<void> {
-    if (!this.marketBoard || !this.showPrices || this.matchedDyes.length === 0) return;
+  async fetchPricesForMatchedDyes(): Promise<void> {
+    if (!this.marketBoard || !this.showPrices || this.matchedDyes.length === 0) {
+      return;
+    }
 
     // Fetch prices using Market Board
-    this.priceData = await this.marketBoard.fetchPricesForDyes(this.matchedDyes);
+    const prices = await this.marketBoard.fetchPricesForDyes(this.matchedDyes);
 
-    // Update results with prices
-    this.refreshResults();
+    this.priceData.clear();
+    for (const [id, price] of prices.entries()) {
+      this.priceData.set(id, price);
+    }
+
+    this.onPricesLoaded?.();
   }
+
+  /**
+   * Update prices (PricingMixin requirement)
+   */
+  async updatePrices(): Promise<void> {
+    await this.fetchPricesForMatchedDyes();
+  }
+
+
 
   /**
    * Refresh the results display (re-render with current price data)
@@ -916,7 +518,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     });
 
     // Load recent colors from localStorage (T5)
-    this.loadRecentColors();
+    // Load recent colors from localStorage (T5)
+    // Handled by RecentColorsPanel
+
   }
 
   /**
@@ -930,7 +534,10 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     this.lastSampledColor = hex;
 
     // Add to recent colors history (T5)
-    this.addToRecentColors(hex);
+    // Add to recent colors history (T5)
+    if (this.recentColorsPanel) {
+      this.recentColorsPanel.addRecentColor(hex);
+    }
 
     // Clear any existing match results, but preserve the image
     const existingResults = resultsContainer.querySelector('[data-results-section]');
@@ -1125,136 +732,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   }
 
   // ============================================================================
-  // Recent Colors History Methods (T5)
-  // ============================================================================
 
-  /**
-   * Load recent colors from localStorage
-   */
-  private loadRecentColors(): void {
-    try {
-      const stored = StorageService.getItem<RecentColor[]>(this.recentColorsStorageKey);
-      if (stored && Array.isArray(stored)) {
-        this.recentColors = stored.slice(0, this.maxRecentColors);
-        this.renderRecentColors();
-      }
-    } catch (error) {
-      logger.warn('Failed to load recent colors from storage:', error);
-    }
-  }
-
-  /**
-   * Save recent colors to localStorage
-   */
-  private saveRecentColors(): void {
-    try {
-      StorageService.setItem(this.recentColorsStorageKey, this.recentColors);
-    } catch (error) {
-      logger.warn('Failed to save recent colors to storage:', error);
-    }
-  }
-
-  /**
-   * Add a color to recent history
-   */
-  private addToRecentColors(hex: string): void {
-    // Normalize hex to uppercase
-    const normalizedHex = hex.toUpperCase();
-
-    // Remove if already exists (to move to front)
-    this.recentColors = this.recentColors.filter((c) => c.hex.toUpperCase() !== normalizedHex);
-
-    // Add to front
-    this.recentColors.unshift({
-      hex: normalizedHex,
-      timestamp: Date.now(),
-    });
-
-    // Trim to max size
-    if (this.recentColors.length > this.maxRecentColors) {
-      this.recentColors = this.recentColors.slice(0, this.maxRecentColors);
-    }
-
-    // Save and re-render
-    this.saveRecentColors();
-    this.renderRecentColors();
-  }
-
-  /**
-   * Clear all recent colors
-   */
-  private clearRecentColors(): void {
-    this.recentColors = [];
-    this.saveRecentColors();
-    this.renderRecentColors();
-    AnnouncerService.announce('Recent colors cleared');
-  }
-
-  /**
-   * Render the recent colors UI
-   */
-  private renderRecentColors(): void {
-    const section = this.querySelector<HTMLElement>('#recent-colors-section');
-    const container = this.querySelector<HTMLElement>('#recent-colors-container');
-    if (!section || !container) return;
-
-    // Clear existing content
-    clearContainer(container);
-
-    // Hide section if no recent colors
-    if (this.recentColors.length === 0) {
-      section.style.display = 'none';
-      return;
-    }
-
-    // Show section
-    section.style.display = 'block';
-
-    // Render swatches
-    this.recentColors.forEach((color, index) => {
-      const swatch = this.createElement('button', {
-        className:
-          'w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer ' +
-          'hover:scale-110 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
-          'transition-transform',
-        attributes: {
-          style: `background-color: ${color.hex};`,
-          title: `${color.hex} - Click to re-match`,
-          'aria-label': `Recent color ${color.hex}, click to match`,
-          'data-recent-index': String(index),
-        },
-      });
-
-      // Click to re-match
-      this.on(swatch, 'click', () => {
-        this.matchColor(color.hex);
-        AnnouncerService.announce(`Re-matching color ${color.hex}`);
-      });
-
-      container.appendChild(swatch);
-    });
-
-    // Add clear button
-    const clearBtn = this.createElement('button', {
-      className:
-        'px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 ' +
-        'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 ' +
-        'hover:bg-red-50 hover:border-red-300 hover:text-red-600 ' +
-        'dark:hover:bg-red-900/20 dark:hover:border-red-700 dark:hover:text-red-400 ' +
-        'transition-colors ml-2',
-      textContent: LanguageService.t('matcher.clearHistory') || 'Clear',
-      attributes: {
-        title: 'Clear recent colors history',
-        'aria-label': 'Clear recent colors history',
-      },
-    });
-
-    this.on(clearBtn, 'click', () => {
-      this.clearRecentColors();
-    });
-
-    container.appendChild(clearBtn);
-  }
 
   /**
    * Get component state
@@ -1263,7 +741,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     return {
       matchedDyeCount: this.matchedDyes.length,
       sampleSize: this.sampleSize,
-      recentColorsCount: this.recentColors.length,
+      recentColorsCount: this.recentColorsPanel?.getState().recentColorsCount,
     };
   }
 
@@ -1271,6 +749,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
    * Cleanup child components and references
    */
   destroy(): void {
+    // Destroy child components
     // Destroy child components
     if (this.imageUpload) {
       this.imageUpload.destroy();
@@ -1286,16 +765,18 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         this.dyeFilters = null;
       }
     }
+    if (this.imageZoomController) {
+      this.imageZoomController.destroy();
+      this.imageZoomController = null;
+    }
+    if (this.recentColorsPanel) {
+      this.recentColorsPanel.destroy();
+      this.recentColorsPanel = null;
+    }
 
     // Clear arrays and Maps
     this.matchedDyes = [];
     this.priceData.clear();
-    this.recentColors = [];
-
-    // Null element references
-    this.currentImage = null;
-    this.canvasContainerRef = null;
-    this.canvasRef = null;
 
     super.destroy();
   }

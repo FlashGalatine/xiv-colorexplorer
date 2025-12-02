@@ -384,20 +384,20 @@ Use this template to track progress:
 ## Optimization Progress
 
 ### Phase 1: Quick Wins
-- [ ] Move showToast to ToastService
+- [x] Move showToast to ToastService
 - [x] Implement incremental language updates (5 tools)
 - [x] Fix event listener cleanup
-- [ ] Add card styling constant
+- [x] Add card styling constant
 - [x] Cache color distance calculations
 
 ### Phase 2: Medium Effort
-- [ ] Extract MarketBoard mixin
-- [ ] Create ToolHeader component
-- [ ] Add browser API types
-- [ ] Create DyeCardRenderer
+- [x] Extract MarketBoard mixin
+- [x] Create ToolHeader component
+- [x] Add browser API types
+- [x] Create DyeCardRenderer
 
 ### Phase 3: Larger Refactors
-- [ ] Split ColorMatcherTool
+- [x] Split ColorMatcherTool
 - [ ] Create DyeSelectionContext
 - [ ] Refactor DyeSelector
 
