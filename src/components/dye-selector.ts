@@ -74,7 +74,7 @@ export class DyeSelector extends BaseComponent {
       excludeFacewear: this.options.excludeFacewear,
       initialSort: this.sortOption,
       initialCategory: this.currentCategory,
-      initialSearch: this.searchQuery
+      initialSearch: this.searchQuery,
     });
     this.searchBox.init();
 
@@ -82,8 +82,9 @@ export class DyeSelector extends BaseComponent {
     if (this.options.allowMultiple) {
       const selectedContainer = this.createElement('div', {
         id: 'selected-dyes-container',
-        className: 'p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700',
-        attributes: { style: this.selectedDyes.length > 0 ? '' : 'display: none;' }
+        className:
+          'p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700',
+        attributes: { style: this.selectedDyes.length > 0 ? '' : 'display: none;' },
       });
       selectedContainer.style.display = ''; // Reset style
 
@@ -110,7 +111,7 @@ export class DyeSelector extends BaseComponent {
       allowMultiple: this.options.allowMultiple,
       allowDuplicates: this.allowDuplicates,
       maxSelections: this.options.maxSelections,
-      showCategories: this.options.showCategories
+      showCategories: this.options.showCategories,
     });
     this.dyeGrid.init();
 
@@ -162,7 +163,6 @@ export class DyeSelector extends BaseComponent {
       this.emit('selection-changed', { selectedDyes: this.selectedDyes });
     });
 
-
     this.onCustom('escape-pressed', () => {
       if (this.selectedDyes.length > 0) {
         this.selectedDyes = [];
@@ -185,7 +185,7 @@ export class DyeSelector extends BaseComponent {
           this.selectedDyes.push(dye);
         }
       } else {
-        const index = this.selectedDyes.findIndex(d => d.id === dye.id);
+        const index = this.selectedDyes.findIndex((d) => d.id === dye.id);
         if (index >= 0) {
           this.selectedDyes.splice(index, 1);
         } else if (this.selectedDyes.length < (this.options.maxSelections ?? 4)) {
@@ -236,9 +236,10 @@ export class DyeSelector extends BaseComponent {
     if (selectedList) {
       clearContainer(selectedList);
 
-      this.selectedDyes.forEach(dye => {
+      this.selectedDyes.forEach((dye) => {
         const dyeTag = this.createElement('div', {
-          className: 'inline-flex items-center gap-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm',
+          className:
+            'inline-flex items-center gap-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm',
         });
 
         const dyeColor = this.createElement('div', {
@@ -253,7 +254,8 @@ export class DyeSelector extends BaseComponent {
 
         const removeBtn = this.createElement('button', {
           textContent: '✕',
-          className: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dye-remove-btn',
+          className:
+            'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dye-remove-btn',
           attributes: {
             'data-dye-id': String(dye.id),
             type: 'button',
@@ -262,7 +264,7 @@ export class DyeSelector extends BaseComponent {
 
         this.on(removeBtn, 'click', (e) => {
           e.preventDefault();
-          this.selectedDyes = this.selectedDyes.filter(d => d.id !== dye.id);
+          this.selectedDyes = this.selectedDyes.filter((d) => d.id !== dye.id);
           this.update();
           this.emit('selection-changed', { selectedDyes: this.selectedDyes });
         });
@@ -282,7 +284,7 @@ export class DyeSelector extends BaseComponent {
 
     this.dyeGrid.setDyes(this.filteredDyes, {
       type: this.searchQuery.trim() ? 'search' : 'category',
-      query: this.searchQuery
+      query: this.searchQuery,
     });
     this.dyeGrid.setSelectedDyes(this.selectedDyes);
   }

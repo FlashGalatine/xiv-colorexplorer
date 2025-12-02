@@ -543,10 +543,10 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         closestDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(hex, best.hex);
-              const dyeDist = ColorService.getColorDistance(hex, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+                const bestDist = ColorService.getColorDistance(hex, best.hex);
+                const dyeDist = ColorService.getColorDistance(hex, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
             : null;
       }
 

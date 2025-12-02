@@ -546,10 +546,10 @@ export class DyeMixerTool extends BaseComponent {
         matchedDye =
           filteredDyes.length > 0
             ? filteredDyes.reduce((best, dye) => {
-              const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
-              const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
-              return dyeDist < bestDist ? dye : best;
-            })
+                const bestDist = ColorService.getColorDistance(theoreticalColor, best.hex);
+                const dyeDist = ColorService.getColorDistance(theoreticalColor, dye.hex);
+                return dyeDist < bestDist ? dye : best;
+              })
             : null;
       }
 

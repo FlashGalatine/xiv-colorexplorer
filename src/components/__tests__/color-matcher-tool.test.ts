@@ -97,7 +97,7 @@ vi.mock('../image-upload-display', () => {
   return {
     ImageUploadDisplay: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) { }
+      constructor(_container: HTMLElement) {}
       init(): void {
         imageUploadInitMock();
       }
@@ -113,7 +113,7 @@ vi.mock('../color-picker-display', () => {
   return {
     ColorPickerDisplay: class {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      constructor(_container: HTMLElement) { }
+      constructor(_container: HTMLElement) {}
       init(): void {
         colorPickerInitMock();
       }
@@ -133,13 +133,21 @@ const imageZoomControllerSetImageMock = vi.fn();
 vi.mock('../image-zoom-controller', () => {
   return {
     ImageZoomController: class {
-      constructor(_container: HTMLElement) { }
-      init() { imageZoomControllerInitMock(); }
-      setImage(img: HTMLImageElement) { imageZoomControllerSetImageMock(img); }
-      destroy() { }
-      getCanvasContainer() { return document.createElement('div'); }
-      getCanvas() { return document.createElement('canvas'); }
-    }
+      constructor(_container: HTMLElement) {}
+      init() {
+        imageZoomControllerInitMock();
+      }
+      setImage(img: HTMLImageElement) {
+        imageZoomControllerSetImageMock(img);
+      }
+      destroy() {}
+      getCanvasContainer() {
+        return document.createElement('div');
+      }
+      getCanvas() {
+        return document.createElement('canvas');
+      }
+    },
   };
 });
 
@@ -148,12 +156,18 @@ const recentColorsPanelAddColorMock = vi.fn();
 vi.mock('../recent-colors-panel', () => {
   return {
     RecentColorsPanel: class {
-      constructor(_container: HTMLElement) { }
-      init() { recentColorsPanelInitMock(); }
-      addRecentColor(hex: string) { recentColorsPanelAddColorMock(hex); }
-      destroy() { }
-      getState() { return { recentColorsCount: 0 }; }
-    }
+      constructor(_container: HTMLElement) {}
+      init() {
+        recentColorsPanelInitMock();
+      }
+      addRecentColor(hex: string) {
+        recentColorsPanelAddColorMock(hex);
+      }
+      destroy() {}
+      getState() {
+        return { recentColorsCount: 0 };
+      }
+    },
   };
 });
 
@@ -656,8 +670,6 @@ describe('ColorMatcherTool', () => {
         (instance as unknown as ComponentWithPrivate).matchColor('#FF0000');
       }).not.toThrow();
     });
-
-
   });
 
   // ==========================================================================

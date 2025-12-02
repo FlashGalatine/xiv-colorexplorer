@@ -90,6 +90,11 @@ export interface Dye {
   category: string; // 'Neutral', 'Red', 'Blue', etc.
   acquisition: string; // How to obtain the dye
   cost: number; // Gil cost
+  // Type flags for locale-independent filtering (added in core v1.3.0)
+  isMetallic: boolean;
+  isPastel: boolean;
+  isDark: boolean;
+  isCosmic: boolean;
 }
 
 /**

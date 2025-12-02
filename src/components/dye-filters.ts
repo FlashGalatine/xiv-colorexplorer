@@ -335,26 +335,23 @@ export class DyeFilters extends BaseComponent {
    * Check if a dye should be excluded based on current filter settings
    */
   isDyeExcluded(dye: Dye): boolean {
-    // Exclude Metallic dyes
-    if (this.filters.excludeMetallic && dye.name.includes('Metallic')) {
+    // Exclude Metallic dyes (using locale-independent flag)
+    if (this.filters.excludeMetallic && dye.isMetallic) {
       return true;
     }
 
-    // Exclude Pastel dyes
-    if (this.filters.excludePastel && dye.name.includes('Pastel')) {
+    // Exclude Pastel dyes (using locale-independent flag)
+    if (this.filters.excludePastel && dye.isPastel) {
       return true;
     }
 
-    // Exclude Dark dyes (begin with "Dark")
-    if (this.filters.excludeDark && dye.name.toLowerCase().startsWith('dark')) {
+    // Exclude Dark dyes (using locale-independent flag)
+    if (this.filters.excludeDark && dye.isDark) {
       return true;
     }
 
-    // Exclude Cosmic dyes (Cosmic Exploration or Cosmic Fortunes)
-    if (
-      this.filters.excludeCosmic &&
-      (dye.acquisition === 'Cosmic Exploration' || dye.acquisition === 'Cosmic Fortunes')
-    ) {
+    // Exclude Cosmic dyes (using locale-independent flag)
+    if (this.filters.excludeCosmic && dye.isCosmic) {
       return true;
     }
 
