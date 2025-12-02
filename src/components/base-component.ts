@@ -88,6 +88,7 @@ export abstract class BaseComponent implements ComponentLifecycle {
       this.onMount?.();
       return this;
     } catch (error) {
+      console.error('BaseComponent.init failed:', error);
       ErrorHandler.log(error);
       throw error;
     }
@@ -252,6 +253,11 @@ export abstract class BaseComponent implements ComponentLifecycle {
     event: K,
     handler: EventHandler<HTMLElementEventMap[K]>
   ): void {
+    // console.log('BaseComponent.on called', { target, event, type: typeof handler });
+    if (!handler || typeof handler !== 'function') {
+      console.error('BaseComponent.on: handler is invalid', { target, event, handler });
+      return;
+    }
     const boundHandler = handler.bind(this) as EventListener;
     const eventName = event as string;
 
@@ -259,6 +265,8 @@ export abstract class BaseComponent implements ComponentLifecycle {
       target.addEventListener(eventName, boundHandler);
     } else if (target instanceof Document || target instanceof Window) {
       target.addEventListener(eventName, boundHandler);
+    } else {
+      console.error('BaseComponent.on: Target is not HTMLElement, Document, or Window', target);
     }
 
     // Store listener for cleanup with event name

@@ -118,21 +118,20 @@ export class DyeSelector extends BaseComponent {
     clearContainer(this.container);
     this.element = wrapper;
     this.container.appendChild(this.element);
-
-    this.bindEvents();
-    this.update();
   }
 
   bindEvents(): void {
+    if (!this.element) return;
+
     // Listen for events from DyeGrid
     // We listen on gridContainer directly to ensure we catch the event
     const gridContainer = this.element.querySelector('#dye-grid-container');
 
     if (gridContainer) {
-      this.on(gridContainer as HTMLElement, 'dye-selected', (e) => {
-        const event = e as CustomEvent<Dye>;
-        e.stopPropagation(); // Stop propagation to avoid double handling if bubbling works
-        this.handleDyeSelection(event.detail);
+      // Use onCustom for custom events
+      this.onCustom('dye-selected', (e) => {
+        const dye = e.detail as Dye;
+        this.handleDyeSelection(dye);
       });
     } else {
       logger.warn('DyeSelector: gridContainer not found for dye-selected event listener.');
@@ -339,6 +338,9 @@ export class DyeSelector extends BaseComponent {
   }
 
   onMount(): void {
+    // Initial update to populate the grid
+    this.update();
+
     LanguageService.subscribe(() => {
       this.update();
     });

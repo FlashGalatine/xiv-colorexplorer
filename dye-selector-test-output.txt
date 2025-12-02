@@ -1,0 +1,428 @@
+﻿
+> xivdyetools@2.4.8 test
+> vitest --run src/components/__tests__/dye-selector.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.13 [39m[90mC:/Users/DrawF/OneDrive/Projects/CodingProjects/XIVProjects/xivdyetools-web-app[39m
+
+[90mstdout[2m | src/components/__tests__/dye-selector.test.ts
+[22m[39mΓ£à Dye database loaded: 136 dyes
+
+node.exe : [90mstderr[2m | src/components/__tests__/dye-selector.test.ts[2m > [22m[2mDyeSelector[2m > 
+[22m[2mupdate branch coverage[2m > [22m[2mshould restore sort selection after update
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\DrawF\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr[2m...on after update:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mButton clicked! [33m5734[39m
+
+ [31mΓ¥»[39m src/components/__tests__/dye-selector.test.ts [2m([22m[2m65 tests[22m[2m | [22m[31m17 failed[39m[2m)[22m[33m 2335[2mms[22m[39m
+       [32mΓ£ô[39m should initialize with default options[32m 26[2mms[22m[39m
+       [32mΓ£ô[39m should accept custom options[32m 6[2mms[22m[39m
+       [32mΓ£ô[39m should initialize with empty selection[32m 4[2mms[22m[39m
+       [32mΓ£ô[39m should render search input[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should render clear button[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should render category buttons when showCategories is true[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should not render category buttons when showCategories is false[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m should render dye cards[39m[32m 11[2mms[22m[39m
+[31m       [31m├ù[31m should render selected dyes counter when allowMultiple is true[39m[32m 7[2mms[22m[39m
+       [32mΓ£ô[39m should exclude Facewear category by default[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should highlight Neutral category by default[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should filter dyes by search query[32m 77[2mms[22m[39m
+       [32mΓ£ô[39m should be case-insensitive[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should update results as user types[32m 139[2mms[22m[39m
+       [32mΓ£ô[39m should preserve search input value during updates[32m 124[2mms[22m[39m
+       [32mΓ£ô[39m should filter dyes by category[32m 141[2mms[22m[39m
+       [32mΓ£ô[39m should show all dyes when "All" is selected[32m 218[2mms[22m[39m
+       [32mΓ£ô[39m should highlight active category button[32m 74[2mms[22m[39m
+       [32mΓ£ô[39m should remove highlight from previously active category[32m 77[2mms[22m[39m
+[31m       [31m├ù[31m should select a dye when clicked[39m[32m 5[2mms[22m[39m
+[31m       [31m├ù[31m should emit selection-changed event when dye is selected[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should respect maxSelections limit[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should toggle selection when clicking same dye twice (no duplicates)[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should allow duplicates when allowDuplicates is true[39m[32m 5[2mms[22m[39m
+[31m       [31m├ù[31m should only allow single selection when allowMultiple is false[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m should update selected dyes counter[39m[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m should display selected dye tags[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should clear all selections when clear button is clicked[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should emit selection-changed event when cleared[39m[32m 7[2mms[22m[39m
+[31m       [31m├ù[31m should remove individual dyes from selection[39m[32m 66[2mms[22m[39m
+[31m       [31m├ù[31m should emit selection-changed event when dye is removed[39m[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should combine search and category filtering[32m 125[2mms[22m[39m
+       [32mΓ£ô[39m should get component state[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should set component state[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m should get selected dyes[39m[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should set selected dyes programmatically[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should enforce maxSelections when setting dyes[32m 4[2mms[22m[39m
+       [32mΓ£ô[39m should clean up event listeners on destroy[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should maintain functionality after update[32m 117[2mms[22m[39m
+       [32mΓ£ô[39m should have proper ARIA labels[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should have keyboard-accessible buttons[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should handle empty search results gracefully[32m 56[2mms[22m[39m
+       [32mΓ£ô[39m should handle rapid selection/deselection[32m 6[2mms[22m[39m
+       [32mΓ£ô[39m should handle search input trimming[32m 118[2mms[22m[39m
+       [32mΓ£ô[39m should sort by hue with similar hue values (saturation tiebreaker)[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should sort by saturation with tiebreaker for brightness[32m 64[2mms[22m[39m
+       [32mΓ£ô[39m should sort by category then alphabetically[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should use default alphabetical sort for unknown sort option[32m 61[2mms[22m[39m
+       [32mΓ£ô[39m should ignore clicks outside dye-select-btn[32m 62[2mms[22m[39m
+[31m       [31m├ù[31m should handle click on child element of dye-select-btn[39m[32m 64[2mms[22m[39m
+       [32mΓ£ô[39m should handle invalid dye ID gracefully[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should return early if not initialized[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle missing selectedLabel gracefully[39m[32m 61[2mms[22m[39m
+       [32mΓ£ô[39m should restore search focus after update[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should restore sort selection after update[32m 125[2mms[22m[39m
+       [32mΓ£ô[39m should handle null currentCategory[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should handle sortOption string[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should ignore invalid selectedDyes type[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should ignore invalid searchQuery type[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should handle category display based on showCategories option[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should apply brightness filter on mouseenter[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m should remove brightness filter on mouseleave[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should apply darker brightness on mousedown[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should restore brightness on mouseup[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m should include Facewear category when excludeFacewear is false[32m 2[2mms[22m[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 17 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > 
+[22mRendering[2m > [22mshould render dye cards
+[31m[1mAssertionError[22m: expected 0 to be greater than 0[39m
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m119:31[22m[39m
+    [90m117| [39m
+    [90m118| [39m      [35mconst[39m dyeCards [33m=[39m 
+container[33m.[39m[34mquerySelectorAll[39m([32m'.dye-select-btn'[39m)[33m;[39m
+    [90m119| [39m      
+[34mexpect[39m(dyeCards[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                              [31m^[39m
+    [90m120| [39m    })[33m;[39m
+    [90m121| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > 
+[22mRendering[2m > [22mshould render selected dyes counter when allowMultiple is true
+[31m[1mAssertionError[22m: expected '' to contain 'Selected: 0/4'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Selected: 0/4[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m127:42[22m[39m
+    [90m125| [39m      const selectedLabel = container.querySelector('#selected-dyes-laΓÇª
+    [90m126| [39m      [34mexpect[39m(selectedLabel)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m127| [39m      
+[34mexpect[39m(selectedLabel[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'Selected: 
+0/4'[39m)[33m;[39m
+    [90m   | [39m                                         [31m^[39m
+    [90m128| [39m    })[33m;[39m
+    [90m129| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould select a dye when clicked
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m345:35[22m[39m
+    [90m343| [39m
+    [90m344| [39m      [35mconst[39m selectedDyes [33m=[39m 
+component[33m.[39m[34mgetSelectedDyes[39m()[33m;[39m
+    [90m345| [39m      
+[34mexpect[39m(selectedDyes[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                  [31m^[39m
+    [90m346| [39m    })[33m;[39m
+    [90m347| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould emit selection-changed event when dye is selected
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 1 times, but got 0 times[39m
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m357:28[22m[39m
+    [90m355| [39m      dyeCard[33m?.[39m[34mclick[39m()[33m;[39m
+    [90m356| [39m
+    [90m357| [39m      
+[34mexpect[39m(eventHandler)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m358| [39m    })[33m;[39m
+    [90m359| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould respect maxSelections limit
+[31m[1mAssertionError[22m: expected +0 to be 2 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m376:35[22m[39m
+    [90m374| [39m
+    [90m375| [39m      [35mconst[39m selectedDyes [33m=[39m 
+component[33m.[39m[34mgetSelectedDyes[39m()[33m;[39m
+    [90m376| [39m      
+[34mexpect[39m(selectedDyes[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m2[39m)[33m;[39m [90m// Should 
+stop at 2[39m
+    [90m   | [39m                                  [31m^[39m
+    [90m377| [39m    })[33m;[39m
+    [90m378| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould toggle selection when clicking same dye twice (no duplicates)
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m389:50[22m[39m
+    [90m387| [39m      const dyeCard1 = container.querySelector(`[data-dye-id="${dyeId}ΓÇª
+    [90m388| [39m      dyeCard1[33m?.[39m[34mclick[39m()[33m;[39m
+    [90m389| [39m      [34mexpect[39m(component[33m.[39m[34mgetSelectedDyes[39m()[33m.[39mlength)[33m.
+[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m390| [39m
+    [90m391| [39m      [90m// Click again - re-query after component update[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould allow duplicates when allowDuplicates is true
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m412:50[22m[39m
+    [90m410| [39m      dyeCard1[33m?.[39m[34mclick[39m()[33m;[39m
+    [90m411| [39m
+    [90m412| [39m      expect(component.getSelectedDyes().length).toBe(1); // First cliΓÇª
+    [90m   | [39m                                                 [31m^[39m
+    [90m413| [39m
+    [90m414| [39m      // Re-query specifically for the dye grid button (not the removeΓÇª
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould only allow single selection when allowMultiple is false
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m438:35[22m[39m
+    [90m436| [39m
+    [90m437| [39m      [35mconst[39m selectedDyes [33m=[39m 
+component[33m.[39m[34mgetSelectedDyes[39m()[33m;[39m
+    [90m438| [39m      expect(selectedDyes.length).toBe(1); // Only last selection shouΓÇª
+    [90m   | [39m                                  [31m^[39m
+    [90m439| [39m    })[33m;[39m
+    [90m440| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould update selected dyes counter
+[31m[1mAssertionError[22m: expected '' to contain '0/4'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0/4[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m445:42[22m[39m
+    [90m443| [39m
+    [90m444| [39m      const selectedLabel = container.querySelector('#selected-dyes-laΓÇª
+    [90m445| [39m      
+[34mexpect[39m(selectedLabel[33m?.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'0/4'[39m)[33m;[39m
+    [90m   | [39m                                         [31m^[39m
+    [90m446| [39m
+    [90m447| [39m      const dyeCard = container.querySelector('.dye-select-btn') as HTΓÇª
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mDye 
+Selection[2m > [22mshould display selected dye tags
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m462:31[22m[39m
+    [90m460| [39m      [35mconst[39m dyeTags [33m=[39m selectedList[33m?.[39mchildren[33m;[39m
+    [90m461| [39m
+    [90m462| [39m      
+[34mexpect[39m(dyeTags[33m?.[39mlength)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                              [31m^[39m
+    [90m463| [39m    })[33m;[39m
+    [90m464| [39m  })[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mClear 
+Functionality[2m > [22mshould clear all selections when clear button is clicked
+[31m[1mAssertionError[22m: expected +0 to be 2 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m484:50[22m[39m
+    [90m482| [39m      })[33m;[39m
+    [90m483| [39m
+    [90m484| [39m      [34mexpect[39m(component[33m.[39m[34mgetSelectedDyes[39m()[33m.[39mlength)[33m.
+[39m[34mtoBe[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m485| [39m
+    [90m486| [39m      [90m// Click clear button[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mClear 
+Functionality[2m > [22mshould emit selection-changed event when cleared
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 1 times, but got 2 times[39m
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m509:28[22m[39m
+    [90m507| [39m      clearBtn[33m?.[39m[34mclick[39m()[33m;[39m
+    [90m508| [39m
+    [90m509| [39m      
+[34mexpect[39m(eventHandler)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m510| [39m      expect(eventHandler.mock.calls[0][0].detail.selectedDyes.length)ΓÇª
+    [90m511| [39m    })[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[12/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mRemove 
+Dye[2m > [22mshould remove individual dyes from selection
+[31m[1mAssertionError[22m: expected +0 to be 2 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m534:50[22m[39m
+    [90m532| [39m      [35mawait[39m [34mwaitForComponent[39m([34m50[39m)[33m;[39m
+    [90m533| [39m
+    [90m534| [39m      [34mexpect[39m(component[33m.[39m[34mgetSelectedDyes[39m()[33m.[39mlength)[33m.
+[39m[34mtoBe[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m535| [39m
+    [90m536| [39m      [90m// Click remove button on first dye[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[13/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mRemove 
+Dye[2m > [22mshould emit selection-changed event when dye is removed
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 1 times, but got 0 times[39m
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m563:28[22m[39m
+    [90m561| [39m      removeBtn[33m?.[39m[34mclick[39m()[33m;[39m
+    [90m562| [39m
+    [90m563| [39m      
+[34mexpect[39m(eventHandler)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m564| [39m    })[33m;[39m
+    [90m565| [39m  })[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[14/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mState 
+Management[2m > [22mshould get selected dyes
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m649:35[22m[39m
+    [90m647| [39m      [35mconst[39m selectedDyes [33m=[39m 
+component[33m.[39m[34mgetSelectedDyes[39m()[33m;[39m
+    [90m648| [39m      [34mexpect[39m([33mArray[39m[33m.[39m[34misArray[39m(selectedDyes))[33m.[39m[
+34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m649| [39m      
+[34mexpect[39m(selectedDyes[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                  [31m^[39m
+    [90m650| [39m    })[33m;[39m
+    [90m651| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[15/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > 
+[22mbindEvents branch coverage[2m > [22mshould handle click on child element of dye-select-btn
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m889:50[22m[39m
+    [90m887| [39m
+    [90m888| [39m      [90m// Should still select the dye by traversing up to the button[39m
+    [90m889| [39m      [34mexpect[39m(component[33m.[39m[34mgetSelectedDyes[39m()[33m.[39mlength)[33m.
+[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m890| [39m    })[33m;[39m
+    [90m891| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[16/17]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/__tests__/dye-selector.test.ts[2m > [22mDyeSelector[2m > [22mupdate 
+branch coverage[2m > [22mshould handle missing selectedLabel gracefully
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2mΓ¥»[22m src/components/__tests__/dye-selector.test.ts:[2m937:50[22m[39m
+    [90m935| [39m
+    [90m936| [39m      [90m// Should not throw[39m
+    [90m937| [39m      [34mexpect[39m(component[33m.[39m[34mgetSelectedDyes[39m()[33m.[39mlength)[33m.
+[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m938| [39m    })[33m;[39m
+    [90m939| [39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[17/17]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m17 failed[39m[22m[2m | [22m[1m[32m48 passed[39m[22m[90m (65)[39m
+[2m   Start at [22m 08:18:41
+[2m   Duration [22m 4.97s[2m (transform 357ms, setup 185ms, collect 648ms, tests 2.33s, environment 1.08s, prepare 18ms)[22m
+

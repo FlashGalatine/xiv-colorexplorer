@@ -56,23 +56,23 @@ export class DyeGrid extends BaseComponent {
       const emptyHtml =
         this.emptyState.type === 'search'
           ? getEmptyStateHTML({
-              icon: ICON_SEARCH,
-              title:
-                LanguageService.tInterpolate('dyeSelector.noResults', {
-                  query: this.emptyState.query || '',
-                }) || `No dyes match "${this.emptyState.query}"`,
-              description:
-                LanguageService.t('dyeSelector.noResultsHint') ||
-                'Try checking your spelling or search for a category like "purple".',
-            })
+            icon: ICON_SEARCH,
+            title:
+              LanguageService.tInterpolate('dyeSelector.noResults', {
+                query: this.emptyState.query || '',
+              }) || `No dyes match "${this.emptyState.query}"`,
+            description:
+              LanguageService.t('dyeSelector.noResultsHint') ||
+              'Try checking your spelling or search for a category like "purple".',
+          })
           : getEmptyStateHTML({
-              icon: ICON_PALETTE,
-              title:
-                LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
-              description:
-                LanguageService.t('dyeSelector.tryCategoryHint') ||
-                'Try selecting a different category.',
-            });
+            icon: ICON_PALETTE,
+            title:
+              LanguageService.t('dyeSelector.noDyesInCategory') || 'No dyes in this category',
+            description:
+              LanguageService.t('dyeSelector.tryCategoryHint') ||
+              'Try selecting a different category.',
+          });
       wrapper.innerHTML = emptyHtml;
       wrapper.classList.remove(
         'grid',
@@ -89,11 +89,10 @@ export class DyeGrid extends BaseComponent {
         const isSelected = this.selectedDyes.some((d) => d.id === dye.id);
 
         const btn = this.createElement('button', {
-          className: `dye-select-btn group relative flex flex-col items-center p-3 rounded-xl transition-all duration-200 ${
-            isSelected
-              ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 shadow-md transform scale-[1.02]'
-              : 'bg-white dark:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 hover:bg-gray-50 dark:hover:bg-gray-750 border border-gray-100 dark:border-gray-700'
-          }`,
+          className: `dye-select-btn group relative flex flex-col items-center p-3 rounded-xl transition-all duration-200 ${isSelected
+            ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 shadow-md transform scale-[1.02]'
+            : 'bg-white dark:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 hover:bg-gray-50 dark:hover:bg-gray-750 border border-gray-100 dark:border-gray-700'
+            }`,
           attributes: {
             'data-dye-id': String(dye.id),
             'aria-label': dye.name,
@@ -103,6 +102,7 @@ export class DyeGrid extends BaseComponent {
         });
 
         this.on(btn, 'click', (e) => {
+          console.error('Button clicked!', dye.id);
           e.stopPropagation(); // Prevent bubbling if needed, or just let it bubble
           this.emit('dye-selected', dye);
         }); // Content
@@ -149,18 +149,14 @@ export class DyeGrid extends BaseComponent {
   }
 
   bindEvents(): void {
-    console.error('DyeGrid.bindEvents called', this.element);
     if (!this.element) return;
 
     // Click
     this.on(this.element, 'click', (e) => {
-      console.error('DyeGrid click handler fired');
       const target = (e.target as HTMLElement).closest('.dye-select-btn');
-      console.error('DyeGrid click target', target);
       if (target) {
         const id = parseInt(target.getAttribute('data-dye-id') || '0', 10);
         const dye = this.dyes.find((d) => d.id === id);
-        console.error('DyeGrid click found', id, dye);
         if (dye) this.emit('dye-selected', dye);
       }
     });

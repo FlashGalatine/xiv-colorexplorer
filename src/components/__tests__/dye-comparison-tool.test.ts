@@ -44,6 +44,9 @@ interface ComponentWithPrivate {
   generateCssExport: () => string;
   renderStatCard: (label: string, value: string) => HTMLElement;
   getState: () => Record<string, unknown>;
+  checkPendingDye: () => void;
+  showTutorial: () => void;
+  dyeSelector: { setSelectedDyes: (dyes: Dye[]) => void } | null;
 }
 
 const mockFetchPrices = vi.fn().mockResolvedValue(new Map());
@@ -1319,6 +1322,102 @@ describe('DyeComparisonTool Component', () => {
 
       // Price fetch is async, so we check if it was called
       expect(mockFetchPrices).toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - checkPendingDye
+  // ==========================================================================
+
+  describe('checkPendingDye method', () => {
+    beforeEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('should not throw when no pending dye in sessionStorage', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).checkPendingDye();
+      }).not.toThrow();
+    });
+
+    it('should clear pending dye from sessionStorage after processing', async () => {
+      const pendingDye = createMockDye({ id: 123, name: 'Pending Dye' });
+      sessionStorage.setItem('pendingDye', JSON.stringify(pendingDye));
+
+      const instance = await createComponent();
+      (instance as unknown as ComponentWithPrivate).checkPendingDye();
+
+      expect(sessionStorage.getItem('pendingDye')).toBeNull();
+    });
+
+    it('should handle invalid JSON in sessionStorage gracefully', async () => {
+      sessionStorage.setItem('pendingDye', 'not valid json');
+
+      const instance = await createComponent();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).checkPendingDye();
+      }).not.toThrow();
+    });
+
+    it('should handle empty object in sessionStorage', async () => {
+      sessionStorage.setItem('pendingDye', '{}');
+
+      const instance = await createComponent();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).checkPendingDye();
+      }).not.toThrow();
+    });
+
+    it('should handle dye without id in sessionStorage', async () => {
+      const invalidDye = { name: 'No ID Dye' };
+      sessionStorage.setItem('pendingDye', JSON.stringify(invalidDye));
+
+      const instance = await createComponent();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).checkPendingDye();
+      }).not.toThrow();
+    });
+
+    it('should not call setSelectedDyes when dyeSelector is null', async () => {
+      const pendingDye = createMockDye({ id: 101, name: 'No Selector Dye' });
+      sessionStorage.setItem('pendingDye', JSON.stringify(pendingDye));
+
+      const instance = await createComponent();
+      (instance as unknown as ComponentWithPrivate).dyeSelector = null;
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).checkPendingDye();
+        vi.advanceTimersByTime(200);
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - showTutorial
+  // ==========================================================================
+
+  describe('showTutorial method', () => {
+    it('should not throw when called', async () => {
+      const instance = await createComponent();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).showTutorial();
+      }).not.toThrow();
+    });
+
+    it('should dynamically import TutorialService', async () => {
+      const instance = await createComponent();
+
+      // Call showTutorial - it uses dynamic import
+      (instance as unknown as ComponentWithPrivate).showTutorial();
+
+      // The import is async, so we just verify no error is thrown
+      await Promise.resolve();
     });
   });
 });

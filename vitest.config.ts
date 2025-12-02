@@ -34,6 +34,7 @@ export default defineConfig({
       '@shared': resolve(__dirname, './src/shared'),
       '@apps': resolve(__dirname, './src/apps'),
       '@data': resolve(__dirname, './src/data'),
+      'virtual:changelog': resolve(__dirname, './src/__tests__/mocks/virtual-changelog.ts'),
     },
   },
 })

@@ -65,6 +65,8 @@ describe('ColorInterpolationDisplay', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     container = createTestContainer();
+    // Mock scrollIntoView since jsdom doesn't support it
+    HTMLElement.prototype.scrollIntoView = vi.fn();
   });
 
   afterEach(() => {
@@ -442,6 +444,270 @@ describe('ColorInterpolationDisplay', () => {
       component.init();
 
       expect(() => component.destroy()).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Interactive Stop Selection (T4)
+  // ==========================================================================
+
+  describe('interactive stop selection', () => {
+    it('should select a stop when clicking stop marker', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker = container.querySelector('button[data-stop-index="0"]') as HTMLButtonElement;
+      expect(stopMarker).not.toBeNull();
+
+      stopMarker.click();
+
+      // Check that selectedStopIndex was updated
+      expect(component['selectedStopIndex']).toBe(0);
+    });
+
+    it('should deselect stop when clicking same stop again', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker = container.querySelector('button[data-stop-index="0"]') as HTMLButtonElement;
+      stopMarker.click();
+      expect(component['selectedStopIndex']).toBe(0);
+
+      stopMarker.click();
+      expect(component['selectedStopIndex']).toBe(-1);
+    });
+
+    it('should select a different stop when clicking another stop', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker0 = container.querySelector('button[data-stop-index="0"]') as HTMLButtonElement;
+      const stopMarker2 = container.querySelector('button[data-stop-index="2"]') as HTMLButtonElement;
+
+      stopMarker0.click();
+      expect(component['selectedStopIndex']).toBe(0);
+
+      stopMarker2.click();
+      expect(component['selectedStopIndex']).toBe(2);
+    });
+
+    it('should select step when clicking step item in list', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stepItem = container.querySelector('[data-step-index="1"]') as HTMLElement;
+      expect(stepItem).not.toBeNull();
+
+      stepItem.click();
+
+      expect(component['selectedStopIndex']).toBe(1);
+    });
+
+    it('should highlight step in list when stop is selected', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker = container.querySelector('button[data-stop-index="0"]') as HTMLButtonElement;
+      stopMarker.click();
+
+      const stepItem = container.querySelector('[data-step-index="0"]') as HTMLElement;
+      expect(stepItem.classList.contains('ring-2')).toBe(true);
+      expect(stepItem.classList.contains('ring-blue-500')).toBe(true);
+    });
+
+    it('should handle keyboard navigation with Enter key on step item', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stepItem = container.querySelector('[data-step-index="1"]') as HTMLElement;
+      stepItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+      expect(component['selectedStopIndex']).toBe(1);
+    });
+
+    it('should handle keyboard navigation with Space key on step item', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stepItem = container.querySelector('[data-step-index="2"]') as HTMLElement;
+      stepItem.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+
+      expect(component['selectedStopIndex']).toBe(2);
+    });
+
+    it('should not select on other keyboard keys', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stepItem = container.querySelector('[data-step-index="1"]') as HTMLElement;
+      stepItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+
+      expect(component['selectedStopIndex']).toBe(-1);
+    });
+
+    it('should update stop marker visuals when selection changes', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker = container.querySelector('button[data-stop-index="1"]') as HTMLButtonElement;
+      stopMarker.click();
+
+      // Check that the selected marker has the correct classes
+      expect(stopMarker.classList.contains('z-20')).toBe(true);
+
+      const handle = stopMarker.querySelector('div');
+      expect(handle?.classList.contains('border-blue-500')).toBe(true);
+    });
+
+    it('should remove highlight from previous step when selecting new one', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopMarker0 = container.querySelector('button[data-stop-index="0"]') as HTMLButtonElement;
+      const stopMarker1 = container.querySelector('button[data-stop-index="1"]') as HTMLButtonElement;
+
+      stopMarker0.click();
+      stopMarker1.click();
+
+      // First step should no longer be highlighted
+      const stepItem0 = container.querySelector('[data-step-index="0"]') as HTMLElement;
+      expect(stepItem0.classList.contains('ring-2')).toBe(false);
+
+      // Second step should be highlighted
+      const stepItem1 = container.querySelector('[data-step-index="1"]') as HTMLElement;
+      expect(stepItem1.classList.contains('ring-2')).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // Distance Color Ranges
+  // ==========================================================================
+
+  describe('distance color ranges', () => {
+    it('should return blue color for distance 31-60', () => {
+      const steps: InterpolationStep[] = [
+        {
+          position: 0,
+          theoreticalColor: '#FF0000',
+          matchedDye: createMockDye('#FF5500', 'Good Match'),
+          distance: 45,
+        },
+      ];
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      // Check getDistanceColor method
+      const color = component['getDistanceColor'](45);
+      expect(color).toContain('blue');
+    });
+
+    it('should return yellow color for distance 61-100', () => {
+      const steps: InterpolationStep[] = [
+        {
+          position: 0,
+          theoreticalColor: '#FF0000',
+          matchedDye: createMockDye('#FF8800', 'Fair Match'),
+          distance: 80,
+        },
+      ];
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const color = component['getDistanceColor'](80);
+      expect(color).toContain('yellow');
+    });
+  });
+
+  // ==========================================================================
+  // Gradient Bar
+  // ==========================================================================
+
+  describe('gradient bar', () => {
+    it('should render gradient stops container', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const stopsContainer = container.querySelector('#stops-container');
+      expect(stopsContainer).not.toBeNull();
+    });
+
+    it('should render gradient bar with linear gradient', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const gradientBar = container.querySelector('#gradient-bar') as HTMLElement;
+      expect(gradientBar).not.toBeNull();
+      expect(gradientBar.style.background).toContain('linear-gradient');
+    });
+
+    it('should render stop markers for each step', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      const markers = container.querySelectorAll('button[data-stop-index]');
+      expect(markers.length).toBe(5);
+    });
+
+    it('should render hint text', () => {
+      const steps = createMockSteps();
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      expect(container.textContent).toContain('Click a stop marker');
+    });
+  });
+
+  // ==========================================================================
+  // Edge Cases
+  // ==========================================================================
+
+  describe('edge cases', () => {
+    it('should handle updateStopMarkerVisuals when stopsContainer is null', () => {
+      component = new ColorInterpolationDisplay(container);
+      component.init();
+
+      // Calling this should not throw
+      expect(() => {
+        component['updateStopMarkerVisuals'](0, 1);
+      }).not.toThrow();
+    });
+
+    it('should handle highlightStepInList when listContainer is null', () => {
+      component = new ColorInterpolationDisplay(container);
+      component.init();
+
+      // Calling this should not throw
+      expect(() => {
+        component['highlightStepInList'](0);
+      }).not.toThrow();
+    });
+
+    it('should handle step with matchedDye but item has null matchedDye in renderStepItem', () => {
+      const steps: InterpolationStep[] = [
+        {
+          position: 0.5,
+          theoreticalColor: '#AAAAAA',
+          matchedDye: null,
+          distance: 0,
+        },
+      ];
+      component = new ColorInterpolationDisplay(container, '#FF0000', '#00FF00', steps);
+      component.init();
+
+      expect(container.textContent).toContain('No close match');
     });
   });
 });

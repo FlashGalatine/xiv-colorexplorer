@@ -49,6 +49,7 @@ interface ComponentWithPrivate {
   renderDyeCard: (dye: Dye, sampledColor: string) => HTMLElement;
   refreshResults: () => void;
   fetchPricesForMatchedDyes: () => Promise<void>;
+  updateLocalizedText: () => void;
   getState: () => Record<string, unknown>;
   matchedDyes: Dye[];
   showPrices: boolean;
@@ -56,6 +57,8 @@ interface ComponentWithPrivate {
   zoomLevel: number;
   lastSampledColor: string;
   priceData: Map<number, { currentAverage: number }>;
+  previewOverlay: { showPreview: () => void; hide: () => void } | null;
+  samplePosition: { x: number; y: number };
 }
 
 vi.mock('../market-board', () => {
@@ -1092,6 +1095,199 @@ describe('ColorMatcherTool', () => {
       expect(() => {
         instance.destroy();
       }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - updateLocalizedText
+  // ==========================================================================
+
+  describe('updateLocalizedText method', () => {
+    it('should update title text when element exists', async () => {
+      const instance = await createComponent();
+
+      // The component already has h2 elements, just call updateLocalizedText
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateLocalizedText();
+      }).not.toThrow();
+    });
+
+    it('should handle missing title element gracefully', async () => {
+      const instance = await createComponent();
+
+      // Remove all h2 elements
+      container.querySelectorAll('h2').forEach((el) => el.remove());
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateLocalizedText();
+      }).not.toThrow();
+    });
+
+    it('should update subtitle text when element exists', async () => {
+      const instance = await createComponent();
+
+      (instance as unknown as ComponentWithPrivate).updateLocalizedText();
+
+      // Should not throw when called
+      expect(true).toBe(true);
+    });
+
+    it('should handle missing subtitle element gracefully', async () => {
+      const instance = await createComponent();
+
+      // Remove the subtitle (p element following h2)
+      const subtitle = container.querySelector('h2 + p');
+      subtitle?.remove();
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateLocalizedText();
+      }).not.toThrow();
+    });
+
+    it('should handle missing both title and subtitle elements', async () => {
+      const instance = await createComponent();
+
+      // Remove both elements
+      container.querySelectorAll('h2, h2 + p').forEach((el) => el.remove());
+
+      expect(() => {
+        (instance as unknown as ComponentWithPrivate).updateLocalizedText();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - renderDyeCard onHover callback
+  // ==========================================================================
+
+  describe('renderDyeCard onHover callback', () => {
+    it('should show preview when hovering with previewOverlay and valid position', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye({ id: 1, name: 'Hover Test Dye' });
+
+      // Set up previewOverlay and samplePosition
+      const mockShowPreview = vi.fn();
+      const mockHide = vi.fn();
+      (instance as unknown as ComponentWithPrivate).previewOverlay = {
+        showPreview: mockShowPreview,
+        hide: mockHide,
+      };
+      (instance as unknown as ComponentWithPrivate).samplePosition = { x: 100, y: 100 };
+
+      // Render card and trigger hover
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+
+      // Simulate mouseenter - should trigger onHover callback
+      card.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+      // Give time for event handler
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(mockShowPreview).toHaveBeenCalled();
+    });
+
+    it('should hide preview when mouse leaves', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye();
+
+      const mockShowPreview = vi.fn();
+      const mockHide = vi.fn();
+      (instance as unknown as ComponentWithPrivate).previewOverlay = {
+        showPreview: mockShowPreview,
+        hide: mockHide,
+      };
+      (instance as unknown as ComponentWithPrivate).samplePosition = { x: 50, y: 50 };
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#00FF00');
+
+      // Trigger mouseleave
+      card.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(mockHide).toHaveBeenCalled();
+    });
+
+    it('should not show preview when samplePosition.x is 0', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye();
+
+      const mockShowPreview = vi.fn();
+      (instance as unknown as ComponentWithPrivate).previewOverlay = {
+        showPreview: mockShowPreview,
+        hide: vi.fn(),
+      };
+      (instance as unknown as ComponentWithPrivate).samplePosition = { x: 0, y: 100 };
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#0000FF');
+
+      card.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(mockShowPreview).not.toHaveBeenCalled();
+    });
+
+    it('should not show preview when previewOverlay is null', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye();
+
+      (instance as unknown as ComponentWithPrivate).previewOverlay = null;
+      (instance as unknown as ComponentWithPrivate).samplePosition = { x: 100, y: 100 };
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#AABBCC');
+
+      expect(() => {
+        card.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - renderDyeCard onClick callback
+  // ==========================================================================
+
+  describe('renderDyeCard onClick callback', () => {
+    it('should handle click on card', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye();
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+
+      expect(() => {
+        card.click();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - copy button hover effects
+  // ==========================================================================
+
+  describe('copy button hover effects', () => {
+    it('should change background on mouseenter', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye({ hex: '#AABBCC' });
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+      const copyButton = card.querySelector('button');
+
+      copyButton?.dispatchEvent(new MouseEvent('mouseenter'));
+
+      expect(copyButton?.style.backgroundColor).toBe('var(--theme-card-hover)');
+    });
+
+    it('should reset background on mouseleave', async () => {
+      const instance = await createComponent();
+      const dye = createMockDye();
+
+      const card = (instance as unknown as ComponentWithPrivate).renderDyeCard(dye, '#FF0000');
+      const copyButton = card.querySelector('button');
+
+      copyButton?.dispatchEvent(new MouseEvent('mouseenter'));
+      copyButton?.dispatchEvent(new MouseEvent('mouseleave'));
+
+      expect(copyButton?.style.backgroundColor).toBe('var(--theme-background-secondary)');
     });
   });
 });

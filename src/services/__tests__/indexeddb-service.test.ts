@@ -430,4 +430,376 @@ describe('IndexedDBService', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('Error Handling', () => {
+    it('should handle open error', async () => {
+      // Mock open to fail
+      const mockFailingIndexedDB = {
+        open: vi.fn().mockImplementation(() => {
+          const request: any = {
+            result: null,
+            error: new Error('Open failed'),
+            onsuccess: null,
+            onerror: null,
+            onupgradeneeded: null,
+            onblocked: null,
+          };
+          setTimeout(() => {
+            if (request.onerror) {
+              request.onerror({ target: request });
+            }
+          }, 0);
+          return request;
+        }),
+      };
+
+      // @ts-ignore - reset singleton
+      IndexedDBService.instance = null;
+      // @ts-ignore
+      global.indexedDB = mockFailingIndexedDB;
+
+      const service = IndexedDBService.getInstance();
+      const result = await service.initialize();
+      expect(result).toBe(false);
+    });
+
+    it('should handle blocked event', async () => {
+      // Mock open to be blocked
+      const mockBlockedIndexedDB = {
+        open: vi.fn().mockImplementation(() => {
+          const request: any = {
+            result: null,
+            error: null,
+            onsuccess: null,
+            onerror: null,
+            onupgradeneeded: null,
+            onblocked: null,
+          };
+          setTimeout(() => {
+            if (request.onblocked) {
+              request.onblocked({ target: request });
+            }
+          }, 0);
+          return request;
+        }),
+      };
+
+      // @ts-ignore - reset singleton
+      IndexedDBService.instance = null;
+      // @ts-ignore
+      global.indexedDB = mockBlockedIndexedDB;
+
+      const service = IndexedDBService.getInstance();
+      const result = await service.initialize();
+      expect(result).toBe(false);
+    });
+
+    it('should handle get error', async () => {
+      await indexedDBService.initialize();
+
+      // Create a failing get request
+      mockStore.get = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Get failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.get(STORES.SETTINGS, 'testKey');
+      expect(result).toBeNull();
+    });
+
+    it('should handle get exception', async () => {
+      await indexedDBService.initialize();
+
+      // Make transaction throw
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.get(STORES.SETTINGS, 'testKey');
+      expect(result).toBeNull();
+    });
+
+    it('should handle set error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.put = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Put failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.set(STORES.SETTINGS, 'key', 'value');
+      expect(result).toBe(false);
+    });
+
+    it('should handle set exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.set(STORES.SETTINGS, 'key', 'value');
+      expect(result).toBe(false);
+    });
+
+    it('should handle delete error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.delete = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Delete failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.delete(STORES.SETTINGS, 'key');
+      expect(result).toBe(false);
+    });
+
+    it('should handle delete exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.delete(STORES.SETTINGS, 'key');
+      expect(result).toBe(false);
+    });
+
+    it('should handle keys error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.getAllKeys = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('GetAllKeys failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.keys(STORES.SETTINGS);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle keys exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.keys(STORES.SETTINGS);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle getAll error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.getAll = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('GetAll failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.getAll(STORES.SETTINGS);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle getAll exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.getAll(STORES.SETTINGS);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle clear error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.clear = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Clear failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.clear(STORES.SETTINGS);
+      expect(result).toBe(false);
+    });
+
+    it('should handle clear exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.clear(STORES.SETTINGS);
+      expect(result).toBe(false);
+    });
+
+    it('should handle count error', async () => {
+      await indexedDBService.initialize();
+
+      mockStore.count = vi.fn(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Count failed'),
+          onsuccess: null,
+          onerror: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.count(STORES.SETTINGS);
+      expect(result).toBe(0);
+    });
+
+    it('should handle count exception', async () => {
+      await indexedDBService.initialize();
+
+      mockDB.transaction = vi.fn(() => {
+        throw new Error('Transaction error');
+      });
+
+      const result = await indexedDBService.count(STORES.SETTINGS);
+      expect(result).toBe(0);
+    });
+
+    it('should handle deleteDatabase error', async () => {
+      await indexedDBService.initialize();
+
+      (global.indexedDB.deleteDatabase as any) = vi.fn().mockImplementation(() => {
+        const request: any = {
+          result: undefined,
+          error: new Error('Delete database failed'),
+          onsuccess: null,
+          onerror: null,
+          onblocked: null,
+        };
+        setTimeout(() => {
+          if (request.onerror) {
+            request.onerror({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.deleteDatabase();
+      expect(result).toBe(false);
+    });
+
+    it('should handle deleteDatabase blocked', async () => {
+      await indexedDBService.initialize();
+
+      (global.indexedDB.deleteDatabase as any) = vi.fn().mockImplementation(() => {
+        const request: any = {
+          result: undefined,
+          error: null,
+          onsuccess: null,
+          onerror: null,
+          onblocked: null,
+        };
+        setTimeout(() => {
+          if (request.onblocked) {
+            request.onblocked({ target: request });
+          }
+        }, 0);
+        return request;
+      });
+
+      const result = await indexedDBService.deleteDatabase();
+      expect(result).toBe(false);
+    });
+
+    it('should handle deleteDatabase exception', async () => {
+      await indexedDBService.initialize();
+
+      (global.indexedDB.deleteDatabase as any) = vi.fn().mockImplementation(() => {
+        throw new Error('Delete database error');
+      });
+
+      const result = await indexedDBService.deleteDatabase();
+      expect(result).toBe(false);
+    });
+
+    it('should handle initialization exception in doInitialize', async () => {
+      // Mock open to throw directly
+      const mockThrowingIndexedDB = {
+        open: vi.fn().mockImplementation(() => {
+          throw new Error('Open throws directly');
+        }),
+      };
+
+      // @ts-ignore - reset singleton
+      IndexedDBService.instance = null;
+      // @ts-ignore
+      global.indexedDB = mockThrowingIndexedDB;
+
+      const service = IndexedDBService.getInstance();
+      const result = await service.initialize();
+      expect(result).toBe(false);
+    });
+  });
 });

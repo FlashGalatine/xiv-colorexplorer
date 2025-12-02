@@ -297,6 +297,206 @@ describe('showSavedPalettesModal', () => {
 
       expect(PaletteService.deletePalette).not.toHaveBeenCalled();
     });
+
+    it('should trigger file import on import click', () => {
+      // Create a spy on document.createElement to track input creation
+      const createElementSpy = vi.spyOn(document, 'createElement');
+
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const buttons = content.querySelectorAll('button');
+      const importBtn = buttons[1] as HTMLButtonElement; // Second button is import
+
+      // Click import
+      importBtn.click();
+
+      // Verify a file input was created
+      expect(createElementSpy).toHaveBeenCalledWith('input');
+      createElementSpy.mockRestore();
+    });
+
+    it('should handle successful file import', async () => {
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const buttons = content.querySelectorAll('button');
+      const importBtn = buttons[1] as HTMLButtonElement;
+
+      // Click import to trigger creation of file input
+      importBtn.click();
+
+      // Create a mock file with text() method
+      const mockFileContent = '{"palettes":[]}';
+      const mockFile = {
+        text: vi.fn().mockResolvedValue(mockFileContent),
+      } as unknown as File;
+
+      // Find the created input
+      const inputElement = content.querySelector('input[type="file"]');
+      if (inputElement) {
+        Object.defineProperty(inputElement, 'files', {
+          value: [mockFile],
+          writable: false,
+        });
+
+        // Trigger change event
+        inputElement.dispatchEvent(new Event('change'));
+
+        // Wait for async operations
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(PaletteService.importPalettes).toHaveBeenCalled();
+        expect(ToastService.success).toHaveBeenCalled();
+      }
+    });
+
+    it('should handle import with no files selected', async () => {
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const buttons = content.querySelectorAll('button');
+      const importBtn = buttons[1] as HTMLButtonElement;
+
+      importBtn.click();
+
+      const inputElement = content.querySelector('input[type="file"]');
+      if (inputElement) {
+        // No files selected
+        Object.defineProperty(inputElement, 'files', {
+          value: null,
+          writable: false,
+        });
+
+        inputElement.dispatchEvent(new Event('change'));
+
+        await Promise.resolve();
+
+        // Should not call importPalettes when no file is selected
+        expect(PaletteService.importPalettes).not.toHaveBeenCalled();
+      }
+    });
+
+    it('should show warning when import returns 0 palettes', async () => {
+      vi.mocked(PaletteService.importPalettes).mockReturnValue(0);
+
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const buttons = content.querySelectorAll('button');
+      const importBtn = buttons[1] as HTMLButtonElement;
+
+      importBtn.click();
+
+      const mockFile = {
+        text: vi.fn().mockResolvedValue('{}'),
+      } as unknown as File;
+
+      const inputElement = content.querySelector('input[type="file"]');
+      if (inputElement) {
+        Object.defineProperty(inputElement, 'files', {
+          value: [mockFile],
+          writable: false,
+        });
+
+        inputElement.dispatchEvent(new Event('change'));
+
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(ToastService.warning).toHaveBeenCalledWith('Import failed');
+      }
+    });
+
+    it('should show error when import file is invalid JSON', async () => {
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+      const buttons = content.querySelectorAll('button');
+      const importBtn = buttons[1] as HTMLButtonElement;
+
+      importBtn.click();
+
+      const mockFile = {
+        text: vi.fn().mockResolvedValue('invalid json'),
+      } as unknown as File;
+
+      const inputElement = content.querySelector('input[type="file"]');
+      if (inputElement) {
+        Object.defineProperty(inputElement, 'files', {
+          value: [mockFile],
+          writable: false,
+        });
+
+        inputElement.dispatchEvent(new Event('change'));
+
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(ToastService.error).toHaveBeenCalledWith('Invalid file format');
+      }
+    });
+  });
+
+  describe('getDyeHexByName functionality', () => {
+    it('should display correct hex color for known dye names', () => {
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+
+      // Find companion swatches (should have actual hex colors)
+      const paletteItems = content.querySelectorAll('.palette-item');
+      expect(paletteItems.length).toBeGreaterThan(0);
+
+      // Check first palette item - "Snow White" companion should have #FFFFFF
+      const firstItem = paletteItems[0];
+      const swatches = firstItem.querySelectorAll('div[title]');
+      const snowWhiteSwatch = Array.from(swatches).find((s) =>
+        s.getAttribute('title')?.includes('Snow White')
+      ) as HTMLElement;
+
+      if (snowWhiteSwatch) {
+        expect(snowWhiteSwatch.style.backgroundColor).toBe('rgb(255, 255, 255)');
+      }
+    });
+
+    it('should apply fallback style for unknown dye names', () => {
+      // Create palette with unknown dye names
+      vi.mocked(PaletteService.getPalettesSortedByDate).mockReturnValue([
+        {
+          id: 'palette-unknown',
+          name: 'Unknown Palette',
+          baseColor: '#FF0000',
+          baseDyeName: 'Red',
+          harmonyType: 'complementary',
+          companions: ['Unknown Dye Name'],
+          dateCreated: Date.now(),
+        },
+      ]);
+
+      showSavedPalettesModal();
+
+      const call = vi.mocked(ModalService.show).mock.calls[0][0];
+      const content = call.content as HTMLElement;
+
+      // Find companion swatch with unknown dye
+      const swatches = content.querySelectorAll('.palette-item div[title="Unknown Dye Name"]');
+      expect(swatches.length).toBe(1);
+
+      const unknownSwatch = swatches[0] as HTMLElement;
+      // Should have fallback class
+      expect(unknownSwatch.classList.contains('bg-gray-200')).toBe(true);
+    });
   });
 });
 

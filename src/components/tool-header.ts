@@ -50,4 +50,8 @@ export class ToolHeader extends BaseComponent {
 
     this.container.appendChild(header);
   }
+
+  bindEvents(): void {
+    // No events to bind for ToolHeader
+  }
 }

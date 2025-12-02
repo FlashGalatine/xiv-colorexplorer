@@ -1708,4 +1708,226 @@ describe('HarmonyGeneratorTool', () => {
       expect(generateBtn.style.filter).toBe('brightness(0.9)');
     });
   });
+
+  // ==========================================================================
+  // Function Coverage Tests - destroy method complete coverage
+  // ==========================================================================
+
+  describe('destroy method complete coverage', () => {
+    it('should unsubscribe from language changes', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Set up a mock unsubscribe function
+      const mockUnsubscribe = vi.fn();
+      (component as unknown as { languageUnsubscribe: (() => void) | null }).languageUnsubscribe =
+        mockUnsubscribe;
+
+      component.destroy();
+
+      expect(mockUnsubscribe).toHaveBeenCalled();
+    });
+
+    it('should handle null languageUnsubscribe', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      (component as unknown as { languageUnsubscribe: null }).languageUnsubscribe = null;
+
+      expect(() => {
+        component.destroy();
+      }).not.toThrow();
+    });
+
+    it('should destroy dyeFilters if exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockDyeFilters = { destroy: vi.fn() };
+      (component as unknown as { dyeFilters: typeof mockDyeFilters }).dyeFilters = mockDyeFilters;
+
+      component.destroy();
+
+      expect(mockDyeFilters.destroy).toHaveBeenCalled();
+    });
+
+    it('should destroy emptyStateElement if exists', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const mockEmptyState = { destroy: vi.fn() };
+      (component as unknown as { emptyStateElement: typeof mockEmptyState }).emptyStateElement =
+        mockEmptyState;
+
+      component.destroy();
+
+      expect(mockEmptyState.destroy).toHaveBeenCalled();
+    });
+
+    it('should clear all Maps on destroy', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Generate some harmonies first
+      (component as unknown as ComponentWithPrivate).baseColor = '#FF0000';
+      (component as unknown as ComponentWithPrivate).generateHarmonies();
+
+      // Verify maps have entries
+      const displays = (component as unknown as ComponentWithPrivate).harmonyDisplays;
+      expect(displays.size).toBeGreaterThan(0);
+
+      component.destroy();
+
+      // Verify maps are cleared
+      expect(displays.size).toBe(0);
+    });
+
+    it('should null out element references', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      component.destroy();
+
+      expect(
+        (component as unknown as { harmoniesGridElement: HTMLElement | null }).harmoniesGridElement
+      ).toBeNull();
+      expect(
+        (component as unknown as { companionDyesInput: HTMLInputElement | null }).companionDyesInput
+      ).toBeNull();
+    });
+
+    it('should clear suggestionsModeRadios map', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const radios = (
+        component as unknown as { suggestionsModeRadios: Map<string, HTMLInputElement> }
+      ).suggestionsModeRadios;
+      expect(radios.size).toBeGreaterThan(0);
+
+      component.destroy();
+
+      expect(radios.size).toBe(0);
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - updateLocalizedText
+  // ==========================================================================
+
+  describe('updateLocalizedText method', () => {
+    it('should update title text', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      expect(() => {
+        (component as unknown as { updateLocalizedText: () => void }).updateLocalizedText();
+      }).not.toThrow();
+    });
+
+    it('should handle missing title element', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Remove h2 elements
+      container.querySelectorAll('h2').forEach((el) => el.remove());
+
+      expect(() => {
+        (component as unknown as { updateLocalizedText: () => void }).updateLocalizedText();
+      }).not.toThrow();
+    });
+
+    it('should handle missing subtitle element', () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      // Remove subtitle
+      container.querySelectorAll('h2 + p').forEach((el) => el.remove());
+
+      expect(() => {
+        (component as unknown as { updateLocalizedText: () => void }).updateLocalizedText();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - saved palettes button
+  // ==========================================================================
+
+  describe('saved palettes button', () => {
+    it('should handle click on saved palettes button', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+
+      const savedPalettesBtn = (component as unknown as Record<string, HTMLElement>)
+        ._savedPalettesBtn as HTMLButtonElement;
+
+      expect(savedPalettesBtn).toBeTruthy();
+
+      // Click should trigger modal but not throw
+      expect(() => {
+        savedPalettesBtn.click();
+      }).not.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // Function Coverage Tests - event handlers
+  // ==========================================================================
+
+  describe('event handlers', () => {
+    it('should handle dyeAction event for comparison', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      const navigateSpy = vi.fn();
+      window.addEventListener('navigateToTool', navigateSpy);
+
+      // Dispatch dyeAction event
+      container.dispatchEvent(
+        new CustomEvent('dyeAction', {
+          detail: { action: 'comparison', dye: { id: 1, name: 'Test Dye' } },
+          bubbles: true,
+        })
+      );
+
+      expect(navigateSpy).toHaveBeenCalled();
+      window.removeEventListener('navigateToTool', navigateSpy);
+    });
+
+    it('should handle savePalette event', async () => {
+      const container = document.createElement('div');
+      const component = new HarmonyGeneratorTool(container);
+      component.render();
+      await (component as unknown as { bindEvents: () => Promise<void> }).bindEvents();
+
+      // Dispatch savePalette event - should not throw
+      expect(() => {
+        container.dispatchEvent(
+          new CustomEvent('savePalette', {
+            detail: {
+              harmonyType: 'complementary',
+              harmonyName: 'Complementary',
+              baseColor: '#FF0000',
+              dyes: [],
+            },
+            bubbles: true,
+          })
+        );
+      }).not.toThrow();
+    });
+  });
 });
