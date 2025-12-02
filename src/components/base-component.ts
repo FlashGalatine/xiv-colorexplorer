@@ -324,7 +324,10 @@ export abstract class BaseComponent implements ComponentLifecycle {
 
     const target = this.element || this.container;
     target.addEventListener(eventName, boundHandler);
-    this.listeners.set(`custom_${eventName}`, {
+
+    // Use unique key with timestamp to prevent overwrites when same event is registered multiple times
+    const listenerKey = `custom_${eventName}_${Date.now()}_${this.listeners.size}`;
+    this.listeners.set(listenerKey, {
       target,
       event: eventName,
       handler: boundHandler,

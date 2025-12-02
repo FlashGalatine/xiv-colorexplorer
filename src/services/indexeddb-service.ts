@@ -186,7 +186,11 @@ export class IndexedDBService {
       try {
         const transaction = this.db!.transaction(storeName, 'readwrite');
         const store = transaction.objectStore(storeName);
-        const request = store.put({ key, value });
+
+        // Special handling for PALETTES store (uses keyPath: 'id')
+        // Store the value directly instead of wrapping it
+        const data = storeName === STORES.PALETTES ? value : { key, value };
+        const request = store.put(data);
 
         request.onsuccess = () => {
           resolve(true);
