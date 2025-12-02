@@ -14,12 +14,7 @@ import { MarketBoard } from './market-board';
 import { DyeFilters } from './dye-filters';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import { DyePreviewOverlay } from './dye-preview-overlay';
-import {
-  dyeService,
-  LanguageService,
-  ColorService,
-  ToastService,
-} from '@services/index';
+import { dyeService, LanguageService, ColorService, ToastService } from '@services/index';
 import type { PriceData, DyeWithDistance } from '@shared/types';
 import { PricingMixin, type PricingState } from '@services/pricing-mixin';
 import { ToolHeader } from './tool-header';
@@ -248,9 +243,8 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       this.imageUpload = new ImageUploadDisplay(imageUploadContainer);
       this.imageUpload.init();
 
-      imageUploadContainer.addEventListener('image-loaded', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        const { image } = customEvent.detail;
+      this.onCustom('image-loaded', (event: CustomEvent) => {
+        const { image } = event.detail;
 
         // Show success toast
         ToastService.success('✓ Image loaded successfully');
@@ -261,10 +255,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         }
       });
 
-      imageUploadContainer.addEventListener('error', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        const message = customEvent.detail?.message || 'Failed to load image';
-        logger.error('Image upload error:', customEvent.detail);
+      this.onCustom('error', (event: CustomEvent) => {
+        const message = event.detail?.message || 'Failed to load image';
+        logger.error('Image upload error:', event.detail);
         ToastService.error(message);
       });
     }
@@ -296,9 +289,8 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       this.imageUpload = new ImageUploadDisplay(imageUploadContainer);
       this.imageUpload.init();
 
-      imageUploadContainer.addEventListener('image-loaded', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        const { image } = customEvent.detail;
+      this.onCustom('image-loaded', (event: CustomEvent) => {
+        const { image } = event.detail;
 
         // Show success toast
         ToastService.success('✓ Image loaded successfully');
@@ -323,11 +315,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         }
       });
 
-      imageUploadContainer.addEventListener('error', (event: Event) => {
-        console.log('DEBUG: error event received');
-        const customEvent = event as CustomEvent;
-        const message = customEvent.detail?.message || 'Failed to load image';
-        logger.error('Image upload error:', customEvent.detail);
+      this.onCustom('error', (event: CustomEvent) => {
+        const message = event.detail?.message || 'Failed to load image';
+        logger.error('Image upload error:', event.detail);
         ToastService.error(message);
       });
     }
@@ -337,9 +327,8 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       this.colorPicker = new ColorPickerDisplay(colorPickerContainer);
       this.colorPicker.init();
 
-      colorPickerContainer.addEventListener('color-selected', (event: Event) => {
-        const customEvent = event as CustomEvent;
-        const { color } = customEvent.detail;
+      this.onCustom('color-selected', (event: CustomEvent) => {
+        const { color } = event.detail;
         this.matchColor(color);
       });
     }
@@ -396,8 +385,6 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     }
   }
 
-
-
   /**
    * Fetch prices for matched dyes
    */
@@ -423,8 +410,6 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   async updatePrices(): Promise<void> {
     await this.fetchPricesForMatchedDyes();
   }
-
-
 
   /**
    * Refresh the results display (re-render with current price data)
@@ -520,7 +505,6 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     // Load recent colors from localStorage (T5)
     // Load recent colors from localStorage (T5)
     // Handled by RecentColorsPanel
-
   }
 
   /**
@@ -732,7 +716,6 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   }
 
   // ============================================================================
-
 
   /**
    * Get component state
