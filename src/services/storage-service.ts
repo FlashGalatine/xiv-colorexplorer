@@ -626,7 +626,7 @@ export class SecureStorage {
 
       // Remove oldest entries until under limit
       let freed = 0;
-      let totalSize = currentSize;
+      const totalSize = currentSize;
       for (const entry of entries) {
         if (totalSize - freed < MAX_CACHE_SIZE) {
           break;

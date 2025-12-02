@@ -75,9 +75,7 @@ export class RecentColorsPanel extends BaseComponent {
     const normalizedHex = hex.toUpperCase();
 
     // Check if color already exists
-    const existingIndex = this.recentColors.findIndex(
-      (c) => c.hex.toUpperCase() === normalizedHex
-    );
+    const existingIndex = this.recentColors.findIndex((c) => c.hex.toUpperCase() === normalizedHex);
 
     if (existingIndex !== -1) {
       // Remove existing and re-add at front - need full re-render for reorder

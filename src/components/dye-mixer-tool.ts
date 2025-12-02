@@ -951,5 +951,4 @@ export class DyeMixerTool extends BaseComponent {
         ToastService.error(LanguageService.t('mixer.copyUrlFailed'));
       });
   }
-
 }
