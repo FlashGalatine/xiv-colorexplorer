@@ -447,11 +447,11 @@ export class SecureStorage {
         return false;
       }
 
-      // Check cache size before storing
-      await this.enforceSizeLimit();
-
       const serialized = typeof value === 'string' ? value : JSON.stringify(value);
       const checksum = await generateChecksum(serialized);
+
+      // Check cache size after checksum generation to avoid race conditions
+      await this.enforceSizeLimit();
 
       const entry: SecureStorageEntry<T> = {
         value,
