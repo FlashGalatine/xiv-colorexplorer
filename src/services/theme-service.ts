@@ -241,6 +241,14 @@ export class ThemeService {
     const baseName = this.currentTheme.replace(/-dark$|(-light)$/, '');
     const newTheme = (isCurrentlyDark ? `${baseName}-light` : `${baseName}-dark`) as ThemeName;
 
+    // Check if the new theme variant exists
+    if (!this.isValidThemeName(newTheme)) {
+      logger.warn(
+        `Theme ${this.currentTheme} does not have a ${isCurrentlyDark ? 'light' : 'dark'} variant`
+      );
+      return;
+    }
+
     this.setTheme(newTheme);
   }
 

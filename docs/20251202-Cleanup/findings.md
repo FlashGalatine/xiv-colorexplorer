@@ -4,7 +4,7 @@
 - **[RESOLVED] [BUG-C01] Race Condition in `SecureStorage.setItem`**: Fixed by moving `enforceSizeLimit()` call to after checksum generation. This ensures size calculations are based on current state including the item being stored, preventing concurrent calls from using outdated size information.
 
 ## High Priority Issues
-- **[BUG-H01] `ThemeService.toggleDarkMode` Crash**: The `toggleDarkMode` method assumes a `-light`/`-dark` naming convention for themes. This logic fails for themes without these suffixes (e.g., `sugar-riot`, `cotton-candy`), generating an invalid theme name and potentially causing a crash or incorrect theme application.
+- **[RESOLVED] [BUG-H01] `ThemeService.toggleDarkMode` Crash**: Fixed by adding validation check before toggling. The method now checks if the target theme variant exists using `isValidThemeName()` and logs a warning if the theme doesn't have a light/dark variant, preventing crashes.
 - **[BUG-H02] `DyeFilters` Localization Failure**: The `DyeFilters` component uses hardcoded English string checks (e.g., `startsWith('dark')`, `includes('Metallic')`) to filter dyes. This logic will fail for non-English locales where dye names do not follow these specific English patterns.
 - **[BUG-H03] `MarketBoard` Price Fetching Localization Failure**: `MarketBoard.shouldFetchPrice` relies on matching `dye.acquisition` against English constants defined in `PRICE_CATEGORIES`. If `dye.acquisition` values are localized in the dye database, this check will fail, preventing price fetching for valid dyes in non-English locales.
 
