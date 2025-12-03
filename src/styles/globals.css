@@ -229,6 +229,11 @@ body.theme-sugar-riot .tool-card:hover {
 }
 
 /* Light themes that need adjusted warning colors for better contrast */
+.theme-standard-light,
+.theme-cotton-candy,
+.theme-grayscale-light,
+.theme-high-contrast-light,
+.theme-parchment-light,
 .theme-hydaelyn-light {
   --toast-warning-text: #b45309;
 }
