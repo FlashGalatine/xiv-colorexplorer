@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.11] - 2025-12-02
+
+### ♿ Accessibility Checker Redesign
+
+**Status**: ✅ COMPLETE
+**Focus**: Improved clarity of contrast information in the Accessibility Checker tool.
+
+#### Breaking Changes ⚠️
+
+**Removed Confusing Scores**
+- Removed "Contrast Score" (0-100) which was calculated as `min(contrastLight, contrastDark) * 20` - a confusing metric
+- Removed "Overall Accessibility Score" summary which combined multiple factors into an unclear single number
+
+#### New Features ✅
+
+**Clear WCAG Contrast Display**
+- Shows actual WCAG contrast ratios (e.g., "4.5:1", "7.2:1") instead of arbitrary 0-100 scores
+- Displays contrast vs White and contrast vs Black separately for each dye
+- Shows WCAG compliance level badges (AAA ≥7:1, AA ≥4.5:1, Fail <4.5:1)
+
+**Improved Pair Comparisons**
+- Shows actual contrast ratio between dye pairs (1-21 WCAG scale)
+- Displays distinguishability scores per vision type (normal, deuteranopia, protanopia, tritanopia)
+- Warns when pairs are hard to distinguish for specific colorblindness types
+
+**Reduced Maximum Dyes**
+- Changed from 12 dyes to 4 dyes maximum for clearer, more focused analysis
+
+#### Files Modified ✅
+- `src/components/accessibility-checker-tool.ts` - Complete redesign of contrast display
+- `src/locales/en.json` - Updated locale strings
+- `src/locales/ja.json` - Japanese translations
+- `src/locales/de.json` - German translations
+- `src/locales/fr.json` - French translations
+- `src/locales/ko.json` - Korean translations
+- `src/locales/zh.json` - Chinese translations
+- `src/components/__tests__/accessibility-checker-tool.test.ts` - Updated tests
+
+#### Benefits Achieved ✅
+- ✅ **Clearer Information** - Users see actual WCAG ratios instead of arbitrary scores
+- ✅ **Industry Standard** - Uses familiar WCAG contrast ratio scale (1-21)
+- ✅ **Actionable Insights** - Clear AAA/AA/Fail badges show accessibility compliance
+- ✅ **Better Colorblindness Support** - Per-vision-type distinguishability scores
+
+---
+
 ## [2.4.10] - 2025-12-02
 
 ### 🎨 UI Improvements: Dye Selector Color Swatches

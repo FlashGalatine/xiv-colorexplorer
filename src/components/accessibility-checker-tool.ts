@@ -17,14 +17,22 @@ import { ICON_TOOL_ACCESSIBILITY } from '@shared/tool-icons';
 import { ICON_WARNING } from '@shared/ui-icons';
 
 /**
+ * Contrast result for a single background
+ */
+export interface ContrastResult {
+  ratio: number; // Actual WCAG contrast ratio (1-21)
+  wcagLevel: 'AAA' | 'AA' | 'Fail';
+}
+
+/**
  * Individual dye accessibility analysis
  */
 export interface DyeAccessibilityResult {
   dyeId: number;
   dyeName: string;
   hex: string;
-  contrastScore: number; // 0-100
-  wcagLevel: 'AAA' | 'AA' | 'Fail';
+  contrastVsWhite: ContrastResult;
+  contrastVsBlack: ContrastResult;
   warnings: string[];
   // Colorblindness simulations for all 5 vision types
   colorblindnessSimulations: {
@@ -37,7 +45,7 @@ export interface DyeAccessibilityResult {
 }
 
 /**
- * Dye pair distinguishability analysis
+ * Dye pair comparison result
  */
 export interface DyePairResult {
   dye1Id: number;
@@ -46,19 +54,26 @@ export interface DyePairResult {
   dye2Id: number;
   dye2Name: string;
   dye2Hex: string;
-  distinguishability: number; // 0-100
+  contrastRatio: number; // Actual WCAG contrast ratio between the two dyes
+  wcagLevel: 'AAA' | 'AA' | 'Fail';
+  distinguishability: number; // 0-100 color distance score
+  colorblindnessDistinguishability: {
+    normal: number;
+    deuteranopia: number;
+    protanopia: number;
+    tritanopia: number;
+  };
   warnings: string[];
 }
 
 /**
  * Accessibility Checker Tool Component
- * Simulate colorblindness and check color accessibility for up to 12 dyes
- * Supports both individual dye analysis and optional pairwise comparisons
+ * Simulate colorblindness and check color accessibility for up to 4 dyes
+ * Shows contrast ratios vs white/black and pairwise comparisons
  */
 export class AccessibilityCheckerTool extends BaseComponent {
   private dyeSelector: DyeSelector | null = null;
   private selectedDyes: Dye[] = [];
-  private dyePairs: [Dye, Dye][] = [];
   private dyeResults: DyeAccessibilityResult[] = [];
   private pairResults: DyePairResult[] = [];
   private languageUnsubscribe: (() => void) | null = null;
@@ -99,7 +114,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     const selectorLabel = this.createElement('h3', {
-      textContent: LanguageService.tInterpolate('accessibility.selectUpTo', { count: '12' }),
+      textContent: LanguageService.tInterpolate('accessibility.selectUpTo', { count: '4' }),
       className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
     });
     selectorSection.appendChild(selectorLabel);
@@ -130,7 +145,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     if (dyeSelectorContainer && !this.dyeSelector) {
       this.dyeSelector = new DyeSelector(dyeSelectorContainer, {
-        maxSelections: 12,
+        maxSelections: 4,
         allowMultiple: true,
         allowDuplicates: true,
         showCategories: true,
@@ -172,7 +187,6 @@ export class AccessibilityCheckerTool extends BaseComponent {
     }
 
     // Clear arrays
-    this.dyePairs = [];
     this.pairResults = [];
 
     super.destroy();
@@ -198,7 +212,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     const selectorLabel = this.querySelector<HTMLElement>('h3');
     if (selectorLabel) {
       selectorLabel.textContent = LanguageService.tInterpolate('accessibility.selectUpTo', {
-        count: '12',
+        count: '4',
       });
     }
 
@@ -230,11 +244,6 @@ export class AccessibilityCheckerTool extends BaseComponent {
     // Calculate individual dye results
     this.dyeResults = this.selectedDyes.map((dye) => this.analyzeDye(dye));
 
-    // Render overall accessibility score
-    const overallScore = this.calculateOverallAccessibilityScore();
-    const overallSection = this.renderOverallAccessibilityScore(overallScore);
-    resultsContainer.appendChild(overallSection);
-
     // Render individual dye analysis
     const dyesSection = this.createElement('div', {
       className: 'space-y-4',
@@ -247,7 +256,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
     dyesSection.appendChild(dyesLabel);
 
     const dyesGrid = this.createElement('div', {
-      className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4',
+      className: 'grid grid-cols-1 md:grid-cols-2 gap-4',
     });
 
     for (const result of this.dyeResults) {
@@ -260,6 +269,14 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     // Render pair comparison section if 2+ dyes selected
     if (this.selectedDyes.length >= 2) {
+      // Calculate all pair results
+      this.pairResults = [];
+      for (let i = 0; i < this.selectedDyes.length; i++) {
+        for (let j = i + 1; j < this.selectedDyes.length; j++) {
+          this.pairResults.push(this.analyzePair(this.selectedDyes[i], this.selectedDyes[j]));
+        }
+      }
+
       const pairsSection = this.createElement('div', {
         className: 'space-y-4 mt-8',
       });
@@ -270,20 +287,27 @@ export class AccessibilityCheckerTool extends BaseComponent {
       });
       pairsSection.appendChild(pairsLabel);
 
-      const pairsNote = this.createElement('p', {
-        textContent: LanguageService.t('accessibility.pairComparisonNote'),
-        className: 'text-sm text-gray-600 dark:text-gray-400 mb-4',
+      const pairsGrid = this.createElement('div', {
+        className: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
       });
-      pairsSection.appendChild(pairsNote);
 
-      const pairsContainer = this.createElement('div', {
-        id: 'pairs-container',
-        className: 'space-y-3',
-      });
-      pairsSection.appendChild(pairsContainer);
+      for (const pairResult of this.pairResults) {
+        const card = this.renderPairCard(pairResult);
+        pairsGrid.appendChild(card);
+      }
 
+      pairsSection.appendChild(pairsGrid);
       resultsContainer.appendChild(pairsSection);
     }
+  }
+
+  /**
+   * Get WCAG level from contrast ratio
+   */
+  private getWCAGLevel(ratio: number): 'AAA' | 'AA' | 'Fail' {
+    if (ratio >= 7) return 'AAA';
+    if (ratio >= 4.5) return 'AA';
+    return 'Fail';
   }
 
   /**
@@ -298,12 +322,6 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     const contrastLight = ColorService.getContrastRatio(primaryHex, lightBg);
     const contrastDark = ColorService.getContrastRatio(primaryHex, darkBg);
-
-    // Use the worse contrast ratio (min value) for safety
-    const contrastScore = Math.round(Math.min(contrastLight, contrastDark) * 20);
-
-    // Check accessibility levels
-    const wcagLevel = contrastScore >= 100 ? 'AAA' : contrastScore >= 70 ? 'AA' : 'Fail';
 
     const warnings: string[] = [];
 
@@ -330,8 +348,14 @@ export class AccessibilityCheckerTool extends BaseComponent {
       dyeId: dye.id,
       dyeName: LanguageService.getDyeName(dye.itemID) || dye.name,
       hex: primaryHex,
-      contrastScore,
-      wcagLevel,
+      contrastVsWhite: {
+        ratio: Math.round(contrastLight * 100) / 100,
+        wcagLevel: this.getWCAGLevel(contrastLight),
+      },
+      contrastVsBlack: {
+        ratio: Math.round(contrastDark * 100) / 100,
+        wcagLevel: this.getWCAGLevel(contrastDark),
+      },
       warnings,
       colorblindnessSimulations: {
         normal: primaryHex,
@@ -347,9 +371,39 @@ export class AccessibilityCheckerTool extends BaseComponent {
    * Analyze distinguishability between two dyes
    */
   private analyzePair(dye1: Dye, dye2: Dye): DyePairResult {
+    const contrastRatio = ColorService.getContrastRatio(dye1.hex, dye2.hex);
     const distance = ColorService.getColorDistance(dye1.hex, dye2.hex);
     // Normalize to 0-100 scale (max distance is 441.67)
     const distinguishability = Math.round((distance / 441.67) * 100);
+
+    // Calculate distinguishability under each vision type
+    const normalDist = Math.round(
+      (ColorService.getColorDistance(dye1.hex, dye2.hex) / 441.67) * 100
+    );
+    const deuterDist = Math.round(
+      (ColorService.getColorDistance(
+        ColorService.simulateColorblindnessHex(dye1.hex, 'deuteranopia'),
+        ColorService.simulateColorblindnessHex(dye2.hex, 'deuteranopia')
+      ) /
+        441.67) *
+        100
+    );
+    const protanDist = Math.round(
+      (ColorService.getColorDistance(
+        ColorService.simulateColorblindnessHex(dye1.hex, 'protanopia'),
+        ColorService.simulateColorblindnessHex(dye2.hex, 'protanopia')
+      ) /
+        441.67) *
+        100
+    );
+    const tritanDist = Math.round(
+      (ColorService.getColorDistance(
+        ColorService.simulateColorblindnessHex(dye1.hex, 'tritanopia'),
+        ColorService.simulateColorblindnessHex(dye2.hex, 'tritanopia')
+      ) /
+        441.67) *
+        100
+    );
 
     const warnings: string[] = [];
 
@@ -359,6 +413,17 @@ export class AccessibilityCheckerTool extends BaseComponent {
       warnings.push(LanguageService.t('accessibility.somewhatSimilar'));
     }
 
+    // Add colorblindness-specific warnings
+    if (deuterDist < 20 && normalDist >= 20) {
+      warnings.push(LanguageService.t('accessibility.hardForDeuteranopia'));
+    }
+    if (protanDist < 20 && normalDist >= 20) {
+      warnings.push(LanguageService.t('accessibility.hardForProtanopia'));
+    }
+    if (tritanDist < 20 && normalDist >= 20) {
+      warnings.push(LanguageService.t('accessibility.hardForTritanopia'));
+    }
+
     return {
       dye1Id: dye1.id,
       dye1Name: LanguageService.getDyeName(dye1.itemID) || dye1.name,
@@ -366,7 +431,15 @@ export class AccessibilityCheckerTool extends BaseComponent {
       dye2Id: dye2.id,
       dye2Name: LanguageService.getDyeName(dye2.itemID) || dye2.name,
       dye2Hex: dye2.hex,
+      contrastRatio: Math.round(contrastRatio * 100) / 100,
+      wcagLevel: this.getWCAGLevel(contrastRatio),
       distinguishability,
+      colorblindnessDistinguishability: {
+        normal: normalDist,
+        deuteranopia: deuterDist,
+        protanopia: protanDist,
+        tritanopia: tritanDist,
+      },
       warnings,
     };
   }
@@ -408,51 +481,40 @@ export class AccessibilityCheckerTool extends BaseComponent {
     swatchRow.appendChild(swatchText);
     card.appendChild(swatchRow);
 
-    // Contrast score
-    const scoreSection = this.createElement('div', {
-      className: 'space-y-2 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700',
+    // Contrast section - vs White and vs Black
+    const contrastSection = this.createElement('div', {
+      className: 'space-y-3 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700',
     });
 
-    const scoreLabel = this.createElement('div', {
-      textContent: LanguageService.t('accessibility.contrastScore'),
+    const contrastLabel = this.createElement('div', {
+      textContent: LanguageService.t('accessibility.contrastRatios'),
       className: 'text-sm font-medium text-gray-700 dark:text-gray-300',
     });
-    addInfoIconTo(scoreLabel, TOOLTIP_CONTENT.wcagContrast);
-    scoreSection.appendChild(scoreLabel);
+    addInfoIconTo(contrastLabel, TOOLTIP_CONTENT.wcagContrast);
+    contrastSection.appendChild(contrastLabel);
 
-    const scoreBar = this.createElement('div', {
-      className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden',
-    });
+    // Contrast vs White
+    const whiteRow = this.renderContrastRow(
+      LanguageService.t('accessibility.vsWhite'),
+      '#FFFFFF',
+      result.contrastVsWhite
+    );
+    contrastSection.appendChild(whiteRow);
 
-    const scoreFill = this.createElement('div', {
-      className: this.getScoreColor(result.contrastScore),
-      attributes: {
-        style: `width: ${result.contrastScore}%`,
-      },
-    });
-    scoreBar.appendChild(scoreFill);
-    scoreSection.appendChild(scoreBar);
+    // Contrast vs Black
+    const blackRow = this.renderContrastRow(
+      LanguageService.t('accessibility.vsBlack'),
+      '#000000',
+      result.contrastVsBlack
+    );
+    contrastSection.appendChild(blackRow);
 
-    const scoreText = this.createElement('div', {
-      className: 'flex justify-between text-xs',
-    });
-    const scoreValue = this.createElement('span', {
-      textContent: `${result.contrastScore}/${100}`,
-      className: 'font-semibold text-gray-900 dark:text-white',
-    });
-    const wcagBadge = this.createElement('span', {
-      textContent: `WCAG ${result.wcagLevel}`,
-      className: this.getWCAGBadgeColor(result.wcagLevel),
-    });
-    scoreText.appendChild(scoreValue);
-    scoreText.appendChild(wcagBadge);
-    scoreSection.appendChild(scoreText);
-    card.appendChild(scoreSection);
+    card.appendChild(contrastSection);
 
     // Warnings
     if (result.warnings.length > 0) {
       const warningsSection = this.createElement('div', {
-        className: 'space-y-1',
+        className: 'space-y-1 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700',
       });
 
       const warningsLabel = this.createElement('div', {
@@ -474,7 +536,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
     // Colorblindness simulations
     const colorblindSection = this.createElement('div', {
-      className: 'space-y-2 pt-3 border-t border-gray-200 dark:border-gray-700',
+      className: 'space-y-2',
     });
 
     const colorblindLabel = this.createElement('div', {
@@ -526,6 +588,59 @@ export class AccessibilityCheckerTool extends BaseComponent {
     card.appendChild(colorblindSection);
 
     return card;
+  }
+
+  /**
+   * Render a contrast ratio row with color swatch and WCAG badge
+   */
+  private renderContrastRow(
+    label: string,
+    bgColor: string,
+    contrast: ContrastResult
+  ): HTMLElement {
+    const row = this.createElement('div', {
+      className: 'flex items-center justify-between gap-2',
+    });
+
+    const leftSide = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    const colorSwatch = this.createElement('div', {
+      className: 'w-5 h-5 rounded border border-gray-400 dark:border-gray-500',
+      attributes: {
+        style: `background-color: ${bgColor}`,
+      },
+    });
+    leftSide.appendChild(colorSwatch);
+
+    const labelText = this.createElement('span', {
+      textContent: label,
+      className: 'text-xs text-gray-600 dark:text-gray-400',
+    });
+    leftSide.appendChild(labelText);
+
+    row.appendChild(leftSide);
+
+    const rightSide = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    const ratioText = this.createElement('span', {
+      textContent: `${contrast.ratio}:1`,
+      className: 'text-xs font-mono font-semibold text-gray-900 dark:text-white',
+    });
+    rightSide.appendChild(ratioText);
+
+    const wcagBadge = this.createElement('span', {
+      textContent: `WCAG ${contrast.wcagLevel}`,
+      className: this.getWCAGBadgeColor(contrast.wcagLevel),
+    });
+    rightSide.appendChild(wcagBadge);
+
+    row.appendChild(rightSide);
+
+    return row;
   }
 
   /**
@@ -588,57 +703,108 @@ export class AccessibilityCheckerTool extends BaseComponent {
     pairRow.appendChild(rightDye);
     card.appendChild(pairRow);
 
-    // Distinguishability score
-    const scoreSection = this.createElement('div', {
+    // Contrast ratio between the two dyes
+    const contrastSection = this.createElement('div', {
+      className: 'mb-3 pb-3 border-b border-gray-200 dark:border-gray-700',
+    });
+
+    const contrastRow = this.createElement('div', {
+      className: 'flex items-center justify-between',
+    });
+
+    const contrastLabel = this.createElement('span', {
+      textContent: LanguageService.t('accessibility.contrastBetween'),
+      className: 'text-xs text-gray-600 dark:text-gray-400',
+    });
+    contrastRow.appendChild(contrastLabel);
+
+    const contrastValue = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    const ratioText = this.createElement('span', {
+      textContent: `${result.contrastRatio}:1`,
+      className: 'text-sm font-mono font-semibold text-gray-900 dark:text-white',
+    });
+    contrastValue.appendChild(ratioText);
+
+    const wcagBadge = this.createElement('span', {
+      textContent: `WCAG ${result.wcagLevel}`,
+      className: this.getWCAGBadgeColor(result.wcagLevel),
+    });
+    contrastValue.appendChild(wcagBadge);
+
+    contrastRow.appendChild(contrastValue);
+    contrastSection.appendChild(contrastRow);
+    card.appendChild(contrastSection);
+
+    // Distinguishability under different vision types
+    const visionSection = this.createElement('div', {
       className: 'space-y-2',
     });
 
-    const scoreBar = this.createElement('div', {
-      className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden',
+    const visionLabel = this.createElement('div', {
+      textContent: LanguageService.t('accessibility.distinguishabilityByVision'),
+      className: 'text-xs font-semibold text-gray-700 dark:text-gray-300',
+    });
+    visionSection.appendChild(visionLabel);
+
+    const visionGrid = this.createElement('div', {
+      className: 'grid grid-cols-2 gap-2',
     });
 
-    const scoreFill = this.createElement('div', {
-      className: this.getDistinguishabilityColor(result.distinguishability),
-      attributes: {
-        style: `width: ${result.distinguishability}%`,
-      },
-    });
-    scoreBar.appendChild(scoreFill);
-    scoreSection.appendChild(scoreBar);
+    const visionTypes: Array<{
+      key: keyof typeof result.colorblindnessDistinguishability;
+      localeKey: string;
+    }> = [
+      { key: 'normal', localeKey: 'normal' },
+      { key: 'deuteranopia', localeKey: 'deuteranopia' },
+      { key: 'protanopia', localeKey: 'protanopia' },
+      { key: 'tritanopia', localeKey: 'tritanopia' },
+    ];
 
-    const scoreText = this.createElement('div', {
-      className: 'flex justify-between text-xs',
-    });
-    const scoreValue = this.createElement('span', {
-      textContent: `${result.distinguishability}% ${LanguageService.t('accessibility.distinguishable')}`,
-      className: 'font-semibold text-gray-900 dark:text-white',
-    });
-    scoreText.appendChild(scoreValue);
-    scoreSection.appendChild(scoreText);
+    for (const visionType of visionTypes) {
+      const dist = result.colorblindnessDistinguishability[visionType.key];
+      const visionRow = this.createElement('div', {
+        className: 'flex items-center justify-between',
+      });
+
+      const visionName = this.createElement('span', {
+        textContent: LanguageService.getVisionType(visionType.localeKey),
+        className: 'text-xs text-gray-600 dark:text-gray-400',
+      });
+      visionRow.appendChild(visionName);
+
+      const distValue = this.createElement('span', {
+        textContent: `${dist}%`,
+        className: `text-xs font-semibold ${this.getDistinguishabilityTextColor(dist)}`,
+      });
+      visionRow.appendChild(distValue);
+
+      visionGrid.appendChild(visionRow);
+    }
+
+    visionSection.appendChild(visionGrid);
+    card.appendChild(visionSection);
 
     // Warnings
     if (result.warnings.length > 0) {
+      const warningsSection = this.createElement('div', {
+        className: 'mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-1',
+      });
+
       for (const warning of result.warnings) {
         const warningText = this.createElement('div', {
           innerHTML: `<span class="inline-block w-4 h-4 align-middle mr-1">${ICON_WARNING}</span>${warning}`,
-          className: 'text-xs text-orange-700 dark:text-orange-300 mt-2',
+          className: 'text-xs text-orange-700 dark:text-orange-300',
         });
-        scoreSection.appendChild(warningText);
+        warningsSection.appendChild(warningText);
       }
+
+      card.appendChild(warningsSection);
     }
 
-    card.appendChild(scoreSection);
     return card;
-  }
-
-  /**
-   * Get color class for contrast score bar
-   */
-  private getScoreColor(score: number): string {
-    if (score >= 100) return 'bg-green-500';
-    if (score >= 70) return 'bg-blue-500';
-    if (score >= 40) return 'bg-yellow-500';
-    return 'bg-red-500';
   }
 
   /**
@@ -647,202 +813,21 @@ export class AccessibilityCheckerTool extends BaseComponent {
   private getWCAGBadgeColor(level: string): string {
     switch (level) {
       case 'AAA':
-        return 'px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded';
+        return 'px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs';
       case 'AA':
-        return 'px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded';
+        return 'px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs';
       default:
-        return 'px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded';
+        return 'px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-xs';
     }
   }
 
   /**
-   * Get color class for distinguishability score
+   * Get text color class for distinguishability percentage
    */
-  private getDistinguishabilityColor(score: number): string {
-    if (score >= 80) return 'bg-green-500';
-    if (score >= 60) return 'bg-blue-500';
-    if (score >= 40) return 'bg-yellow-500';
-    return 'bg-red-500';
-  }
-
-  /**
-   * Calculate overall accessibility score from selected dyes
-   * Normalizes penalties by total comparisons to scale properly with any number of dyes.
-   * Scores remain meaningful whether selecting 2 dyes or 12 dyes.
-   */
-  private calculateOverallAccessibilityScore(): number {
-    // If less than 2 dyes, there are no pairs to compare, so score is 100% (Pass)
-    if (this.selectedDyes.length < 2) return 100;
-
-    const visionTypes: ('normal' | 'deuteranopia' | 'protanopia' | 'tritanopia')[] = [
-      'normal',
-      'deuteranopia',
-      'protanopia',
-      'tritanopia',
-    ];
-
-    let totalPenalty = 0;
-    let totalComparisons = 0;
-
-    // Check every pair of dyes
-    for (let i = 0; i < this.selectedDyes.length; i++) {
-      for (let j = i + 1; j < this.selectedDyes.length; j++) {
-        const dye1 = this.selectedDyes[i];
-        const dye2 = this.selectedDyes[j];
-
-        // Check distinguishability under each vision type
-        for (const visionType of visionTypes) {
-          const c1 = ColorService.simulateColorblindnessHex(dye1.hex, visionType);
-          const c2 = ColorService.simulateColorblindnessHex(dye2.hex, visionType);
-          const distance = ColorService.getColorDistance(c1, c2);
-
-          totalComparisons++;
-
-          // Apply penalties based on distance (thresholds from legacy tool)
-          if (distance < 30) {
-            totalPenalty += 10; // Hard to distinguish
-          } else if (distance < 60) {
-            totalPenalty += 2; // Somewhat similar
-          }
-        }
-      }
-    }
-
-    // Normalize penalty by total comparisons to get average penalty per check
-    const avgPenalty = totalComparisons > 0 ? totalPenalty / totalComparisons : 0;
-
-    // Scale to 0-100 range (avgPenalty of 10 = worst case, maps to score 0)
-    // avgPenalty of 0 = best case, maps to score 100
-    const score = Math.max(0, Math.min(100, 100 - avgPenalty * 10));
-
-    return Math.round(score);
-  }
-
-  /**
-   * Get color and label for overall accessibility score
-   */
-  private getAccessibilityScoreStyle(score: number): {
-    color: string;
-    label: string;
-    bgClass: string;
-  } {
-    if (score >= 80) {
-      return {
-        color: 'text-green-700 dark:text-green-300',
-        label: LanguageService.t('accessibility.excellent'),
-        bgClass: 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700',
-      };
-    }
-    if (score >= 50) {
-      return {
-        color: 'text-yellow-700 dark:text-yellow-300',
-        label: LanguageService.t('accessibility.fair'),
-        bgClass: 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700',
-      };
-    }
-    return {
-      color: 'text-red-700 dark:text-red-300',
-      label: LanguageService.t('accessibility.poor'),
-      bgClass: 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700',
-    };
-  }
-
-  /**
-   * Render overall accessibility score section
-   */
-  private renderOverallAccessibilityScore(score: number): HTMLElement {
-    const section = this.createElement('div', {
-      className: 'space-y-4 mb-8',
-    });
-
-    const { color, label, bgClass } = this.getAccessibilityScoreStyle(score);
-
-    const card = this.createElement('div', {
-      className: `rounded-lg border-2 p-6 ${bgClass}`,
-    });
-
-    const headerRow = this.createElement('div', {
-      className: 'flex items-center justify-between mb-4',
-    });
-
-    const titleSection = this.createElement('div');
-    const title = this.createElement('h3', {
-      textContent: LanguageService.t('accessibility.overallScore'),
-      className: 'text-xl font-bold text-gray-900 dark:text-white',
-    });
-    const description = this.createElement('p', {
-      textContent: LanguageService.tInterpolate('accessibility.overallScoreDesc', {
-        count: this.dyeResults.length.toString(),
-      }),
-      className: 'text-sm text-gray-600 dark:text-gray-400 mt-1',
-    });
-    titleSection.appendChild(title);
-    titleSection.appendChild(description);
-    headerRow.appendChild(titleSection);
-
-    const scoreDisplay = this.createElement('div', {
-      className: 'text-right',
-    });
-    const scoreValue = this.createElement('div', {
-      textContent: `${score}`,
-      className: `text-5xl font-bold ${color}`,
-    });
-    const scoreMax = this.createElement('div', {
-      textContent: '/ 100',
-      className: 'text-lg text-gray-600 dark:text-gray-400 mt-1',
-    });
-    const statusLabel = this.createElement('div', {
-      textContent: label,
-      className: `text-sm font-semibold ${color} mt-2`,
-    });
-    scoreDisplay.appendChild(scoreValue);
-    scoreDisplay.appendChild(scoreMax);
-    scoreDisplay.appendChild(statusLabel);
-    headerRow.appendChild(scoreDisplay);
-
-    card.appendChild(headerRow);
-
-    // Progress bar
-    const barContainer = this.createElement('div', {
-      className: 'w-full bg-gray-300 dark:bg-gray-600 rounded-full h-3 overflow-hidden',
-    });
-    const barFill = this.createElement('div', {
-      className: this.getScoreColor(score),
-      attributes: {
-        style: `width: ${score}%`,
-      },
-    });
-    barContainer.appendChild(barFill);
-    card.appendChild(barContainer);
-
-    section.appendChild(card);
-    return section;
-  }
-
-  /**
-   * Create a pair from two dyes
-   */
-  createPair(dye1: Dye, dye2: Dye): void {
-    this.dyePairs.push([dye1, dye2]);
-    const pairResult = this.analyzePair(dye1, dye2);
-    this.pairResults.push(pairResult);
-
-    const pairsContainer = this.querySelector<HTMLElement>('#pairs-container');
-    if (pairsContainer) {
-      const card = this.renderPairCard(pairResult);
-      pairsContainer.appendChild(card);
-    }
-  }
-
-  /**
-   * Clear all pairs
-   */
-  clearPairs(): void {
-    this.dyePairs = [];
-    this.pairResults = [];
-    const pairsContainer = this.querySelector<HTMLElement>('#pairs-container');
-    if (pairsContainer) {
-      clearContainer(pairsContainer);
-    }
+  private getDistinguishabilityTextColor(score: number): string {
+    if (score >= 60) return 'text-green-600 dark:text-green-400';
+    if (score >= 40) return 'text-blue-600 dark:text-blue-400';
+    if (score >= 20) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   }
 }

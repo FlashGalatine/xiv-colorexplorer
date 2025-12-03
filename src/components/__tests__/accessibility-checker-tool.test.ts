@@ -35,8 +35,8 @@ interface ComponentWithPrivate {
     dyeId: number;
     dyeName: string;
     hex: string;
-    contrastScore: number;
-    wcagLevel: 'AAA' | 'AA' | 'Fail';
+    contrastVsWhite: { ratio: number; wcagLevel: 'AAA' | 'AA' | 'Fail' };
+    contrastVsBlack: { ratio: number; wcagLevel: 'AAA' | 'AA' | 'Fail' };
     warnings: string[];
     colorblindnessSimulations: Record<string, string>;
   };
@@ -46,14 +46,15 @@ interface ComponentWithPrivate {
   ) => {
     dye1Id: number;
     dye2Id: number;
+    contrastRatio: number;
+    wcagLevel: 'AAA' | 'AA' | 'Fail';
     distinguishability: number;
+    colorblindnessDistinguishability: Record<string, number>;
     warnings: string[];
   };
-  calculateOverallAccessibilityScore: () => number;
-  getAccessibilityScoreStyle: (score: number) => { color: string; label: string; bgClass: string };
-  getScoreColor: (score: number) => string;
+  getWCAGLevel: (ratio: number) => 'AAA' | 'AA' | 'Fail';
   getWCAGBadgeColor: (level: string) => string;
-  getDistinguishabilityColor: (score: number) => string;
+  getDistinguishabilityTextColor: (score: number) => string;
   selectedDyes: Dye[];
 }
 
@@ -553,8 +554,8 @@ describe('AccessibilityCheckerTool Component', () => {
       expect(result).toHaveProperty('dyeId');
       expect(result).toHaveProperty('dyeName');
       expect(result).toHaveProperty('hex');
-      expect(result).toHaveProperty('contrastScore');
-      expect(result).toHaveProperty('wcagLevel');
+      expect(result).toHaveProperty('contrastVsWhite');
+      expect(result).toHaveProperty('contrastVsBlack');
       expect(result).toHaveProperty('warnings');
       expect(result).toHaveProperty('colorblindnessSimulations');
     });
@@ -573,25 +574,26 @@ describe('AccessibilityCheckerTool Component', () => {
       expect(result.colorblindnessSimulations).toHaveProperty('achromatopsia');
     });
 
-    it('should calculate contrast score between 0 and 100', () => {
+    it('should calculate contrast ratios as positive numbers', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
       const mockDye = createMockDye();
       const result = (component as unknown as ComponentWithPrivate).analyzeDye(mockDye);
 
-      expect(result.contrastScore).toBeGreaterThanOrEqual(0);
-      expect(result.contrastScore).toBeLessThanOrEqual(100);
+      expect(result.contrastVsWhite.ratio).toBeGreaterThanOrEqual(1);
+      expect(result.contrastVsBlack.ratio).toBeGreaterThanOrEqual(1);
     });
 
-    it('should return valid WCAG level', () => {
+    it('should return valid WCAG levels for contrast', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
       const mockDye = createMockDye();
       const result = (component as unknown as ComponentWithPrivate).analyzeDye(mockDye);
 
-      expect(['AAA', 'AA', 'Fail']).toContain(result.wcagLevel);
+      expect(['AAA', 'AA', 'Fail']).toContain(result.contrastVsWhite.wcagLevel);
+      expect(['AAA', 'AA', 'Fail']).toContain(result.contrastVsBlack.wcagLevel);
     });
   });
 
@@ -600,7 +602,7 @@ describe('AccessibilityCheckerTool Component', () => {
   // ==========================================================================
 
   describe('analyzePair method', () => {
-    it('should return DyePairResult with distinguishability score', () => {
+    it('should return DyePairResult with contrast ratio and distinguishability', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
@@ -610,7 +612,10 @@ describe('AccessibilityCheckerTool Component', () => {
 
       expect(result).toHaveProperty('dye1Id');
       expect(result).toHaveProperty('dye2Id');
+      expect(result).toHaveProperty('contrastRatio');
+      expect(result).toHaveProperty('wcagLevel');
       expect(result).toHaveProperty('distinguishability');
+      expect(result).toHaveProperty('colorblindnessDistinguishability');
       expect(result).toHaveProperty('warnings');
     });
 
@@ -624,6 +629,17 @@ describe('AccessibilityCheckerTool Component', () => {
 
       expect(result.distinguishability).toBeGreaterThanOrEqual(0);
       expect(result.distinguishability).toBeLessThanOrEqual(100);
+    });
+
+    it('should calculate contrast ratio as a positive number', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#00FF00' });
+      const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
+
+      expect(result.contrastRatio).toBeGreaterThanOrEqual(1);
     });
 
     it('should return low distinguishability for similar colors', () => {
@@ -647,89 +663,50 @@ describe('AccessibilityCheckerTool Component', () => {
 
       expect(result.distinguishability).toBeGreaterThan(50);
     });
+
+    it('should include colorblindness distinguishability for all vision types', () => {
+      component = new AccessibilityCheckerTool(container);
+      component.init();
+
+      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
+      const dye2 = createMockDye({ id: 2, hex: '#00FF00' });
+      const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
+
+      expect(result.colorblindnessDistinguishability).toHaveProperty('normal');
+      expect(result.colorblindnessDistinguishability).toHaveProperty('deuteranopia');
+      expect(result.colorblindnessDistinguishability).toHaveProperty('protanopia');
+      expect(result.colorblindnessDistinguishability).toHaveProperty('tritanopia');
+    }
+    );
   });
 
   // ==========================================================================
-  // Business Logic Tests - calculateOverallAccessibilityScore
+  // Business Logic Tests - getWCAGLevel
   // ==========================================================================
 
-  describe('calculateOverallAccessibilityScore method', () => {
-    it('should return 100 for single dye', () => {
+  describe('getWCAGLevel method', () => {
+    it('should return AAA for ratio >= 7', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      (component as unknown as ComponentWithPrivate).selectedDyes = [createMockDye()];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      expect(score).toBe(100);
+      const level = (component as unknown as ComponentWithPrivate).getWCAGLevel(7);
+      expect(level).toBe('AAA');
     });
 
-    it('should return 100 for empty selection', () => {
+    it('should return AA for ratio >= 4.5', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      (component as unknown as ComponentWithPrivate).selectedDyes = [];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      expect(score).toBe(100);
+      const level = (component as unknown as ComponentWithPrivate).getWCAGLevel(5);
+      expect(level).toBe('AA');
     });
 
-    it('should return score between 0 and 100 for multiple dyes', () => {
+    it('should return Fail for ratio < 4.5', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      (component as unknown as ComponentWithPrivate).selectedDyes = [
-        createMockDye({ id: 1, hex: '#FF0000' }),
-        createMockDye({ id: 2, hex: '#00FF00' }),
-      ];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      expect(score).toBeGreaterThanOrEqual(0);
-      expect(score).toBeLessThanOrEqual(100);
-    });
-  });
-
-  // ==========================================================================
-  // Business Logic Tests - getScoreColor
-  // ==========================================================================
-
-  describe('getScoreColor method', () => {
-    it('should return green for score >= 100', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const color = (component as unknown as ComponentWithPrivate).getScoreColor(100);
-      expect(color).toContain('green');
-    });
-
-    it('should return blue for score >= 70', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const color = (component as unknown as ComponentWithPrivate).getScoreColor(75);
-      expect(color).toContain('blue');
-    });
-
-    it('should return yellow for score >= 40', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const color = (component as unknown as ComponentWithPrivate).getScoreColor(50);
-      expect(color).toContain('yellow');
-    });
-
-    it('should return red for score < 40', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const color = (component as unknown as ComponentWithPrivate).getScoreColor(20);
-      expect(color).toContain('red');
+      const level = (component as unknown as ComponentWithPrivate).getWCAGLevel(3);
+      expect(level).toBe('Fail');
     });
   });
 
@@ -764,117 +741,40 @@ describe('AccessibilityCheckerTool Component', () => {
   });
 
   // ==========================================================================
-  // Business Logic Tests - getDistinguishabilityColor
+  // Business Logic Tests - getDistinguishabilityTextColor
   // ==========================================================================
 
-  describe('getDistinguishabilityColor method', () => {
-    it('should return green for score >= 80', () => {
+  describe('getDistinguishabilityTextColor method', () => {
+    it('should return green for score >= 60', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityColor(85);
+      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityTextColor(65);
       expect(color).toContain('green');
     });
 
-    it('should return blue for score >= 60', () => {
+    it('should return blue for score >= 40', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityColor(65);
+      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityTextColor(45);
       expect(color).toContain('blue');
     });
 
-    it('should return yellow for score >= 40', () => {
+    it('should return yellow for score >= 20', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityColor(45);
+      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityTextColor(25);
       expect(color).toContain('yellow');
     });
 
-    it('should return red for score < 40', () => {
+    it('should return red for score < 20', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityColor(25);
+      const color = (component as unknown as ComponentWithPrivate).getDistinguishabilityTextColor(15);
       expect(color).toContain('red');
-    });
-  });
-
-  // ==========================================================================
-  // Business Logic Tests - getAccessibilityScoreStyle
-  // ==========================================================================
-
-  describe('getAccessibilityScoreStyle method', () => {
-    it('should return excellent style for score >= 80', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const style = (component as unknown as ComponentWithPrivate).getAccessibilityScoreStyle(85);
-      expect(style.label.toLowerCase()).toContain('excellent');
-      expect(style.color).toContain('green');
-    });
-
-    it('should return fair style for score 50-79', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const style = (component as unknown as ComponentWithPrivate).getAccessibilityScoreStyle(60);
-      expect(style.label.toLowerCase()).toContain('fair');
-      expect(style.color).toContain('yellow');
-    });
-
-    it('should return poor style for score < 50', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const style = (component as unknown as ComponentWithPrivate).getAccessibilityScoreStyle(30);
-      expect(style.label.toLowerCase()).toContain('poor');
-      expect(style.color).toContain('red');
-    });
-  });
-
-  // ==========================================================================
-  // Public Methods Tests
-  // ==========================================================================
-
-  describe('createPair method', () => {
-    it('should create pair without error', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const dye1 = createMockDye({ id: 1 });
-      const dye2 = createMockDye({ id: 2 });
-
-      expect(() => component.createPair(dye1, dye2)).not.toThrow();
-    });
-  });
-
-  describe('clearPairs method', () => {
-    it('should clear pairs without error', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(() => component.clearPairs()).not.toThrow();
-    });
-
-    it('should clear existing pairs when pairs container exists', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      // Create some pairs first
-      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
-      const dye2 = createMockDye({ id: 2, hex: '#00FF00' });
-      component.createPair(dye1, dye2);
-
-      // Clear pairs
-      component.clearPairs();
-
-      // Pairs container should be empty (or not exist)
-      const pairsContainer = container.querySelector('#pairs-container');
-      if (pairsContainer) {
-        expect(pairsContainer.children.length).toBe(0);
-      }
     });
   });
 
@@ -965,8 +865,8 @@ describe('AccessibilityCheckerTool Component', () => {
         dyeId: number;
         dyeName: string;
         hex: string;
-        contrastScore: number;
-        wcagLevel: 'AAA' | 'AA' | 'Fail';
+        contrastVsWhite: { ratio: number; wcagLevel: 'AAA' | 'AA' | 'Fail' };
+        contrastVsBlack: { ratio: number; wcagLevel: 'AAA' | 'AA' | 'Fail' };
         warnings: string[];
         colorblindnessSimulations: Record<string, string>;
       }) => HTMLElement;
@@ -981,8 +881,8 @@ describe('AccessibilityCheckerTool Component', () => {
         dyeId: 1,
         dyeName: 'Test Red Dye',
         hex: '#FF0000',
-        contrastScore: 85,
-        wcagLevel: 'AA' as const,
+        contrastVsWhite: { ratio: 4.0, wcagLevel: 'Fail' as const },
+        contrastVsBlack: { ratio: 5.25, wcagLevel: 'AA' as const },
         warnings: [],
         colorblindnessSimulations: {
           normal: '#FF0000',
@@ -999,7 +899,7 @@ describe('AccessibilityCheckerTool Component', () => {
       expect(card.textContent).toContain('#FF0000');
     });
 
-    it('should render WCAG badge', () => {
+    it('should render contrast vs white and black', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
@@ -1008,8 +908,8 @@ describe('AccessibilityCheckerTool Component', () => {
         dyeId: 1,
         dyeName: 'Test Dye',
         hex: '#FF0000',
-        contrastScore: 85,
-        wcagLevel: 'AA' as const,
+        contrastVsWhite: { ratio: 4.0, wcagLevel: 'Fail' as const },
+        contrastVsBlack: { ratio: 5.25, wcagLevel: 'AA' as const },
         warnings: [],
         colorblindnessSimulations: {
           normal: '#FF0000',
@@ -1022,7 +922,9 @@ describe('AccessibilityCheckerTool Component', () => {
 
       const card = comp.renderDyeCard(result);
 
-      expect(card.textContent).toContain('WCAG AA');
+      // Should show contrast ratios (4.0 displayed as "4:1", 5.25 displayed as "5.25:1")
+      expect(card.textContent).toContain('4:1');
+      expect(card.textContent).toContain('5.25:1');
     });
 
     it('should render warnings when present', () => {
@@ -1034,8 +936,8 @@ describe('AccessibilityCheckerTool Component', () => {
         dyeId: 1,
         dyeName: 'Test Dye',
         hex: '#FF0000',
-        contrastScore: 50,
-        wcagLevel: 'Fail' as const,
+        contrastVsWhite: { ratio: 4.0, wcagLevel: 'Fail' as const },
+        contrastVsBlack: { ratio: 5.25, wcagLevel: 'AA' as const },
         warnings: ['Red-green colorblind warning', 'Another warning'],
         colorblindnessSimulations: {
           normal: '#FF0000',
@@ -1061,8 +963,8 @@ describe('AccessibilityCheckerTool Component', () => {
         dyeId: 1,
         dyeName: 'Test Dye',
         hex: '#FF0000',
-        contrastScore: 85,
-        wcagLevel: 'AA' as const,
+        contrastVsWhite: { ratio: 4.0, wcagLevel: 'Fail' as const },
+        contrastVsBlack: { ratio: 5.25, wcagLevel: 'AA' as const },
         warnings: [],
         colorblindnessSimulations: {
           normal: '#FF0000',
@@ -1096,7 +998,15 @@ describe('AccessibilityCheckerTool Component', () => {
         dye2Id: number;
         dye2Name: string;
         dye2Hex: string;
+        contrastRatio: number;
+        wcagLevel: 'AAA' | 'AA' | 'Fail';
         distinguishability: number;
+        colorblindnessDistinguishability: {
+          normal: number;
+          deuteranopia: number;
+          protanopia: number;
+          tritanopia: number;
+        };
         warnings: string[];
       }) => HTMLElement;
     }
@@ -1113,7 +1023,15 @@ describe('AccessibilityCheckerTool Component', () => {
         dye2Id: 2,
         dye2Name: 'Ocean Blue',
         dye2Hex: '#0000FF',
+        contrastRatio: 2.5,
+        wcagLevel: 'Fail' as const,
         distinguishability: 75,
+        colorblindnessDistinguishability: {
+          normal: 75,
+          deuteranopia: 60,
+          protanopia: 55,
+          tritanopia: 70,
+        },
         warnings: [],
       };
 
@@ -1135,7 +1053,15 @@ describe('AccessibilityCheckerTool Component', () => {
         dye2Id: 2,
         dye2Name: 'Blue',
         dye2Hex: '#0000FF',
+        contrastRatio: 2.5,
+        wcagLevel: 'Fail' as const,
         distinguishability: 75,
+        colorblindnessDistinguishability: {
+          normal: 75,
+          deuteranopia: 60,
+          protanopia: 55,
+          tritanopia: 70,
+        },
         warnings: [],
       };
 
@@ -1156,82 +1082,21 @@ describe('AccessibilityCheckerTool Component', () => {
         dye2Id: 2,
         dye2Name: 'Similar Red',
         dye2Hex: '#FF1111',
+        contrastRatio: 1.05,
+        wcagLevel: 'Fail' as const,
         distinguishability: 15,
+        colorblindnessDistinguishability: {
+          normal: 15,
+          deuteranopia: 10,
+          protanopia: 8,
+          tritanopia: 12,
+        },
         warnings: ['Very similar colors'],
       };
 
       const card = comp.renderPairCard(result);
 
       expect(card.textContent).toContain('Very similar colors');
-    });
-  });
-
-  // ==========================================================================
-  // Rendering Tests - renderOverallAccessibilityScore
-  // ==========================================================================
-
-  describe('renderOverallAccessibilityScore rendering', () => {
-    // Use interface to avoid 'never' type from intersection with private members
-    interface ComponentWithRender {
-      renderOverallAccessibilityScore: (score: number) => HTMLElement;
-      dyeResults: unknown[];
-    }
-
-    it('should render score value', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const comp = component as unknown as ComponentWithRender;
-      comp.dyeResults = [{}, {}]; // Mock 2 dye results
-      const section = comp.renderOverallAccessibilityScore(85);
-
-      expect(section.textContent).toContain('85');
-      expect(section.textContent).toContain('/ 100');
-    });
-
-    it('should render excellent label for high score', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const comp = component as unknown as ComponentWithRender;
-      comp.dyeResults = [{}, {}];
-      const section = comp.renderOverallAccessibilityScore(90);
-
-      expect(section.textContent?.toLowerCase()).toContain('excellent');
-    });
-
-    it('should render fair label for medium score', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const comp = component as unknown as ComponentWithRender;
-      comp.dyeResults = [{}, {}];
-      const section = comp.renderOverallAccessibilityScore(60);
-
-      expect(section.textContent?.toLowerCase()).toContain('fair');
-    });
-
-    it('should render poor label for low score', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const comp = component as unknown as ComponentWithRender;
-      comp.dyeResults = [{}, {}];
-      const section = comp.renderOverallAccessibilityScore(30);
-
-      expect(section.textContent?.toLowerCase()).toContain('poor');
-    });
-
-    it('should render progress bar', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      const comp = component as unknown as ComponentWithRender;
-      comp.dyeResults = [{}, {}];
-      const section = comp.renderOverallAccessibilityScore(75);
-
-      const progressBar = section.querySelector('.h-3');
-      expect(progressBar).not.toBeNull();
     });
   });
 
@@ -1313,102 +1178,6 @@ describe('AccessibilityCheckerTool Component', () => {
       const result = (component as unknown as ComponentWithPrivate).analyzePair(dye1, dye2);
 
       expect(result.warnings.length).toBe(0);
-    });
-  });
-
-  // ==========================================================================
-  // calculateOverallAccessibilityScore Edge Cases
-  // ==========================================================================
-
-  describe('calculateOverallAccessibilityScore edge cases', () => {
-    it('should apply penalties for indistinguishable dye pairs', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      // Two very similar colors should reduce score
-      (component as unknown as ComponentWithPrivate).selectedDyes = [
-        createMockDye({ id: 1, hex: '#FF0000' }),
-        createMockDye({ id: 2, hex: '#FF0505' }),
-      ];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      expect(score).toBeLessThan(100);
-    });
-
-    it('should check all vision types for pair comparisons', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      (component as unknown as ComponentWithPrivate).selectedDyes = [
-        createMockDye({ id: 1, hex: '#FF0000' }), // Red
-        createMockDye({ id: 2, hex: '#00FF00' }), // Green
-      ];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      // Score should account for colorblindness simulations
-      expect(score).toBeGreaterThanOrEqual(0);
-      expect(score).toBeLessThanOrEqual(100);
-    });
-
-    it('should clamp score to minimum of 0', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      // Many similar colors should heavily penalize but not go negative
-      (component as unknown as ComponentWithPrivate).selectedDyes = [
-        createMockDye({ id: 1, hex: '#FF0000' }),
-        createMockDye({ id: 2, hex: '#FF0001' }),
-        createMockDye({ id: 3, hex: '#FF0002' }),
-        createMockDye({ id: 4, hex: '#FF0003' }),
-        createMockDye({ id: 5, hex: '#FF0004' }),
-      ];
-      const score = (
-        component as unknown as ComponentWithPrivate
-      ).calculateOverallAccessibilityScore();
-
-      expect(score).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  // ==========================================================================
-  // createPair with pairs container
-  // ==========================================================================
-
-  describe('createPair with DOM rendering', () => {
-    it('should add pair card to pairs container when it exists', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      // Manually create pairs container
-      const resultsContainer = container.querySelector('#results-container');
-      if (resultsContainer) {
-        const pairsContainer = document.createElement('div');
-        pairsContainer.id = 'pairs-container';
-        resultsContainer.appendChild(pairsContainer);
-      }
-
-      const dye1 = createMockDye({ id: 1, name: 'Red', hex: '#FF0000' });
-      const dye2 = createMockDye({ id: 2, name: 'Blue', hex: '#0000FF' });
-
-      component.createPair(dye1, dye2);
-
-      const pairsContainer = container.querySelector('#pairs-container');
-      expect(pairsContainer?.children.length).toBeGreaterThan(0);
-    });
-
-    it('should handle missing pairs container gracefully', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      // Don't create pairs container - should not throw
-      const dye1 = createMockDye({ id: 1, hex: '#FF0000' });
-      const dye2 = createMockDye({ id: 2, hex: '#0000FF' });
-
-      expect(() => component.createPair(dye1, dye2)).not.toThrow();
     });
   });
 });
