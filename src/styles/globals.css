@@ -209,7 +209,7 @@ body.theme-sugar-riot .tool-card:hover {
   /* Warning - yellow tinted */
   --toast-warning-bg: color-mix(in srgb, var(--theme-surface, #ffffff) 85%, #eab308 15%);
   --toast-warning-border: color-mix(in srgb, var(--theme-border, #e5e7eb) 50%, #eab308 50%);
-  --toast-warning-text: #854d0e;
+  --toast-warning-text: #92400e;
 
   /* Info - blue tinted */
   --toast-info-bg: color-mix(in srgb, var(--theme-surface, #ffffff) 85%, #3b82f6 15%);
@@ -221,12 +221,16 @@ body.theme-sugar-riot .tool-card:hover {
 .dark,
 [class*="-dark"],
 .theme-sugar-riot,
-.theme-hydaelyn-light,
 .theme-og-classic-dark {
   --toast-success-text: #86efac;
   --toast-error-text: #fca5a5;
   --toast-warning-text: #fde047;
   --toast-info-text: #93c5fd;
+}
+
+/* Light themes that need adjusted warning colors for better contrast */
+.theme-hydaelyn-light {
+  --toast-warning-text: #b45309;
 }
 
 /* Apply toast variables to type classes */
