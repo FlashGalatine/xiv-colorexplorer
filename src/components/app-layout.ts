@@ -24,6 +24,7 @@ import {
   ICON_PATREON,
 } from '@shared/social-icons';
 import { ICON_CRYSTAL } from '@shared/ui-icons';
+import { LOGO_SPARKLES } from '@shared/app-logo';
 
 /**
  * Main application layout component
@@ -101,56 +102,24 @@ export class AppLayout extends BaseComponent {
       className: 'flex items-center gap-3',
     });
 
-    // Logo image - responsive picture element with WebP support
-    // Provides different image sizes for mobile, tablet, and desktop
-    const picture = this.createElement('picture', {});
-
-    // Mobile source (max-width: 640px)
-    const sourceMobile = this.createElement('source', {
+    // Logo using inline SVG (theme-aware with currentColor for brush handle)
+    const logoContainer = this.createElement('div', {
+      className: 'w-10 h-10 flex items-center justify-center',
       attributes: {
-        srcset: '/assets/icons/icon-40x40.webp',
-        media: '(max-width: 640px)',
-        type: 'image/webp',
-      },
-    });
-
-    // Tablet source (max-width: 1024px)
-    const sourceTablet = this.createElement('source', {
-      attributes: {
-        srcset: '/assets/icons/icon-60x60.webp',
-        media: '(max-width: 1024px)',
-        type: 'image/webp',
-      },
-    });
-
-    // Desktop source (default)
-    const sourceDesktop = this.createElement('source', {
-      attributes: {
-        srcset: '/assets/icons/icon-80x80.webp',
-        type: 'image/webp',
-      },
-    });
-
-    // Fallback PNG image (single size, browser will scale)
-    const logo = this.createElement('img', {
-      attributes: {
-        src: '/assets/icons/icon-192x192.png',
-        alt: 'XIV Dye Tools Logo',
+        'aria-label': 'XIV Dye Tools Logo',
         title: 'XIV Dye Tools',
-        loading: 'eager',
-        fetchpriority: 'high',
-        width: '40',
-        height: '40',
-        onerror: "this.onerror=null; this.src='/assets/icons/icon-192x192.png';",
       },
-      className: 'w-10 h-10 rounded',
     });
+    logoContainer.innerHTML = LOGO_SPARKLES;
+    
+    // Ensure SVG fills container and is centered
+    const svg = logoContainer.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '100%');
+    }
 
-    picture.appendChild(sourceMobile);
-    picture.appendChild(sourceTablet);
-    picture.appendChild(sourceDesktop);
-    picture.appendChild(logo);
-    titleDiv.appendChild(picture);
+    titleDiv.appendChild(logoContainer);
 
     // Use --theme-text-header for header text
     const title = this.createElement('h1', {

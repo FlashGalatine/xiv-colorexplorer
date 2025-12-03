@@ -93,21 +93,15 @@ describe('AppLayout', () => {
   // ==========================================================================
 
   describe('Header', () => {
-    it('should render logo image with responsive picture element', () => {
+    it('should render logo as inline SVG', () => {
       component = new AppLayout(container);
       component.init();
 
-      const picture = container.querySelector('picture');
-      expect(picture).not.toBeNull();
-
-      const logo = container.querySelector('img[alt="XIV Dye Tools Logo"]') as HTMLImageElement;
-      expect(logo).not.toBeNull();
-      expect(logo.src).toContain('assets/icons/icon-192x192.png');
-      expect(logo.getAttribute('title')).toBe('XIV Dye Tools');
-      expect(logo.getAttribute('fetchpriority')).toBe('high');
-
-      const sources = picture?.querySelectorAll('source');
-      expect(sources?.length).toBe(3); // mobile, tablet, default
+      const logoContainer = container.querySelector('div[aria-label="XIV Dye Tools Logo"]') as HTMLDivElement;
+      expect(logoContainer).not.toBeNull();
+      expect(logoContainer.innerHTML).toContain('<svg');
+      expect(logoContainer.innerHTML).toContain('viewBox="0 0 138.77071 192.24226"');
+      expect(logoContainer.getAttribute('title')).toBe('XIV Dye Tools');
     });
 
     it('should render title', () => {
