@@ -35,8 +35,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Reduced Maximum Dyes**
 - Changed from 12 dyes to 4 dyes maximum for clearer, more focused analysis
 
+#### Theme Improvements ✅
+
+**Theme-Aware Warning Colors**
+- Added semantic text color utility classes (`.text-warning`, `.text-error`, `.text-success`, `.text-info`)
+- Warning text now uses CSS variable `--toast-warning-text` for theme adaptation
+- Applied amber warning color (`#b45309`) to all light themes for better contrast:
+  - Standard Light
+  - Cotton Candy
+  - Grayscale Light
+  - High Contrast Light
+  - Parchment Light
+  - Hydaelyn Light
+
 #### Files Modified ✅
 - `src/components/accessibility-checker-tool.ts` - Complete redesign of contrast display
+- `src/styles/globals.css` - Added semantic text color utilities, theme-aware warning colors
 - `src/locales/en.json` - Updated locale strings
 - `src/locales/ja.json` - Japanese translations
 - `src/locales/de.json` - German translations
@@ -50,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ **Industry Standard** - Uses familiar WCAG contrast ratio scale (1-21)
 - ✅ **Actionable Insights** - Clear AAA/AA/Fail badges show accessibility compliance
 - ✅ **Better Colorblindness Support** - Per-vision-type distinguishability scores
+- ✅ **Theme Consistency** - Warning colors adapt to all themes for better readability
 
 ---
 
