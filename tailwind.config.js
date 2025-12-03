@@ -11,8 +11,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'Inter var',
-          'Inter',
+          'Onest',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
@@ -22,15 +21,13 @@ module.exports = {
           'sans-serif',
         ],
         heading: [
-          'Outfit',
-          'Inter',
+          'Space Grotesk',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
           'sans-serif',
         ],
         mono: [
-          'JetBrains Mono',
           'Fira Code',
           'Consolas',
           'Monaco',

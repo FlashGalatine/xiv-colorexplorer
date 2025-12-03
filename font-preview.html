@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XIV Dye Tools - Font Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* CSS Variables for fonts */
+    :root {
+      --font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-button: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    /* Control Panel */
+    .controls {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 2px solid #ddd;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+
+    .controls h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #4f46e5;
+    }
+
+    .font-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .font-group {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .font-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    .font-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .font-group select:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
+
+    /* Content Area */
+    .content {
+      margin-top: calc(40vh + 20px);
+      padding: 20px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Typography Examples */
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      margin-bottom: 0.75em;
+      color: #1f2937;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 2rem;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      line-height: 1.4;
+    }
+
+    p, .body-text {
+      font-family: var(--font-body);
+      margin-bottom: 1em;
+      font-size: 1rem;
+    }
+
+    /* Panel Styles */
+    .panel {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .panel-header {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e5e7eb;
+      color: #1f2937;
+    }
+
+    .panel-body {
+      font-family: var(--font-body);
+      color: #4b5563;
+      line-height: 1.7;
+    }
+
+    /* Widget Styles */
+    .widget {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .widget-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .widget-value {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .widget-label {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    /* Button Styles */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    button {
+      font-family: var(--font-button);
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #4f46e5;
+      color: #4f46e5;
+    }
+
+    .btn-outline:hover {
+      background: #4f46e5;
+      color: white;
+    }
+
+    /* Label and Badge */
+    .label {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 12px;
+      background: #dbeafe;
+      color: #1e40af;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* Code Block */
+    .code-block {
+      font-family: var(--font-mono);
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 16px;
+      border-radius: 6px;
+      margin: 16px 0;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    /* List Styles */
+    ul, ol {
+      font-family: var(--font-body);
+      margin: 1em 0;
+      padding-left: 2em;
+    }
+
+    li {
+      margin-bottom: 0.5em;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: var(--font-body);
+    }
+
+    th {
+      font-family: var(--font-heading);
+      background: #f9fafb;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 2px solid #e5e7eb;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Input Fields */
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      font-family: var(--font-body);
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
+
+    .form-label {
+      font-family: var(--font-body);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    /* Stats Card */
+    .stats-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .stats-label {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .stats-value {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    /* Alert Box */
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      border-left: 4px solid;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #166534;
+    }
+
+    .alert-title {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .alert-message {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+    }
+
+    /* Navigation */
+    .nav {
+      background: #1f2937;
+      padding: 12px 24px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-item {
+      font-family: var(--font-button);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .nav-item.active {
+      background: #4f46e5;
+    }
+  </style>
+  
+  <!-- Load Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;600;700;800&family=Lato:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&family=Merriweather:wght@400;700;900&family=Playfair+Display:wght@400;600;700;800&family=Source+Sans+Pro:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@300..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Gruppo&family=Onest:wght@100..900&family=Strait&family=Alan+Sans:wght@300..900&family=Habibi&family=Istok+Web:ital,wght@0,400;0,700;1,400;1,700&family=Varela+Round&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Font Selection Controls -->
+  <div class="controls">
+    <h2>🎨 Font Preview - XIV Dye Tools</h2>
+    <div class="font-selector">
+      <div class="font-group">
+        <label for="heading-font">Headings (H1, H2, H3)</label>
+        <select id="heading-font">
+          <option value="'Outfit', system-ui, sans-serif" selected>Outfit (Current)</option>
+          <option value="'Inter', system-ui, sans-serif">Inter</option>
+          <option value="'Poppins', system-ui, sans-serif">Poppins</option>
+          <option value="'Montserrat', system-ui, sans-serif">Montserrat</option>
+          <option value="'Raleway', system-ui, sans-serif">Raleway</option>
+          <option value="'Work Sans', system-ui, sans-serif">Work Sans</option>
+          <option value="'Nunito', system-ui, sans-serif">Nunito</option>
+          <option value="'Rubik', system-ui, sans-serif">Rubik</option>
+          <option value="'DM Sans', system-ui, sans-serif">DM Sans</option>
+          <option value="'Space Grotesk', system-ui, sans-serif">Space Grotesk</option>
+          <option value="'Plus Jakarta Sans', system-ui, sans-serif">Plus Jakarta Sans</option>
+          <option value="'Onest', system-ui, sans-serif">Onest</option>
+          <option value="'Gruppo', system-ui, sans-serif">Gruppo</option>
+          <option value="'Strait', system-ui, sans-serif">Strait</option>
+          <option value="'Habibi', serif">Habibi (Serif)</option>
+          <option value="'Playfair Display', serif">Playfair Display (Serif)</option>
+          <option value="'Merriweather', serif">Merriweather (Serif)</option>
+        </select>
+      </div>
+
+      <div class="font-group">
+        <label for="body-font">Body Text (Paragraphs, Panels)</label>
+        <select id="body-font">
+          <option value="'Inter', system-ui, sans-serif" selected>Inter (Current)</option>
+          <option value="'Roboto', system-ui, sans-serif">Roboto</option>
+          <option value="'Open Sans', system-ui, sans-serif">Open Sans</option>
+          <option value="'Lato', system-ui, sans-serif">Lato</option>
+          <option value="'Poppins', system-ui, sans-serif">Poppins</option>
+          <option value="'Source Sans Pro', system-ui, sans-serif">Source Sans Pro</option>
+          <option value="'Work Sans', system-ui, sans-serif">Work Sans</option>
+          <option value="'Nunito', system-ui, sans-serif">Nunito</option>
+          <option value="'IBM Plex Sans', system-ui, sans-serif">IBM Plex Sans</option>
+          <option value="'Rubik', system-ui, sans-serif">Rubik</option>
+          <option value="'DM Sans', system-ui, sans-serif">DM Sans</option>
+          <option value="'Plus Jakarta Sans', system-ui, sans-serif">Plus Jakarta Sans</option>
+          <option value="'Onest', system-ui, sans-serif">Onest</option>
+          <option value="'Alan Sans', system-ui, sans-serif">Alan Sans</option>
+          <option value="'Varela Round', system-ui, sans-serif">Varela Round</option>
+          <option value="'Istok Web', system-ui, sans-serif">Istok Web</option>
+        </select>
+      </div>
+
+      <div class="font-group">
+        <label for="button-font">Buttons & Navigation</label>
+        <select id="button-font">
+          <option value="'Inter', system-ui, sans-serif" selected>Inter (Current)</option>
+          <option value="'Outfit', system-ui, sans-serif">Outfit</option>
+          <option value="'Poppins', system-ui, sans-serif">Poppins</option>
+          <option value="'Montserrat', system-ui, sans-serif">Montserrat</option>
+          <option value="'Roboto', system-ui, sans-serif">Roboto</option>
+          <option value="'Work Sans', system-ui, sans-serif">Work Sans</option>
+          <option value="'Rubik', system-ui, sans-serif">Rubik</option>
+          <option value="'DM Sans', system-ui, sans-serif">DM Sans</option>
+          <option value="'Space Grotesk', system-ui, sans-serif">Space Grotesk</option>
+          <option value="'Onest', system-ui, sans-serif">Onest</option>
+          <option value="'Alan Sans', system-ui, sans-serif">Alan Sans</option>
+          <option value="'Varela Round', system-ui, sans-serif">Varela Round</option>
+          <option value="'Istok Web', system-ui, sans-serif">Istok Web</option>
+        </select>
+      </div>
+
+      <div class="font-group">
+        <label for="mono-font">Code & Monospace</label>
+        <select id="mono-font">
+          <option value="'JetBrains Mono', monospace" selected>JetBrains Mono (Current)</option>
+          <option value="'Fira Code', monospace">Fira Code</option>
+          <option value="'Consolas', monospace">Consolas</option>
+          <option value="'Monaco', monospace">Monaco</option>
+          <option value="'Courier New', monospace">Courier New</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Content -->
+  <div class="content">
+    <!-- Main Headings -->
+    <section class="panel">
+      <h1>XIV Dye Tools - Main Heading (H1)</h1>
+      <h2>Color Harmony Explorer - Subheading (H2)</h2>
+      <h3>Discover Harmonious Combinations - Section Title (H3)</h3>
+      <p class="body-text">
+        This is body text that appears throughout the application. It should be readable, 
+        comfortable for extended reading, and work well at various sizes. The font needs 
+        to maintain clarity in both light and dark themes.
+      </p>
+    </section>
+
+    <!-- International Text Examples -->
+    <section class="panel">
+      <div class="panel-header">International Language Support</div>
+      <div class="panel-body">
+        <h3>日本語テキスト (Japanese)</h3>
+        <p>
+          ファイナルファンタジーXIVの染色システムは、装備品の外見をカスタマイズするための重要な機能です。
+          このツールを使用すると、画像から色を抽出して、最も近い染色アイテムを見つけることができます。
+          カラーハーモニーエクスプローラーを使用して、調和の取れた配色を生成できます。
+        </p>
+
+        <h3>한국어 텍스트 (Korean)</h3>
+        <p>
+          파이널 판타지 XIV의 염색 시스템을 통해 장비의 외형을 사용자 정의할 수 있습니다.
+          이 도구를 사용하면 이미지에서 색상을 추출하고 가장 가까운 염료를 찾을 수 있습니다.
+          색상 조화 탐색기를 사용하여 조화로운 색상 팔레트를 생성하세요.
+        </p>
+
+        <h3>中文文本 (Chinese)</h3>
+        <p>
+          最终幻想XIV的染色系统是自定义装备外观的重要功能。
+          使用此工具，您可以从图像中提取颜色并找到最匹配的染料。
+          使用色彩和谐探索器生成和谐的调色板。
+        </p>
+      </div>
+    </section>
+
+    <!-- Widget Examples -->
+    <div class="grid">
+      <div class="widget">
+        <div class="widget-title">Total Dyes</div>
+        <div class="widget-value">192</div>
+        <div class="widget-label">Available Colors</div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">利用可能な染料</div>
+        <div class="widget-value">192</div>
+        <div class="widget-label">染色アイテム数</div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">可用染料</div>
+        <div class="widget-value">192</div>
+        <div class="widget-label">颜色总数</div>
+      </div>
+    </div>
+
+    <!-- Panel with Header -->
+    <div class="panel">
+      <div class="panel-header">Color Matcher Settings</div>
+      <div class="panel-body">
+        <p>
+          Upload an image or select a color to find the closest matching dyes in Final Fantasy XIV. 
+          Our algorithm analyzes RGB values and finds the most accurate matches from the complete 
+          dye database.
+        </p>
+        <div class="button-group">
+          <button class="btn-primary">Upload Image</button>
+          <button class="btn-secondary">Select Color</button>
+          <button class="btn-outline">View Results</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid">
+      <div class="stats-card">
+        <div class="stats-label">Images Processed</div>
+        <div class="stats-value">1,247</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-label">Active Users</div>
+        <div class="stats-value">892</div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-label">Color Matches</div>
+        <div class="stats-value">5,431</div>
+      </div>
+    </div>
+
+    <!-- Form Elements -->
+    <div class="panel">
+      <div class="panel-header">Form Elements</div>
+      <div class="panel-body">
+        <label class="form-label" for="dye-name">Dye Name</label>
+        <input type="text" id="dye-name" placeholder="Enter dye name..." value="Soot Black">
+        
+        <label class="form-label" for="description">Description</label>
+        <textarea id="description" rows="3" placeholder="Add description...">A deep, rich black dye perfect for creating dramatic outfits.</textarea>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="alert alert-info">
+      <div class="alert-title">Info Alert</div>
+      <div class="alert-message">This is an informational message with body text styling.</div>
+    </div>
+
+    <div class="alert alert-success">
+      <div class="alert-title">Success Alert</div>
+      <div class="alert-message">Color match found! The closest dye is Soot Black (98% match).</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <a href="#" class="nav-item active">Color Matcher / カラーマッチャー</a>
+      <a href="#" class="nav-item">Harmony Explorer / ハーモニー探索</a>
+      <a href="#" class="nav-item">Accessibility / 色覚サポート</a>
+      <a href="#" class="nav-item">Comparison / 比較ツール</a>
+      <a href="#" class="nav-item">Dye Mixer / 染料ミキサー</a>
+    </nav> class="panel-body">
+        <span class="label">General / 一般</span>
+        <span class="label">Rare / レア / 희귀</span>
+        <span class="label">Metallic / 金属 / 금속</span>
+        <span class="label">Pastel / パステル / 파스텔</span>
+        <span class="label">Deep / 深色 / 짙은색</span>
+        <span class="label">Vibrant / 鮮やか / 선명한</span>
+      </div>
+    </div>pan class="label">Metallic</span>
+        <span class="label">Pastel</span>
+        <span class="label">Deep</span>
+        <span class="label">Vibrant</span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="panel">
+      <div class="panel-header">Dye Comparison Table</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Dye Name</th>
+            <th>Category</th>
+            <th>RGB Values</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Soot Black / スートブラック</td>
+            <td>General / 一般</td>
+            <td>RGB(25, 27, 28)</td>
+            <td>Market Board / マーケット</td>
+          </tr>
+          <tr>
+            <td>Snow White / スノウホワイト</td>
+            <td>General / 一般</td>
+            <td>RGB(236, 239, 241)</td>
+            <td>Market Board / マーケット</td>
+          </tr>
+          <tr>
+            <td>Ruby Red / ルビーレッド</td>
+            <td>Rare / レア</td>
+            <td>RGB(157, 38, 40)</td>
+            <td>Achievement / アチーブメント</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Code Block -->
+    <div class="panel">
+      <div class="panel-header">RGB Color Code</div>
+      <div class="panel-body">
+        <div class="code-block">
+const dyeColor = {
+  name: "Soot Black",
+  rgb: [25, 27, 28],
+  hex: "#191B1C",
+  category: "General"
+};</div>
+      </div>
+    </div>
+
+    <!-- Lists -->
+    <div class="panel">
+      <div class="panel-header">Features List</div>
+      <div class="panel-body">
+        <ul>
+          <li>Upload images to find matching dyes</li>
+          <li>Generate harmonious color palettes using color theory</li>
+          <li>Compare up to 4 dyes side-by-side</li>
+          <li>Test colorblindness accessibility</li>
+          <li>Mix dyes to preview combinations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Font selector functionality
+    const headingSelect = document.getElementById('heading-font');
+    const bodySelect = document.getElementById('body-font');
+    const buttonSelect = document.getElementById('button-font');
+    const monoSelect = document.getElementById('mono-font');
+
+    headingSelect.addEventListener('change', (e) => {
+      document.documentElement.style.setProperty('--font-heading', e.target.value);
+    });
+
+    bodySelect.addEventListener('change', (e) => {
+      document.documentElement.style.setProperty('--font-body', e.target.value);
+    });
+
+    buttonSelect.addEventListener('change', (e) => {
+      document.documentElement.style.setProperty('--font-button', e.target.value);
+    });
+
+    monoSelect.addEventListener('change', (e) => {
+      document.documentElement.style.setProperty('--font-mono', e.target.value);
+    });
+
+    // Log current selections for easy copying
+    function logCurrentFonts() {
+      console.log('Current Font Selections:');
+      console.log('Heading:', headingSelect.value);
+      console.log('Body:', bodySelect.value);
+      console.log('Button:', buttonSelect.value);
+      console.log('Mono:', monoSelect.value);
+    }
+
+    // Add button to log selections
+    const logBtn = document.createElement('button');
+    logBtn.textContent = 'Log Current Fonts to Console';
+    logBtn.className = 'btn-secondary';
+    logBtn.style.marginTop = '10px';
+    logBtn.onclick = logCurrentFonts;
+    document.querySelector('.controls').appendChild(logBtn);
+  </script>
+</body>
+</html>

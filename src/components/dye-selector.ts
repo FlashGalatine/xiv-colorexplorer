@@ -34,7 +34,7 @@ export interface DyeSelectorOptions {
 export class DyeSelector extends BaseComponent {
   private selectedDyes: Dye[] = [];
   private filteredDyes: Dye[] = [];
-  private currentCategory: string | null = 'Neutral';
+  private currentCategory: string | null = null;
   private searchQuery: string = '';
   private sortOption: SortOption = 'alphabetical';
   private options: DyeSelectorOptions;

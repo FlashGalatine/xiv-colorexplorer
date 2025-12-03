@@ -20,7 +20,7 @@ export interface DyeSearchBoxOptions {
 export class DyeSearchBox extends BaseComponent {
   private searchQuery: string = '';
   private sortOption: SortOption = 'alphabetical';
-  private currentCategory: string | null = 'Neutral';
+  private currentCategory: string | null = null;
   private options: DyeSearchBoxOptions;
 
   constructor(container: HTMLElement, options: DyeSearchBoxOptions = {}) {
@@ -29,7 +29,7 @@ export class DyeSearchBox extends BaseComponent {
       showCategories: options.showCategories ?? true,
       excludeFacewear: options.excludeFacewear ?? true,
       initialSort: options.initialSort ?? 'alphabetical',
-      initialCategory: options.initialCategory ?? 'Neutral',
+      initialCategory: options.initialCategory ?? null,
       initialSearch: options.initialSearch ?? '',
     };
     this.sortOption = this.options.initialSort!;

@@ -138,11 +138,11 @@ describe('DyeSelector', () => {
       expect(facewearBtn).toBeUndefined();
     });
 
-    it('should highlight Neutral category by default', () => {
+    it('should highlight All category by default', () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const neutralBtn = container.querySelector('[data-category="Neutral"]');
-      expectElement.toHaveClass(neutralBtn as HTMLElement, 'bg-blue-500');
+      const allBtn = container.querySelector('[data-category="all"]');
+      expectElement.toHaveClass(allBtn as HTMLElement, 'bg-blue-500');
     });
   });
 
