@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.10] - 2025-12-02
+
+### 🎨 UI Improvements: Dye Selector Color Swatches
+
+**Status**: ✅ COMPLETE
+**Focus**: Improved visual consistency of color swatches in the dye selector component.
+
+#### UI Enhancements ✅
+
+**Fixed Width Color Swatches**
+- Changed color swatches from variable width (based on dye name length) to fixed 2:1 aspect ratio
+- Added `max-h-16` constraint to prevent oversized swatches (4rem/64px maximum height)
+- Swatches now maintain consistent proportions across all dye cards
+- Improved visual uniformity in dye grid layout
+
+**Technical Implementation**
+- Replaced fixed height (`h-12`) with `aspect-ratio: 2/1` CSS property
+- Added `max-h-16` to cap maximum height while preserving aspect ratio
+- Updated content container with `w-full` for proper width inheritance
+
+#### Files Modified ✅
+- `src/components/dye-grid.ts` - Updated color swatch rendering with aspect ratio constraint
+
+#### Benefits Achieved ✅
+- ✅ **Visual Consistency** - All color swatches display at uniform size regardless of dye name length
+- ✅ **Better Grid Layout** - Improved alignment and spacing in dye selector grid
+- ✅ **Responsive Design** - Swatches scale appropriately while maintaining 2:1 ratio
+- ✅ **Professional Appearance** - More polished and intentional design
+
+---
+
 ## [2.4.9] - 2025-12-02
 
 ### 🧪 Comprehensive Function Coverage Testing

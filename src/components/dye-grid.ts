@@ -106,12 +106,12 @@ export class DyeGrid extends BaseComponent {
           e.stopPropagation(); // Prevent bubbling if needed, or just let it bubble
           this.emit('dye-selected', dye);
         }); // Content
-        const content = this.createElement('div', { className: 'space-y-1' });
-        // Color div
+        const content = this.createElement('div', { className: 'space-y-1 w-full' });
+        // Color div with 2:1 aspect ratio
         content.appendChild(
           this.createElement('div', {
-            className: 'w-full h-12 rounded border border-gray-300 dark:border-gray-600',
-            attributes: { style: `background-color: ${dye.hex}` },
+            className: 'w-full max-h-16 rounded border border-gray-300 dark:border-gray-600',
+            attributes: { style: `background-color: ${dye.hex}; aspect-ratio: 2/1;` },
           })
         );
         // Name
