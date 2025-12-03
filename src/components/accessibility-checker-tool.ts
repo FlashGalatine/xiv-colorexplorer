@@ -519,7 +519,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
 
       const warningsLabel = this.createElement('div', {
         innerHTML: `<span class="inline-block w-4 h-4 align-middle mr-1">${ICON_WARNING}</span>${LanguageService.t('accessibility.colorblindnessIssues')}`,
-        className: 'text-xs font-semibold text-orange-700 dark:text-orange-300',
+        className: 'text-xs font-semibold text-warning',
       });
       warningsSection.appendChild(warningsLabel);
 
@@ -796,7 +796,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
       for (const warning of result.warnings) {
         const warningText = this.createElement('div', {
           innerHTML: `<span class="inline-block w-4 h-4 align-middle mr-1">${ICON_WARNING}</span>${warning}`,
-          className: 'text-xs text-orange-700 dark:text-orange-300',
+          className: 'text-xs text-warning',
         });
         warningsSection.appendChild(warningText);
       }
