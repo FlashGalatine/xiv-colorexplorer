@@ -174,12 +174,6 @@ export interface AppState {
 /**
  * Tool-specific state extending AppState
  */
-export interface AccessibilityState extends AppState {
-  visionType: VisionType;
-  dualDyesEnabled: boolean;
-  selectedDyes: number[]; // Item IDs of selected dyes
-}
-
 export interface HarmonyState extends AppState {
   harmonyType:
     | 'complementary'

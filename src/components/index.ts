@@ -25,7 +25,6 @@ export { DyeComparisonTool } from './dye-comparison-tool';
 export { ColorInterpolationDisplay, type InterpolationStep } from './color-interpolation-display';
 export { DyeMixerTool } from './dye-mixer-tool';
 export { ColorblindnessDisplay, type VisionTypeInfo } from './colorblindness-display';
-export { OutfitSlotSelector, type OutfitSlot } from './outfit-slot-selector';
 export {
   AccessibilityCheckerTool,
   type DyeAccessibilityResult,

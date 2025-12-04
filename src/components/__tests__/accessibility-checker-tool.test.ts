@@ -145,195 +145,6 @@ describe('AccessibilityCheckerTool Component', () => {
     });
   });
 
-  describe('Outfit Slots', () => {
-    it('should provide Head dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should provide Body dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should provide Hands dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should provide Legs dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container).toBeDefined();
-    });
-
-    it('should provide Feet dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should provide Weapon dye selector', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should handle all 6 slots simultaneously', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-  });
-
-  describe('Dual Dyes Feature', () => {
-    it('should provide dual dye toggle', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container).toBeDefined();
-    });
-
-    it('should display dual dye description', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should toggle dual dyes on/off', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      component.update();
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should persist dual dye preference', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-  });
-
-  describe('Intensity Sliders', () => {
-    it('should provide intensity slider', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container).toBeDefined();
-    });
-
-    it('should show current intensity value', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should allow adjusting intensity', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      component.update();
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should update preview in real-time on slider change', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-  });
-
-  describe('Preview Display', () => {
-    it('should display outfit preview', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should show normal vision colors', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should show simulated colorblind colors', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container).toBeDefined();
-    });
-
-    it('should display side-by-side comparison', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should update preview when dyes change', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      component.update();
-      expect(container).toBeDefined();
-    });
-  });
-
-  describe('Accessibility Score', () => {
-    it('should calculate accessibility score', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should display score numerically', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should show score interpretation', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should update score as dyes change', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      component.update();
-      expect(component).toBeDefined();
-    });
-
-    it('should handle no dyes selected', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container).toBeDefined();
-    });
-  });
-
   describe('Distinguishability Warnings', () => {
     it('should warn when dyes not distinguishable', () => {
       component = new AccessibilityCheckerTool(container);
@@ -365,29 +176,6 @@ describe('AccessibilityCheckerTool Component', () => {
     });
   });
 
-  describe('Color Suggestions', () => {
-    it('should provide dye suggestions for improvement', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
-    it('should rank suggestions by improvement potential', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should support one-click application of suggestions', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-  });
-
   describe('State Management', () => {
     it('should maintain selected dyes', () => {
       component = new AccessibilityCheckerTool(container);
@@ -407,14 +195,6 @@ describe('AccessibilityCheckerTool Component', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
-      expect(component).toBeDefined();
-    });
-
-    it('should maintain dual dyes toggle state', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      component.update();
       expect(component).toBeDefined();
     });
 
@@ -517,21 +297,7 @@ describe('AccessibilityCheckerTool Component', () => {
       expect(component).toBeDefined();
     });
 
-    it('should handle all 6 outfit slots filled', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(container.children.length).toBeGreaterThan(0);
-    });
-
     it('should handle no dyes selected', () => {
-      component = new AccessibilityCheckerTool(container);
-      component.init();
-
-      expect(component).toBeDefined();
-    });
-
-    it('should handle mixed dual/single dyes', () => {
       component = new AccessibilityCheckerTool(container);
       component.init();
 
