@@ -41,6 +41,15 @@ export { TutorialService } from './tutorial-service';
 export type { TutorialTool, TutorialStep, Tutorial } from './tutorial-service';
 export { KeyboardService } from './keyboard-service';
 export { DyeSelectionContext } from './dye-selection-context';
+export { CollectionService } from './collection-service';
+export type {
+  DyeId,
+  Collection,
+  FavoritesData,
+  CollectionsData,
+  CollectionExport,
+  ImportResult,
+} from './collection-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';

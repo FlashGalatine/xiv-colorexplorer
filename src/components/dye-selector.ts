@@ -8,7 +8,7 @@
  */
 
 import { BaseComponent } from './base-component';
-import { DyeService, LanguageService } from '@services/index';
+import { DyeService, LanguageService, CollectionService } from '@services/index';
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -25,6 +25,7 @@ export interface DyeSelectorOptions {
   showCategories?: boolean;
   showPrices?: boolean;
   excludeFacewear?: boolean;
+  showFavorites?: boolean;
 }
 
 /**
@@ -39,6 +40,9 @@ export class DyeSelector extends BaseComponent {
   private sortOption: SortOption = 'alphabetical';
   private options: DyeSelectorOptions;
   private allowDuplicates: boolean = false;
+  private favoriteDyes: Dye[] = [];
+  private favoritesExpanded: boolean = true;
+  private unsubscribeFavorites: (() => void) | null = null;
 
   // Sub-components
   private searchBox: DyeSearchBox | null = null;
@@ -53,8 +57,27 @@ export class DyeSelector extends BaseComponent {
       showCategories: options.showCategories ?? true,
       showPrices: options.showPrices ?? false,
       excludeFacewear: options.excludeFacewear ?? true,
+      showFavorites: options.showFavorites ?? true,
     };
     this.allowDuplicates = this.options.allowDuplicates ?? false;
+
+    // Subscribe to favorites changes
+    if (this.options.showFavorites) {
+      this.unsubscribeFavorites = CollectionService.subscribeFavorites((favoriteIds) => {
+        this.updateFavoriteDyes(favoriteIds);
+      });
+    }
+  }
+
+  /**
+   * Update favorite dyes from IDs
+   */
+  private updateFavoriteDyes(favoriteIds: number[]): void {
+    const dyeService = DyeService.getInstance();
+    this.favoriteDyes = favoriteIds
+      .map((id) => dyeService.getDyeById(id))
+      .filter((dye): dye is Dye => dye !== undefined);
+    this.updateFavoritesPanel();
   }
 
   /**
@@ -78,7 +101,13 @@ export class DyeSelector extends BaseComponent {
     });
     this.searchBox.init();
 
-    // 2. Selected Dyes Display
+    // 2. Favorites Panel (collapsible)
+    if (this.options.showFavorites) {
+      const favoritesPanel = this.createFavoritesPanel();
+      wrapper.appendChild(favoritesPanel);
+    }
+
+    // 3. Selected Dyes Display
     if (this.options.allowMultiple) {
       const selectedContainer = this.createElement('div', {
         id: 'selected-dyes-container',
@@ -103,7 +132,7 @@ export class DyeSelector extends BaseComponent {
       wrapper.appendChild(selectedContainer);
     }
 
-    // 3. Dye Grid Container
+    // 4. Dye Grid Container
     const gridContainer = this.createElement('div', { id: 'dye-grid-container' });
     wrapper.appendChild(gridContainer);
 
@@ -173,6 +202,32 @@ export class DyeSelector extends BaseComponent {
         (document.activeElement as HTMLElement)?.blur();
       }
     });
+
+    // Favorites panel events
+    if (this.options.showFavorites) {
+      // Toggle favorites panel
+      const favoritesHeader = this.element.querySelector<HTMLElement>('#favorites-header');
+      if (favoritesHeader) {
+        this.on(favoritesHeader, 'click', () => {
+          this.toggleFavoritesPanel();
+        });
+      }
+
+      // Click on favorite dye cards
+      const favoritesPanel = this.element.querySelector<HTMLElement>('#favorites-panel');
+      if (favoritesPanel) {
+        this.on(favoritesPanel, 'click', (e) => {
+          const target = (e.target as HTMLElement).closest('.favorite-dye-card');
+          if (target) {
+            const dyeId = parseInt(target.getAttribute('data-dye-id') || '0', 10);
+            const dye = this.favoriteDyes.find((d) => d.id === dyeId);
+            if (dye) {
+              this.handleDyeSelection(dye);
+            }
+          }
+        });
+      }
+    }
 
     // Global keyboard shortcut
     this.on(document, 'keydown', this.handleGlobalKeydown);
@@ -379,6 +434,202 @@ export class DyeSelector extends BaseComponent {
   setSelectedDyes(dyes: Dye[]): void {
     this.selectedDyes = dyes.slice(0, this.options.maxSelections ?? 4);
     this.update();
+  }
+
+  /**
+   * Create the collapsible favorites panel
+   */
+  private createFavoritesPanel(): HTMLElement {
+    const panel = this.createElement('div', {
+      id: 'favorites-panel',
+      className: 'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden',
+    });
+
+    // Header (clickable to toggle)
+    const header = this.createElement('button', {
+      id: 'favorites-header',
+      className: 'w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors',
+      attributes: { type: 'button' },
+    });
+
+    const headerLeft = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    // Star icon
+    const starIcon = this.createElement('span', {
+      textContent: '⭐',
+      className: 'text-yellow-500',
+    });
+    headerLeft.appendChild(starIcon);
+
+    // Title with count
+    const title = this.createElement('span', {
+      id: 'favorites-title',
+      textContent: `${LanguageService.t('collections.favorites') || 'Favorites'} (${this.favoriteDyes.length})`,
+      className: 'font-medium text-gray-900 dark:text-white',
+    });
+    headerLeft.appendChild(title);
+
+    header.appendChild(headerLeft);
+
+    // Chevron icon
+    const chevron = this.createElement('span', {
+      id: 'favorites-chevron',
+      textContent: this.favoritesExpanded ? '▼' : '▶',
+      className: 'text-gray-500 text-sm transition-transform',
+    });
+    header.appendChild(chevron);
+
+    panel.appendChild(header);
+
+    // Content area
+    const content = this.createElement('div', {
+      id: 'favorites-content',
+      className: `px-4 py-3 ${this.favoritesExpanded ? '' : 'hidden'}`,
+    });
+
+    if (this.favoriteDyes.length === 0) {
+      // Empty state
+      const emptyState = this.createElement('div', {
+        className: 'text-center py-4 text-gray-500 dark:text-gray-400',
+      });
+      const emptyText = this.createElement('p', {
+        textContent: LanguageService.t('collections.favoritesEmptyHint') || 'Click the ★ on any dye to add it to your favorites',
+        className: 'text-sm',
+      });
+      emptyState.appendChild(emptyText);
+      content.appendChild(emptyState);
+    } else {
+      // Grid of favorite dyes
+      const grid = this.createElement('div', {
+        id: 'favorites-grid',
+        className: 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2',
+      });
+
+      this.favoriteDyes.forEach((dye) => {
+        const dyeCard = this.createFavoriteDyeCard(dye);
+        grid.appendChild(dyeCard);
+      });
+
+      content.appendChild(grid);
+    }
+
+    panel.appendChild(content);
+
+    return panel;
+  }
+
+  /**
+   * Create a compact dye card for the favorites panel
+   */
+  private createFavoriteDyeCard(dye: Dye): HTMLElement {
+    const isSelected = this.selectedDyes.some((d) => d.id === dye.id);
+
+    const card = this.createElement('button', {
+      className: `favorite-dye-card relative flex flex-col items-center p-2 rounded-lg transition-all duration-200 ${
+        isSelected
+          ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/30'
+          : 'hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+      }`,
+      attributes: {
+        'data-dye-id': String(dye.id),
+        'aria-label': `${LanguageService.getDyeName(dye.itemID) || dye.name}`,
+        type: 'button',
+      },
+    });
+
+    // Color swatch
+    const swatch = this.createElement('div', {
+      className: 'w-8 h-8 rounded border border-gray-300 dark:border-gray-500',
+      attributes: { style: `background-color: ${dye.hex};` },
+    });
+    card.appendChild(swatch);
+
+    // Dye name (truncated)
+    const name = this.createElement('div', {
+      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
+      className: 'text-xs text-gray-700 dark:text-gray-300 truncate w-full text-center mt-1',
+    });
+    card.appendChild(name);
+
+    return card;
+  }
+
+  /**
+   * Update the favorites panel without full re-render
+   */
+  private updateFavoritesPanel(): void {
+    if (!this.options.showFavorites || !this.element) return;
+
+    const panel = this.element.querySelector('#favorites-panel');
+    if (!panel) return;
+
+    // Update title count
+    const title = panel.querySelector('#favorites-title');
+    if (title) {
+      title.textContent = `${LanguageService.t('collections.favorites') || 'Favorites'} (${this.favoriteDyes.length})`;
+    }
+
+    // Update content
+    const content = panel.querySelector<HTMLElement>('#favorites-content');
+    if (content) {
+      clearContainer(content);
+
+      if (this.favoriteDyes.length === 0) {
+        // Empty state
+        const emptyState = this.createElement('div', {
+          className: 'text-center py-4 text-gray-500 dark:text-gray-400',
+        });
+        const emptyText = this.createElement('p', {
+          textContent: LanguageService.t('collections.favoritesEmptyHint') || 'Click the ★ on any dye to add it to your favorites',
+          className: 'text-sm',
+        });
+        emptyState.appendChild(emptyText);
+        content.appendChild(emptyState);
+      } else {
+        // Grid of favorite dyes
+        const grid = this.createElement('div', {
+          id: 'favorites-grid',
+          className: 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2',
+        });
+
+        this.favoriteDyes.forEach((dye) => {
+          const dyeCard = this.createFavoriteDyeCard(dye);
+          grid.appendChild(dyeCard);
+        });
+
+        content.appendChild(grid);
+      }
+    }
+  }
+
+  /**
+   * Toggle favorites panel expansion
+   */
+  private toggleFavoritesPanel(): void {
+    this.favoritesExpanded = !this.favoritesExpanded;
+
+    const content = this.element?.querySelector('#favorites-content');
+    const chevron = this.element?.querySelector('#favorites-chevron');
+
+    if (content) {
+      content.classList.toggle('hidden', !this.favoritesExpanded);
+    }
+    if (chevron) {
+      chevron.textContent = this.favoritesExpanded ? '▼' : '▶';
+    }
+  }
+
+  /**
+   * Clean up subscriptions when component is destroyed
+   */
+  override destroy(): void {
+    if (this.unsubscribeFavorites) {
+      this.unsubscribeFavorites();
+      this.unsubscribeFavorites = null;
+    }
+    super.destroy();
   }
 
   protected getState(): Record<string, unknown> {
