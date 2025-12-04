@@ -117,6 +117,16 @@ export const ICON_UPLOAD = `<svg viewBox="0 0 24 24" fill="none" stroke="current
 </svg>`;
 
 /**
+ * Dice icon - Random selection
+ */
+export const ICON_DICE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="3" width="18" height="18" rx="3" />
+  <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+  <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+  <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none" />
+</svg>`;
+
+/**
  * Map of UI icon names to SVG strings
  */
 export const UI_ICONS: Record<string, string> = {
@@ -131,6 +141,7 @@ export const UI_ICONS: Record<string, string> = {
   crystal: ICON_CRYSTAL,
   upload: ICON_UPLOAD,
   warning: ICON_WARNING,
+  dice: ICON_DICE,
 };
 
 /**

@@ -1,5 +1,6 @@
 import { BaseComponent } from './base-component';
 import { LanguageService, DyeService } from '@services/index';
+import { ICON_DICE } from '@shared/ui-icons';
 
 export type SortOption =
   | 'alphabetical'
@@ -75,8 +76,8 @@ export class DyeSearchBox extends BaseComponent {
 
     // Random Dye Button
     const randomBtn = this.createElement('button', {
-      textContent: `🎲 ${LanguageService.t('dyeSelector.randomDye')}`,
-      className: 'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
+      className:
+        'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto flex items-center justify-center gap-2',
       attributes: {
         id: 'dye-selector-random-btn',
         type: 'button',
@@ -84,6 +85,19 @@ export class DyeSearchBox extends BaseComponent {
         style: 'background-color: var(--theme-background-secondary); color: var(--theme-text);',
       },
     });
+
+    // Add dice icon and text
+    const diceIcon = this.createElement('span', {
+      className: 'w-4 h-4 inline-block',
+    });
+    diceIcon.innerHTML = ICON_DICE;
+
+    const randomText = this.createElement('span', {
+      textContent: LanguageService.t('dyeSelector.randomDye'),
+    });
+
+    randomBtn.appendChild(diceIcon);
+    randomBtn.appendChild(randomText);
 
     // Hover effects for random button
     randomBtn.addEventListener('mouseenter', () => (randomBtn.style.filter = 'brightness(0.9)'));

@@ -48,6 +48,7 @@ import {
   ICON_CRYSTAL,
   ICON_WARNING,
   ICON_UPLOAD,
+  ICON_DICE,
 } from '../ui-icons';
 
 // ==========================================================================
@@ -347,6 +348,12 @@ describe('UI Icons', () => {
       expect(icon).toContain('<svg');
     });
 
+    it('should return dice icon when name is "dice"', () => {
+      const icon = getUIIcon('dice');
+      expect(icon).toBe(ICON_DICE);
+      expect(icon).toContain('<svg');
+    });
+
     it('should return undefined for unknown icon name', () => {
       const icon = getUIIcon('unknown');
       expect(icon).toBeUndefined();
@@ -384,6 +391,7 @@ describe('UI Icons', () => {
         'crystal',
         'upload',
         'warning',
+        'dice',
       ]);
     });
 
@@ -459,6 +467,12 @@ describe('UI Icons', () => {
       expect(ICON_UPLOAD).toContain('<svg');
       expect(ICON_UPLOAD).toContain('path');
       expect(ICON_UPLOAD).toContain('line');
+    });
+
+    it('ICON_DICE should be a valid SVG with rect and circles', () => {
+      expect(ICON_DICE).toContain('<svg');
+      expect(ICON_DICE).toContain('rect');
+      expect(ICON_DICE).toContain('circle');
     });
   });
 });
