@@ -179,9 +179,15 @@ export class ColorDisplay extends BaseComponent {
         textContent: 'RGB',
         className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
       });
+      const rgbCopyValue = `rgb(${dye.rgb.r}, ${dye.rgb.g}, ${dye.rgb.b})`;
       const rgbValue = this.createElement('div', {
         textContent: `${dye.rgb.r}, ${dye.rgb.g}, ${dye.rgb.b}`,
-        className: 'font-mono text-gray-900 dark:text-white',
+        className:
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+        attributes: {
+          'data-copy': rgbCopyValue,
+          title: 'Click to copy RGB',
+        },
       });
       rgbItem.appendChild(rgbLabel);
       rgbItem.appendChild(rgbValue);
@@ -189,28 +195,29 @@ export class ColorDisplay extends BaseComponent {
     }
 
     if (this.options.showHSV) {
-      const hsvItems = [
-        { label: 'H', value: Math.round(dye.hsv.h) },
-        { label: 'S', value: Math.round(dye.hsv.s) },
-        { label: 'V', value: Math.round(dye.hsv.v) },
-      ];
-
-      for (const item of hsvItems) {
-        const hsvItem = this.createElement('div', {
-          className: 'space-y-1',
-        });
-        const hsvLabel = this.createElement('div', {
-          textContent: item.label,
-          className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
-        });
-        const hsvValue = this.createElement('div', {
-          textContent: `${item.value}${item.label === 'H' ? '°' : '%'}`,
-          className: 'font-mono text-gray-900 dark:text-white',
-        });
-        hsvItem.appendChild(hsvLabel);
-        hsvItem.appendChild(hsvValue);
-        infoGrid.appendChild(hsvItem);
-      }
+      const hsvItem = this.createElement('div', {
+        className: 'space-y-1',
+      });
+      const hsvLabel = this.createElement('div', {
+        textContent: 'HSV',
+        className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+      });
+      const h = Math.round(dye.hsv.h);
+      const s = Math.round(dye.hsv.s);
+      const v = Math.round(dye.hsv.v);
+      const hsvCopyValue = `hsv(${h}, ${s}%, ${v}%)`;
+      const hsvValue = this.createElement('div', {
+        textContent: `${h}°, ${s}%, ${v}%`,
+        className:
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+        attributes: {
+          'data-copy': hsvCopyValue,
+          title: 'Click to copy HSV',
+        },
+      });
+      hsvItem.appendChild(hsvLabel);
+      hsvItem.appendChild(hsvValue);
+      infoGrid.appendChild(hsvItem);
     }
 
     card.appendChild(infoGrid);
