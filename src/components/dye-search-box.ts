@@ -73,8 +73,27 @@ export class DyeSearchBox extends BaseComponent {
     clearBtn.addEventListener('mousedown', () => (clearBtn.style.filter = 'brightness(0.8)'));
     clearBtn.addEventListener('mouseup', () => (clearBtn.style.filter = 'brightness(0.9)'));
 
+    // Random Dye Button
+    const randomBtn = this.createElement('button', {
+      textContent: `🎲 ${LanguageService.t('dyeSelector.randomDye')}`,
+      className: 'px-4 py-2 rounded-lg transition-all duration-200 w-full sm:w-auto',
+      attributes: {
+        id: 'dye-selector-random-btn',
+        type: 'button',
+        'aria-label': LanguageService.t('dyeSelector.randomDyeAriaLabel'),
+        style: 'background-color: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+
+    // Hover effects for random button
+    randomBtn.addEventListener('mouseenter', () => (randomBtn.style.filter = 'brightness(0.9)'));
+    randomBtn.addEventListener('mouseleave', () => (randomBtn.style.filter = ''));
+    randomBtn.addEventListener('mousedown', () => (randomBtn.style.filter = 'brightness(0.8)'));
+    randomBtn.addEventListener('mouseup', () => (randomBtn.style.filter = 'brightness(0.9)'));
+
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(clearBtn);
+    searchContainer.appendChild(randomBtn);
     wrapper.appendChild(searchContainer);
 
     // Sort Dropdown Section
@@ -192,6 +211,14 @@ export class DyeSearchBox extends BaseComponent {
         this.searchQuery = '';
         searchInput.value = '';
         this.emit('clear-all', void 0);
+      });
+    }
+
+    // Random Button
+    const randomBtn = this.querySelector<HTMLButtonElement>('#dye-selector-random-btn');
+    if (randomBtn) {
+      this.on(randomBtn, 'click', () => {
+        this.emit('random-dye-requested', void 0);
       });
     }
 

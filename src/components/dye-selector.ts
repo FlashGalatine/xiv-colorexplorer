@@ -160,6 +160,10 @@ export class DyeSelector extends BaseComponent {
       this.emit('selection-changed', { selectedDyes: this.selectedDyes });
     });
 
+    this.onCustom('random-dye-requested', () => {
+      this.selectRandomDye();
+    });
+
     this.onCustom('escape-pressed', () => {
       if (this.selectedDyes.length > 0) {
         this.selectedDyes = [];
@@ -204,6 +208,28 @@ export class DyeSelector extends BaseComponent {
         this.searchBox?.focusSearch();
       }
     }
+  }
+
+  /**
+   * Select a random dye from the currently filtered list
+   */
+  private selectRandomDye(): void {
+    const availableDyes = this.getFilteredDyes();
+
+    if (availableDyes.length === 0) {
+      logger.warn('DyeSelector: No dyes available to select randomly');
+      return;
+    }
+
+    // Select a random dye from filtered list
+    const randomIndex = Math.floor(Math.random() * availableDyes.length);
+    const randomDye = availableDyes[randomIndex];
+
+    // Use the same selection handler
+    this.handleDyeSelection(randomDye);
+
+    // Log for debugging
+    logger.info(`DyeSelector: Random dye selected - ${randomDye.name}`);
   }
 
   override update(): void {
