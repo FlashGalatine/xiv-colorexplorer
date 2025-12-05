@@ -1,10 +1,10 @@
-# XIV Dye Tools v2.4.1
+# XIV Dye Tools v2.5.0
 
-**Status**: ✅ Production Ready | **Version**: 2.4.1 | **Release**: December 1, 2025 | **Phase**: UI/UX Phase 4 Complete
+**Status**: ✅ Production Ready | **Version**: 2.5.0 | **Release**: December 5, 2025 | **Phase**: Multi-Color Palette Extraction
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.4.1 Release Notes**: Phase 4 testing bug fixes including palette import count calculation, companion dye color display, theme-aware button styling, camera privacy notice, offline banner initialization, and high contrast theme localization. See [CHANGELOG.md](docs/CHANGELOG.md) for detailed release information.
+> **v2.5.0 Release Notes**: Multi-color palette extraction in Color Matcher - extract 3-5 dominant colors from any image using K-means++ clustering, with visual sampling indicators showing where colors were sampled. See [CHANGELOG.md](CHANGELOG.md) for detailed release information.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
@@ -99,10 +99,20 @@ Generate color harmonies based on FFXIV's dye palette using established color th
 - **Two-Column Layout** - Optimized for 1080p displays with sticky sidebar containing all controls and 2-column harmony results grid
 - **Tools Navigation Dropdown** - Quick dropdown menu to switch between all XIV Dye Tools
 
-### 🔍 Color Matcher (v2.0.0)
+### 🔍 Color Matcher (v2.5.0)
 Upload an image or pick a color to find the closest matching FFXIV dye with an intuitive two-column interface:
 
-**New in v1.3.0:**
+**New in v2.5.0 - Multi-Color Palette Extraction:**
+- **Extraction Mode Toggle** - Switch between Single Color (click to sample) and Palette Mode (extract dominant colors)
+- **K-means++ Clustering** - Extract 3-5 dominant colors from any image using advanced clustering algorithm
+- **Color Count Slider** - Choose how many dominant colors to extract (3, 4, or 5)
+- **Visual Sampling Indicators** - See exactly where each color was sampled with colored circles on the image
+- **Palette Results Display** - Color bar visualization with extracted → matched dye comparison
+- **Dominance Percentages** - See how much of the image each color represents
+- **Copy Hex Buttons** - Quick copy for each matched dye's hex code
+- **6-Language Support** - Full localization (en, ja, de, fr, ko, zh)
+
+**Previous Features (v1.3.0):**
 - **Clipboard Image Paste** - Paste images directly using Ctrl+V (Windows/Linux) or Cmd+V (Mac)
   - Seamlessly integrates with existing drag-and-drop and file picker methods
   - Perfect for quickly testing screenshots and clipboard images

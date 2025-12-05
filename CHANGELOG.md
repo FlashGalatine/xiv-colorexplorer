@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.0] - 2025-12-05
+
+### 🎨 Multi-Color Palette Extraction
+
+**Status**: ✅ COMPLETE
+**Focus**: Extract multiple dominant colors from images in Color Matcher.
+
+#### New Features ✅
+
+**Extraction Mode Toggle**
+- Switch between Single Color (click to sample) and Palette Mode (extract dominant colors)
+- Toggle buttons in the Settings section below sample size slider
+
+**K-means++ Clustering Algorithm**
+- Extract 3-5 dominant colors from any image
+- Configurable color count slider
+- Uses `PaletteService` from xivdyetools-core for accurate color detection
+
+**Visual Sampling Indicators**
+- Colored circles on the image showing where each color was sampled
+- White outer ring for visibility on any background
+- Inner ring colored to match the extracted color
+- Automatically finds representative pixel positions via grid sampling
+
+**Palette Results Display**
+- Color bar visualization showing relative dominance of each color
+- Individual entries showing extracted color → matched dye
+- Dominance percentages for each color
+- Color distance (Δ) values showing match accuracy
+- Copy hex buttons for each matched dye
+
+**6-Language Localization**
+- Full translations for en, ja, de, fr, ko, zh
+- 14 new translation keys added
+
+#### Files Modified
+- `src/components/color-matcher-tool.ts` - Added palette mode, extraction, and results rendering
+- `src/locales/*.json` - Added translation keys (6 files)
+
+---
+
 ## [2.4.11] - 2025-12-02
 
 ### ♿ Accessibility Checker Redesign
