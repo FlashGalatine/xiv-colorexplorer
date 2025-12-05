@@ -401,6 +401,34 @@ export class PresetBrowserTool extends BaseComponent {
     this.presetGrid.classList.remove('hidden');
   }
 
+  /**
+   * Update category selection without full re-render
+   * This preserves event listeners by only updating visuals and preset grid
+   */
+  private updateCategorySelection(category: PresetCategory | null): void {
+    this.selectedCategory = category;
+
+    // Update tab visual states
+    if (this.categoryContainer) {
+      this.categoryContainer.querySelectorAll('button').forEach((btn) => {
+        const btnCategory = (btn as HTMLElement).dataset.category;
+        const isActive =
+          (category === null && btnCategory === 'all') || btnCategory === category;
+
+        if (isActive) {
+          btn.className =
+            'px-4 py-2 rounded-full text-sm font-medium transition-colors bg-indigo-600 text-white';
+        } else {
+          btn.className =
+            'px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600';
+        }
+      });
+    }
+
+    // Re-render only the presets grid (not the whole component)
+    this.renderPresets();
+  }
+
   bindEvents(): void {
     // Category tab clicks
     if (this.categoryContainer) {
@@ -408,8 +436,8 @@ export class PresetBrowserTool extends BaseComponent {
         const target = e.target as HTMLElement;
         if (target.tagName === 'BUTTON') {
           const category = target.dataset.category;
-          this.selectedCategory = category === 'all' ? null : (category as PresetCategory);
-          this.render();
+          const newCategory = category === 'all' ? null : (category as PresetCategory);
+          this.updateCategorySelection(newCategory);
         }
       });
     }
