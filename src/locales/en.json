@@ -166,7 +166,21 @@
     "sampledColor": "Sampled Color",
     "samplePreview": "Sample Point Preview",
     "recentColors": "Recent Picks",
-    "clearHistory": "Clear"
+    "clearHistory": "Clear",
+    "extractionMode": "Extraction Mode",
+    "singleColor": "Single Color",
+    "singleColorDesc": "Click to sample individual colors",
+    "paletteMode": "Palette Mode",
+    "paletteModeDesc": "Extract dominant colors from entire image",
+    "colorCount": "Number of Colors",
+    "colorCountDesc": "How many dominant colors to extract",
+    "extractPalette": "Extract Palette",
+    "extractingPalette": "Extracting...",
+    "paletteResults": "Extracted Palette",
+    "dominance": "Dominance",
+    "extractedColor": "Extracted",
+    "matchedDye": "Matched Dye",
+    "noImageForPalette": "Please upload an image first to extract palette"
   },
   "accessibility": {
     "selectDyes": "Select Dyes",

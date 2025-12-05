@@ -19,6 +19,7 @@ import type { PriceData, DyeWithDistance } from '@shared/types';
 import { PricingMixin, type PricingState } from '@services/pricing-mixin';
 import { ToolHeader } from './tool-header';
 import { DyeCardRenderer } from './dye-card-renderer';
+import { PaletteService, type PaletteMatch } from 'xivdyetools-core';
 
 import { CARD_CLASSES } from '@shared/constants';
 import { logger } from '@shared/logger';
@@ -43,6 +44,12 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   private previewOverlay: DyePreviewOverlay | null = null;
   private samplePosition: { x: number; y: number } = { x: 0, y: 0 };
 
+  // Palette extraction mode
+  private paletteMode: boolean = false;
+  private paletteColorCount: number = 4;
+  private paletteService: PaletteService;
+  private lastPaletteResults: PaletteMatch[] = [];
+
   // Cached DOM references for performance
   private sampleSizeDisplay: HTMLElement | null = null;
 
@@ -62,6 +69,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   constructor(container: HTMLElement) {
     super(container);
     Object.assign(this, PricingMixin);
+    this.paletteService = new PaletteService();
   }
 
   /**
@@ -183,6 +191,118 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     sampleDiv.appendChild(sampleContainer);
     sampleDiv.appendChild(sampleHint);
     settingsSection.appendChild(sampleDiv);
+
+    // Extraction Mode Toggle
+    const modeDiv = this.createElement('div', {
+      className: 'space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700',
+    });
+
+    const modeLabel = this.createElement('label', {
+      textContent: LanguageService.t('matcher.extractionMode'),
+      className: 'block text-sm font-semibold text-gray-700 dark:text-gray-300',
+    });
+    modeDiv.appendChild(modeLabel);
+
+    // Mode toggle buttons
+    const modeToggle = this.createElement('div', {
+      className: 'flex gap-2',
+      attributes: { id: 'extraction-mode-toggle' },
+    });
+
+    const singleModeBtn = this.createElement('button', {
+      className:
+        'flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors',
+      textContent: LanguageService.t('matcher.singleColor'),
+      attributes: {
+        id: 'single-mode-btn',
+        type: 'button',
+        title: LanguageService.t('matcher.singleColorDesc'),
+      },
+    });
+
+    const paletteModeBtn = this.createElement('button', {
+      className:
+        'flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors',
+      textContent: LanguageService.t('matcher.paletteMode'),
+      attributes: {
+        id: 'palette-mode-btn',
+        type: 'button',
+        title: LanguageService.t('matcher.paletteModeDesc'),
+      },
+    });
+
+    modeToggle.appendChild(singleModeBtn);
+    modeToggle.appendChild(paletteModeBtn);
+    modeDiv.appendChild(modeToggle);
+
+    // Palette options (hidden by default)
+    const paletteOptions = this.createElement('div', {
+      className: 'space-y-3 hidden',
+      attributes: { id: 'palette-options' },
+    });
+
+    // Color count slider
+    const colorCountDiv = this.createElement('div', {
+      className: 'space-y-2',
+    });
+
+    const colorCountLabel = this.createElement('label', {
+      textContent: LanguageService.t('matcher.colorCount'),
+      className: 'block text-sm font-medium text-gray-700 dark:text-gray-300',
+    });
+
+    const colorCountContainer = this.createElement('div', {
+      className: 'flex items-center gap-4',
+    });
+
+    const colorCountInput = this.createElement('input', {
+      className:
+        'flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700',
+      attributes: {
+        type: 'range',
+        min: '3',
+        max: '5',
+        value: String(this.paletteColorCount),
+        id: 'palette-color-count',
+        style: 'accent-color: var(--theme-primary);',
+      },
+    });
+
+    const colorCountValue = this.createElement('div', {
+      textContent: String(this.paletteColorCount),
+      className: 'text-lg font-bold text-gray-900 dark:text-white w-8 text-center',
+      attributes: { id: 'color-count-value' },
+    });
+
+    colorCountContainer.appendChild(colorCountInput);
+    colorCountContainer.appendChild(colorCountValue);
+
+    const colorCountHint = this.createElement('p', {
+      textContent: LanguageService.t('matcher.colorCountDesc'),
+      className: 'text-xs text-gray-600 dark:text-gray-400',
+    });
+
+    colorCountDiv.appendChild(colorCountLabel);
+    colorCountDiv.appendChild(colorCountContainer);
+    colorCountDiv.appendChild(colorCountHint);
+    paletteOptions.appendChild(colorCountDiv);
+
+    // Extract button
+    const extractBtn = this.createElement('button', {
+      className:
+        'w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors',
+      textContent: LanguageService.t('matcher.extractPalette'),
+      attributes: {
+        id: 'extract-palette-btn',
+        type: 'button',
+        style:
+          'background-color: var(--theme-primary); color: white;',
+      },
+    });
+
+    paletteOptions.appendChild(extractBtn);
+    modeDiv.appendChild(paletteOptions);
+    settingsSection.appendChild(modeDiv);
 
     wrapper.appendChild(settingsSection);
 
@@ -342,6 +462,51 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         if (this.sampleSizeDisplay) {
           this.sampleSizeDisplay.textContent = String(this.sampleSize);
         }
+      });
+    }
+
+    // Extraction mode toggle
+    const singleModeBtn = this.querySelector<HTMLButtonElement>('#single-mode-btn');
+    const paletteModeBtn = this.querySelector<HTMLButtonElement>('#palette-mode-btn');
+    const paletteOptions = this.querySelector<HTMLElement>('#palette-options');
+
+    // Initialize button styles
+    this.updateModeButtonStyles();
+
+    if (singleModeBtn) {
+      this.on(singleModeBtn, 'click', () => {
+        this.paletteMode = false;
+        this.updateModeButtonStyles();
+        paletteOptions?.classList.add('hidden');
+      });
+    }
+
+    if (paletteModeBtn) {
+      this.on(paletteModeBtn, 'click', () => {
+        this.paletteMode = true;
+        this.updateModeButtonStyles();
+        paletteOptions?.classList.remove('hidden');
+      });
+    }
+
+    // Color count slider
+    const colorCountInput = this.querySelector<HTMLInputElement>('#palette-color-count');
+    const colorCountValue = this.querySelector<HTMLElement>('#color-count-value');
+
+    if (colorCountInput) {
+      this.on(colorCountInput, 'input', () => {
+        this.paletteColorCount = parseInt(colorCountInput.value, 10);
+        if (colorCountValue) {
+          colorCountValue.textContent = String(this.paletteColorCount);
+        }
+      });
+    }
+
+    // Extract palette button
+    const extractBtn = this.querySelector<HTMLButtonElement>('#extract-palette-btn');
+    if (extractBtn) {
+      this.on(extractBtn, 'click', () => {
+        void this.extractPalette();
       });
     }
 
@@ -643,6 +808,277 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   }
 
   /**
+   * Update mode toggle button styles
+   */
+  private updateModeButtonStyles(): void {
+    const singleModeBtn = this.querySelector<HTMLButtonElement>('#single-mode-btn');
+    const paletteModeBtn = this.querySelector<HTMLButtonElement>('#palette-mode-btn');
+
+    const activeClasses =
+      'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
+    const inactiveClasses =
+      'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600';
+
+    if (singleModeBtn && paletteModeBtn) {
+      if (this.paletteMode) {
+        singleModeBtn.className = `flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors ${inactiveClasses}`;
+        paletteModeBtn.className = `flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors ${activeClasses}`;
+      } else {
+        singleModeBtn.className = `flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors ${activeClasses}`;
+        paletteModeBtn.className = `flex-1 px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors ${inactiveClasses}`;
+      }
+    }
+  }
+
+  /**
+   * Extract palette from loaded image
+   */
+  private async extractPalette(): Promise<void> {
+    // Get canvas from ImageZoomController
+    const canvas = this.imageZoomController?.getCanvas();
+
+    if (!canvas) {
+      ToastService.error(LanguageService.t('matcher.noImageForPalette'));
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      ToastService.error('Could not get canvas context');
+      return;
+    }
+
+    // Update button to show loading
+    const extractBtn = this.querySelector<HTMLButtonElement>('#extract-palette-btn');
+    if (extractBtn) {
+      extractBtn.textContent = LanguageService.t('matcher.extractingPalette');
+      extractBtn.disabled = true;
+    }
+
+    try {
+      // Get pixel data from canvas
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = PaletteService.pixelDataToRGBFiltered(imageData.data);
+
+      if (pixels.length === 0) {
+        ToastService.error('No pixels to analyze');
+        return;
+      }
+
+      // Extract palette and match to dyes
+      const matches = this.paletteService.extractAndMatchPalette(pixels, dyeService, {
+        colorCount: this.paletteColorCount,
+      });
+
+      this.lastPaletteResults = matches;
+
+      // Render results
+      this.renderPaletteResults(matches);
+
+      // Fetch prices if enabled
+      if (this.showPrices && this.marketBoard) {
+        // Convert PaletteMatch to DyeWithDistance for price fetching
+        this.matchedDyes = matches.map((m: PaletteMatch) => ({
+          ...m.matchedDye,
+          distance: m.distance,
+        }));
+        void this.updatePrices();
+      }
+
+      ToastService.success(`✓ Extracted ${matches.length} colors from image`);
+    } catch (error) {
+      logger.error('Palette extraction failed:', error);
+      ToastService.error('Failed to extract palette');
+    } finally {
+      // Restore button
+      if (extractBtn) {
+        extractBtn.textContent = LanguageService.t('matcher.extractPalette');
+        extractBtn.disabled = false;
+      }
+    }
+  }
+
+  /**
+   * Render extracted palette results
+   */
+  private renderPaletteResults(matches: PaletteMatch[]): void {
+    const resultsContainer = this.querySelector<HTMLElement>('#results-container');
+    if (!resultsContainer) return;
+
+    // Clear existing results
+    const existingResults = resultsContainer.querySelector('[data-results-section]');
+    if (existingResults) {
+      existingResults.remove();
+    }
+
+    if (matches.length === 0) {
+      return;
+    }
+
+    // Results section
+    const section = this.createElement('div', {
+      className: `${CARD_CLASSES} space-y-4`,
+    });
+    section.setAttribute('data-results-section', 'true');
+
+    const title = this.createElement('h3', {
+      textContent: LanguageService.t('matcher.paletteResults'),
+      className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
+    });
+    section.appendChild(title);
+
+    // Palette color bar (visual overview)
+    const colorBar = this.createElement('div', {
+      className: 'flex h-12 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600',
+    });
+
+    for (const match of matches) {
+      const colorSegment = this.createElement('div', {
+        className: 'transition-all hover:flex-grow cursor-pointer',
+        attributes: {
+          style: `flex: ${match.dominance}; background-color: rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b});`,
+          title: `${match.matchedDye.name} (${match.dominance}%)`,
+        },
+      });
+      colorBar.appendChild(colorSegment);
+    }
+    section.appendChild(colorBar);
+
+    // Individual color entries
+    const colorsGrid = this.createElement('div', {
+      className: 'space-y-3',
+    });
+
+    for (const match of matches) {
+      const entry = this.renderPaletteEntry(match);
+      colorsGrid.appendChild(entry);
+    }
+
+    section.appendChild(colorsGrid);
+    resultsContainer.appendChild(section);
+  }
+
+  /**
+   * Render a single palette entry
+   */
+  private renderPaletteEntry(match: PaletteMatch): HTMLElement {
+    const entry = this.createElement('div', {
+      className:
+        'flex items-center gap-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700',
+    });
+
+    // Extracted color swatch
+    const extractedSwatch = this.createElement('div', {
+      className: 'flex flex-col items-center gap-1',
+    });
+
+    const extractedColor = this.createElement('div', {
+      className: 'w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600',
+      attributes: {
+        style: `background-color: rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b});`,
+        title: LanguageService.t('matcher.extractedColor'),
+      },
+    });
+
+    const extractedLabel = this.createElement('span', {
+      textContent: LanguageService.t('matcher.extractedColor'),
+      className: 'text-xs text-gray-500 dark:text-gray-400',
+    });
+
+    extractedSwatch.appendChild(extractedColor);
+    extractedSwatch.appendChild(extractedLabel);
+    entry.appendChild(extractedSwatch);
+
+    // Arrow
+    const arrow = this.createElement('span', {
+      textContent: '→',
+      className: 'text-xl text-gray-400 dark:text-gray-500',
+    });
+    entry.appendChild(arrow);
+
+    // Matched dye swatch
+    const matchedSwatch = this.createElement('div', {
+      className: 'flex flex-col items-center gap-1',
+    });
+
+    const matchedColor = this.createElement('div', {
+      className: 'w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600',
+      attributes: {
+        style: `background-color: ${match.matchedDye.hex};`,
+        title: match.matchedDye.name,
+      },
+    });
+
+    const matchedLabel = this.createElement('span', {
+      textContent: LanguageService.t('matcher.matchedDye'),
+      className: 'text-xs text-gray-500 dark:text-gray-400',
+    });
+
+    matchedSwatch.appendChild(matchedColor);
+    matchedSwatch.appendChild(matchedLabel);
+    entry.appendChild(matchedSwatch);
+
+    // Dye info
+    const dyeInfo = this.createElement('div', {
+      className: 'flex-1 min-w-0',
+    });
+
+    const dyeName = this.createElement('div', {
+      textContent: match.matchedDye.name,
+      className: 'font-semibold text-gray-900 dark:text-white truncate',
+    });
+
+    const dyeDetails = this.createElement('div', {
+      className: 'flex gap-3 text-xs text-gray-500 dark:text-gray-400',
+    });
+
+    const dominanceSpan = this.createElement('span', {
+      textContent: `${LanguageService.t('matcher.dominance')}: ${match.dominance}%`,
+    });
+
+    const distanceSpan = this.createElement('span', {
+      textContent: `Δ${match.distance.toFixed(1)}`,
+    });
+
+    const hexSpan = this.createElement('span', {
+      textContent: match.matchedDye.hex.toUpperCase(),
+      className: 'font-mono',
+    });
+
+    dyeDetails.appendChild(dominanceSpan);
+    dyeDetails.appendChild(distanceSpan);
+    dyeDetails.appendChild(hexSpan);
+
+    dyeInfo.appendChild(dyeName);
+    dyeInfo.appendChild(dyeDetails);
+    entry.appendChild(dyeInfo);
+
+    // Copy button
+    const copyBtn = this.createElement('button', {
+      textContent: LanguageService.t('matcher.copyHex'),
+      className:
+        'px-3 py-1 text-xs font-medium rounded transition-colors border cursor-pointer',
+      attributes: {
+        style:
+          'background-color: var(--theme-background-secondary); color: var(--theme-text); border-color: var(--theme-border);',
+      },
+    });
+
+    this.on(copyBtn, 'click', async () => {
+      try {
+        await navigator.clipboard.writeText(match.matchedDye.hex);
+        ToastService.success(`✓ Copied ${match.matchedDye.hex}`);
+      } catch {
+        ToastService.error('Failed to copy hex code');
+      }
+    });
+
+    entry.appendChild(copyBtn);
+
+    return entry;
+  }
+
+  /**
    * Render dye card
    */
   private renderDyeCard(dye: DyeWithDistance, sampledColor: string): HTMLElement {
@@ -726,6 +1162,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
       matchedDyeCount: this.matchedDyes.length,
       sampleSize: this.sampleSize,
       recentColorsCount: this.recentColorsPanel?.getState().recentColorsCount,
+      paletteMode: this.paletteMode,
+      paletteColorCount: this.paletteColorCount,
+      lastPaletteResultsCount: this.lastPaletteResults.length,
     };
   }
 
@@ -767,6 +1206,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     // Clear arrays and Maps
     this.matchedDyes = [];
     this.priceData.clear();
+    this.lastPaletteResults = [];
 
     // Clear cached DOM references
     this.sampleSizeDisplay = null;
