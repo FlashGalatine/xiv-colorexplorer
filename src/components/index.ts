@@ -24,6 +24,7 @@ export { DyeComparisonChart, type ChartType } from './dye-comparison-chart';
 export { DyeComparisonTool } from './dye-comparison-tool';
 export { ColorInterpolationDisplay, type InterpolationStep } from './color-interpolation-display';
 export { DyeMixerTool } from './dye-mixer-tool';
+// PresetBrowserTool is lazily-loaded via main.ts, not exported statically
 export { ColorblindnessDisplay, type VisionTypeInfo } from './colorblindness-display';
 export {
   AccessibilityCheckerTool,

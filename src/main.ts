@@ -38,6 +38,7 @@ import {
   ICON_TOOL_ACCESSIBILITY,
   ICON_TOOL_COMPARISON,
   ICON_TOOL_MIXER,
+  ICON_TOOL_PRESETS,
 } from '@shared/tool-icons';
 
 /**
@@ -161,6 +162,17 @@ async function initializeApp(): Promise<void> {
         loadComponent: async () => {
           const { DyeMixerTool } = await import('@components/dye-mixer-tool');
           return DyeMixerTool;
+        },
+      },
+      {
+        id: 'presets',
+        name: LanguageService.t('tools.presets.title'),
+        shortName: LanguageService.t('tools.presets.shortName'),
+        icon: ICON_TOOL_PRESETS,
+        description: LanguageService.t('tools.presets.description'),
+        loadComponent: async () => {
+          const { PresetBrowserTool } = await import('@components/preset-browser-tool');
+          return PresetBrowserTool;
         },
       },
     ];
@@ -299,7 +311,7 @@ async function initializeApp(): Promise<void> {
       const isActive = tool.id === 'harmony';
 
       // Base classes
-      btn.className = 'px-4 py-2 rounded-lg font-medium transition-all duration-200';
+      btn.className = 'px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2';
 
       // Apply theme-aware styling
       if (isActive) {
@@ -325,7 +337,7 @@ async function initializeApp(): Promise<void> {
       });
 
       // Use inline SVG for theme color inheritance
-      btn.innerHTML = `<span class="inline-block w-5 h-5" aria-hidden="true">${tool.icon}</span> ${tool.name}`;
+      btn.innerHTML = `<span class="w-5 h-5 flex-shrink-0" aria-hidden="true">${tool.icon}</span> ${tool.name}`;
       btn.title = tool.description;
       btn.addEventListener('click', () => {
         void loadTool(tool.id);

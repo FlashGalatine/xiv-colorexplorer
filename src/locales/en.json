@@ -51,6 +51,18 @@
       "shortName": "Mixer",
       "description": "Find intermediate dyes",
       "subtitle": "Create smooth color gradients between two dyes and discover intermediate options."
+    },
+    "presets": {
+      "title": "Preset Palettes",
+      "shortName": "Presets",
+      "description": "Browse themed palettes",
+      "subtitle": "Explore curated dye palettes for jobs, seasons, events, and more.",
+      "allCategories": "All",
+      "noPresets": "No presets found",
+      "dyes": "dyes",
+      "backToList": "Back to list",
+      "colorsInPalette": "Colors in this Palette",
+      "tags": "Tags"
     }
   },
   "common": {

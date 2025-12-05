@@ -51,6 +51,18 @@
       "shortName": "Mélangeur",
       "description": "Trouver des teintures intermédiaires",
       "subtitle": "Créez des dégradés de couleurs fluides entre deux teintures et découvrez des options intermédiaires."
+    },
+    "presets": {
+      "title": "Palettes Prédéfinies",
+      "shortName": "Palettes",
+      "description": "Parcourir les palettes thématiques",
+      "subtitle": "Explorez des palettes de teintures sélectionnées pour les jobs, saisons, événements et plus encore.",
+      "allCategories": "Tous",
+      "noPresets": "Aucune palette trouvée",
+      "dyes": "teintures",
+      "backToList": "Retour à la liste",
+      "colorsInPalette": "Couleurs de cette Palette",
+      "tags": "Tags"
     }
   },
   "common": {

@@ -51,6 +51,18 @@
       "shortName": "混合",
       "description": "寻找中间染剂",
       "subtitle": "在两种染剂之间创建平滑的颜色渐变，发现中间选项。"
+    },
+    "presets": {
+      "title": "预设调色板",
+      "shortName": "预设",
+      "description": "浏览主题调色板",
+      "subtitle": "探索为职业、季节、活动等精心策划的染剂调色板。",
+      "allCategories": "全部",
+      "noPresets": "未找到预设",
+      "dyes": "染剂",
+      "backToList": "返回列表",
+      "colorsInPalette": "此调色板中的颜色",
+      "tags": "标签"
     }
   },
   "common": {

@@ -51,6 +51,18 @@
       "shortName": "Mixer",
       "description": "Zwischenfarben finden",
       "subtitle": "Erstelle sanfte Farbverläufe zwischen zwei Farbstoffen und entdecke Zwischenoptionen."
+    },
+    "presets": {
+      "title": "Voreingestellte Paletten",
+      "shortName": "Vorlagen",
+      "description": "Themen-Paletten durchsuchen",
+      "subtitle": "Entdecke kuratierte Farbstoff-Paletten für Jobs, Jahreszeiten, Events und mehr.",
+      "allCategories": "Alle",
+      "noPresets": "Keine Voreinstellungen gefunden",
+      "dyes": "Farbstoffe",
+      "backToList": "Zurück zur Liste",
+      "colorsInPalette": "Farben in dieser Palette",
+      "tags": "Tags"
     }
   },
   "common": {

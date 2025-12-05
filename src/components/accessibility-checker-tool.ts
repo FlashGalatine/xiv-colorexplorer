@@ -9,6 +9,7 @@
 
 import { BaseComponent } from './base-component';
 import { DyeSelector } from './dye-selector';
+import { ToolHeader } from './tool-header';
 import { addInfoIconTo, TOOLTIP_CONTENT } from './info-tooltip';
 import type { Dye } from '@shared/types';
 import { ColorService, LanguageService } from '@services/index';
@@ -87,25 +88,10 @@ export class AccessibilityCheckerTool extends BaseComponent {
     });
 
     // Title
-    const title = this.createElement('div', {
-      className: 'space-y-2 text-center',
-    });
-
-    const heading = this.createElement('h2', {
-      textContent: LanguageService.t('tools.accessibility.title'),
-      className: 'text-2xl font-bold text-gray-900 dark:text-white',
-    });
-
-    const subtitle = this.createElement('p', {
-      textContent: LanguageService.t('tools.accessibility.subtitle'),
-      attributes: {
-        style: 'color: var(--theme-text-muted);',
-      },
-    });
-
-    title.appendChild(heading);
-    title.appendChild(subtitle);
-    wrapper.appendChild(title);
+    new ToolHeader(wrapper, {
+      title: LanguageService.t('tools.accessibility.title'),
+      description: LanguageService.t('tools.accessibility.subtitle'),
+    }).render();
 
     // Dye selector section
     const selectorSection = this.createElement('div', {

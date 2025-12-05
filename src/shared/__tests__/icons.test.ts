@@ -230,6 +230,7 @@ describe('Tool Icons', () => {
         'accessibility',
         'comparison',
         'mixer',
+        'presets',
         'tools',
       ]);
     });

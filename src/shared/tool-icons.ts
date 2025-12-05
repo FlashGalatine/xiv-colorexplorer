@@ -62,6 +62,19 @@ export const ICON_TOOL_MIXER = `<svg viewBox="0 0 24 24" fill="none" stroke="cur
 </svg>`;
 
 /**
+ * Preset Palettes icon - Bookmarked color swatches
+ */
+export const ICON_TOOL_PRESETS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="3" width="18" height="18" rx="2" opacity="0.3" />
+  <rect x="5" y="6" width="4" height="5" rx="0.5" fill="currentColor" stroke="none" opacity="0.6" />
+  <rect x="10" y="6" width="4" height="5" rx="0.5" fill="currentColor" stroke="none" opacity="0.8" />
+  <rect x="15" y="6" width="4" height="5" rx="0.5" fill="currentColor" stroke="none" />
+  <path d="M6 14h12" opacity="0.4" />
+  <path d="M6 17h8" opacity="0.4" />
+  <path d="M17 13v5l2-1.5 2 1.5v-5" opacity="0.7" />
+</svg>`;
+
+/**
  * Tools Menu icon - Toolbox
  */
 export const ICON_TOOL_MENU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -82,6 +95,7 @@ export const TOOL_ICONS: Record<string, string> = {
   accessibility: ICON_TOOL_ACCESSIBILITY,
   comparison: ICON_TOOL_COMPARISON,
   mixer: ICON_TOOL_MIXER,
+  presets: ICON_TOOL_PRESETS,
   tools: ICON_TOOL_MENU,
 };
 

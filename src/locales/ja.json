@@ -51,6 +51,18 @@
       "shortName": "ミキサー",
       "description": "中間カララントを探す",
       "subtitle": "2つのカララント間の滑らかな色のグラデーションを作成し、中間オプションを発見します。"
+    },
+    "presets": {
+      "title": "プリセットパレット",
+      "shortName": "プリセット",
+      "description": "テーマパレットを閲覧",
+      "subtitle": "ジョブ、季節、イベントなどのキュレーションされた染料パレットを探索しましょう。",
+      "allCategories": "すべて",
+      "noPresets": "プリセットが見つかりません",
+      "dyes": "染料",
+      "backToList": "リストに戻る",
+      "colorsInPalette": "このパレットの色",
+      "tags": "タグ"
     }
   },
   "common": {
