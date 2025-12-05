@@ -4,6 +4,7 @@ import { Dye } from '@shared/types';
 import { clearContainer } from '@shared/utils';
 import { getEmptyStateHTML } from './empty-state';
 import { ICON_SEARCH, ICON_PALETTE } from '@shared/empty-state-icons';
+import { showAddToCollectionMenu } from './add-to-collection-menu';
 
 export interface DyeGridOptions {
   allowMultiple?: boolean;
@@ -126,10 +127,27 @@ export class DyeGrid extends BaseComponent {
         // Content wrapper
         const content = this.createElement('div', { className: 'space-y-1 w-full' });
 
-        // Favorite star button (positioned absolutely in top-right)
+        // Action buttons container (positioned absolutely in top-right)
         if (this.options.showFavorites) {
+          const actionsContainer = this.createElement('div', {
+            className: 'absolute top-1 right-1 z-10 flex gap-0.5',
+          });
+
+          // Add to Collection button
+          const collectionBtn = this.createElement('button', {
+            className: 'collection-btn p-1.5 rounded-full transition-all duration-200 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700',
+            attributes: {
+              'data-collection-dye-id': String(dye.id),
+              'aria-label': LanguageService.t('collections.addToCollection') || 'Add to collection',
+              type: 'button',
+            },
+          });
+          collectionBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>';
+          actionsContainer.appendChild(collectionBtn);
+
+          // Favorite star button
           const favoriteBtn = this.createElement('button', {
-            className: `favorite-btn absolute top-1 right-1 z-10 p-1.5 rounded-full transition-all duration-200 ${
+            className: `favorite-btn p-1.5 rounded-full transition-all duration-200 ${
               isFavorite
                 ? 'text-yellow-500 hover:text-yellow-600 bg-yellow-50 dark:bg-yellow-900/30'
                 : 'text-gray-400 hover:text-yellow-500 opacity-0 group-hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -147,7 +165,9 @@ export class DyeGrid extends BaseComponent {
           favoriteBtn.innerHTML = isFavorite
             ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>'
             : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>';
-          btn.appendChild(favoriteBtn);
+          actionsContainer.appendChild(favoriteBtn);
+
+          btn.appendChild(actionsContainer);
         }
 
         // Color div with 2:1 aspect ratio
@@ -196,6 +216,15 @@ export class DyeGrid extends BaseComponent {
 
     // Click on dye button
     this.on(this.element, 'click', (e) => {
+      // Handle collection button clicks
+      const collectionTarget = (e.target as HTMLElement).closest('.collection-btn');
+      if (collectionTarget) {
+        e.stopPropagation();
+        const dyeId = parseInt(collectionTarget.getAttribute('data-collection-dye-id') || '0', 10);
+        this.handleCollectionClick(dyeId, collectionTarget as HTMLElement);
+        return;
+      }
+
       // Handle favorite button clicks
       const favoriteTarget = (e.target as HTMLElement).closest('.favorite-btn');
       if (favoriteTarget) {
@@ -251,6 +280,22 @@ export class DyeGrid extends BaseComponent {
 
     // Emit event for parent components
     this.emit('favorite-toggled', { dyeId, isFavorite: !wasFavorite, dyeName });
+  }
+
+  /**
+   * Handle collection button click for a dye
+   */
+  private handleCollectionClick(dyeId: number, anchorElement: HTMLElement): void {
+    const dye = this.dyes.find((d) => d.id === dyeId);
+    if (!dye) return;
+
+    showAddToCollectionMenu({
+      dye,
+      anchorElement,
+      onAdded: (collection) => {
+        this.emit('added-to-collection', { dyeId, collection });
+      },
+    });
   }
 
   /**
@@ -368,6 +413,23 @@ export class DyeGrid extends BaseComponent {
           event.preventDefault();
           const focusedDye = this.dyes[this.focusedIndex];
           this.handleFavoriteToggle(focusedDye.id);
+        }
+        return;
+
+      case 'c':
+      case 'C':
+        // Open add-to-collection menu on focused dye
+        if (this.options.showFavorites && this.focusedIndex >= 0 && this.focusedIndex < this.dyes.length) {
+          event.preventDefault();
+          const focusedDye = this.dyes[this.focusedIndex];
+          const dyeButtons = this.container.querySelectorAll<HTMLButtonElement>('.dye-select-btn');
+          const focusedBtn = dyeButtons[this.focusedIndex];
+          if (focusedBtn) {
+            const collectionBtn = focusedBtn.querySelector('.collection-btn');
+            if (collectionBtn) {
+              this.handleCollectionClick(focusedDye.id, collectionBtn as HTMLElement);
+            }
+          }
         }
         return;
 

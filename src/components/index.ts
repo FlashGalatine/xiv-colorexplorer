@@ -56,3 +56,13 @@ export {
 } from './dye-action-dropdown';
 export { TutorialSpotlight, initializeTutorialSpotlight } from './tutorial-spotlight';
 export { offlineBanner } from './offline-banner';
+export {
+  showCollectionManagerModal,
+  showCreateCollectionDialog,
+} from './collection-manager-modal';
+export {
+  showAddToCollectionMenu,
+  closeAddToCollectionMenu,
+  isAddToCollectionMenuOpen,
+  type AddToCollectionMenuOptions,
+} from './add-to-collection-menu';

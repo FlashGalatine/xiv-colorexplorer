@@ -14,6 +14,7 @@ import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import { DyeSearchBox, SortOption } from './dye-search-box';
 import { DyeGrid } from './dye-grid';
+import { showCollectionManagerModal } from './collection-manager-modal';
 
 /**
  * Options for dye selector initialization
@@ -473,13 +474,32 @@ export class DyeSelector extends BaseComponent {
 
     header.appendChild(headerLeft);
 
+    const headerRight = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    // Manage Collections button
+    const manageBtn = this.createElement('button', {
+      id: 'manage-collections-btn',
+      className: 'text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors',
+      textContent: LanguageService.t('collections.manageCollections') || 'Manage Collections',
+      attributes: { type: 'button' },
+    });
+    manageBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent toggling the panel
+      showCollectionManagerModal();
+    });
+    headerRight.appendChild(manageBtn);
+
     // Chevron icon
     const chevron = this.createElement('span', {
       id: 'favorites-chevron',
       textContent: this.favoritesExpanded ? '▼' : '▶',
       className: 'text-gray-500 text-sm transition-transform',
     });
-    header.appendChild(chevron);
+    headerRight.appendChild(chevron);
+
+    header.appendChild(headerRight);
 
     panel.appendChild(header);
 
