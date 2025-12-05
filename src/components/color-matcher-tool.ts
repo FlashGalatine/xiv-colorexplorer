@@ -49,6 +49,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
   private paletteColorCount: number = 4;
   private paletteService: PaletteService;
   private lastPaletteResults: PaletteMatch[] = [];
+  private currentImage: HTMLImageElement | null = null;
 
   // Cached DOM references for performance
   private sampleSizeDisplay: HTMLElement | null = null;
@@ -412,6 +413,9 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
 
       this.onCustom('image-loaded', (event: CustomEvent) => {
         const { image } = event.detail;
+
+        // Store reference to image for palette extraction redraw
+        this.currentImage = image;
 
         // Show success toast
         ToastService.success('✓ Image loaded successfully');
@@ -872,6 +876,10 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
 
       this.lastPaletteResults = matches;
 
+      // Find representative positions for each extracted color and draw indicators
+      const positions = this.findColorPositions(imageData, matches);
+      this.drawSampleIndicators(canvas, ctx, matches, positions);
+
       // Render results
       this.renderPaletteResults(matches);
 
@@ -895,6 +903,102 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
         extractBtn.textContent = LanguageService.t('matcher.extractPalette');
         extractBtn.disabled = false;
       }
+    }
+  }
+
+  /**
+   * Find representative pixel positions for each extracted color
+   * Scans the image to find pixels closest to each centroid
+   */
+  private findColorPositions(
+    imageData: ImageData,
+    matches: PaletteMatch[]
+  ): Array<{ x: number; y: number }> {
+    const { data, width, height } = imageData;
+    const positions: Array<{ x: number; y: number; distance: number }> = matches.map(() => ({
+      x: 0,
+      y: 0,
+      distance: Infinity,
+    }));
+
+    // Sample grid (every 4th pixel for performance on large images)
+    const step = Math.max(1, Math.floor(Math.sqrt((width * height) / 10000)));
+
+    for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += step) {
+        const idx = (y * width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const a = data[idx + 3];
+
+        // Skip transparent pixels
+        if (a < 128) continue;
+
+        // Check each extracted color
+        for (let i = 0; i < matches.length; i++) {
+          const extracted = matches[i].extracted;
+          const dr = r - extracted.r;
+          const dg = g - extracted.g;
+          const db = b - extracted.b;
+          const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+
+          if (dist < positions[i].distance) {
+            positions[i] = { x, y, distance: dist };
+          }
+        }
+      }
+    }
+
+    return positions.map((p) => ({ x: p.x, y: p.y }));
+  }
+
+  /**
+   * Draw sample indicator circles on the canvas
+   */
+  private drawSampleIndicators(
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    matches: PaletteMatch[],
+    positions: Array<{ x: number; y: number }>
+  ): void {
+    // First redraw the original image to clear any previous indicators
+    if (this.currentImage) {
+      ctx.drawImage(this.currentImage, 0, 0);
+    }
+
+    // Calculate circle radius based on image size (2-4% of smaller dimension)
+    const minDimension = Math.min(canvas.width, canvas.height);
+    const radius = Math.max(15, Math.min(50, minDimension * 0.03));
+
+    // Draw each indicator
+    for (let i = 0; i < matches.length; i++) {
+      const pos = positions[i];
+      const match = matches[i];
+
+      // Outer white circle (for visibility on dark backgrounds)
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Inner colored circle matching the extracted color
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Small center dot
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b})`;
+      ctx.fill();
     }
   }
 
@@ -1207,6 +1311,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     this.matchedDyes = [];
     this.priceData.clear();
     this.lastPaletteResults = [];
+    this.currentImage = null;
 
     // Clear cached DOM references
     this.sampleSizeDisplay = null;
