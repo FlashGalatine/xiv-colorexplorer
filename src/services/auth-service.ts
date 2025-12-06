@@ -56,7 +56,7 @@ interface AuthResponse {
  * OAuth Worker URL - handles Discord OAuth flow
  */
 const OAUTH_WORKER_URL =
-  import.meta.env.VITE_OAUTH_WORKER_URL || 'https://xivdyetools-oauth.workers.dev';
+  import.meta.env.VITE_OAUTH_WORKER_URL || 'https://xivdyetools-oauth.ashejunius.workers.dev';
 
 /**
  * Storage key for auth token
@@ -74,6 +74,7 @@ const EXPIRY_STORAGE_KEY = 'xivdyetools_auth_expires';
 const PKCE_VERIFIER_KEY = 'xivdyetools_pkce_verifier';
 const OAUTH_STATE_KEY = 'xivdyetools_oauth_state';
 const OAUTH_RETURN_PATH_KEY = 'xivdyetools_oauth_return_path';
+const OAUTH_RETURN_TOOL_KEY = 'xivdyetools_oauth_return_tool';
 
 // ============================================
 // Auth Service
@@ -107,13 +108,21 @@ class AuthServiceImpl {
       const error = urlParams.get('error');
 
       if (token) {
+        logger.info('🔐 Token found in URL, processing callback...');
         await this.handleCallbackToken(token, urlParams.get('expires_at'));
-        // Clean up URL
-        this.cleanupCallbackUrl();
+        // Get return path before cleaning URL, default to home
+        const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
+        logger.info(`🔐 Navigating to return path: ${returnPath}`);
+        sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
+        // Clean up URL and navigate to return path
+        this.navigateAfterAuth(returnPath);
       } else if (error) {
         logger.error('OAuth error:', error);
-        // Clean up URL
-        this.cleanupCallbackUrl();
+        // Get return path before cleaning URL
+        const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
+        sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
+        // Clean up URL and navigate back (even on error)
+        this.navigateAfterAuth(returnPath);
       }
 
       this.initialized = true;
@@ -134,7 +143,10 @@ class AuthServiceImpl {
       const token = localStorage.getItem(TOKEN_STORAGE_KEY);
       const expiresAtStr = localStorage.getItem(EXPIRY_STORAGE_KEY);
 
+      logger.info(`🔐 loadFromStorage: token=${token ? 'present' : 'missing'}, expiry=${expiresAtStr || 'missing'}`);
+
       if (!token || !expiresAtStr) {
+        logger.info('🔐 No stored auth found, clearing state');
         this.clearState();
         return;
       }
@@ -181,17 +193,20 @@ class AuthServiceImpl {
    * Handle token received from OAuth callback
    */
   private async handleCallbackToken(token: string, expiresAtStr: string | null): Promise<void> {
+    logger.info('🔐 handleCallbackToken: Processing token...');
     const payload = this.decodeJWT(token);
     if (!payload) {
-      logger.error('Invalid token received from OAuth callback');
+      logger.error('Invalid token received from OAuth callback - decode failed');
       return;
     }
+    logger.info(`🔐 Token decoded for user: ${payload.username} (${payload.sub})`);
 
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : payload.exp;
 
     // Store token
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
     localStorage.setItem(EXPIRY_STORAGE_KEY, expiresAt.toString());
+    logger.info(`🔐 Token stored to localStorage, expires: ${new Date(expiresAt * 1000).toISOString()}`);
 
     // Update state
     this.state = {
@@ -212,15 +227,17 @@ class AuthServiceImpl {
   }
 
   /**
-   * Clean up OAuth callback parameters from URL
+   * Navigate to the return path after OAuth callback
+   * This handles both successful login and error cases
    */
-  private cleanupCallbackUrl(): void {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('token');
-    url.searchParams.delete('expires_at');
-    url.searchParams.delete('error');
-    url.searchParams.delete('return_path');
-    window.history.replaceState({}, '', url.toString());
+  private navigateAfterAuth(returnPath: string): void {
+    // Use replaceState to avoid adding callback URL to history
+    // Then navigate to the return path
+    const targetUrl = new URL(window.location.origin + returnPath);
+    window.history.replaceState({}, '', targetUrl.toString());
+    // Force page reload to re-render with new auth state
+    // This ensures all components see the updated auth state
+    window.location.reload();
   }
 
   /**
@@ -289,8 +306,9 @@ class AuthServiceImpl {
   /**
    * Initiate Discord OAuth login
    * @param returnPath - Path to return to after login
+   * @param returnTool - Tool ID to return to after login (e.g., 'presets')
    */
-  async login(returnPath?: string): Promise<void> {
+  async login(returnPath?: string, returnTool?: string): Promise<void> {
     logger.info('Initiating Discord OAuth login...');
 
     try {
@@ -303,6 +321,10 @@ class AuthServiceImpl {
       sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
       sessionStorage.setItem(OAUTH_STATE_KEY, state);
       sessionStorage.setItem(OAUTH_RETURN_PATH_KEY, returnPath || window.location.pathname);
+      // Store return tool if provided
+      if (returnTool) {
+        sessionStorage.setItem(OAUTH_RETURN_TOOL_KEY, returnTool);
+      }
 
       // Build auth URL
       const authUrl = new URL(`${OAUTH_WORKER_URL}/auth/discord`);
@@ -442,3 +464,15 @@ class AuthServiceImpl {
 
 export const authService = new AuthServiceImpl();
 export { AuthServiceImpl as AuthService };
+
+/**
+ * Get and consume the return tool ID stored during login
+ * Returns the tool ID and removes it from sessionStorage
+ */
+export function consumeReturnTool(): string | null {
+  const tool = sessionStorage.getItem(OAUTH_RETURN_TOOL_KEY);
+  if (tool) {
+    sessionStorage.removeItem(OAUTH_RETURN_TOOL_KEY);
+  }
+  return tool;
+}

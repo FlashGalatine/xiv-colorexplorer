@@ -469,14 +469,14 @@ export class PresetBrowserTool extends BaseComponent {
 
       // Auth button (shows username with logout option)
       const authBtnContainer = this.createElement('div', {});
-      this.authButton = new AuthButton(authBtnContainer);
-      this.authButton.render();
+      this.authButton = new AuthButton(authBtnContainer, { returnTool: 'presets' });
+      this.authButton.init();
       rightSide.appendChild(authBtnContainer);
     } else {
       // Show login button
       const authBtnContainer = this.createElement('div', {});
-      this.authButton = new AuthButton(authBtnContainer);
-      this.authButton.render();
+      this.authButton = new AuthButton(authBtnContainer, { returnTool: 'presets' });
+      this.authButton.init();
       rightSide.appendChild(authBtnContainer);
     }
 

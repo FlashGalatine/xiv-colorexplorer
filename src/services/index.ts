@@ -65,7 +65,7 @@ export type {
   PresetSortOption,
   GetPresetsOptions,
 } from './hybrid-preset-service';
-export { AuthService, authService } from './auth-service';
+export { AuthService, authService, consumeReturnTool } from './auth-service';
 export type { AuthUser, AuthState, AuthStateListener } from './auth-service';
 export {
   PresetSubmissionService,

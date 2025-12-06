@@ -12,7 +12,7 @@ import '@/styles/themes.css';
 import '@/styles/tailwind.css';
 
 // Import services
-import { initializeServices, getServicesStatus, LanguageService } from '@services/index';
+import { initializeServices, getServicesStatus, LanguageService, consumeReturnTool } from '@services/index';
 import { ErrorHandler } from '@shared/error-handler';
 import { APP_VERSION } from '@shared/constants';
 import { logger } from '@shared/logger';
@@ -450,8 +450,13 @@ async function initializeApp(): Promise<void> {
       logger.info('🌐 UI updated for language change');
     });
 
-    // Load the default tool (harmony)
-    void loadTool('harmony');
+    // Load the return tool from OAuth flow, or default to harmony
+    const returnTool = consumeReturnTool();
+    const initialTool = returnTool && tools.some((t) => t.id === returnTool) ? returnTool : 'harmony';
+    void loadTool(initialTool);
+    if (returnTool) {
+      logger.info(`🔄 Restored tool after OAuth: ${initialTool}`);
+    }
 
     logger.info('✅ Application initialized successfully');
     logger.info('📦 Phase 12: All 5 tools integrated and ready');

@@ -20,6 +20,14 @@ const ICON_DISCORD = `<svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-
 </svg>`;
 
 /**
+ * Auth button component options
+ */
+interface AuthButtonOptions {
+  /** Tool ID to return to after login (e.g., 'presets') */
+  returnTool?: string;
+}
+
+/**
  * Auth button component - Discord OAuth login/logout
  */
 export class AuthButton extends BaseComponent {
@@ -31,6 +39,12 @@ export class AuthButton extends BaseComponent {
   };
   private isDropdownOpen = false;
   private unsubscribe: (() => void) | null = null;
+  private returnTool: string | undefined;
+
+  constructor(container: HTMLElement, options?: AuthButtonOptions) {
+    super(container);
+    this.returnTool = options?.returnTool;
+  }
 
   /**
    * Render the auth button component
@@ -209,7 +223,7 @@ export class AuthButton extends BaseComponent {
     const loginBtn = this.querySelector<HTMLButtonElement>('#auth-login-btn');
     if (loginBtn) {
       this.on(loginBtn, 'click', () => {
-        authService.login();
+        authService.login(undefined, this.returnTool);
       });
     }
 

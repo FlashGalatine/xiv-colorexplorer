@@ -64,7 +64,7 @@ export interface PresetFilters {
 /**
  * Default API URL - can be overridden via environment or config
  */
-const DEFAULT_API_URL = 'https://presets-api.xivdyetools.workers.dev';
+const DEFAULT_API_URL = 'https://xivdyetools-presets-api.ashejunius.workers.dev';
 
 /**
  * Cache TTL in milliseconds (5 minutes)
@@ -162,7 +162,7 @@ export class CommunityPresetService {
 
     try {
       // Test API connectivity with a lightweight request
-      const response = await this.fetchWithTimeout(`${this.apiUrl}/api/v1/health`, {
+      const response = await this.fetchWithTimeout(`${this.apiUrl}/health`, {
         method: 'GET',
       });
 

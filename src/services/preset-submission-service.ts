@@ -49,7 +49,7 @@ export interface MySubmissionsResponse {
  * Presets API URL
  */
 const PRESETS_API_URL =
-  import.meta.env.VITE_PRESETS_API_URL || 'https://presets-api.xivdyetools.workers.dev';
+  import.meta.env.VITE_PRESETS_API_URL || 'https://xivdyetools-presets-api.ashejunius.workers.dev';
 
 /**
  * Valid categories for submissions
