@@ -50,6 +50,21 @@ export type {
   CollectionExport,
   ImportResult,
 } from './collection-service';
+export { CommunityPresetService, communityPresetService } from './community-preset-service';
+export type {
+  CommunityPreset,
+  PresetStatus,
+  PresetListResponse,
+  CategoryWithCount,
+  PresetFilters,
+} from './community-preset-service';
+export { HybridPresetService, hybridPresetService } from './hybrid-preset-service';
+export type {
+  UnifiedPreset,
+  UnifiedCategory,
+  PresetSortOption,
+  GetPresetsOptions,
+} from './hybrid-preset-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
@@ -97,6 +112,13 @@ export async function initializeServices(): Promise<void> {
     cameraService.startDeviceChangeListener();
     logger.info(
       `✅ CameraService: ${cameraService.hasCameraAvailable() ? 'Camera available' : 'No camera detected'}`
+    );
+
+    // Initialize HybridPresetService (async - checks API availability)
+    const { hybridPresetService } = await import('./hybrid-preset-service');
+    await hybridPresetService.initialize();
+    logger.info(
+      `✅ HybridPresetService: ${hybridPresetService.isAPIAvailable() ? 'API available' : 'Local only'}`
     );
 
     logger.info('🚀 All services initialized successfully');
