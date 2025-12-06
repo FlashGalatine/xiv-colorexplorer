@@ -452,11 +452,10 @@ async function initializeApp(): Promise<void> {
 
     // Load the return tool from OAuth flow, or default to harmony
     const returnTool = consumeReturnTool();
+    console.log('🔄 [Main] consumeReturnTool:', { returnTool, sessionStorageKeys: Object.keys(sessionStorage) });
     const initialTool = returnTool && tools.some((t) => t.id === returnTool) ? returnTool : 'harmony';
+    console.log('🔄 [Main] Loading initial tool:', initialTool);
     void loadTool(initialTool);
-    if (returnTool) {
-      logger.info(`🔄 Restored tool after OAuth: ${initialTool}`);
-    }
 
     logger.info('✅ Application initialized successfully');
     logger.info('📦 Phase 12: All 5 tools integrated and ready');

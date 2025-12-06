@@ -97,7 +97,8 @@ class AuthServiceImpl {
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
-    logger.info('🔐 Initializing AuthService...');
+    // Use console.log directly for production debugging
+    console.log('🔐 [AuthService] Initializing...', { url: window.location.href });
 
     try {
       this.loadFromStorage();
@@ -107,17 +108,19 @@ class AuthServiceImpl {
       const token = urlParams.get('token');
       const error = urlParams.get('error');
 
+      console.log('🔐 [AuthService] URL params:', { hasToken: !!token, hasError: !!error });
+
       if (token) {
-        logger.info('🔐 Token found in URL, processing callback...');
+        console.log('🔐 [AuthService] Token found in URL, processing callback...');
         await this.handleCallbackToken(token, urlParams.get('expires_at'));
         // Get return path before cleaning URL, default to home
         const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
-        logger.info(`🔐 Navigating to return path: ${returnPath}`);
+        console.log(`🔐 [AuthService] Navigating to return path: ${returnPath}`);
         sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
         // Clean up URL and navigate to return path
         this.navigateAfterAuth(returnPath);
       } else if (error) {
-        logger.error('OAuth error:', error);
+        console.error('🔐 [AuthService] OAuth error:', error);
         // Get return path before cleaning URL
         const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
         sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
@@ -126,11 +129,11 @@ class AuthServiceImpl {
       }
 
       this.initialized = true;
-      logger.info(
-        `✅ AuthService initialized: ${this.state.isAuthenticated ? 'Logged in' : 'Not logged in'}`
+      console.log(
+        `✅ [AuthService] Initialized: ${this.state.isAuthenticated ? 'Logged in as ' + this.state.user?.username : 'Not logged in'}`
       );
     } catch (err) {
-      logger.error('Failed to initialize AuthService:', err);
+      console.error('🔐 [AuthService] Failed to initialize:', err);
       this.initialized = true;
     }
   }
@@ -143,7 +146,7 @@ class AuthServiceImpl {
       const token = localStorage.getItem(TOKEN_STORAGE_KEY);
       const expiresAtStr = localStorage.getItem(EXPIRY_STORAGE_KEY);
 
-      logger.info(`🔐 loadFromStorage: token=${token ? 'present' : 'missing'}, expiry=${expiresAtStr || 'missing'}`);
+      console.log(`🔐 [AuthService] loadFromStorage: token=${token ? 'present' : 'missing'}, expiry=${expiresAtStr || 'missing'}`);
 
       if (!token || !expiresAtStr) {
         logger.info('🔐 No stored auth found, clearing state');
@@ -193,13 +196,13 @@ class AuthServiceImpl {
    * Handle token received from OAuth callback
    */
   private async handleCallbackToken(token: string, expiresAtStr: string | null): Promise<void> {
-    logger.info('🔐 handleCallbackToken: Processing token...');
+    console.log('🔐 [AuthService] handleCallbackToken: Processing token...', { tokenLength: token?.length });
     const payload = this.decodeJWT(token);
     if (!payload) {
-      logger.error('Invalid token received from OAuth callback - decode failed');
+      console.error('🔐 [AuthService] Invalid token - decode failed. Token preview:', token?.substring(0, 50) + '...');
       return;
     }
-    logger.info(`🔐 Token decoded for user: ${payload.username} (${payload.sub})`);
+    console.log(`🔐 [AuthService] Token decoded for user: ${payload.username} (${payload.sub})`);
 
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : payload.exp;
 
