@@ -1,0 +1,312 @@
+/**
+ * XIV Dye Tools - Auth Button Component
+ *
+ * Discord OAuth login/logout button with user display
+ *
+ * @module components/auth-button
+ */
+
+import { BaseComponent } from './base-component';
+import { authService, LanguageService } from '@services/index';
+import type { AuthState, AuthUser } from '@services/auth-service';
+import { clearContainer } from '@shared/utils';
+
+// Discord brand color
+const DISCORD_BLURPLE = '#5865F2';
+
+// Discord logo SVG (simplified)
+const ICON_DISCORD = `<svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+</svg>`;
+
+/**
+ * Auth button component - Discord OAuth login/logout
+ */
+export class AuthButton extends BaseComponent {
+  private authState: AuthState = {
+    isAuthenticated: false,
+    user: null,
+    token: null,
+    expiresAt: null,
+  };
+  private isDropdownOpen = false;
+  private unsubscribe: (() => void) | null = null;
+
+  /**
+   * Render the auth button component
+   */
+  render(): void {
+    const wrapper = this.createElement('div', {
+      className: 'relative',
+    });
+
+    if (this.authState.isAuthenticated && this.authState.user) {
+      // Logged in state - show user info with dropdown
+      wrapper.appendChild(this.renderLoggedIn(this.authState.user));
+    } else {
+      // Logged out state - show login button
+      wrapper.appendChild(this.renderLoggedOut());
+    }
+
+    clearContainer(this.container);
+    this.element = wrapper;
+    this.container.appendChild(this.element);
+  }
+
+  /**
+   * Render logged out state - Login button
+   */
+  private renderLoggedOut(): HTMLElement {
+    const button = this.createElement('button', {
+      id: 'auth-login-btn',
+      className: 'flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-white transition-all hover:opacity-90',
+      attributes: {
+        style: `background-color: ${DISCORD_BLURPLE};`,
+        'aria-label': 'Login with Discord',
+      },
+    });
+
+    button.innerHTML = `${ICON_DISCORD}<span class="hidden sm:inline">Login with Discord</span><span class="sm:hidden">Login</span>`;
+
+    return button;
+  }
+
+  /**
+   * Render logged in state - User avatar with dropdown
+   */
+  private renderLoggedIn(user: AuthUser): HTMLElement {
+    const container = this.createElement('div', {
+      className: 'relative',
+    });
+
+    // User button (avatar + name)
+    const button = this.createElement('button', {
+      id: 'auth-user-btn',
+      className: 'flex items-center gap-2 px-2 py-1 rounded-lg transition-colors border',
+      attributes: {
+        style: 'border-color: var(--theme-border); color: var(--theme-text);',
+        'aria-label': 'User menu',
+        'aria-haspopup': 'true',
+        'aria-expanded': String(this.isDropdownOpen),
+      },
+    });
+
+    // Avatar
+    const avatar = this.createElement('div', {
+      className: 'w-8 h-8 rounded-full overflow-hidden bg-gray-300 flex-shrink-0',
+    });
+
+    if (user.avatar_url) {
+      const img = this.createElement('img', {
+        className: 'w-full h-full object-cover',
+        attributes: {
+          src: user.avatar_url,
+          alt: user.global_name || user.username,
+        },
+      });
+      avatar.appendChild(img);
+    } else {
+      // Default avatar with initials
+      avatar.className = 'w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium';
+      avatar.style.backgroundColor = DISCORD_BLURPLE;
+      avatar.textContent = (user.global_name || user.username).charAt(0).toUpperCase();
+    }
+
+    // Username (hidden on mobile)
+    const username = this.createElement('span', {
+      className: 'hidden sm:inline text-sm font-medium max-w-[120px] truncate',
+      textContent: user.global_name || user.username,
+    });
+
+    // Dropdown arrow
+    const arrow = this.createElement('span', {
+      className: 'text-xs transition-transform',
+      attributes: {
+        style: this.isDropdownOpen ? 'transform: rotate(180deg);' : '',
+      },
+      textContent: '▼',
+    });
+
+    button.appendChild(avatar);
+    button.appendChild(username);
+    button.appendChild(arrow);
+
+    // Dropdown menu
+    const dropdown = this.createElement('div', {
+      id: 'auth-dropdown',
+      className: `absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-50 ${this.isDropdownOpen ? '' : 'hidden'}`,
+      attributes: {
+        style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
+      },
+    });
+
+    // User info header
+    const header = this.createElement('div', {
+      className: 'px-4 py-3 border-b',
+      attributes: {
+        style: 'border-color: var(--theme-border);',
+      },
+    });
+
+    const headerName = this.createElement('div', {
+      className: 'font-medium text-sm',
+      textContent: user.global_name || user.username,
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
+    });
+
+    const headerUsername = this.createElement('div', {
+      className: 'text-xs opacity-70',
+      textContent: `@${user.username}`,
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
+    });
+
+    header.appendChild(headerName);
+    header.appendChild(headerUsername);
+
+    // Menu items
+    const menu = this.createElement('div', {
+      className: 'py-1',
+    });
+
+    // Logout button
+    const logoutBtn = this.createElement('button', {
+      id: 'auth-logout-btn',
+      className: 'w-full px-4 py-2 text-left text-sm transition-colors flex items-center gap-2',
+      attributes: {
+        style: 'color: var(--theme-text);',
+      },
+    });
+    logoutBtn.innerHTML = `<span class="text-red-500">↩</span> Logout`;
+
+    // Add hover effect
+    logoutBtn.addEventListener('mouseenter', () => {
+      logoutBtn.style.backgroundColor = 'var(--theme-card-hover)';
+    });
+    logoutBtn.addEventListener('mouseleave', () => {
+      logoutBtn.style.backgroundColor = 'transparent';
+    });
+
+    menu.appendChild(logoutBtn);
+
+    dropdown.appendChild(header);
+    dropdown.appendChild(menu);
+
+    container.appendChild(button);
+    container.appendChild(dropdown);
+
+    return container;
+  }
+
+  /**
+   * Bind event listeners
+   */
+  bindEvents(): void {
+    // Login button click
+    const loginBtn = this.querySelector<HTMLButtonElement>('#auth-login-btn');
+    if (loginBtn) {
+      this.on(loginBtn, 'click', () => {
+        authService.login();
+      });
+    }
+
+    // User button click (toggle dropdown)
+    const userBtn = this.querySelector<HTMLButtonElement>('#auth-user-btn');
+    const dropdown = this.querySelector<HTMLDivElement>('#auth-dropdown');
+
+    if (userBtn && dropdown) {
+      this.on(userBtn, 'click', (event) => {
+        event.stopPropagation();
+        this.isDropdownOpen = !this.isDropdownOpen;
+        dropdown.classList.toggle('hidden', !this.isDropdownOpen);
+        userBtn.setAttribute('aria-expanded', String(this.isDropdownOpen));
+
+        // Update arrow rotation
+        const arrow = userBtn.querySelector('span:last-child');
+        if (arrow) {
+          (arrow as HTMLElement).style.transform = this.isDropdownOpen ? 'rotate(180deg)' : '';
+        }
+      });
+    }
+
+    // Logout button click
+    const logoutBtn = this.querySelector<HTMLButtonElement>('#auth-logout-btn');
+    if (logoutBtn) {
+      this.on(logoutBtn, 'click', async () => {
+        await authService.logout();
+        // State will update via subscription
+      });
+    }
+
+    // Close dropdown when clicking outside
+    this.on(document, 'click', (event) => {
+      if (this.isDropdownOpen && this.element && !this.element.contains(event.target as Node)) {
+        this.isDropdownOpen = false;
+        const dropdown = this.querySelector<HTMLDivElement>('#auth-dropdown');
+        if (dropdown) {
+          dropdown.classList.add('hidden');
+        }
+        const userBtn = this.querySelector<HTMLButtonElement>('#auth-user-btn');
+        if (userBtn) {
+          userBtn.setAttribute('aria-expanded', 'false');
+          const arrow = userBtn.querySelector('span:last-child');
+          if (arrow) {
+            (arrow as HTMLElement).style.transform = '';
+          }
+        }
+      }
+    });
+
+    // Close dropdown on Escape key
+    this.on(document, 'keydown', (event) => {
+      if (event.key === 'Escape' && this.isDropdownOpen) {
+        this.isDropdownOpen = false;
+        this.update();
+      }
+    });
+  }
+
+  /**
+   * Subscribe to auth state changes on mount
+   */
+  onMount(): void {
+    // Get initial state
+    this.authState = authService.getState();
+
+    // Subscribe to auth changes
+    this.unsubscribe = authService.subscribe((state) => {
+      this.authState = state;
+      this.isDropdownOpen = false; // Close dropdown on state change
+      this.update();
+    });
+
+    // Subscribe to language changes
+    LanguageService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  /**
+   * Cleanup subscriptions on unmount
+   */
+  onUnmount(): void {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+  }
+
+  /**
+   * Get component state
+   */
+  protected getState(): Record<string, unknown> {
+    return {
+      isAuthenticated: this.authState.isAuthenticated,
+      user: this.authState.user,
+      isDropdownOpen: this.isDropdownOpen,
+    };
+  }
+}

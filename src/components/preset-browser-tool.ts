@@ -22,9 +22,13 @@ import {
   type UnifiedPreset,
   type UnifiedCategory,
   type PresetSortOption,
+  authService,
 } from '@services/index';
 import { getCategoryIcon, ICON_ARROW_BACK } from '@shared/category-icons';
 import { DyeService, dyeDatabase, type Dye, type PresetCategory } from 'xivdyetools-core';
+import { AuthButton } from './auth-button';
+import { showPresetSubmissionForm } from './preset-submission-form';
+import { MySubmissionsPanel } from './my-submissions-panel';
 
 // Initialize dye service for resolving dye IDs
 const dyeService = new DyeService(dyeDatabase);
@@ -33,19 +37,29 @@ const dyeService = new DyeService(dyeDatabase);
  * Preset Browser Tool Component
  * Displays curated and community dye palettes in a browsable grid layout
  */
+type ViewTab = 'browse' | 'my-submissions';
+
 export class PresetBrowserTool extends BaseComponent {
   private selectedCategory: PresetCategory | null = null;
   private selectedPreset: UnifiedPreset | null = null;
   private currentSort: PresetSortOption = 'name';
+  private currentTab: ViewTab = 'browse';
   private categoryContainer: HTMLElement | null = null;
   private sortContainer: HTMLElement | null = null;
   private featuredSection: HTMLElement | null = null;
   private presetGrid: HTMLElement | null = null;
   private detailPanel: HTMLElement | null = null;
+  private authSection: HTMLElement | null = null;
+  private authButton: AuthButton | null = null;
+  private tabContainer: HTMLElement | null = null;
+  private browseContent: HTMLElement | null = null;
+  private mySubmissionsContainer: HTMLElement | null = null;
+  private mySubmissionsPanel: MySubmissionsPanel | null = null;
   private categories: UnifiedCategory[] = [];
   private presets: UnifiedPreset[] = [];
   private featuredPresets: UnifiedPreset[] = [];
   private isLoading = false;
+  private authUnsubscribe: (() => void) | null = null;
 
   constructor(container: HTMLElement) {
     super(container);
@@ -101,24 +115,53 @@ export class PresetBrowserTool extends BaseComponent {
     this.sortContainer = this.renderSortControls();
     content.appendChild(this.sortContainer);
 
-    // Discord CTA (if API available)
+    // Auth section with submission CTA (if API available)
     if (hybridPresetService.isAPIAvailable()) {
-      const discordCTA = this.renderDiscordCTA();
-      content.appendChild(discordCTA);
+      this.authSection = this.renderAuthSection();
+      content.appendChild(this.authSection);
+
+      // Subscribe to auth state changes to update the section and tabs
+      this.authUnsubscribe = authService.subscribe(() => {
+        this.updateAuthSection();
+        this.updateViewTabs();
+      });
+
+      // View tabs (Browse / My Submissions) - only show when logged in
+      if (authService.isAuthenticated()) {
+        this.tabContainer = this.renderViewTabs();
+        content.appendChild(this.tabContainer);
+      }
     }
+
+    // Browse content wrapper
+    this.browseContent = this.createElement('div', {
+      className: this.currentTab === 'browse' ? '' : 'hidden',
+    });
 
     // Preset grid
     this.presetGrid = this.createElement('div', {
       className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4',
     });
     this.renderPresets();
-    content.appendChild(this.presetGrid);
+    this.browseContent.appendChild(this.presetGrid);
 
     // Detail panel (initially hidden)
     this.detailPanel = this.createElement('div', {
       className: 'hidden',
     });
-    content.appendChild(this.detailPanel);
+    this.browseContent.appendChild(this.detailPanel);
+
+    content.appendChild(this.browseContent);
+
+    // My Submissions container (only when logged in)
+    if (hybridPresetService.isAPIAvailable() && authService.isAuthenticated()) {
+      this.mySubmissionsContainer = this.createElement('div', {
+        className: this.currentTab === 'my-submissions' ? '' : 'hidden',
+      });
+      this.mySubmissionsPanel = new MySubmissionsPanel(this.mySubmissionsContainer);
+      this.mySubmissionsPanel.render();
+      content.appendChild(this.mySubmissionsContainer);
+    }
 
     // Re-bind events after async render
     this.bindEvents();
@@ -350,43 +393,307 @@ export class PresetBrowserTool extends BaseComponent {
   }
 
   /**
-   * Render Discord submission CTA
+   * Render auth section with login/submission UI
    */
-  private renderDiscordCTA(): HTMLElement {
-    const cta = this.createElement('div', {
+  private renderAuthSection(): HTMLElement {
+    const section = this.createElement('div', {
       className:
-        'flex items-center justify-between p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800',
+        'flex items-center justify-between gap-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800',
+    });
+
+    // Left side: text and optional auth button
+    const leftSide = this.createElement('div', {
+      className: 'flex items-center gap-4',
     });
 
     const text = this.createElement('div', {});
 
-    const title = this.createElement('div', {
-      className: 'font-medium text-indigo-900 dark:text-indigo-100',
-      textContent: 'Share Your Presets!',
+    const isLoggedIn = authService.isAuthenticated();
+
+    if (isLoggedIn) {
+      const title = this.createElement('div', {
+        className: 'font-medium text-indigo-900 dark:text-indigo-100',
+        textContent: 'Share Your Presets!',
+      });
+      text.appendChild(title);
+
+      const subtitle = this.createElement('div', {
+        className: 'text-sm text-indigo-700 dark:text-indigo-300',
+        textContent: 'Create and submit your own dye palettes for the community',
+      });
+      text.appendChild(subtitle);
+    } else {
+      const title = this.createElement('div', {
+        className: 'font-medium text-indigo-900 dark:text-indigo-100',
+        textContent: 'Want to Share Your Presets?',
+      });
+      text.appendChild(title);
+
+      const subtitle = this.createElement('div', {
+        className: 'text-sm text-indigo-700 dark:text-indigo-300',
+        textContent: 'Sign in with Discord to submit your color palettes',
+      });
+      text.appendChild(subtitle);
+    }
+
+    leftSide.appendChild(text);
+    section.appendChild(leftSide);
+
+    // Right side: auth button or submit button
+    const rightSide = this.createElement('div', {
+      className: 'flex items-center gap-3 flex-shrink-0',
     });
-    text.appendChild(title);
 
-    const subtitle = this.createElement('div', {
-      className: 'text-sm text-indigo-700 dark:text-indigo-300',
-      textContent: 'Submit your color palettes via our Discord bot using /preset submit',
+    if (isLoggedIn) {
+      // Show submit button
+      const submitBtn = this.createElement('button', {
+        className:
+          'px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center gap-2',
+        dataAttributes: {
+          action: 'submit-preset',
+        },
+      });
+
+      // Plus icon
+      const plusIcon = this.createElement('span', {
+        innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>`,
+      });
+      submitBtn.appendChild(plusIcon);
+
+      const btnText = this.createElement('span', {
+        textContent: 'Submit Preset',
+      });
+      submitBtn.appendChild(btnText);
+
+      rightSide.appendChild(submitBtn);
+
+      // Auth button (shows username with logout option)
+      const authBtnContainer = this.createElement('div', {});
+      this.authButton = new AuthButton(authBtnContainer);
+      this.authButton.render();
+      rightSide.appendChild(authBtnContainer);
+    } else {
+      // Show login button
+      const authBtnContainer = this.createElement('div', {});
+      this.authButton = new AuthButton(authBtnContainer);
+      this.authButton.render();
+      rightSide.appendChild(authBtnContainer);
+    }
+
+    section.appendChild(rightSide);
+
+    return section;
+  }
+
+  /**
+   * Update auth section when auth state changes
+   */
+  private updateAuthSection(): void {
+    if (!this.authSection) return;
+
+    // Clean up old auth button
+    if (this.authButton) {
+      this.authButton.destroy();
+      this.authButton = null;
+    }
+
+    // Get parent and position
+    const parent = this.authSection.parentElement;
+    const nextSibling = this.authSection.nextSibling;
+
+    // Remove old section
+    this.authSection.remove();
+
+    // Create new section
+    this.authSection = this.renderAuthSection();
+
+    // Insert at same position
+    if (parent) {
+      if (nextSibling) {
+        parent.insertBefore(this.authSection, nextSibling);
+      } else {
+        parent.appendChild(this.authSection);
+      }
+    }
+
+    // Re-bind events for the new section
+    this.bindAuthSectionEvents();
+  }
+
+  /**
+   * Bind events for auth section
+   */
+  private bindAuthSectionEvents(): void {
+    if (!this.authSection) return;
+
+    // Submit button click
+    const submitBtn = this.authSection.querySelector('[data-action="submit-preset"]');
+    if (submitBtn) {
+      this.on(submitBtn as HTMLElement, 'click', () => {
+        this.handleSubmitPreset();
+      });
+    }
+  }
+
+  /**
+   * Handle submit preset button click
+   */
+  private handleSubmitPreset(): void {
+    showPresetSubmissionForm(async (result) => {
+      if (result.success) {
+        // Refresh presets to show new submission (if approved)
+        try {
+          this.presets = await hybridPresetService.getPresets({
+            sort: this.currentSort,
+            category: this.selectedCategory || undefined,
+          });
+          this.renderPresets();
+
+          // Also refresh my submissions if on that tab
+          if (this.currentTab === 'my-submissions' && this.mySubmissionsPanel) {
+            this.mySubmissionsPanel.render();
+          }
+        } catch (error) {
+          console.error('Failed to refresh presets:', error);
+        }
+      }
     });
-    text.appendChild(subtitle);
+  }
 
-    cta.appendChild(text);
-
-    const link = this.createElement('a', {
-      className:
-        'px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium',
-      textContent: 'Join Discord',
-      attributes: {
-        href: 'https://discord.gg/xivdyetools',
-        target: '_blank',
-        rel: 'noopener noreferrer',
-      },
+  /**
+   * Render view tabs (Browse / My Submissions)
+   */
+  private renderViewTabs(): HTMLElement {
+    const container = this.createElement('div', {
+      className: 'flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-4',
     });
-    cta.appendChild(link);
 
-    return cta;
+    // Browse tab
+    const browseTab = this.createElement('button', {
+      className: `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+        this.currentTab === 'browse'
+          ? 'text-indigo-600 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+          : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+      }`,
+      textContent: 'Browse Presets',
+      dataAttributes: { tab: 'browse' },
+    });
+    container.appendChild(browseTab);
+
+    // My Submissions tab
+    const mySubmissionsTab = this.createElement('button', {
+      className: `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+        this.currentTab === 'my-submissions'
+          ? 'text-indigo-600 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+          : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+      }`,
+      textContent: 'My Submissions',
+      dataAttributes: { tab: 'my-submissions' },
+    });
+    container.appendChild(mySubmissionsTab);
+
+    return container;
+  }
+
+  /**
+   * Update view tabs when auth state changes
+   */
+  private updateViewTabs(): void {
+    const isLoggedIn = authService.isAuthenticated();
+
+    if (isLoggedIn && !this.tabContainer) {
+      // User just logged in - add tabs
+      const authSectionParent = this.authSection?.parentElement;
+      if (authSectionParent && this.authSection) {
+        this.tabContainer = this.renderViewTabs();
+        // Insert after auth section
+        this.authSection.insertAdjacentElement('afterend', this.tabContainer);
+
+        // Create my submissions panel if it doesn't exist
+        if (!this.mySubmissionsContainer) {
+          this.mySubmissionsContainer = this.createElement('div', {
+            className: 'hidden',
+          });
+          this.mySubmissionsPanel = new MySubmissionsPanel(this.mySubmissionsContainer);
+          this.mySubmissionsPanel.render();
+          this.browseContent?.parentElement?.appendChild(this.mySubmissionsContainer);
+        }
+
+        // Bind tab events
+        this.bindTabEvents();
+      }
+    } else if (!isLoggedIn && this.tabContainer) {
+      // User just logged out - remove tabs and switch to browse
+      this.currentTab = 'browse';
+      this.tabContainer.remove();
+      this.tabContainer = null;
+
+      // Show browse content, hide my submissions
+      if (this.browseContent) this.browseContent.classList.remove('hidden');
+      if (this.mySubmissionsContainer) {
+        this.mySubmissionsContainer.classList.add('hidden');
+      }
+
+      // Clean up my submissions panel
+      if (this.mySubmissionsPanel) {
+        this.mySubmissionsPanel.destroy();
+        this.mySubmissionsPanel = null;
+      }
+      if (this.mySubmissionsContainer) {
+        this.mySubmissionsContainer.remove();
+        this.mySubmissionsContainer = null;
+      }
+    }
+  }
+
+  /**
+   * Switch between view tabs
+   */
+  private switchTab(tab: ViewTab): void {
+    if (this.currentTab === tab) return;
+
+    this.currentTab = tab;
+
+    // Update tab button styles
+    if (this.tabContainer) {
+      this.tabContainer.querySelectorAll('button').forEach((btn) => {
+        const btnTab = (btn as HTMLElement).dataset.tab;
+        const isActive = btnTab === tab;
+        btn.className = `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+          isActive
+            ? 'text-indigo-600 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+            : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+        }`;
+      });
+    }
+
+    // Show/hide content
+    if (this.browseContent) {
+      this.browseContent.classList.toggle('hidden', tab !== 'browse');
+    }
+    if (this.mySubmissionsContainer) {
+      this.mySubmissionsContainer.classList.toggle('hidden', tab !== 'my-submissions');
+    }
+
+    // Refresh my submissions when switching to that tab
+    if (tab === 'my-submissions' && this.mySubmissionsPanel) {
+      this.mySubmissionsPanel.render();
+    }
+  }
+
+  /**
+   * Bind tab click events
+   */
+  private bindTabEvents(): void {
+    if (!this.tabContainer) return;
+
+    this.on(this.tabContainer, 'click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const button = target.closest('button') as HTMLElement | null;
+      if (button && button.dataset.tab) {
+        this.switchTab(button.dataset.tab as ViewTab);
+      }
+    });
   }
 
   /**
@@ -951,14 +1258,43 @@ export class PresetBrowserTool extends BaseComponent {
         }
       });
     }
+
+    // Auth section events (submit button)
+    this.bindAuthSectionEvents();
+
+    // Tab events
+    this.bindTabEvents();
   }
 
   destroy(): void {
+    // Unsubscribe from auth state changes
+    if (this.authUnsubscribe) {
+      this.authUnsubscribe();
+      this.authUnsubscribe = null;
+    }
+
+    // Clean up auth button
+    if (this.authButton) {
+      this.authButton.destroy();
+      this.authButton = null;
+    }
+
+    // Clean up my submissions panel
+    if (this.mySubmissionsPanel) {
+      this.mySubmissionsPanel.destroy();
+      this.mySubmissionsPanel = null;
+    }
+
     this.selectedCategory = null;
     this.selectedPreset = null;
+    this.currentTab = 'browse';
     this.categories = [];
     this.presets = [];
     this.featuredPresets = [];
+    this.authSection = null;
+    this.tabContainer = null;
+    this.browseContent = null;
+    this.mySubmissionsContainer = null;
     super.destroy();
   }
 }

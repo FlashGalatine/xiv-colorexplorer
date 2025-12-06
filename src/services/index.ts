@@ -65,6 +65,19 @@ export type {
   PresetSortOption,
   GetPresetsOptions,
 } from './hybrid-preset-service';
+export { AuthService, authService } from './auth-service';
+export type { AuthUser, AuthState, AuthStateListener } from './auth-service';
+export {
+  PresetSubmissionService,
+  presetSubmissionService,
+  validateSubmission,
+} from './preset-submission-service';
+export type {
+  PresetSubmission,
+  SubmissionResult,
+  ValidationError,
+  MySubmissionsResponse,
+} from './preset-submission-service';
 
 // Re-export commonly used types
 export type { Dye, VisionType, ThemeName, PriceData } from '@shared/types';
@@ -119,6 +132,13 @@ export async function initializeServices(): Promise<void> {
     await hybridPresetService.initialize();
     logger.info(
       `✅ HybridPresetService: ${hybridPresetService.isAPIAvailable() ? 'API available' : 'Local only'}`
+    );
+
+    // Initialize AuthService (async - restores session, handles OAuth callback)
+    const { authService } = await import('./auth-service');
+    await authService.initialize();
+    logger.info(
+      `✅ AuthService: ${authService.isAuthenticated() ? 'Logged in' : 'Not logged in'}`
     );
 
     logger.info('🚀 All services initialized successfully');
