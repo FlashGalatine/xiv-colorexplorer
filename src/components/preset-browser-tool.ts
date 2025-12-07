@@ -598,28 +598,34 @@ export class PresetBrowserTool extends BaseComponent {
     const isLoggedIn = authService.isAuthenticated();
 
     if (isLoggedIn) {
-      // Clean up any existing tabs first to prevent duplicates
+      // Clean up any existing elements first to prevent duplicates
       if (this.tabContainer) {
         this.tabContainer.remove();
         this.tabContainer = null;
       }
+      if (this.mySubmissionsPanel) {
+        this.mySubmissionsPanel.destroy();
+        this.mySubmissionsPanel = null;
+      }
+      if (this.mySubmissionsContainer) {
+        this.mySubmissionsContainer.remove();
+        this.mySubmissionsContainer = null;
+      }
 
-      // User is logged in - add/recreate tabs
+      // User is logged in - create tabs and submissions panel
       const authSectionParent = this.authSection?.parentElement;
       if (authSectionParent && this.authSection) {
         this.tabContainer = this.renderViewTabs();
         // Insert after auth section
         this.authSection.insertAdjacentElement('afterend', this.tabContainer);
 
-        // Create my submissions panel if it doesn't exist
-        if (!this.mySubmissionsContainer) {
-          this.mySubmissionsContainer = this.createElement('div', {
-            className: 'hidden',
-          });
-          this.mySubmissionsPanel = new MySubmissionsPanel(this.mySubmissionsContainer);
-          this.mySubmissionsPanel.render();
-          this.browseContent?.parentElement?.appendChild(this.mySubmissionsContainer);
-        }
+        // Create my submissions panel
+        this.mySubmissionsContainer = this.createElement('div', {
+          className: 'hidden',
+        });
+        this.mySubmissionsPanel = new MySubmissionsPanel(this.mySubmissionsContainer);
+        this.mySubmissionsPanel.render();
+        this.browseContent?.parentElement?.appendChild(this.mySubmissionsContainer);
 
         // Bind tab events
         this.bindTabEvents();
