@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.1] - 2025-12-06
+
+### 🐛 Bug Fixes
+
+**Changelog Parser Path Fix**
+- Fixed build error where changelog parser looked for `docs/CHANGELOG.md` instead of root `CHANGELOG.md`
+- Updated `vite-plugin-changelog-parser.ts` to reflect new file location after CHANGELOG was moved to project root
+
+#### Files Modified
+- `vite-plugin-changelog-parser.ts` - Updated path resolution from `docs/CHANGELOG.md` to `CHANGELOG.md`
+
+---
+
 ## [2.5.0] - 2025-12-05
 
 ### 🎨 Multi-Color Palette Extraction
