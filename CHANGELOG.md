@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.0] - 2025-12-07
+
+### 🎨 Preset Refinements
+
+**Status**: ✅ COMPLETE
+**Focus**: Add voting, editing, sharing, and bug fixes to the community presets system.
+
+#### New Features ✅
+
+**Vote for Presets**
+- Vote button in preset detail panel (toggle on/off)
+- Real-time vote count updates
+- Requires Discord authentication
+
+**Share Preset Links**
+- Share button copies permalink to clipboard
+- Deep link routing for `/presets/:id` URLs
+- Direct navigation to specific presets
+
+**Edit Own Presets**
+- Edit button in My Submissions panel (for non-rejected presets)
+- Edit form with pre-filled values
+- Name, description, dyes, and tags are editable
+- Category remains read-only
+- Duplicate dye combination detection
+- Moderation warning if edit is flagged
+
+**Duplicate Preset Navigation**
+- When submitting a duplicate, shows the existing preset name
+- Automatically navigates to the duplicate preset
+
+#### Bug Fixes 🐛
+
+**Facewear Dye Filter**
+- Filtered facewear dyes from submission/edit forms (they shouldn't be in community presets)
+
+**Permalink Routing**
+- Fixed regex to match preset IDs with category prefixes (e.g., `community-uuid`)
+
+**Modal Debug Logging**
+- Added comprehensive logging to track modal dismiss flow
+
+#### Files Modified
+- `src/main.ts` - URL routing for preset deep links
+- `src/components/preset-browser-tool.ts` - Share/vote buttons, URL updates, navigate event
+- `src/components/preset-submission-form.ts` - Facewear filter, duplicate navigation
+- `src/components/preset-edit-form.ts` - New edit form component
+- `src/components/my-submissions-panel.ts` - Edit button and handler
+- `src/services/community-preset-service.ts` - Voting methods
+- `src/services/preset-submission-service.ts` - Edit method
+- `src/components/modal-container.ts` - Debug logging
+
+---
+
 ## [2.5.1] - 2025-12-06
 
 ### 🐛 Bug Fixes
