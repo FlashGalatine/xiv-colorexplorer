@@ -1,10 +1,10 @@
-# XIV Dye Tools v2.5.0
+# XIV Dye Tools v2.5.1
 
-**Status**: ✅ Production Ready | **Version**: 2.5.0 | **Release**: December 5, 2025 | **Phase**: Multi-Color Palette Extraction
+**Status**: ✅ Production Ready | **Version**: 2.5.1 | **Release**: December 6, 2025 | **Phase**: Multi-Color Palette Extraction
 
 A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.5.0 Release Notes**: Multi-color palette extraction in Color Matcher - extract 3-5 dominant colors from any image using K-means++ clustering, with visual sampling indicators showing where colors were sampled. See [CHANGELOG.md](CHANGELOG.md) for detailed release information.
+> **v2.5.1 Release Notes**: Bug fix release. Multi-color palette extraction in Color Matcher - extract 3-5 dominant colors from any image using K-means++ clustering, with visual sampling indicators showing where colors were sampled. See [CHANGELOG.md](CHANGELOG.md) for detailed release information.
 
 **Five Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
