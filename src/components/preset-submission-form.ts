@@ -81,25 +81,13 @@ export function showPresetSubmissionForm(onSubmit?: OnSubmitCallback): void {
   const content = createFormContent(state, onSubmit);
 
   // Show modal using ModalService
-  const maybeShow = (ModalService as unknown as Record<string, unknown>).show as
-    | ((config: {
-        type: 'custom';
-        title: string;
-        content: HTMLElement;
-        size?: 'sm' | 'md' | 'lg';
-        closable?: boolean;
-      }) => void)
-    | undefined;
-
-  if (typeof maybeShow === 'function') {
-    maybeShow({
-      type: 'custom',
-      title: 'Submit a Preset',
-      content,
-      size: 'lg',
-      closable: true,
-    });
-  }
+  ModalService.show({
+    type: 'custom',
+    title: 'Submit a Preset',
+    content,
+    size: 'lg',
+    closable: true,
+  });
 }
 
 // ============================================
