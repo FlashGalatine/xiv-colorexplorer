@@ -452,7 +452,8 @@ async function initializeApp(): Promise<void> {
 
     // Check for preset route before loading initial tool
     const path = window.location.pathname;
-    const presetMatch = path.match(/^\/presets\/([a-f0-9-]+)$/i);
+    // Match preset IDs like "community-cfe2ca08-cd7f-4d3a-9b6d-a24b6ac729b4"
+    const presetMatch = path.match(/^\/presets\/([\w-]+)$/i);
     let initialTool = 'harmony';
 
     if (presetMatch) {
