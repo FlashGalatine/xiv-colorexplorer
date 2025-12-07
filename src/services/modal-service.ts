@@ -141,15 +141,21 @@ export class ModalService {
    * Dismiss a specific modal by ID
    */
   static dismiss(id: string): void {
+    console.log('[ModalService] dismiss called for id:', id);
     const index = this.modals.findIndex((m) => m.id === id);
+    console.log('[ModalService] modal index:', index, 'total modals:', this.modals.length);
     if (index !== -1) {
       const modal = this.modals[index];
       this.modals.splice(index, 1);
+      console.log('[ModalService] modal removed, remaining modals:', this.modals.length);
       if (modal.onClose) {
         modal.onClose();
       }
+      console.log('[ModalService] notifying listeners, count:', this.listeners.size);
       this.notifyListeners();
       logger.info(`Modal dismissed: ${id}`);
+    } else {
+      console.warn('[ModalService] modal not found:', id);
     }
   }
 
@@ -157,9 +163,13 @@ export class ModalService {
    * Dismiss the topmost modal
    */
   static dismissTop(): void {
+    console.log('[ModalService] dismissTop called, modals.length:', this.modals.length);
     if (this.modals.length > 0) {
       const topModal = this.modals[this.modals.length - 1];
+      console.log('[ModalService] dismissing modal:', topModal.id);
       this.dismiss(topModal.id);
+    } else {
+      console.warn('[ModalService] dismissTop called but no modals to dismiss');
     }
   }
 

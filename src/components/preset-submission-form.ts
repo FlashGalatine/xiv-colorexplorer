@@ -378,7 +378,8 @@ function createDyeSelector(state: FormState): HTMLElement {
   dyeGrid.style.cssText =
     'background-color: var(--theme-card-background); border-color: var(--theme-border);';
 
-  const allDyes = dyeService.getAllDyes();
+  // Filter out Facewear dyes - they shouldn't be in presets
+  const allDyes = dyeService.getAllDyes().filter((dye) => dye.category !== 'Facewear');
   let filteredDyes = allDyes;
 
   const renderDyeGrid = () => {
@@ -551,7 +552,9 @@ function createSubmitButton(state: FormState, onSubmit?: OnSubmitCallback): HTML
           ToastService.success('Preset submitted successfully!');
         }
 
+        console.log('[PresetSubmissionForm] calling ModalService.dismissTop()');
         ModalService.dismissTop();
+        console.log('[PresetSubmissionForm] dismissTop() returned');
         onSubmit?.(result);
       } else {
         ToastService.error(result.error || 'Failed to submit preset');

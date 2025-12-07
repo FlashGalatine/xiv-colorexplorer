@@ -41,6 +41,7 @@ export class ModalContainer extends BaseComponent {
   onMount(): void {
     // Subscribe to modal service
     this.unsubscribe = ModalService.subscribe((modals) => {
+      console.log('[ModalContainer] subscription callback, received modals:', modals.length);
       const hadModals = this.modals.length > 0;
       const hasModals = modals.length > 0;
 
@@ -50,6 +51,7 @@ export class ModalContainer extends BaseComponent {
       }
 
       this.modals = modals;
+      console.log('[ModalContainer] calling update()');
       this.update();
 
       // Restore focus after closing last modal
@@ -304,10 +306,14 @@ export class ModalContainer extends BaseComponent {
    * Render the modal container
    */
   render(): void {
+    console.log('[ModalContainer] render() called, modals.length:', this.modals.length);
+    console.log('[ModalContainer] container children before clear:', this.container.children.length);
     clearContainer(this.container);
+    console.log('[ModalContainer] container children after clear:', this.container.children.length);
 
     // If no modals, don't render anything
     if (this.modals.length === 0) {
+      console.log('[ModalContainer] no modals, setting element to null and returning');
       this.element = null;
       return;
     }
@@ -349,9 +355,17 @@ export class ModalContainer extends BaseComponent {
    * Called after update
    */
   onUpdate(): void {
+    console.log('[ModalContainer] onUpdate() called, modals.length:', this.modals.length);
     // Restore body scroll when no modals
     if (this.modals.length === 0) {
+      console.log('[ModalContainer] restoring body scroll');
       document.body.style.overflow = '';
+      // Debug: verify DOM state
+      console.log('[ModalContainer] container final state:', {
+        containerChildren: this.container.children.length,
+        hasModalBackdrop: !!document.querySelector('.modal-backdrop'),
+        bodyOverflow: document.body.style.overflow,
+      });
     }
   }
 
