@@ -119,14 +119,6 @@ export class PresetBrowserTool extends BaseComponent {
     if (hybridPresetService.isAPIAvailable()) {
       this.authSection = this.renderAuthSection();
       content.appendChild(this.authSection);
-
-      // Subscribe to auth state changes to update the section and tabs
-      // Note: subscription immediately fires with current state, which will call updateViewTabs()
-      // to create tabs if authenticated - no need to create them here
-      this.authUnsubscribe = authService.subscribe(() => {
-        this.updateAuthSection();
-        this.updateViewTabs();
-      });
     }
 
     // Browse content wrapper
@@ -149,8 +141,15 @@ export class PresetBrowserTool extends BaseComponent {
 
     content.appendChild(this.browseContent);
 
-    // Note: My Submissions container is created by updateViewTabs() when authenticated
-    // The auth subscription fires immediately and handles panel creation
+    // Subscribe to auth state changes AFTER browseContent exists
+    // The subscription fires immediately, and updateViewTabs() appends mySubmissionsContainer
+    // as a sibling to browseContent - so browseContent must exist first
+    if (hybridPresetService.isAPIAvailable()) {
+      this.authUnsubscribe = authService.subscribe(() => {
+        this.updateAuthSection();
+        this.updateViewTabs();
+      });
+    }
 
     // Re-bind events after async render
     this.bindEvents();
