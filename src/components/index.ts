@@ -69,4 +69,5 @@ export {
 } from './add-to-collection-menu';
 export { AuthButton } from './auth-button';
 export { showPresetSubmissionForm } from './preset-submission-form';
+export { showPresetEditForm } from './preset-edit-form';
 export { MySubmissionsPanel } from './my-submissions-panel';
