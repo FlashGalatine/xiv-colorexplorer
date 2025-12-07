@@ -62,6 +62,7 @@ export class PresetBrowserTool extends BaseComponent {
   private featuredPresets: UnifiedPreset[] = [];
   private isLoading = false;
   private authUnsubscribe: (() => void) | null = null;
+  private navigateHandler: ((e: Event) => void) | null = null;
 
   constructor(container: HTMLElement) {
     super(container);
@@ -1472,9 +1473,25 @@ export class PresetBrowserTool extends BaseComponent {
 
     // Tab events
     this.bindTabEvents();
+
+    // Listen for navigate-to-preset events (e.g., from duplicate detection in submission form)
+    this.navigateHandler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ presetId: string }>;
+      const presetId = customEvent.detail?.presetId;
+      if (presetId) {
+        this.selectPresetById(presetId);
+      }
+    };
+    window.addEventListener('navigate-to-preset', this.navigateHandler);
   }
 
   destroy(): void {
+    // Clean up navigate-to-preset listener
+    if (this.navigateHandler) {
+      window.removeEventListener('navigate-to-preset', this.navigateHandler);
+      this.navigateHandler = null;
+    }
+
     // Unsubscribe from auth state changes
     if (this.authUnsubscribe) {
       this.authUnsubscribe();

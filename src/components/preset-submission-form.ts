@@ -543,9 +543,24 @@ function createSubmitButton(state: FormState, onSubmit?: OnSubmitCallback): HTML
 
       if (result.success) {
         if (result.duplicate) {
-          ToastService.info(
-            `This dye combination already exists! ${result.vote_added ? 'Your vote has been added.' : ''}`
-          );
+          const duplicateName = result.duplicate.name || 'existing preset';
+          const voteMsg = result.vote_added ? ' Your vote has been added!' : '';
+          ToastService.info(`This dye combination already exists as "${duplicateName}".${voteMsg}`);
+
+          // Navigate to the duplicate preset after dismissing modal
+          console.log('[PresetSubmissionForm] calling ModalService.dismissTop() for duplicate');
+          ModalService.dismissTop();
+          console.log('[PresetSubmissionForm] dismissTop() returned for duplicate');
+
+          // Store the duplicate preset ID for navigation
+          if (result.duplicate.id) {
+            sessionStorage.setItem('pendingPresetId', result.duplicate.id);
+            // Dispatch event to notify preset browser to switch and show the preset
+            window.dispatchEvent(new CustomEvent('navigate-to-preset', { detail: { presetId: result.duplicate.id } }));
+          }
+
+          onSubmit?.(result);
+          return;
         } else if (result.moderation_status === 'pending') {
           ToastService.success('Preset submitted! It will appear after moderator review.');
         } else {
