@@ -121,16 +121,12 @@ export class PresetBrowserTool extends BaseComponent {
       content.appendChild(this.authSection);
 
       // Subscribe to auth state changes to update the section and tabs
+      // Note: subscription immediately fires with current state, which will call updateViewTabs()
+      // to create tabs if authenticated - no need to create them here
       this.authUnsubscribe = authService.subscribe(() => {
         this.updateAuthSection();
         this.updateViewTabs();
       });
-
-      // View tabs (Browse / My Submissions) - only show when logged in
-      if (authService.isAuthenticated()) {
-        this.tabContainer = this.renderViewTabs();
-        content.appendChild(this.tabContainer);
-      }
     }
 
     // Browse content wrapper
@@ -601,8 +597,14 @@ export class PresetBrowserTool extends BaseComponent {
   private updateViewTabs(): void {
     const isLoggedIn = authService.isAuthenticated();
 
-    if (isLoggedIn && !this.tabContainer) {
-      // User just logged in - add tabs
+    if (isLoggedIn) {
+      // Clean up any existing tabs first to prevent duplicates
+      if (this.tabContainer) {
+        this.tabContainer.remove();
+        this.tabContainer = null;
+      }
+
+      // User is logged in - add/recreate tabs
       const authSectionParent = this.authSection?.parentElement;
       if (authSectionParent && this.authSection) {
         this.tabContainer = this.renderViewTabs();

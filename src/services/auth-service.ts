@@ -59,6 +59,12 @@ const OAUTH_WORKER_URL =
   import.meta.env.VITE_OAUTH_WORKER_URL || 'https://xivdyetools-oauth.ashejunius.workers.dev';
 
 /**
+ * Presets API URL - handles preset operations
+ */
+const PRESETS_API_URL =
+  import.meta.env.VITE_PRESETS_API_URL || 'https://xivdyetools-presets-api.ashejunius.workers.dev';
+
+/**
  * Storage key for auth token
  */
 const TOKEN_STORAGE_KEY = 'xivdyetools_auth_token';
@@ -227,6 +233,37 @@ class AuthServiceImpl {
 
     this.notifyListeners();
     logger.info(`Logged in as ${this.state.user?.global_name || this.state.user?.username}`);
+
+    // Refresh author name on all user's presets (fire-and-forget)
+    // This keeps preset attribution in sync with the user's current Discord display name
+    this.refreshAuthorName().catch((err) => {
+      logger.warn('Failed to refresh author name on presets:', err);
+    });
+  }
+
+  /**
+   * Refresh the author name on all presets submitted by this user
+   * Called on login to sync with the user's current Discord display name
+   */
+  private async refreshAuthorName(): Promise<void> {
+    if (!this.state.token) return;
+
+    try {
+      const response = await fetch(`${PRESETS_API_URL}/api/v1/presets/refresh-author`, {
+        method: 'PATCH',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.updated > 0) {
+          logger.info(`Updated author name on ${result.updated} preset(s)`);
+        }
+      }
+    } catch (err) {
+      // Non-blocking - don't throw, just log
+      logger.warn('Error refreshing author name:', err);
+    }
   }
 
   /**
