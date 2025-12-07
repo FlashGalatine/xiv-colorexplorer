@@ -255,20 +255,41 @@ class PresetSubmissionServiceImpl {
   }
 
   /**
-   * Get submission status label and color
+   * Get submission status label and styling
+   * Uses Tailwind classes for consistent theming across light/dark modes
    */
-  getStatusInfo(status: PresetStatus): { label: string; color: string; icon: string } {
+  getStatusInfo(status: PresetStatus): { label: string; colorClass: string; icon: string } {
     switch (status) {
       case 'approved':
-        return { label: 'Approved', color: '#57f287', icon: '✓' };
+        return {
+          label: 'Approved',
+          colorClass: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+          icon: '✓',
+        };
       case 'pending':
-        return { label: 'Pending Review', color: '#fee75c', icon: '⏳' };
+        return {
+          label: 'Pending Review',
+          colorClass: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+          icon: '⏳',
+        };
       case 'rejected':
-        return { label: 'Rejected', color: '#ed4245', icon: '✗' };
+        return {
+          label: 'Rejected',
+          colorClass: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+          icon: '✗',
+        };
       case 'flagged':
-        return { label: 'Flagged', color: '#ffa500', icon: '⚠' };
+        return {
+          label: 'Flagged',
+          colorClass: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+          icon: '⚠',
+        };
       default:
-        return { label: 'Unknown', color: '#99aab5', icon: '?' };
+        return {
+          label: 'Unknown',
+          colorClass: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+          icon: '?',
+        };
     }
   }
 
@@ -307,6 +328,41 @@ class PresetSubmissionServiceImpl {
     } catch (err) {
       logger.error('Error fetching rate limit:', err);
       return { remaining: 10, limit: 10, resetAt: null };
+    }
+  }
+
+  /**
+   * Delete a preset by ID
+   * Only the owner or a moderator can delete presets
+   */
+  async deletePreset(presetId: string): Promise<{ success: boolean; error?: string }> {
+    if (!authService.isAuthenticated()) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+      const response = await fetch(`${PRESETS_API_URL}/api/v1/presets/${presetId}`, {
+        method: 'DELETE',
+        headers: {
+          ...authService.getAuthHeaders(),
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        return { success: false, error: data.message || `Failed to delete (${response.status})` };
+      }
+
+      return { success: true };
+    } catch (err) {
+      logger.error('Error deleting preset:', err);
+      return { success: false, error: 'Network error - please try again' };
     }
   }
 }

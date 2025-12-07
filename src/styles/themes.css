@@ -504,6 +504,11 @@ html.theme-high-contrast-dark .border-gray-200 {
   cursor: not-allowed;
 }
 
+/* Featured section gradient - uses theme primary with slight variation */
+.featured-section-gradient {
+  background: linear-gradient(135deg, var(--theme-primary) 0%, color-mix(in srgb, var(--theme-primary), #000 20%) 100%);
+}
+
 /* Danger/Delete button - uses red with theme awareness */
 .btn-theme-danger {
   background-color: transparent;

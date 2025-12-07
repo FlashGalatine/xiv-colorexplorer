@@ -264,10 +264,7 @@ export class MySubmissionsPanel extends BaseComponent {
 
     // Status badge
     const statusBadge = this.createElement('div', {
-      className: 'flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0',
-      attributes: {
-        style: `background-color: ${statusInfo.color}20; color: ${statusInfo.color}`,
-      },
+      className: `flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${statusInfo.colorClass}`,
     });
 
     const statusIcon = this.createElement('span', {
@@ -374,7 +371,7 @@ export class MySubmissionsPanel extends BaseComponent {
 
       preset.tags.forEach((tag) => {
         const tagChip = this.createElement('span', {
-          className: 'px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs',
+          className: 'px-2 py-0.5 bg-[var(--theme-primary)]/10 text-[var(--theme-primary)] rounded text-xs',
           textContent: tag,
         });
         tagList.appendChild(tagChip);
@@ -396,6 +393,21 @@ export class MySubmissionsPanel extends BaseComponent {
 
     details.appendChild(stats);
 
+    // Action buttons section
+    const actions = this.createElement('div', {
+      className: 'flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700',
+    });
+
+    const deleteBtn = this.createElement('button', {
+      className:
+        'px-3 py-1.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors',
+      textContent: '🗑️ Delete',
+      dataAttributes: { action: 'delete', presetId: preset.id },
+    });
+    actions.appendChild(deleteBtn);
+
+    details.appendChild(actions);
+
     return details;
   }
 
@@ -415,12 +427,41 @@ export class MySubmissionsPanel extends BaseComponent {
         }
       }
 
+      // Delete button
+      const deleteBtn = target.closest('[data-action="delete"]') as HTMLElement;
+      if (deleteBtn) {
+        e.stopPropagation(); // Prevent toggle
+        const presetId = deleteBtn.dataset.presetId;
+        if (presetId && confirm('Are you sure you want to delete this preset? This cannot be undone.')) {
+          this.handleDelete(presetId);
+        }
+      }
+
       // Refresh button
       const refreshBtn = target.closest('[data-action="refresh"]');
       if (refreshBtn) {
         this.loadSubmissions();
       }
     });
+  }
+
+  /**
+   * Handle preset deletion
+   */
+  private async handleDelete(presetId: string): Promise<void> {
+    try {
+      const result = await presetSubmissionService.deletePreset(presetId);
+      if (result.success) {
+        // Remove from local list and re-render
+        this.submissions = this.submissions.filter((p) => p.id !== presetId);
+        this.updateListContainer(this.renderSubmissionsList());
+      } else {
+        alert(result.error || 'Failed to delete preset');
+      }
+    } catch (error) {
+      console.error('Failed to delete preset:', error);
+      alert('Failed to delete preset. Please try again.');
+    }
   }
 
   destroy(): void {

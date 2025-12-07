@@ -187,7 +187,7 @@ export class PresetBrowserTool extends BaseComponent {
    */
   private renderFeaturedSection(): HTMLElement {
     const section = this.createElement('div', {
-      className: 'bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-6 text-white',
+      className: 'featured-section-gradient rounded-lg p-6 text-white',
     });
 
     const header = this.createElement('div', {
@@ -310,7 +310,7 @@ export class PresetBrowserTool extends BaseComponent {
     const tab = this.createElement('button', {
       className: `px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
         isActive
-          ? 'bg-indigo-600 text-white'
+          ? 'bg-[var(--theme-primary)] text-white'
           : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
       }`,
       dataAttributes: {
@@ -364,7 +364,7 @@ export class PresetBrowserTool extends BaseComponent {
       const btn = this.createElement('button', {
         className: `px-3 py-1 text-sm rounded transition-colors ${
           this.currentSort === value
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-[var(--theme-primary)] text-white'
             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
         }`,
         textContent: label,
@@ -386,7 +386,7 @@ export class PresetBrowserTool extends BaseComponent {
   private renderAuthSection(): HTMLElement {
     const section = this.createElement('div', {
       className:
-        'flex items-center justify-between gap-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800',
+        'flex items-center justify-between gap-4 p-4 bg-[var(--theme-primary)]/10 rounded-lg border border-[var(--theme-primary)]/30',
     });
 
     // Left side: text and optional auth button
@@ -400,25 +400,25 @@ export class PresetBrowserTool extends BaseComponent {
 
     if (isLoggedIn) {
       const title = this.createElement('div', {
-        className: 'font-medium text-indigo-900 dark:text-indigo-100',
+        className: 'font-medium text-gray-900 dark:text-gray-100',
         textContent: 'Share Your Presets!',
       });
       text.appendChild(title);
 
       const subtitle = this.createElement('div', {
-        className: 'text-sm text-indigo-700 dark:text-indigo-300',
+        className: 'text-sm text-gray-700 dark:text-gray-300',
         textContent: 'Create and submit your own dye palettes for the community',
       });
       text.appendChild(subtitle);
     } else {
       const title = this.createElement('div', {
-        className: 'font-medium text-indigo-900 dark:text-indigo-100',
+        className: 'font-medium text-gray-900 dark:text-gray-100',
         textContent: 'Want to Share Your Presets?',
       });
       text.appendChild(title);
 
       const subtitle = this.createElement('div', {
-        className: 'text-sm text-indigo-700 dark:text-indigo-300',
+        className: 'text-sm text-gray-700 dark:text-gray-300',
         textContent: 'Sign in with Discord to submit your color palettes',
       });
       text.appendChild(subtitle);
@@ -436,7 +436,7 @@ export class PresetBrowserTool extends BaseComponent {
       // Show submit button
       const submitBtn = this.createElement('button', {
         className:
-          'px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center gap-2',
+          'btn-theme-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2',
         dataAttributes: {
           action: 'submit-preset',
         },
@@ -560,7 +560,7 @@ export class PresetBrowserTool extends BaseComponent {
     const browseTab = this.createElement('button', {
       className: `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
         this.currentTab === 'browse'
-          ? 'text-indigo-600 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+          ? 'text-[var(--theme-primary)] border-[var(--theme-primary)]'
           : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
       }`,
       textContent: 'Browse Presets',
@@ -572,7 +572,7 @@ export class PresetBrowserTool extends BaseComponent {
     const mySubmissionsTab = this.createElement('button', {
       className: `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
         this.currentTab === 'my-submissions'
-          ? 'text-indigo-600 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+          ? 'text-[var(--theme-primary)] border-[var(--theme-primary)]'
           : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
       }`,
       textContent: 'My Submissions',
