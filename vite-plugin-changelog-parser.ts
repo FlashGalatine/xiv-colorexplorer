@@ -1,7 +1,7 @@
 /**
  * Vite plugin to parse CHANGELOG.md and provide changelog data at build time
  *
- * This plugin reads docs/CHANGELOG.md, extracts version entries with their
+ * This plugin reads CHANGELOG.md from the project root, extracts version entries with their
  * highlights, and exposes them as a virtual module that can be imported.
  *
  * Usage in code:
@@ -181,7 +181,7 @@ export function changelogParser(): Plugin {
 
     configResolved(config) {
       // Resolve the changelog path relative to project root
-      changelogPath = resolve(config.root, '..', 'docs', 'CHANGELOG.md');
+      changelogPath = resolve(config.root, '..', 'CHANGELOG.md');
     },
 
     resolveId(id) {

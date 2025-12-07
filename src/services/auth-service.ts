@@ -333,6 +333,7 @@ class AuthServiceImpl {
       const authUrl = new URL(`${OAUTH_WORKER_URL}/auth/discord`);
       authUrl.searchParams.set('code_challenge', codeChallenge);
       authUrl.searchParams.set('code_challenge_method', 'S256');
+      authUrl.searchParams.set('code_verifier', codeVerifier); // Pass verifier for worker to include in state
       authUrl.searchParams.set('state', state);
       authUrl.searchParams.set('redirect_uri', `${window.location.origin}/auth/callback`);
       if (returnPath) {
