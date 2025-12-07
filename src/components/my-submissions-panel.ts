@@ -13,6 +13,7 @@ import { presetSubmissionService, authService } from '@services/index';
 import type { CommunityPreset, PresetStatus } from '@services/community-preset-service';
 import { DyeService, dyeDatabase } from 'xivdyetools-core';
 import { getCategoryIcon } from '@shared/category-icons';
+import { showPresetEditForm } from './preset-edit-form';
 
 // Initialize dye service
 const dyeService = new DyeService(dyeDatabase);
@@ -398,6 +399,17 @@ export class MySubmissionsPanel extends BaseComponent {
       className: 'flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700',
     });
 
+    // Edit button (only for non-rejected presets)
+    if (preset.status !== 'rejected') {
+      const editBtn = this.createElement('button', {
+        className:
+          'px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors',
+        textContent: '✏️ Edit',
+        dataAttributes: { action: 'edit', presetId: preset.id },
+      });
+      actions.appendChild(editBtn);
+    }
+
     const deleteBtn = this.createElement('button', {
       className:
         'px-3 py-1.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors',
@@ -427,6 +439,16 @@ export class MySubmissionsPanel extends BaseComponent {
         }
       }
 
+      // Edit button
+      const editBtn = target.closest('[data-action="edit"]') as HTMLElement;
+      if (editBtn) {
+        e.stopPropagation(); // Prevent toggle
+        const presetId = editBtn.dataset.presetId;
+        if (presetId) {
+          this.handleEdit(presetId);
+        }
+      }
+
       // Delete button
       const deleteBtn = target.closest('[data-action="delete"]') as HTMLElement;
       if (deleteBtn) {
@@ -441,6 +463,29 @@ export class MySubmissionsPanel extends BaseComponent {
       const refreshBtn = target.closest('[data-action="refresh"]');
       if (refreshBtn) {
         this.loadSubmissions();
+      }
+    });
+  }
+
+  /**
+   * Handle preset edit
+   */
+  private handleEdit(presetId: string): void {
+    const preset = this.submissions.find((p) => p.id === presetId);
+    if (!preset) {
+      console.error('Preset not found:', presetId);
+      return;
+    }
+
+    // Show edit form modal, refresh list on successful edit
+    showPresetEditForm(preset, (result) => {
+      if (result.success && result.preset) {
+        // Update local preset data
+        const index = this.submissions.findIndex((p) => p.id === presetId);
+        if (index !== -1) {
+          this.submissions[index] = result.preset;
+          this.updateListContainer(this.renderSubmissionsList());
+        }
       }
     });
   }
