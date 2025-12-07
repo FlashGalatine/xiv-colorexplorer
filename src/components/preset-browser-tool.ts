@@ -149,15 +149,8 @@ export class PresetBrowserTool extends BaseComponent {
 
     content.appendChild(this.browseContent);
 
-    // My Submissions container (only when logged in)
-    if (hybridPresetService.isAPIAvailable() && authService.isAuthenticated()) {
-      this.mySubmissionsContainer = this.createElement('div', {
-        className: this.currentTab === 'my-submissions' ? '' : 'hidden',
-      });
-      this.mySubmissionsPanel = new MySubmissionsPanel(this.mySubmissionsContainer);
-      this.mySubmissionsPanel.render();
-      content.appendChild(this.mySubmissionsContainer);
-    }
+    // Note: My Submissions container is created by updateViewTabs() when authenticated
+    // The auth subscription fires immediately and handles panel creation
 
     // Re-bind events after async render
     this.bindEvents();

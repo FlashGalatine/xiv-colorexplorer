@@ -31,6 +31,12 @@ export class MySubmissionsPanel extends BaseComponent {
   }
 
   async render(): Promise<void> {
+    // Remove old element if it exists to prevent duplicates on re-render
+    if (this.element) {
+      this.element.remove();
+      this.element = null;
+    }
+
     const wrapper = this.createElement('div', {
       className: 'space-y-4',
     });
