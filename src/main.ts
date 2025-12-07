@@ -450,10 +450,24 @@ async function initializeApp(): Promise<void> {
       logger.info('🌐 UI updated for language change');
     });
 
-    // Load the return tool from OAuth flow, or default to harmony
-    const returnTool = consumeReturnTool();
-    console.log('🔄 [Main] consumeReturnTool:', { returnTool, sessionStorageKeys: Object.keys(sessionStorage) });
-    const initialTool = returnTool && tools.some((t) => t.id === returnTool) ? returnTool : 'harmony';
+    // Check for preset route before loading initial tool
+    const path = window.location.pathname;
+    const presetMatch = path.match(/^\/presets\/([a-f0-9-]+)$/i);
+    let initialTool = 'harmony';
+
+    if (presetMatch) {
+      // Store the preset ID for the preset browser tool to pick up
+      const presetId = presetMatch[1];
+      sessionStorage.setItem('pendingPresetId', presetId);
+      initialTool = 'presets';
+      logger.info(`🔗 Deep link to preset: ${presetId}`);
+    } else {
+      // Load the return tool from OAuth flow, or default to harmony
+      const returnTool = consumeReturnTool();
+      console.log('🔄 [Main] consumeReturnTool:', { returnTool, sessionStorageKeys: Object.keys(sessionStorage) });
+      initialTool = returnTool && tools.some((t) => t.id === returnTool) ? returnTool : 'harmony';
+    }
+
     console.log('🔄 [Main] Loading initial tool:', initialTool);
     void loadTool(initialTool);
 

@@ -153,6 +153,9 @@ export class PresetBrowserTool extends BaseComponent {
 
     // Re-bind events after async render
     this.bindEvents();
+
+    // Check for pending preset ID from URL routing
+    this.checkPendingPresetId();
   }
 
   /**
@@ -179,6 +182,49 @@ export class PresetBrowserTool extends BaseComponent {
       console.error('Failed to load preset data:', error);
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  /**
+   * Select and display a preset by its ID (public method for URL routing)
+   * @param presetId - The UUID of the preset to display
+   */
+  public async selectPresetById(presetId: string): Promise<void> {
+    // First check if it's already loaded
+    let preset = this.presets.find((p) => p.id === presetId) ||
+                 this.featuredPresets.find((p) => p.id === presetId);
+
+    if (preset) {
+      this.showPresetDetail(preset, false); // Don't update URL since we're already at it
+      return;
+    }
+
+    // If not in loaded presets, try to fetch from service directly
+    try {
+      const fetchedPreset = await hybridPresetService.getPreset(presetId);
+      if (fetchedPreset) {
+        this.showPresetDetail(fetchedPreset, false);
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to fetch preset by ID:', error);
+    }
+
+    // Preset not found
+    console.warn(`Preset not found: ${presetId}`);
+  }
+
+  /**
+   * Check for pending preset ID from URL routing and select it
+   */
+  private checkPendingPresetId(): void {
+    const pendingId = sessionStorage.getItem('pendingPresetId');
+    if (pendingId) {
+      sessionStorage.removeItem('pendingPresetId');
+      // Use setTimeout to ensure render is complete
+      setTimeout(() => {
+        void this.selectPresetById(pendingId);
+      }, 100);
     }
   }
 
@@ -874,8 +920,10 @@ export class PresetBrowserTool extends BaseComponent {
 
   /**
    * Show detailed view of a preset
+   * @param preset - The preset to display
+   * @param updateUrl - Whether to update the browser URL (default true)
    */
-  private showPresetDetail(preset: UnifiedPreset): void {
+  private showPresetDetail(preset: UnifiedPreset, updateUrl: boolean = true): void {
     if (!this.detailPanel || !this.presetGrid) return;
 
     this.selectedPreset = preset;
@@ -884,6 +932,11 @@ export class PresetBrowserTool extends BaseComponent {
     if (this.sortContainer) this.sortContainer.classList.add('hidden');
     this.detailPanel.classList.remove('hidden');
     this.detailPanel.innerHTML = '';
+
+    // Update URL to shareable preset link
+    if (updateUrl) {
+      history.pushState({ presetId: preset.id }, '', `/presets/${preset.id}`);
+    }
 
     const detail = this.createElement('div', {
       className:
@@ -1123,6 +1176,9 @@ export class PresetBrowserTool extends BaseComponent {
     this.presetGrid.classList.remove('hidden');
     if (this.featuredSection) this.featuredSection.classList.remove('hidden');
     if (this.sortContainer) this.sortContainer.classList.remove('hidden');
+
+    // Reset URL to base presets path
+    history.pushState({}, '', '/');
   }
 
   /**
