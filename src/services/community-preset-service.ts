@@ -6,6 +6,7 @@
  */
 
 import { logger } from '@shared/logger';
+import { authService } from './auth-service';
 import type { PresetCategory } from 'xivdyetools-core';
 
 // ============================================
@@ -55,6 +56,18 @@ export interface PresetFilters {
   page?: number;
   limit?: number;
   is_curated?: boolean;
+}
+
+export interface VoteResponse {
+  success: boolean;
+  new_vote_count: number;
+  already_voted?: boolean;
+  error?: string;
+}
+
+export interface VoteCheckResponse {
+  has_voted: boolean;
+  vote_count: number;
 }
 
 // ============================================
@@ -327,6 +340,156 @@ export class CommunityPresetService {
     this.cache.delete('presets:featured');
     this.cache.delete('categories');
     // Note: Individual preset queries will expire naturally
+  }
+
+  // ============================================
+  // Voting Methods
+  // ============================================
+
+  /**
+   * Vote for a preset
+   * Requires authentication
+   */
+  async voteForPreset(presetId: string): Promise<VoteResponse> {
+    if (!authService.isAuthenticated()) {
+      return {
+        success: false,
+        new_vote_count: 0,
+        error: 'You must be logged in to vote',
+      };
+    }
+
+    try {
+      const response = await this.fetchWithTimeout(`${this.apiUrl}/api/v1/votes/${presetId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authService.getAuthHeaders(),
+        },
+      });
+
+      const data = (await response.json()) as VoteResponse;
+
+      if (response.status === 409) {
+        // Already voted
+        return {
+          success: false,
+          new_vote_count: data.new_vote_count || 0,
+          already_voted: true,
+          error: 'You have already voted for this preset',
+        };
+      }
+
+      if (!response.ok) {
+        return {
+          success: false,
+          new_vote_count: 0,
+          error: (data as { message?: string }).message || 'Failed to vote',
+        };
+      }
+
+      // Invalidate cache for this preset
+      this.cache.delete(`preset:${presetId}`);
+      this.cache.delete(`vote:${presetId}`);
+
+      logger.info(`Voted for preset ${presetId}`);
+      return data;
+    } catch (error) {
+      logger.error('Error voting for preset:', error);
+      return {
+        success: false,
+        new_vote_count: 0,
+        error: 'Network error - please try again',
+      };
+    }
+  }
+
+  /**
+   * Remove vote from a preset
+   * Requires authentication
+   */
+  async removeVote(presetId: string): Promise<VoteResponse> {
+    if (!authService.isAuthenticated()) {
+      return {
+        success: false,
+        new_vote_count: 0,
+        error: 'You must be logged in to remove your vote',
+      };
+    }
+
+    try {
+      const response = await this.fetchWithTimeout(`${this.apiUrl}/api/v1/votes/${presetId}`, {
+        method: 'DELETE',
+        headers: {
+          ...authService.getAuthHeaders(),
+        },
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        return {
+          success: false,
+          new_vote_count: 0,
+          error: data.message || 'Failed to remove vote',
+        };
+      }
+
+      const data = (await response.json()) as VoteResponse;
+
+      // Invalidate cache
+      this.cache.delete(`preset:${presetId}`);
+      this.cache.delete(`vote:${presetId}`);
+
+      logger.info(`Removed vote from preset ${presetId}`);
+      return data;
+    } catch (error) {
+      logger.error('Error removing vote:', error);
+      return {
+        success: false,
+        new_vote_count: 0,
+        error: 'Network error - please try again',
+      };
+    }
+  }
+
+  /**
+   * Check if user has voted for a preset
+   * Requires authentication
+   */
+  async hasVoted(presetId: string): Promise<VoteCheckResponse> {
+    if (!authService.isAuthenticated()) {
+      return { has_voted: false, vote_count: 0 };
+    }
+
+    // Check cache first
+    const cacheKey = `vote:${presetId}`;
+    const cached = this.cache.get(cacheKey) as VoteCheckResponse | null;
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      const response = await this.fetchWithTimeout(`${this.apiUrl}/api/v1/votes/${presetId}/check`, {
+        method: 'GET',
+        headers: {
+          ...authService.getAuthHeaders(),
+        },
+      });
+
+      if (!response.ok) {
+        return { has_voted: false, vote_count: 0 };
+      }
+
+      const data = (await response.json()) as VoteCheckResponse;
+
+      // Cache the result
+      this.cache.set(cacheKey, data);
+
+      return data;
+    } catch (error) {
+      logger.error('Error checking vote status:', error);
+      return { has_voted: false, vote_count: 0 };
+    }
   }
 }
 

@@ -41,6 +41,25 @@ export interface MySubmissionsResponse {
   total: number;
 }
 
+export interface PresetEditRequest {
+  name?: string;
+  description?: string;
+  dyes?: number[];
+  tags?: string[];
+}
+
+export interface EditResult {
+  success: boolean;
+  preset?: CommunityPreset;
+  moderation_status?: 'approved' | 'pending';
+  duplicate?: {
+    id: string;
+    name: string;
+    author_name: string | null;
+  };
+  error?: string;
+}
+
 // ============================================
 // Configuration
 // ============================================
@@ -363,6 +382,134 @@ class PresetSubmissionServiceImpl {
     } catch (err) {
       logger.error('Error deleting preset:', err);
       return { success: false, error: 'Network error - please try again' };
+    }
+  }
+
+  /**
+   * Edit an existing preset
+   * Only the owner can edit their presets
+   * @param presetId - The preset to edit
+   * @param updates - Fields to update (name, description, dyes, tags)
+   */
+  async editPreset(presetId: string, updates: PresetEditRequest): Promise<EditResult> {
+    if (!authService.isAuthenticated()) {
+      return {
+        success: false,
+        error: 'You must be logged in to edit presets',
+      };
+    }
+
+    // Validate fields if provided
+    const errors: ValidationError[] = [];
+
+    if (updates.name !== undefined) {
+      if (updates.name.trim().length < 2) {
+        errors.push({ field: 'name', message: 'Name must be at least 2 characters' });
+      } else if (updates.name.length > 50) {
+        errors.push({ field: 'name', message: 'Name must be 50 characters or less' });
+      }
+    }
+
+    if (updates.description !== undefined) {
+      if (updates.description.trim().length < 10) {
+        errors.push({ field: 'description', message: 'Description must be at least 10 characters' });
+      } else if (updates.description.length > 200) {
+        errors.push({ field: 'description', message: 'Description must be 200 characters or less' });
+      }
+    }
+
+    if (updates.dyes !== undefined) {
+      if (!Array.isArray(updates.dyes) || updates.dyes.length < 2) {
+        errors.push({ field: 'dyes', message: 'Must include at least 2 dyes' });
+      } else if (updates.dyes.length > 5) {
+        errors.push({ field: 'dyes', message: 'Maximum 5 dyes allowed' });
+      } else if (!updates.dyes.every((id) => typeof id === 'number' && id > 0)) {
+        errors.push({ field: 'dyes', message: 'Invalid dye selection' });
+      }
+    }
+
+    if (updates.tags !== undefined) {
+      if (!Array.isArray(updates.tags)) {
+        errors.push({ field: 'tags', message: 'Tags must be an array' });
+      } else if (updates.tags.length > 10) {
+        errors.push({ field: 'tags', message: 'Maximum 10 tags allowed' });
+      } else if (updates.tags.some((tag) => typeof tag !== 'string' || tag.length > 30)) {
+        errors.push({ field: 'tags', message: 'Each tag must be 30 characters or less' });
+      }
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        error: errors.map((e) => e.message).join('. '),
+      };
+    }
+
+    logger.info('Editing preset:', presetId, updates);
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+      // Build request body with only provided fields
+      const body: Record<string, unknown> = {};
+      if (updates.name !== undefined) body.name = updates.name.trim();
+      if (updates.description !== undefined) body.description = updates.description.trim();
+      if (updates.dyes !== undefined) body.dyes = updates.dyes;
+      if (updates.tags !== undefined) body.tags = updates.tags.map((t) => t.trim()).filter(Boolean);
+
+      const response = await fetch(`${PRESETS_API_URL}/api/v1/presets/${presetId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authService.getAuthHeaders(),
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      const result = await response.json();
+
+      if (response.status === 409 && result.duplicate) {
+        // Duplicate dye combination exists
+        return {
+          success: false,
+          duplicate: result.duplicate,
+          error: `This dye combination already exists as "${result.duplicate.name}"`,
+        };
+      }
+
+      if (!response.ok) {
+        logger.error('Preset edit failed:', result);
+        return {
+          success: false,
+          error: result.message || 'Edit failed',
+        };
+      }
+
+      logger.info('Preset edited successfully:', result);
+
+      return {
+        success: true,
+        preset: result.preset,
+        moderation_status: result.moderation_status,
+      };
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        logger.error('Preset edit timed out');
+        return {
+          success: false,
+          error: 'Request timed out. Please try again.',
+        };
+      }
+
+      logger.error('Preset edit error:', err);
+      return {
+        success: false,
+        error: 'Failed to edit preset. Please try again.',
+      };
     }
   }
 }

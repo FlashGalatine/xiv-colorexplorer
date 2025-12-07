@@ -57,6 +57,8 @@ export type {
   PresetListResponse,
   CategoryWithCount,
   PresetFilters,
+  VoteResponse,
+  VoteCheckResponse,
 } from './community-preset-service';
 export { HybridPresetService, hybridPresetService } from './hybrid-preset-service';
 export type {
@@ -77,6 +79,8 @@ export type {
   SubmissionResult,
   ValidationError,
   MySubmissionsResponse,
+  PresetEditRequest,
+  EditResult,
 } from './preset-submission-service';
 
 // Re-export commonly used types
