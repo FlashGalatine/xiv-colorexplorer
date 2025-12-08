@@ -109,6 +109,8 @@ Playwright is configured in `playwright.config.ts`:
 - `e2e/color-matcher.spec.ts` - Color Matcher tool tests
 - `e2e/dye-comparison.spec.ts` - Dye Comparison tool tests
 - `e2e/preset-browser.spec.ts` - Preset Browser tool tests
+- `e2e/accessibility-checker.spec.ts` - Accessibility Checker tool tests
+- `e2e/dye-mixer.spec.ts` - Dye Mixer tool tests
 
 ### What E2E Tests Cover
 
@@ -163,6 +165,27 @@ Playwright is configured in `playwright.config.ts`:
    - Loading state completion
    - Responsive layout
    - Clickable preset cards
+
+8. **Accessibility Checker Tool** (11 tests)
+   - Tool navigation and loading
+   - Selector label for up to 4 dyes
+   - Dye selector container and interactive elements
+   - Results container attachment
+   - Card styling for analysis display
+   - Colorblindness simulation structure
+
+9. **Dye Mixer Tool** (24 tests)
+   - Tool navigation and loading
+   - Dye selector section (max 2 dyes for start/end)
+   - Dye filters container
+   - Interpolation settings (step count slider 2-20, color space radios)
+   - Default HSV color space, RGB switching
+   - Interpolation display container
+   - Export container
+   - Quick actions (save gradient, copy URL buttons)
+   - Saved gradients section (toggle, container, no-saved hint)
+   - Panel visibility toggle animation
+   - Responsive button layout
 
 ### Known E2E Issues
 
