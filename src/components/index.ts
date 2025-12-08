@@ -71,3 +71,6 @@ export { AuthButton } from './auth-button';
 export { showPresetSubmissionForm } from './preset-submission-form';
 export { showPresetEditForm } from './preset-edit-form';
 export { MySubmissionsPanel } from './my-submissions-panel';
+export { PresetCard, type PresetCardCallback } from './preset-card';
+export { PresetDetailView, type PresetDetailViewCallbacks } from './preset-detail-view';
+export { FeaturedPresetsSection, type FeaturedPresetCallback } from './featured-presets-section';

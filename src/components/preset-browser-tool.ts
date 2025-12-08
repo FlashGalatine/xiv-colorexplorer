@@ -18,22 +18,20 @@ import { BaseComponent } from './base-component';
 import { ToolHeader } from './tool-header';
 import {
   LanguageService,
-  dyeService,
   hybridPresetService,
   type UnifiedPreset,
   type UnifiedCategory,
   type PresetSortOption,
   authService,
-  communityPresetService,
-  ToastService,
 } from '@services/index';
-import { getCategoryIcon, ICON_ARROW_BACK } from '@shared/category-icons';
-import type { Dye, PresetCategory } from 'xivdyetools-core';
+import { getCategoryIcon } from '@shared/category-icons';
+import type { PresetCategory } from 'xivdyetools-core';
 import { AuthButton } from './auth-button';
 import { showPresetSubmissionForm } from './preset-submission-form';
 import { MySubmissionsPanel } from './my-submissions-panel';
-
-// Use singleton dyeService from services (imported above)
+import { PresetCard } from './preset-card';
+import { PresetDetailView } from './preset-detail-view';
+import { FeaturedPresetsSection } from './featured-presets-section';
 
 /**
  * Preset Browser Tool Component
@@ -48,7 +46,6 @@ export class PresetBrowserTool extends BaseComponent {
   private currentTab: ViewTab = 'browse';
   private categoryContainer: HTMLElement | null = null;
   private sortContainer: HTMLElement | null = null;
-  private featuredSection: HTMLElement | null = null;
   private presetGrid: HTMLElement | null = null;
   private detailPanel: HTMLElement | null = null;
   private authSection: HTMLElement | null = null;
@@ -63,6 +60,10 @@ export class PresetBrowserTool extends BaseComponent {
   private isLoading = false;
   private authUnsubscribe: (() => void) | null = null;
   private navigateHandler: ((e: Event) => void) | null = null;
+  private featuredSectionComponent: FeaturedPresetsSection | null = null;
+  private featuredSectionContainer: HTMLElement | null = null;
+  private presetCards: PresetCard[] = [];
+  private detailViewComponent: PresetDetailView | null = null;
 
   constructor(container: HTMLElement) {
     super(container);
@@ -106,8 +107,14 @@ export class PresetBrowserTool extends BaseComponent {
 
     // Featured section (if API is available)
     if (hybridPresetService.isAPIAvailable() && this.featuredPresets.length > 0) {
-      this.featuredSection = this.renderFeaturedSection();
-      content.appendChild(this.featuredSection);
+      this.featuredSectionContainer = this.createElement('div');
+      this.featuredSectionComponent = new FeaturedPresetsSection(
+        this.featuredSectionContainer,
+        this.featuredPresets,
+        (preset) => this.showPresetDetail(preset)
+      );
+      this.featuredSectionComponent.render();
+      content.appendChild(this.featuredSectionContainer);
     }
 
     // Category filter tabs
@@ -194,8 +201,9 @@ export class PresetBrowserTool extends BaseComponent {
    */
   public async selectPresetById(presetId: string): Promise<void> {
     // First check if it's already loaded
-    let preset = this.presets.find((p) => p.id === presetId) ||
-                 this.featuredPresets.find((p) => p.id === presetId);
+    let preset =
+      this.presets.find((p) => p.id === presetId) ||
+      this.featuredPresets.find((p) => p.id === presetId);
 
     if (preset) {
       this.showPresetDetail(preset, false); // Don't update URL since we're already at it
@@ -229,100 +237,6 @@ export class PresetBrowserTool extends BaseComponent {
         void this.selectPresetById(pendingId);
       }, 100);
     }
-  }
-
-  /**
-   * Render featured presets section
-   */
-  private renderFeaturedSection(): HTMLElement {
-    const section = this.createElement('div', {
-      className: 'featured-section-gradient rounded-lg p-6 text-white',
-    });
-
-    const header = this.createElement('div', {
-      className: 'flex items-center gap-2 mb-4',
-    });
-
-    const starIcon = this.createElement('span', {
-      innerHTML: '&#11088;', // Star emoji
-      className: 'text-xl',
-    });
-    header.appendChild(starIcon);
-
-    const title = this.createElement('h3', {
-      className: 'text-lg font-semibold',
-      textContent: 'Featured Community Presets',
-    });
-    header.appendChild(title);
-
-    section.appendChild(header);
-
-    const grid = this.createElement('div', {
-      className: 'flex gap-4 overflow-x-auto pb-2',
-    });
-
-    this.featuredPresets.forEach((preset) => {
-      const card = this.createFeaturedCard(preset);
-      grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-
-    return section;
-  }
-
-  /**
-   * Create a featured preset card
-   */
-  private createFeaturedCard(preset: UnifiedPreset): HTMLElement {
-    const card = this.createElement('div', {
-      className:
-        'flex-shrink-0 w-48 bg-white/10 backdrop-blur rounded-lg overflow-hidden cursor-pointer hover:bg-white/20 transition-colors',
-      dataAttributes: {
-        presetId: preset.id,
-      },
-    });
-
-    // Color strip
-    const swatchStrip = this.createElement('div', {
-      className: 'flex h-12',
-    });
-
-    preset.dyes.forEach((dyeId) => {
-      const dye = dyeService.getDyeById(dyeId);
-      const swatch = this.createElement('div', {
-        className: 'flex-1',
-        attributes: {
-          style: `background-color: ${dye?.hex || '#888888'}`,
-        },
-      });
-      swatchStrip.appendChild(swatch);
-    });
-
-    card.appendChild(swatchStrip);
-
-    // Info
-    const info = this.createElement('div', {
-      className: 'p-3',
-    });
-
-    const name = this.createElement('div', {
-      className: 'font-medium text-sm truncate',
-      textContent: preset.name,
-    });
-    info.appendChild(name);
-
-    if (preset.voteCount > 0) {
-      const votes = this.createElement('div', {
-        className: 'text-xs opacity-75 mt-1',
-        textContent: `${preset.voteCount} votes`,
-      });
-      info.appendChild(votes);
-    }
-
-    card.appendChild(info);
-
-    return card;
   }
 
   /**
@@ -750,7 +664,10 @@ export class PresetBrowserTool extends BaseComponent {
    */
   private renderPresets(): void {
     if (!this.presetGrid) return;
+
     this.presetGrid.innerHTML = '';
+    this.presetCards.forEach((card) => card.destroy());
+    this.presetCards = [];
 
     const filteredPresets = this.filterPresetsByCategory(this.presets);
     const sortedPresets = this.sortPresets(filteredPresets);
@@ -765,8 +682,11 @@ export class PresetBrowserTool extends BaseComponent {
     }
 
     sortedPresets.forEach((preset) => {
-      const card = this.createPresetCard(preset);
-      this.presetGrid!.appendChild(card);
+      const card = new PresetCard(this.presetGrid!, preset, (selected) =>
+        this.showPresetDetail(selected)
+      );
+      card.render();
+      this.presetCards.push(card);
     });
   }
 
@@ -816,7 +736,8 @@ export class PresetBrowserTool extends BaseComponent {
     // Community badge for non-curated presets
     if (!preset.isCurated) {
       const badge = this.createElement('div', {
-        className: 'px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-medium',
+        className:
+          'px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-medium',
         textContent: 'Community',
       });
       card.appendChild(badge);
@@ -866,7 +787,8 @@ export class PresetBrowserTool extends BaseComponent {
     // Vote count
     if (preset.voteCount > 0) {
       const votes = this.createElement('span', {
-        className: 'text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1',
+        className:
+          'text-sm text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1',
       });
       const starIcon = this.createElement('span', {
         innerHTML: '&#9733;', // Star
@@ -927,386 +849,76 @@ export class PresetBrowserTool extends BaseComponent {
    * @param updateUrl - Whether to update the browser URL (default true)
    */
   private showPresetDetail(preset: UnifiedPreset, updateUrl: boolean = true): void {
-    if (!this.detailPanel || !this.presetGrid) return;
+    if (!this.detailPanel) return;
 
     this.selectedPreset = preset;
-    this.presetGrid.classList.add('hidden');
-    if (this.featuredSection) this.featuredSection.classList.add('hidden');
-    if (this.sortContainer) this.sortContainer.classList.add('hidden');
+    this.toggleListVisibility(false);
+
     this.detailPanel.classList.remove('hidden');
     this.detailPanel.innerHTML = '';
 
-    // Update URL to shareable preset link
+    this.detailViewComponent?.destroy();
+    this.detailViewComponent = new PresetDetailView(this.detailPanel, preset, {
+      onBack: () => this.hidePresetDetail(),
+      onVoteUpdate: (updated) => this.syncPresetVote(updated),
+    });
+    this.detailViewComponent.render();
+
     if (updateUrl) {
       history.pushState({ presetId: preset.id }, '', `/presets/${preset.id}`);
     }
-
-    const detail = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6',
-    });
-
-    // Back button
-    const backBtn = this.createElement('button', {
-      className:
-        'mb-4 flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:underline',
-      dataAttributes: {
-        action: 'back',
-      },
-    });
-    const backIcon = this.createElement('span', {
-      className: 'w-4 h-4',
-      innerHTML: ICON_ARROW_BACK,
-    });
-    backBtn.appendChild(backIcon);
-    const backText = this.createElement('span', {
-      textContent: LanguageService.t('tools.presets.backToList'),
-    });
-    backBtn.appendChild(backText);
-    detail.appendChild(backBtn);
-
-    // Header with badges
-    const header = this.createElement('div', {
-      className: 'mb-6',
-    });
-
-    // Badges row
-    const badges = this.createElement('div', {
-      className: 'flex items-center gap-2 mb-2',
-    });
-
-    // Category badge
-    const categoryMeta = hybridPresetService.getCategoryMeta(preset.category);
-    const categoryBadge = this.createElement('span', {
-      className:
-        'inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-sm',
-    });
-    const categoryIcon = this.createElement('span', {
-      className: 'w-4 h-4',
-      innerHTML: getCategoryIcon(preset.category),
-    });
-    categoryBadge.appendChild(categoryIcon);
-    const categoryName = this.createElement('span', {
-      textContent: categoryMeta?.name || preset.category,
-    });
-    categoryBadge.appendChild(categoryName);
-    badges.appendChild(categoryBadge);
-
-    // Curated/Community badge
-    if (preset.isCurated) {
-      const curatedBadge = this.createElement('span', {
-        className:
-          'px-2 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-sm',
-        textContent: 'Official',
-      });
-      badges.appendChild(curatedBadge);
-    } else {
-      const communityBadge = this.createElement('span', {
-        className:
-          'px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-sm',
-        textContent: 'Community',
-      });
-      badges.appendChild(communityBadge);
-    }
-
-    // Vote count
-    if (preset.voteCount > 0) {
-      const voteBadge = this.createElement('span', {
-        className:
-          'px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 text-sm flex items-center gap-1',
-      });
-      const starIcon = this.createElement('span', {
-        innerHTML: '&#9733;',
-      });
-      voteBadge.appendChild(starIcon);
-      const voteText = this.createElement('span', {
-        textContent: `${preset.voteCount} votes`,
-      });
-      voteBadge.appendChild(voteText);
-      badges.appendChild(voteBadge);
-    }
-
-    header.appendChild(badges);
-
-    // Title
-    const title = this.createElement('h2', {
-      className: 'text-2xl font-bold text-gray-900 dark:text-white',
-      textContent: preset.name,
-    });
-    header.appendChild(title);
-
-    // Description
-    const description = this.createElement('p', {
-      className: 'mt-2 text-gray-600 dark:text-gray-400',
-      textContent: preset.description,
-    });
-    header.appendChild(description);
-
-    // Author
-    if (preset.author) {
-      const authorInfo = this.createElement('p', {
-        className: 'mt-2 text-sm text-gray-500',
-        textContent: `Created by ${preset.author}`,
-      });
-      header.appendChild(authorInfo);
-    }
-
-    detail.appendChild(header);
-
-    // Large color swatches with dye info
-    const swatchesSection = this.createElement('div', {
-      className: 'space-y-4',
-    });
-
-    const swatchesTitle = this.createElement('h3', {
-      className: 'font-semibold text-gray-900 dark:text-white',
-      textContent: LanguageService.t('tools.presets.colorsInPalette'),
-    });
-    swatchesSection.appendChild(swatchesTitle);
-
-    const swatchGrid = this.createElement('div', {
-      className: 'grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4',
-    });
-
-    preset.dyes.forEach((dyeId) => {
-      const dye = dyeService.getDyeById(dyeId);
-      if (!dye) return;
-
-      const swatchCard = this.createDyeSwatchCard(dye);
-      swatchGrid.appendChild(swatchCard);
-    });
-
-    swatchesSection.appendChild(swatchGrid);
-    detail.appendChild(swatchesSection);
-
-    // Tags section
-    if (preset.tags && preset.tags.length > 0) {
-      const tagsSection = this.createElement('div', {
-        className: 'mt-6',
-      });
-
-      const tagsTitle = this.createElement('h4', {
-        className: 'text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
-        textContent: LanguageService.t('tools.presets.tags'),
-      });
-      tagsSection.appendChild(tagsTitle);
-
-      const tagsList = this.createElement('div', {
-        className: 'flex flex-wrap gap-2',
-      });
-
-      preset.tags.forEach((tag) => {
-        const tagBadge = this.createElement('span', {
-          className:
-            'px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
-          textContent: tag,
-        });
-        tagsList.appendChild(tagBadge);
-      });
-
-      tagsSection.appendChild(tagsList);
-      detail.appendChild(tagsSection);
-    }
-
-    // Action buttons section (share and vote)
-    const actionsSection = this.createElement('div', {
-      className: 'mt-6 flex flex-wrap gap-3',
-    });
-
-    // Share button
-    const shareBtn = this.createElement('button', {
-      className:
-        'flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors',
-      dataAttributes: {
-        action: 'share-preset',
-        presetId: preset.id,
-      },
-    });
-    const shareIcon = this.createElement('span', {
-      innerHTML: '🔗',
-    });
-    shareBtn.appendChild(shareIcon);
-    const shareText = this.createElement('span', {
-      textContent: 'Copy Link',
-    });
-    shareBtn.appendChild(shareText);
-    actionsSection.appendChild(shareBtn);
-
-    // Vote button for community presets (from API)
-    if (preset.isFromAPI && !preset.isCurated) {
-      const voteBtn = this.createElement('button', {
-        className:
-          'flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors',
-        dataAttributes: {
-          action: 'vote-preset',
-          presetId: preset.id,
-        },
-      });
-      const voteIcon = this.createElement('span', {
-        innerHTML: '⭐',
-        className: 'vote-icon',
-      });
-      voteBtn.appendChild(voteIcon);
-      const voteText = this.createElement('span', {
-        className: 'vote-text',
-        textContent: `Vote (${preset.voteCount})`,
-      });
-      voteBtn.appendChild(voteText);
-      actionsSection.appendChild(voteBtn);
-
-      // Check vote status and update button if already voted
-      if (authService.isAuthenticated() && preset.apiPresetId) {
-        void communityPresetService.hasVoted(preset.apiPresetId).then((result) => {
-          if (result.has_voted) {
-            voteBtn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/30');
-            voteBtn.classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-300');
-            voteIcon.innerHTML = '✓';
-            voteText.textContent = `Voted (${result.vote_count})`;
-          }
-        });
-      }
-    }
-
-    detail.appendChild(actionsSection);
-
-    // Login CTA if not authenticated and preset is voteable
-    if (preset.isFromAPI && !preset.isCurated && !authService.isAuthenticated()) {
-      const loginCTA = this.createElement('div', {
-        className:
-          'mt-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center text-sm text-gray-600 dark:text-gray-400',
-      });
-      loginCTA.textContent = 'Login with Discord to vote for this preset';
-      detail.appendChild(loginCTA);
-    }
-
-    this.detailPanel.appendChild(detail);
   }
 
   /**
-   * Create a dye swatch card for detail view
+   * Sync vote updates from detail view back to grid + featured state
    */
-  private createDyeSwatchCard(dye: Dye): HTMLElement {
-    const card = this.createElement('div', {
-      className:
-        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden',
+  private syncPresetVote(updatedPreset: UnifiedPreset): void {
+    const updateList = (list: UnifiedPreset[]): void => {
+      const index = list.findIndex((preset) => preset.id === updatedPreset.id);
+      if (index !== -1) {
+        list[index] = { ...list[index], voteCount: updatedPreset.voteCount };
+      }
+    };
+
+    updateList(this.presets);
+    updateList(this.featuredPresets);
+
+    this.presetCards.forEach((card) => {
+      if (card.getPreset().id === updatedPreset.id) {
+        card.updatePreset(updatedPreset);
+      }
     });
 
-    // Color swatch
-    const swatch = this.createElement('div', {
-      className: 'h-20 w-full',
-      attributes: {
-        style: `background-color: ${dye.hex}`,
-      },
-    });
-    card.appendChild(swatch);
-
-    // Dye info
-    const info = this.createElement('div', {
-      className: 'p-3',
-    });
-
-    const name = this.createElement('div', {
-      className: 'font-medium text-sm text-gray-900 dark:text-white truncate',
-      textContent: LanguageService.getDyeName(dye.id) || dye.name,
-      attributes: {
-        title: dye.name,
-      },
-    });
-    info.appendChild(name);
-
-    const hex = this.createElement('div', {
-      className: 'text-xs text-gray-500 dark:text-gray-400 font-mono',
-      textContent: dye.hex.toUpperCase(),
-    });
-    info.appendChild(hex);
-
-    card.appendChild(info);
-
-    return card;
+    if (this.featuredSectionComponent) {
+      this.featuredSectionComponent.updatePresets(this.featuredPresets);
+    }
   }
 
   /**
    * Hide detail view and show grid
    */
   private hidePresetDetail(): void {
-    if (!this.detailPanel || !this.presetGrid) return;
+    if (!this.detailPanel) return;
 
     this.selectedPreset = null;
+    this.detailViewComponent?.destroy();
+    this.detailViewComponent = null;
+
     this.detailPanel.classList.add('hidden');
-    this.presetGrid.classList.remove('hidden');
-    if (this.featuredSection) this.featuredSection.classList.remove('hidden');
-    if (this.sortContainer) this.sortContainer.classList.remove('hidden');
+    this.detailPanel.innerHTML = '';
+    this.toggleListVisibility(true);
 
     // Reset URL to base presets path
     history.pushState({}, '', '/');
   }
 
   /**
-   * Handle vote button click
+   * Toggle list visibility when switching between grid and detail view
    */
-  private async handleVoteClick(btn: HTMLElement): Promise<void> {
-    if (!authService.isAuthenticated()) {
-      ToastService.warning('Please login with Discord to vote');
-      return;
-    }
-
-    const presetId = btn.dataset.presetId;
-    if (!presetId || !this.selectedPreset?.apiPresetId) return;
-
-    const voteIcon = btn.querySelector('.vote-icon') as HTMLElement;
-    const voteText = btn.querySelector('.vote-text') as HTMLElement;
-    if (!voteIcon || !voteText) return;
-
-    // Check current vote status
-    const hasVoted = voteIcon.innerHTML === '✓';
-
-    // Disable button during API call
-    btn.setAttribute('disabled', 'true');
-    btn.style.opacity = '0.5';
-
-    try {
-      if (hasVoted) {
-        // Remove vote
-        const result = await communityPresetService.removeVote(this.selectedPreset.apiPresetId);
-        if (result.success) {
-          btn.classList.remove('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-300');
-          btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/30', 'text-indigo-700', 'dark:text-indigo-300');
-          voteIcon.innerHTML = '⭐';
-          voteText.textContent = `Vote (${result.new_vote_count})`;
-          // Update preset object
-          if (this.selectedPreset) {
-            this.selectedPreset.voteCount = result.new_vote_count;
-          }
-          ToastService.info('Vote removed');
-        } else {
-          ToastService.error(result.error || 'Failed to remove vote');
-        }
-      } else {
-        // Add vote
-        const result = await communityPresetService.voteForPreset(this.selectedPreset.apiPresetId);
-        if (result.success) {
-          btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/30', 'text-indigo-700', 'dark:text-indigo-300');
-          btn.classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-300');
-          voteIcon.innerHTML = '✓';
-          voteText.textContent = `Voted (${result.new_vote_count})`;
-          // Update preset object
-          if (this.selectedPreset) {
-            this.selectedPreset.voteCount = result.new_vote_count;
-          }
-          ToastService.success('Vote added!');
-        } else if (result.already_voted) {
-          ToastService.info('You already voted for this preset');
-        } else {
-          ToastService.error(result.error || 'Failed to vote');
-        }
-      }
-    } catch (error) {
-      console.error('Vote error:', error);
-      ToastService.error('Failed to process vote');
-    } finally {
-      btn.removeAttribute('disabled');
-      btn.style.opacity = '';
-    }
+  private toggleListVisibility(showList: boolean): void {
+    this.presetGrid?.classList.toggle('hidden', !showList);
+    this.sortContainer?.classList.toggle('hidden', !showList);
+    this.featuredSectionContainer?.classList.toggle('hidden', !showList);
   }
 
   /**
@@ -1319,8 +931,7 @@ export class PresetBrowserTool extends BaseComponent {
     if (this.categoryContainer) {
       this.categoryContainer.querySelectorAll('button').forEach((btn) => {
         const btnCategory = (btn as HTMLElement).dataset.category;
-        const isActive =
-          (category === null && btnCategory === 'all') || btnCategory === category;
+        const isActive = (category === null && btnCategory === 'all') || btnCategory === category;
 
         if (isActive) {
           btn.className =
@@ -1401,73 +1012,6 @@ export class PresetBrowserTool extends BaseComponent {
       });
     }
 
-    // Featured section clicks
-    if (this.featuredSection) {
-      this.on(this.featuredSection, 'click', (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const card = target.closest('[data-preset-id]') as HTMLElement;
-        if (card) {
-          const presetId = card.dataset.presetId;
-          const preset = this.presets.find((p) => p.id === presetId) ||
-                        this.featuredPresets.find((p) => p.id === presetId);
-          if (preset) {
-            this.showPresetDetail(preset);
-          }
-        }
-      });
-    }
-
-    // Preset card clicks
-    if (this.presetGrid) {
-      this.on(this.presetGrid, 'click', (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const card = target.closest('[data-preset-id]') as HTMLElement;
-        if (card) {
-          const presetId = card.dataset.presetId;
-          const preset = this.presets.find((p) => p.id === presetId);
-          if (preset) {
-            this.showPresetDetail(preset);
-          }
-        }
-      });
-    }
-
-    // Detail panel events (back, share, vote)
-    if (this.detailPanel) {
-      this.on(this.detailPanel, 'click', (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-
-        // Back button
-        const backBtn = target.closest('[data-action="back"]') as HTMLElement;
-        if (backBtn) {
-          this.hidePresetDetail();
-          return;
-        }
-
-        // Share button
-        const shareBtn = target.closest('[data-action="share-preset"]') as HTMLElement;
-        if (shareBtn) {
-          const presetId = shareBtn.dataset.presetId;
-          if (presetId) {
-            const url = `${window.location.origin}/presets/${presetId}`;
-            navigator.clipboard.writeText(url).then(() => {
-              ToastService.success('Preset link copied to clipboard!');
-            }).catch(() => {
-              ToastService.error('Failed to copy link');
-            });
-          }
-          return;
-        }
-
-        // Vote button
-        const voteBtn = target.closest('[data-action="vote-preset"]') as HTMLElement;
-        if (voteBtn) {
-          this.handleVoteClick(voteBtn);
-          return;
-        }
-      });
-    }
-
     // Auth section events (submit button)
     this.bindAuthSectionEvents();
 
@@ -1509,6 +1053,20 @@ export class PresetBrowserTool extends BaseComponent {
       this.mySubmissionsPanel.destroy();
       this.mySubmissionsPanel = null;
     }
+
+    if (this.detailViewComponent) {
+      this.detailViewComponent.destroy();
+      this.detailViewComponent = null;
+    }
+
+    this.presetCards.forEach((card) => card.destroy());
+    this.presetCards = [];
+
+    if (this.featuredSectionComponent) {
+      this.featuredSectionComponent.destroy();
+      this.featuredSectionComponent = null;
+    }
+    this.featuredSectionContainer = null;
 
     this.selectedCategory = null;
     this.selectedPreset = null;
