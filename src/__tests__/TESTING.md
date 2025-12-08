@@ -106,6 +106,9 @@ Playwright is configured in `playwright.config.ts`:
 
 - `e2e/collection-manager.spec.ts` - Collection manager modal and app navigation tests
 - `e2e/harmony-generator.spec.ts` - Harmony Generator tool tests
+- `e2e/color-matcher.spec.ts` - Color Matcher tool tests
+- `e2e/dye-comparison.spec.ts` - Dye Comparison tool tests
+- `e2e/preset-browser.spec.ts` - Preset Browser tool tests
 
 ### What E2E Tests Cover
 
@@ -133,6 +136,33 @@ Playwright is configured in `playwright.config.ts`:
    - Export functionality
    - Saved palettes modal
    - State persistence across page reloads
+
+5. **Color Matcher Tool** (21 tests)
+   - Tool navigation and loading
+   - Image upload display container
+   - Manual color picker input
+   - Sample size slider settings
+   - Extraction mode toggle (Single Color / Palette)
+   - Palette color count slider
+   - Dye filters container
+   - Results container
+
+6. **Dye Comparison Tool** (12 tests)
+   - Tool navigation and loading
+   - Dye selector (up to 4 dyes)
+   - Analysis sections (matrix, charts)
+   - Summary, hue-saturation, brightness containers
+   - Export container
+   - Chart grid layout
+
+7. **Preset Browser Tool** (12 tests)
+   - Tool navigation and loading
+   - Category filter tabs
+   - Preset grid display
+   - Sort controls
+   - Loading state completion
+   - Responsive layout
+   - Clickable preset cards
 
 ### Known E2E Issues
 
