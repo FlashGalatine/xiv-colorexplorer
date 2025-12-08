@@ -32,13 +32,19 @@ export class ThemeSwitcher extends BaseComponent {
     const themeObject = ThemeService.getTheme(currentTheme);
     const isLightText = ColorService.getOptimalTextColor(themeObject.palette.primary) === '#FFFFFF';
 
+    const translatedLabel = LanguageService.t('header.themeSelector');
+    const ariaLabel =
+      translatedLabel && translatedLabel !== 'header.themeSelector'
+        ? translatedLabel
+        : 'Toggle theme switcher';
+
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'theme-switcher-btn',
       className: 'p-2 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
       attributes: {
-        'aria-label': LanguageService.t('header.themeSelector') || 'Theme selector',
-        'aria-haspopup': 'listbox',
+        'aria-label': ariaLabel,
+        'aria-haspopup': 'true',
         'aria-expanded': 'false',
         'aria-controls': 'theme-dropdown',
         style: `color: var(--theme-text-header); border-color: ${isLightText ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};`,

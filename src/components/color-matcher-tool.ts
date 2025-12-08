@@ -1246,12 +1246,13 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
               dye: d,
             });
           } else {
-            this.previewOverlay.hide();
+            if (typeof (this.previewOverlay as any).hidePreview === 'function') {
+              (this.previewOverlay as any).hidePreview();
+            } else if (typeof (this.previewOverlay as any).hide === 'function') {
+              (this.previewOverlay as any).hide();
+            }
           }
         }
-      },
-      onClick: () => {
-        // Handle click if needed
       },
     });
   }

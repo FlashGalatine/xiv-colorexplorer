@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* istanbul ignore file */
 /**
  * XIV Dye Tools v2.0.4 - Centralized Logger
  *

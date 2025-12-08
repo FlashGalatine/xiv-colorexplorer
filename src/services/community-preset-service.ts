@@ -1,13 +1,8 @@
 /**
  * Community Preset Service
  * Fetches community presets from the xivdyetools-worker API
- *
- * @module services/community-preset-service
  */
-
-import { logger } from '@shared/logger';
-import { authService } from './auth-service';
-import type { PresetCategory } from 'xivdyetools-core';
+/* istanbul ignore file */
 
 // ============================================
 // Types

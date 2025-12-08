@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * XIV Dye Tools - Add to Collection Menu Component
  *

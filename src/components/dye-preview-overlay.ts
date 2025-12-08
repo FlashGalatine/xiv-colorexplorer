@@ -137,8 +137,14 @@ export class DyePreviewOverlay extends BaseComponent {
   /**
    * Hide the preview overlay
    */
-  hidePreview(): void {
+  hidePreview(immediate: boolean = false): void {
     if (this.overlayElement) {
+      if (immediate) {
+        this.overlayElement.remove();
+        this.overlayElement = null;
+        return;
+      }
+
       this.overlayElement.style.opacity = '0';
       const element = this.overlayElement;
       // Use safeTimeout for cleanup on destroy
@@ -294,7 +300,7 @@ export class DyePreviewOverlay extends BaseComponent {
    * Cleanup on destroy
    */
   onUnmount(): void {
-    this.hidePreview();
+    this.hidePreview(true);
   }
 }
 

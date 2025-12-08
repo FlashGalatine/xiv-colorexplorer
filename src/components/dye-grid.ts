@@ -173,7 +173,7 @@ export class DyeGrid extends BaseComponent {
         // Color div with 2:1 aspect ratio
         content.appendChild(
           this.createElement('div', {
-            className: 'w-full max-h-16 rounded border border-gray-300 dark:border-gray-600',
+            className: 'w-full max-h-16 h-12 rounded border border-gray-300 dark:border-gray-600',
             attributes: { style: `background-color: ${dye.hex}; aspect-ratio: 2/1;` },
           })
         );

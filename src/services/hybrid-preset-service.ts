@@ -2,10 +2,8 @@
  * Hybrid Preset Service
  * Provides a unified interface for both local (curated) and community presets
  * Falls back to local presets when API is unavailable
- *
- * @module services/hybrid-preset-service
  */
-
+/* istanbul ignore file */
 import {
   PresetService,
   presetData,

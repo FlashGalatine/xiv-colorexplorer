@@ -90,6 +90,7 @@ export class DyeCardRenderer {
           style: `background-color: ${sampledColor}`,
           role: 'img',
           'aria-label': `Sampled color: ${sampledColor}`,
+          title: `Sampled color: ${sampledColor}`,
         },
       });
       swatchContainer.appendChild(sampledSwatch);
@@ -101,6 +102,7 @@ export class DyeCardRenderer {
         style: `background-color: ${dye.hex}`,
         role: 'img',
         'aria-label': `${dyeName}: ${dye.hex}`,
+        title: `Dye color: ${dye.hex}`,
       },
     });
 

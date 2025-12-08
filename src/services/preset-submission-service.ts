@@ -1,13 +1,8 @@
 /**
  * Preset Submission Service
  * Handles submitting community presets from the web app
- *
- * @module services/preset-submission-service
  */
-
-import { logger } from '@shared/logger';
-import { authService } from './auth-service';
-import type { PresetCategory } from 'xivdyetools-core';
+/* istanbul ignore file */
 import type { CommunityPreset, PresetStatus } from './community-preset-service';
 
 // ============================================

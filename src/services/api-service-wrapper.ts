@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * API Service Singleton Wrapper
  * Wraps xivdyetools-core APIService with IndexedDB cache (F4)

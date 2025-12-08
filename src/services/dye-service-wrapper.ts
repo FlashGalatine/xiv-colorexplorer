@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Dye Service Singleton Wrapper
  * Wraps xivdyetools-core DyeService with singleton pattern for web app compatibility

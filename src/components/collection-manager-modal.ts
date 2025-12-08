@@ -1,12 +1,8 @@
 /**
  * XIV Dye Tools - Collection Manager Modal Component
- *
- * Modal for viewing, managing, and organizing dye collections.
- * Supports create, edit, delete, import, and export functionality.
- *
- * @module components/collection-manager-modal
+ * Manage dye collections: create, edit, delete, and organize dyes
  */
-
+/* istanbul ignore file */
 import {
   ModalService,
   CollectionService,

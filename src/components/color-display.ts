@@ -172,6 +172,7 @@ export class ColorDisplay extends BaseComponent {
           'data-copy': dye.hex,
           'aria-label': `Copy hex value: ${dye.hex}`,
           'aria-describedby': hexLabelId,
+          title: 'Click to copy',
         },
       });
       hexItem.appendChild(hexLabel);
@@ -200,6 +201,7 @@ export class ColorDisplay extends BaseComponent {
           'data-copy': rgbCopyValue,
           'aria-label': `Copy RGB value: ${rgbCopyValue}`,
           'aria-describedby': rgbLabelId,
+          title: 'Click to copy',
         },
       });
       rgbItem.appendChild(rgbLabel);
@@ -231,6 +233,7 @@ export class ColorDisplay extends BaseComponent {
           'data-copy': hsvCopyValue,
           'aria-label': `Copy HSV value: ${hsvCopyValue}`,
           'aria-describedby': hsvLabelId,
+          title: 'Click to copy',
         },
       });
       hsvItem.appendChild(hsvLabel);

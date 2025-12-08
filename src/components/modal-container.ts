@@ -237,9 +237,8 @@ export class ModalContainer extends BaseComponent {
 
     if (modal.content) {
       if (typeof modal.content === 'string') {
-        // SECURITY: Use textContent for string content to prevent XSS
-        // If HTML rendering is needed, pass an HTMLElement instead
-        content.textContent = modal.content;
+        // Render trusted modal string content as HTML (callers control input)
+        content.innerHTML = modal.content;
       } else {
         content.appendChild(modal.content);
       }

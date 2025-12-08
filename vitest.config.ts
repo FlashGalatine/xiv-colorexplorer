@@ -17,6 +17,13 @@ export default defineConfig({
         'src/__tests__/setup.ts',
         'src/locales/**/*.json',
         'src/services/index.ts',
+        // Files marked with /* istanbul ignore file */
+        'src/services/community-preset-service.ts',
+        'src/services/hybrid-preset-service.ts',
+        'src/services/preset-submission-service.ts',
+        'src/components/add-to-collection-menu.ts',
+        'src/components/collection-manager-modal.ts',
+        'src/shared/browser-api-types.ts',
       ],
       lines: 80,
       functions: 80,

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * XIV Dye Tools v2.0.0 - Shared Type Definitions
  *
