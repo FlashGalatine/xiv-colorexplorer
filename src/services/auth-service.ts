@@ -103,30 +103,38 @@ class AuthServiceImpl {
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
-    // Use console.log directly for production debugging
-    console.log('🔐 [AuthService] Initializing...', { url: window.location.href });
+    if (import.meta.env.DEV) {
+      console.log('🔐 [AuthService] Initializing...', { url: window.location.href });
+    }
 
     try {
       this.loadFromStorage();
 
       // Check if we're handling an OAuth callback
       const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
+      const code = urlParams.get('code');
       const error = urlParams.get('error');
 
-      console.log('🔐 [AuthService] URL params:', { hasToken: !!token, hasError: !!error });
+      if (import.meta.env.DEV) {
+        console.log('🔐 [AuthService] URL params:', { hasCode: !!code, hasError: !!error });
+      }
 
-      if (token) {
-        console.log('🔐 [AuthService] Token found in URL, processing callback...');
-        await this.handleCallbackToken(token, urlParams.get('expires_at'));
+      if (code) {
+        // New secure PKCE flow: we receive the auth code, then exchange it with our stored code_verifier
+        if (import.meta.env.DEV) {
+          console.log('🔐 [AuthService] Auth code found in URL, exchanging for token...');
+        }
+        await this.handleCallbackCode(code, urlParams.get('csrf'));
         // Get return path before cleaning URL, default to home
         const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
-        console.log(`🔐 [AuthService] Navigating to return path: ${returnPath}`);
+        if (import.meta.env.DEV) {
+          console.log(`🔐 [AuthService] Navigating to return path: ${returnPath}`);
+        }
         sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
         // Clean up URL and navigate to return path
         this.navigateAfterAuth(returnPath);
       } else if (error) {
-        console.error('🔐 [AuthService] OAuth error:', error);
+        logger.error('OAuth error:', error);
         // Get return path before cleaning URL
         const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
         sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
@@ -135,11 +143,13 @@ class AuthServiceImpl {
       }
 
       this.initialized = true;
-      console.log(
-        `✅ [AuthService] Initialized: ${this.state.isAuthenticated ? 'Logged in as ' + this.state.user?.username : 'Not logged in'}`
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `✅ [AuthService] Initialized: ${this.state.isAuthenticated ? 'Logged in as ' + this.state.user?.username : 'Not logged in'}`
+        );
+      }
     } catch (err) {
-      console.error('🔐 [AuthService] Failed to initialize:', err);
+      logger.error('Failed to initialize auth service:', err);
       this.initialized = true;
     }
   }
@@ -151,8 +161,6 @@ class AuthServiceImpl {
     try {
       const token = localStorage.getItem(TOKEN_STORAGE_KEY);
       const expiresAtStr = localStorage.getItem(EXPIRY_STORAGE_KEY);
-
-      console.log(`🔐 [AuthService] loadFromStorage: token=${token ? 'present' : 'missing'}, expiry=${expiresAtStr || 'missing'}`);
 
       if (!token || !expiresAtStr) {
         logger.info('🔐 No stored auth found, clearing state');
@@ -199,23 +207,81 @@ class AuthServiceImpl {
   }
 
   /**
-   * Handle token received from OAuth callback
+   * Handle authorization code received from OAuth callback
+   * Exchanges the code for a token via POST to the OAuth worker
+   * This is the secure PKCE flow - the code_verifier never leaves the client
    */
-  private async handleCallbackToken(token: string, expiresAtStr: string | null): Promise<void> {
-    console.log('🔐 [AuthService] handleCallbackToken: Processing token...', { tokenLength: token?.length });
-    const payload = this.decodeJWT(token);
-    if (!payload) {
-      console.error('🔐 [AuthService] Invalid token - decode failed. Token preview:', token?.substring(0, 50) + '...');
+  private async handleCallbackCode(code: string, csrf: string | null): Promise<void> {
+    // Retrieve the stored code_verifier (stored during login initiation)
+    const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
+    const storedState = sessionStorage.getItem(OAUTH_STATE_KEY);
+
+    // Clean up PKCE session storage
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
+    sessionStorage.removeItem(OAUTH_STATE_KEY);
+
+    if (!codeVerifier) {
+      logger.error('Missing code_verifier - OAuth flow may have been tampered with');
       return;
     }
-    console.log(`🔐 [AuthService] Token decoded for user: ${payload.username} (${payload.sub})`);
+
+    // Verify CSRF state matches
+    if (csrf && storedState && csrf !== storedState) {
+      logger.error('CSRF state mismatch - possible attack detected');
+      return;
+    }
+
+    try {
+      // Exchange code for token via POST (code_verifier sent directly, not through redirect)
+      const response = await fetch(`${OAUTH_WORKER_URL}/auth/callback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code,
+          code_verifier: codeVerifier,
+          redirect_uri: `${window.location.origin}/auth/callback`,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        logger.error('Token exchange failed:', errorData);
+        return;
+      }
+
+      const data: AuthResponse = await response.json();
+
+      if (!data.success || !data.token) {
+        logger.error('Token exchange returned error:', data.error);
+        return;
+      }
+
+      // Process the received token
+      await this.handleCallbackToken(data.token, data.expires_at?.toString() || null);
+    } catch (err) {
+      logger.error('Error exchanging code for token:', err);
+    }
+  }
+
+  /**
+   * Handle token received from OAuth callback
+   * Called after successful code exchange
+   */
+  private async handleCallbackToken(token: string, expiresAtStr: string | null): Promise<void> {
+    const payload = this.decodeJWT(token);
+    if (!payload) {
+      logger.error('Invalid token - decode failed');
+      return;
+    }
 
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : payload.exp;
 
     // Store token
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
     localStorage.setItem(EXPIRY_STORAGE_KEY, expiresAt.toString());
-    logger.info(`🔐 Token stored to localStorage, expires: ${new Date(expiresAt * 1000).toISOString()}`);
+    logger.info(`Token stored, expires: ${new Date(expiresAt * 1000).toISOString()}`);
 
     // Update state
     this.state = {
@@ -347,6 +413,10 @@ class AuthServiceImpl {
    * Initiate Discord OAuth login
    * @param returnPath - Path to return to after login
    * @param returnTool - Tool ID to return to after login (e.g., 'presets')
+   *
+   * SECURITY: The code_verifier is stored ONLY in sessionStorage and sent
+   * directly to POST /auth/callback. It is NEVER sent through URL redirects.
+   * This is the core security guarantee of PKCE.
    */
   async login(returnPath?: string, returnTool?: string): Promise<void> {
     logger.info('Initiating Discord OAuth login...');
@@ -357,7 +427,7 @@ class AuthServiceImpl {
       const codeChallenge = await this.sha256Base64Url(codeVerifier);
       const state = this.generateRandomString(32);
 
-      // Store for callback verification
+      // Store for callback verification - code_verifier stays here, never sent via URL
       sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
       sessionStorage.setItem(OAUTH_STATE_KEY, state);
       sessionStorage.setItem(OAUTH_RETURN_PATH_KEY, returnPath || window.location.pathname);
@@ -366,11 +436,10 @@ class AuthServiceImpl {
         sessionStorage.setItem(OAUTH_RETURN_TOOL_KEY, returnTool);
       }
 
-      // Build auth URL
+      // Build auth URL - ONLY send code_challenge, NOT code_verifier
       const authUrl = new URL(`${OAUTH_WORKER_URL}/auth/discord`);
       authUrl.searchParams.set('code_challenge', codeChallenge);
       authUrl.searchParams.set('code_challenge_method', 'S256');
-      authUrl.searchParams.set('code_verifier', codeVerifier); // Pass verifier for worker to include in state
       authUrl.searchParams.set('state', state);
       authUrl.searchParams.set('redirect_uri', `${window.location.origin}/auth/callback`);
       if (returnPath) {
