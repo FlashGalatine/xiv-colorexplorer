@@ -104,7 +104,8 @@ Playwright is configured in `playwright.config.ts`:
 
 ### E2E Test Files
 
-- `e2e/collection-manager.spec.ts` - Collection manager modal tests
+- `e2e/collection-manager.spec.ts` - Collection manager modal and app navigation tests
+- `e2e/harmony-generator.spec.ts` - Harmony Generator tool tests
 
 ### What E2E Tests Cover
 
@@ -119,6 +120,19 @@ Playwright is configured in `playwright.config.ts`:
 
 3. **Collection Manager Modal** (partially skipped - see Known Issues)
    - Shows Manage Collections button in favorites panel
+
+4. **Harmony Generator Tool** (28 tests)
+   - Tool loading and UI elements
+   - Hex color input and color picker
+   - Dye selector integration
+   - All 9 harmony type generation
+   - Suggestions mode switching (Simple/Expanded)
+   - Companion dyes slider functionality
+   - Dye filters section
+   - Market board integration
+   - Export functionality
+   - Saved palettes modal
+   - State persistence across page reloads
 
 ### Known E2E Issues
 
