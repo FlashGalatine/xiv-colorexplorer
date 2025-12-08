@@ -164,41 +164,59 @@ export class DyePreviewOverlay extends BaseComponent {
     const header = document.createElement('div');
     header.className =
       'flex items-center gap-1.5 mb-2 pb-2 border-b border-gray-200 dark:border-gray-600';
-    header.innerHTML = `
-      <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-      </svg>
-      <span class="text-xs font-medium text-gray-600 dark:text-gray-300">${LanguageService.t('matcher.samplePreview') || 'Sample Point Preview'}</span>
-    `;
+    // SECURITY: Use DOM construction instead of innerHTML for better control
+    const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    iconSvg.setAttribute('class', 'w-4 h-4 text-blue-500');
+    iconSvg.setAttribute('fill', 'none');
+    iconSvg.setAttribute('stroke', 'currentColor');
+    iconSvg.setAttribute('viewBox', '0 0 24 24');
+    const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    iconPath.setAttribute('stroke-linecap', 'round');
+    iconPath.setAttribute('stroke-linejoin', 'round');
+    iconPath.setAttribute('stroke-width', '2');
+    iconPath.setAttribute('d', 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z');
+    iconSvg.appendChild(iconPath);
+    header.appendChild(iconSvg);
+    const headerText = document.createElement('span');
+    headerText.className = 'text-xs font-medium text-gray-600 dark:text-gray-300';
+    headerText.textContent = LanguageService.t('matcher.samplePreview') || 'Sample Point Preview';
+    header.appendChild(headerText);
     container.appendChild(header);
 
     // Color comparison swatches
     const swatchRow = document.createElement('div');
     swatchRow.className = 'flex items-center gap-2 mb-2';
 
-    // Sampled color
+    // Sampled color - SECURITY: Use DOM construction instead of innerHTML
     const sampledSwatch = document.createElement('div');
     sampledSwatch.className = 'flex-1 text-center';
-    sampledSwatch.innerHTML = `
-      <div class="w-10 h-10 mx-auto rounded border border-gray-300 dark:border-gray-600 shadow-inner"
-           style="background-color: ${config.sampledColor}"></div>
-      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">${LanguageService.t('matcher.sampled') || 'Sampled'}</div>
-    `;
+    const sampledColorBox = document.createElement('div');
+    sampledColorBox.className = 'w-10 h-10 mx-auto rounded border border-gray-300 dark:border-gray-600 shadow-inner';
+    sampledColorBox.style.backgroundColor = config.sampledColor;
+    const sampledLabel = document.createElement('div');
+    sampledLabel.className = 'text-xs text-gray-500 dark:text-gray-400 mt-1';
+    sampledLabel.textContent = LanguageService.t('matcher.sampled') || 'Sampled';
+    sampledSwatch.appendChild(sampledColorBox);
+    sampledSwatch.appendChild(sampledLabel);
 
     // Arrow
     const arrow = document.createElement('div');
     arrow.className = 'text-gray-400 dark:text-gray-500';
     arrow.textContent = '→';
 
-    // Dye color - use localized name
+    // Dye color - SECURITY: Use DOM construction instead of innerHTML
     const localizedDyeName = LanguageService.getDyeName(config.dye.itemID) || config.dye.name;
     const dyeSwatch = document.createElement('div');
     dyeSwatch.className = 'flex-1 text-center';
-    dyeSwatch.innerHTML = `
-      <div class="w-10 h-10 mx-auto rounded border-2 border-gray-400 dark:border-gray-500 shadow-inner"
-           style="background-color: ${config.dye.hex}"></div>
-      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title="${localizedDyeName}">${localizedDyeName}</div>
-    `;
+    const dyeColorBox = document.createElement('div');
+    dyeColorBox.className = 'w-10 h-10 mx-auto rounded border-2 border-gray-400 dark:border-gray-500 shadow-inner';
+    dyeColorBox.style.backgroundColor = config.dye.hex;
+    const dyeLabel = document.createElement('div');
+    dyeLabel.className = 'text-xs text-gray-500 dark:text-gray-400 mt-1 truncate';
+    dyeLabel.title = localizedDyeName;
+    dyeLabel.textContent = localizedDyeName;
+    dyeSwatch.appendChild(dyeColorBox);
+    dyeSwatch.appendChild(dyeLabel);
 
     swatchRow.appendChild(sampledSwatch);
     swatchRow.appendChild(arrow);

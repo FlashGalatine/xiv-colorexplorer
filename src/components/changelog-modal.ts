@@ -160,7 +160,12 @@ export class ChangelogModal {
         entries.slice(1).forEach((entry) => {
           const item = document.createElement('div');
           item.className = 'text-sm text-gray-600 dark:text-gray-400';
-          item.innerHTML = `<span class="font-medium">v${entry.version}</span> - ${entry.highlights[0]}`;
+          // SECURITY: Use DOM construction instead of innerHTML for text content
+          const versionSpan = document.createElement('span');
+          versionSpan.className = 'font-medium';
+          versionSpan.textContent = `v${entry.version}`;
+          item.appendChild(versionSpan);
+          item.appendChild(document.createTextNode(` - ${entry.highlights[0]}`));
           previousList.appendChild(item);
         });
 
@@ -226,10 +231,14 @@ export class ChangelogModal {
     entry.highlights.forEach((highlight) => {
       const item = document.createElement('li');
       item.className = 'flex items-start gap-2 text-gray-600 dark:text-gray-300';
-      item.innerHTML = `
-        <span class="text-green-500 dark:text-green-400 flex-shrink-0">★</span>
-        <span>${highlight}</span>
-      `;
+      // SECURITY: Use DOM construction instead of innerHTML for text content
+      const starSpan = document.createElement('span');
+      starSpan.className = 'text-green-500 dark:text-green-400 flex-shrink-0';
+      starSpan.textContent = '★';
+      const textSpan = document.createElement('span');
+      textSpan.textContent = highlight;
+      item.appendChild(starSpan);
+      item.appendChild(textSpan);
       list.appendChild(item);
     });
 
