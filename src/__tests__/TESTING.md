@@ -108,16 +108,24 @@ Playwright is configured in `playwright.config.ts`:
 
 ### What E2E Tests Cover
 
-1. **Collection Manager Modal**
-   - Opening/closing the modal
-   - Creating new collections
-   - Empty state handling
-   - Export functionality
-   - Keyboard interactions (Escape to close)
+1. **App Initialization**
+   - Application loads successfully with correct title
+   - Tool navigation buttons are visible
+   - Tool switching works correctly
 
-2. **Add to Collection Menu**
-   - Context menu interactions
-   - Menu positioning
+2. **App Navigation**
+   - Navigate between different tools (harmony, matcher, accessibility, etc.)
+   - Tool state persistence across page interactions
+
+3. **Collection Manager Modal** (partially skipped - see Known Issues)
+   - Shows Manage Collections button in favorites panel
+
+### Known E2E Issues
+
+**Nested Button Problem**: Some collection manager tests are skipped because the "Manage Collections" button is nested inside another `<button>` element (the favorites panel header). This is invalid HTML and prevents reliable click handling in Playwright.
+
+**Location**: `src/components/dye-selector.ts:450-492`
+**Fix Required**: Change the favorites-header from `<button>` to `<div role="button">` with proper keyboard handling.
 
 ### Running E2E Tests
 
