@@ -1,11 +1,12 @@
 /**
  * Vitest Global Setup
  *
- * Initializes services needed for tests
+ * Initializes services needed for tests including MSW for API mocking
  */
 
 import { vi } from 'vitest';
 import { LanguageService } from '@services/language-service';
+import { server } from './mocks/server';
 
 // Mock window.matchMedia for tests that need it
 Object.defineProperty(window, 'matchMedia', {
@@ -55,13 +56,24 @@ vi.mock('@shared/logger', () => {
   };
 });
 
-// Initialize LanguageService before all tests
+// Initialize services and MSW server before all tests
 beforeAll(async () => {
+  // Start MSW server for API mocking
+  server.listen({ onUnhandledRequest: 'bypass' });
+
   // Initialize LanguageService which loads English translations by default
   await LanguageService.initialize();
 });
 
+// Reset handlers after each test to avoid test pollution
+afterEach(() => {
+  server.resetHandlers();
+});
+
 // Clean up after all tests
 afterAll(() => {
+  // Stop MSW server
+  server.close();
+
   vi.restoreAllMocks();
 });
