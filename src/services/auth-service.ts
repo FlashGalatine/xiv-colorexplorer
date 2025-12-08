@@ -82,6 +82,58 @@ const OAUTH_STATE_KEY = 'xivdyetools_oauth_state';
 const OAUTH_RETURN_PATH_KEY = 'xivdyetools_oauth_return_path';
 const OAUTH_RETURN_TOOL_KEY = 'xivdyetools_oauth_return_tool';
 
+/**
+ * Validate and sanitize return path to prevent open redirect attacks
+ *
+ * SECURITY: Only allows:
+ * - Relative paths starting with /
+ * - No protocol (://)
+ * - No protocol-relative URLs (//)
+ * - No external domains
+ *
+ * @returns Sanitized path or '/' if invalid
+ */
+function sanitizeReturnPath(path: string | null): string {
+  if (!path) return '/';
+
+  // Must be a string
+  if (typeof path !== 'string') return '/';
+
+  // Trim whitespace
+  const trimmed = path.trim();
+
+  // Must start with exactly one /
+  if (!trimmed.startsWith('/')) return '/';
+
+  // Block protocol-relative URLs (//evil.com)
+  if (trimmed.startsWith('//')) return '/';
+
+  // Block any URLs with protocol
+  if (trimmed.includes('://')) return '/';
+
+  // Block javascript: protocol (case insensitive)
+  if (trimmed.toLowerCase().includes('javascript:')) return '/';
+
+  // Block data: protocol
+  if (trimmed.toLowerCase().includes('data:')) return '/';
+
+  // Parse as URL to check for host bypass attempts
+  try {
+    const url = new URL(trimmed, window.location.origin);
+    // Must be same origin
+    if (url.origin !== window.location.origin) return '/';
+    // Return just the path (strips any accidentally parsed host)
+    return url.pathname + url.search + url.hash;
+  } catch {
+    // If parsing fails, use the trimmed path if it looks safe
+    // Only allow simple paths without special characters at start
+    if (/^\/[a-zA-Z0-9\-_\/]*$/.test(trimmed)) {
+      return trimmed;
+    }
+    return '/';
+  }
+}
+
 // ============================================
 // Auth Service
 // ============================================
@@ -126,7 +178,9 @@ class AuthServiceImpl {
         }
         await this.handleCallbackCode(code, urlParams.get('csrf'));
         // Get return path before cleaning URL, default to home
-        const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
+        // SECURITY: Sanitize to prevent open redirect attacks
+        const rawPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY);
+        const returnPath = sanitizeReturnPath(rawPath);
         if (import.meta.env.DEV) {
           console.log(`🔐 [AuthService] Navigating to return path: ${returnPath}`);
         }
@@ -136,7 +190,9 @@ class AuthServiceImpl {
       } else if (error) {
         logger.error('OAuth error:', error);
         // Get return path before cleaning URL
-        const returnPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY) || '/';
+        // SECURITY: Sanitize to prevent open redirect attacks
+        const rawPath = urlParams.get('return_path') || sessionStorage.getItem(OAUTH_RETURN_PATH_KEY);
+        const returnPath = sanitizeReturnPath(rawPath);
         sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY);
         // Clean up URL and navigate back (even on error)
         this.navigateAfterAuth(returnPath);
