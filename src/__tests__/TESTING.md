@@ -84,20 +84,73 @@ it('handles server error', async () => {
 });
 ```
 
-## Future: E2E Testing
+## E2E Testing with Playwright
 
-For comprehensive testing of modal components and full user flows, consider adding Playwright:
+E2E tests run in real browsers and test complete user flows.
+
+### Setup
 
 ```bash
-npm install -D @playwright/test
+# Install Playwright browsers (first time only)
 npx playwright install
 ```
 
-E2E tests would cover:
-1. Modal open/close interactions
-2. Form submissions through modals
-3. File upload/download flows
-4. Menu positioning and keyboard navigation
+### Configuration
+
+Playwright is configured in `playwright.config.ts`:
+- **Test directory**: `e2e/`
+- **Base URL**: `http://localhost:5173`
+- **Web server**: Automatically starts Vite dev server
+
+### E2E Test Files
+
+- `e2e/collection-manager.spec.ts` - Collection manager modal tests
+
+### What E2E Tests Cover
+
+1. **Collection Manager Modal**
+   - Opening/closing the modal
+   - Creating new collections
+   - Empty state handling
+   - Export functionality
+   - Keyboard interactions (Escape to close)
+
+2. **Add to Collection Menu**
+   - Context menu interactions
+   - Menu positioning
+
+### Running E2E Tests
+
+```bash
+# Run all E2E tests (headless)
+npm run test:e2e
+
+# Run with browser visible
+npm run test:e2e:headed
+
+# Run with Playwright UI (interactive)
+npm run test:e2e:ui
+
+# View test report
+npm run test:e2e:report
+```
+
+### Writing E2E Tests
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('should open collection manager', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  // Click the manage collections button
+  await page.locator('#manage-collections-btn').click();
+
+  // Verify modal is visible
+  await expect(page.locator('.collection-manager-modal')).toBeVisible();
+});
+```
 
 ## Running Tests
 
@@ -113,6 +166,12 @@ npm test -- --watch
 
 # Specific file
 npm test -- src/services/__tests__/auth-service.test.ts
+
+# E2E tests
+npm run test:e2e
+
+# E2E with browser UI
+npm run test:e2e:headed
 ```
 
 ## Coverage Configuration
