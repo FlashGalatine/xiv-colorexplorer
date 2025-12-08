@@ -28,9 +28,15 @@ export interface DyeActionCallback {
 /**
  * Creates a dropdown button with quick actions for a dye
  */
+// Counter for unique menu IDs
+let menuIdCounter = 0;
+
 export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback): HTMLElement {
   const container = document.createElement('div');
   container.className = 'dye-action-dropdown relative';
+
+  // Generate unique ID for accessibility relationship
+  const menuId = `dye-action-menu-${++menuIdCounter}`;
 
   // Dropdown button
   const button = document.createElement('button');
@@ -49,16 +55,18 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
   button.setAttribute('aria-label', LanguageService.t('harmony.actions') || 'Actions');
   button.setAttribute('aria-haspopup', 'true');
   button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-controls', menuId);
 
-  // Three dots icon
+  // Three dots icon (aria-hidden for screen readers)
   button.innerHTML = `
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
       <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
     </svg>
   `;
 
   // Dropdown menu
   const menu = document.createElement('div');
+  menu.id = menuId;
   menu.className =
     'absolute right-0 top-full mt-1 z-50 min-w-[160px] py-1 rounded-lg shadow-lg opacity-0 invisible transform scale-95 origin-top-right transition-all duration-150';
   menu.style.backgroundColor = 'var(--theme-card-background)';
@@ -66,6 +74,7 @@ export function createDyeActionDropdown(dye: Dye, onAction?: DyeActionCallback):
   menu.style.borderStyle = 'solid';
   menu.style.borderColor = 'var(--theme-border)';
   menu.setAttribute('role', 'menu');
+  menu.setAttribute('aria-label', LanguageService.t('harmony.actionsMenu') || 'Dye actions menu');
   // Use inert for better accessibility - prevents focus while hidden
   menu.setAttribute('inert', '');
 

@@ -35,11 +35,12 @@ export class ThemeSwitcher extends BaseComponent {
     // Create button to toggle dropdown
     const button = this.createElement('button', {
       id: 'theme-switcher-btn',
-      className: 'p-2 rounded-lg border transition-colors',
+      className: 'p-2 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
       attributes: {
-        'aria-label': 'Toggle theme switcher',
-        'aria-haspopup': 'true',
+        'aria-label': LanguageService.t('header.themeSelector') || 'Theme selector',
+        'aria-haspopup': 'listbox',
         'aria-expanded': 'false',
+        'aria-controls': 'theme-dropdown',
         style: `color: var(--theme-text-header); border-color: ${isLightText ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};`,
       },
     });
@@ -62,6 +63,8 @@ export class ThemeSwitcher extends BaseComponent {
       id: 'theme-dropdown',
       className: 'hidden absolute right-0 mt-2 border rounded-lg shadow-lg z-50 min-w-48',
       attributes: {
+        role: 'listbox',
+        'aria-label': LanguageService.t('header.themeOptions') || 'Available themes',
         style: 'background-color: var(--theme-card-background); border-color: var(--theme-border);',
       },
     });
@@ -96,10 +99,13 @@ export class ThemeSwitcher extends BaseComponent {
     });
 
     for (const theme of themes) {
+      const isCurrentTheme = theme.name === this.currentTheme;
       const themeBtn = this.createElement('button', {
         className: 'px-4 py-2 text-left text-sm rounded transition-colors flex items-center gap-2',
         attributes: {
           'data-theme': theme.name,
+          role: 'option',
+          'aria-selected': String(isCurrentTheme),
           style: 'color: var(--theme-text);',
         },
       });
@@ -114,11 +120,12 @@ export class ThemeSwitcher extends BaseComponent {
         }
       });
 
-      // Add color swatch
+      // Add color swatch (decorative, hidden from screen readers)
       const swatch = this.createElement('div', {
         className: 'w-4 h-4 rounded border border-gray-300',
         attributes: {
           style: `background-color: ${theme.palette.primary}`,
+          'aria-hidden': 'true',
         },
       });
 
@@ -133,7 +140,7 @@ export class ThemeSwitcher extends BaseComponent {
       themeBtn.appendChild(this.createElement('span', { textContent: displayName }));
 
       // Mark current theme
-      if (theme.name === this.currentTheme) {
+      if (isCurrentTheme) {
         themeBtn.classList.add('font-semibold');
         themeBtn.style.backgroundColor = 'var(--theme-card-hover)';
       }

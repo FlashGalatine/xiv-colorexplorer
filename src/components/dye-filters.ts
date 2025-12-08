@@ -77,25 +77,32 @@ export class DyeFilters extends BaseComponent {
       className: 'space-y-3',
     });
 
+    // Generate IDs for accessibility
+    const containerId = `${this.container.id || 'filters'}-checkboxes-container`;
+    const chevronId = `${this.container.id || 'filters'}-toggle-chevron`;
+
     // Collapsible header with toggle button
     const filtersHeader = this.createElement('button', {
       attributes: {
         type: 'button',
+        'aria-expanded': 'false', // Updated in updateFiltersUI
+        'aria-controls': containerId,
       },
       className:
-        'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors',
+        'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
     });
 
-    const filtersLabel = this.createElement('label', {
+    const filtersLabel = this.createElement('span', {
       textContent: LanguageService.t('filters.advancedFilters'),
-      className: 'text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer',
+      className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
     });
 
     const toggleChevron = this.createElement('span', {
       textContent: '▼',
       className: 'text-gray-400 dark:text-gray-500 text-xs transition-transform',
       attributes: {
-        id: `${this.container.id || 'filters'}-toggle-chevron`,
+        id: chevronId,
+        'aria-hidden': 'true', // Decorative icon
       },
     });
 
@@ -113,9 +120,14 @@ export class DyeFilters extends BaseComponent {
     const checkboxesContainer = this.createElement('div', {
       className: 'space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out',
       attributes: {
-        id: `${this.container.id || 'filters'}-checkboxes-container`,
+        id: containerId,
+        role: 'region',
+        'aria-labelledby': `${this.container.id || 'filters'}-label`,
       },
     });
+
+    // Add an id to the label for aria-labelledby
+    filtersLabel.id = `${this.container.id || 'filters'}-label`;
 
     // Set initial collapsed state (default: collapsed)
     checkboxesContainer.style.maxHeight = '0px';
@@ -306,6 +318,11 @@ export class DyeFilters extends BaseComponent {
     const chevron = document.getElementById(chevronId);
 
     if (!checkboxesContainer || !chevron) return;
+
+    // Update aria-expanded on the toggle button
+    if (this.filterToggleButton) {
+      this.filterToggleButton.setAttribute('aria-expanded', String(this.filtersExpanded));
+    }
 
     // Set transition properties
     checkboxesContainer.style.transition =

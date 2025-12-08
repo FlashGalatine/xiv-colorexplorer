@@ -59,11 +59,18 @@ export class ColorWheelDisplay extends BaseComponent {
     const dotStrokeColor = theme.isDark ? '#333333' : '#FFFFFF';
     const indicatorColor = theme.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)';
 
-    // Create SVG element
+    // Create SVG element with accessibility attributes
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `0 0 ${this.wheelSize} ${this.wheelSize}`);
     svg.setAttribute('width', String(this.wheelSize));
     svg.setAttribute('height', String(this.wheelSize));
+    svg.setAttribute('role', 'img');
+    // Provide meaningful description for screen readers
+    const harmonyLabel = LanguageService.t(`harmony.${this.harmonyType}`) || this.harmonyType;
+    svg.setAttribute(
+      'aria-label',
+      `${LanguageService.t('harmony.colorWheel') || 'Color harmony wheel'}: ${harmonyLabel} (${this.harmonyDyes.length} ${LanguageService.t('harmony.colors') || 'colors'})`
+    );
     svg.classList.add('color-wheel');
 
     // Create defs for gradients

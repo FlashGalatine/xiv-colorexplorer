@@ -128,18 +128,21 @@ export class ColorDisplay extends BaseComponent {
     });
     card.appendChild(labelDiv);
 
-    // Color swatch
+    // Color swatch (accessible with role="img" and aria-label)
+    const dyeName = LanguageService.getDyeName(dye.itemID) || dye.name;
     const swatch = this.createElement('div', {
       className: 'w-full h-24 rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-md',
       attributes: {
         style: `background-color: ${dye.hex}`,
+        role: 'img',
+        'aria-label': `${dyeName} color swatch: ${dye.hex}`,
       },
     });
     card.appendChild(swatch);
 
     // Dye name
     const nameDiv = this.createElement('div', {
-      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
+      textContent: dyeName,
       className: 'text-lg font-bold text-gray-900 dark:text-white',
     });
     card.appendChild(nameDiv);
@@ -153,17 +156,22 @@ export class ColorDisplay extends BaseComponent {
       const hexItem = this.createElement('div', {
         className: 'space-y-1',
       });
+      const hexLabelId = `hex-label-${dye.id}`;
       const hexLabel = this.createElement('div', {
         textContent: 'Hex',
         className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+        attributes: { id: hexLabelId },
       });
-      const hexValue = this.createElement('div', {
+      // Use button for keyboard accessibility
+      const hexValue = this.createElement('button', {
         textContent: dye.hex,
         className:
-          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1 -mx-1',
         attributes: {
+          type: 'button',
           'data-copy': dye.hex,
-          title: 'Click to copy',
+          'aria-label': `Copy hex value: ${dye.hex}`,
+          'aria-describedby': hexLabelId,
         },
       });
       hexItem.appendChild(hexLabel);
@@ -175,18 +183,23 @@ export class ColorDisplay extends BaseComponent {
       const rgbItem = this.createElement('div', {
         className: 'space-y-1',
       });
+      const rgbLabelId = `rgb-label-${dye.id}`;
       const rgbLabel = this.createElement('div', {
         textContent: 'RGB',
         className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+        attributes: { id: rgbLabelId },
       });
       const rgbCopyValue = `rgb(${dye.rgb.r}, ${dye.rgb.g}, ${dye.rgb.b})`;
-      const rgbValue = this.createElement('div', {
+      // Use button for keyboard accessibility
+      const rgbValue = this.createElement('button', {
         textContent: `${dye.rgb.r}, ${dye.rgb.g}, ${dye.rgb.b}`,
         className:
-          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1 -mx-1',
         attributes: {
+          type: 'button',
           'data-copy': rgbCopyValue,
-          title: 'Click to copy RGB',
+          'aria-label': `Copy RGB value: ${rgbCopyValue}`,
+          'aria-describedby': rgbLabelId,
         },
       });
       rgbItem.appendChild(rgbLabel);
@@ -198,21 +211,26 @@ export class ColorDisplay extends BaseComponent {
       const hsvItem = this.createElement('div', {
         className: 'space-y-1',
       });
+      const hsvLabelId = `hsv-label-${dye.id}`;
       const hsvLabel = this.createElement('div', {
         textContent: 'HSV',
         className: 'text-xs text-gray-600 dark:text-gray-400 uppercase',
+        attributes: { id: hsvLabelId },
       });
       const h = Math.round(dye.hsv.h);
       const s = Math.round(dye.hsv.s);
       const v = Math.round(dye.hsv.v);
       const hsvCopyValue = `hsv(${h}, ${s}%, ${v}%)`;
-      const hsvValue = this.createElement('div', {
+      // Use button for keyboard accessibility
+      const hsvValue = this.createElement('button', {
         textContent: `${h}°, ${s}%, ${v}%`,
         className:
-          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400',
+          'font-mono text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1 -mx-1',
         attributes: {
+          type: 'button',
           'data-copy': hsvCopyValue,
-          title: 'Click to copy HSV',
+          'aria-label': `Copy HSV value: ${hsvCopyValue}`,
+          'aria-describedby': hsvLabelId,
         },
       });
       hsvItem.appendChild(hsvLabel);

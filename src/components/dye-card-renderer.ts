@@ -55,25 +55,41 @@ export class DyeCardRenderer {
 
   render(options: DyeCardOptions): HTMLElement {
     const { dye, sampledColor, price, showPrice, extraInfo, actions, onHover, onClick } = options;
+    const dyeName = LanguageService.getDyeName(dye.itemID) || dye.name;
 
-    const card = this.createElement('div', {
-      className: `${CARD_CLASSES_COMPACT} flex items-center gap-3 cursor-pointer`,
-      attributes: {
-        'data-dye-id': String(dye.id),
-      },
-    });
+    // Use button element for clickable cards (proper keyboard accessibility)
+    // Fall back to div if no onClick handler
+    const card = onClick
+      ? this.createElement('button', {
+          className: `${CARD_CLASSES_COMPACT} flex items-center gap-3 cursor-pointer w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1`,
+          attributes: {
+            type: 'button',
+            'data-dye-id': String(dye.id),
+            'aria-label': `Select ${dyeName} dye`,
+          },
+        })
+      : this.createElement('div', {
+          className: `${CARD_CLASSES_COMPACT} flex items-center gap-3`,
+          attributes: {
+            'data-dye-id': String(dye.id),
+          },
+        });
 
     // Swatches
     const swatchContainer = this.createElement('div', {
       className: 'flex gap-2',
+      attributes: {
+        'aria-hidden': 'true', // Decorative, card label provides accessibility
+      },
     });
 
     if (sampledColor) {
       const sampledSwatch = this.createElement('div', {
         className: 'w-8 h-8 rounded border border-gray-300 dark:border-gray-600',
         attributes: {
-          title: `Sampled: ${sampledColor}`,
           style: `background-color: ${sampledColor}`,
+          role: 'img',
+          'aria-label': `Sampled color: ${sampledColor}`,
         },
       });
       swatchContainer.appendChild(sampledSwatch);
@@ -82,8 +98,9 @@ export class DyeCardRenderer {
     const dyeSwatch = this.createElement('div', {
       className: 'dye-swatch w-8 h-8 rounded border-2 border-gray-400 dark:border-gray-500',
       attributes: {
-        title: `Dye: ${dye.hex}`,
         style: `background-color: ${dye.hex}`,
+        role: 'img',
+        'aria-label': `${dyeName}: ${dye.hex}`,
       },
     });
 
@@ -96,7 +113,7 @@ export class DyeCardRenderer {
     });
 
     const name = this.createElement('div', {
-      textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
+      textContent: dyeName,
       className: 'font-semibold text-gray-900 dark:text-white truncate',
     });
 
@@ -188,8 +205,14 @@ export class DyeCardRenderer {
       card.addEventListener('mouseleave', () => onHover(dye, false));
     }
 
+    // Click handler - for buttons this enables both click and keyboard activation
     if (onClick) {
-      card.addEventListener('click', () => onClick(dye));
+      card.addEventListener('click', (e) => {
+        // Prevent double-firing if clicking on nested interactive elements
+        if (e.target === card || card.contains(e.target as Node)) {
+          onClick(dye);
+        }
+      });
     }
 
     return card;
