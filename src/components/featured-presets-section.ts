@@ -69,6 +69,10 @@ export class FeaturedPresetsSection extends BaseComponent {
     this.container.appendChild(this.element);
   }
 
+  bindEvents(): void {
+    // Events are attached inline during render
+  }
+
   /**
    * Create a featured preset card
    */

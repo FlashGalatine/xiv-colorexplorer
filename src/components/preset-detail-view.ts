@@ -75,6 +75,10 @@ export class PresetDetailView extends BaseComponent {
     this.container.appendChild(this.element);
   }
 
+  bindEvents(): void {
+    // Events are attached inline during render
+  }
+
   /**
    * Render the back button
    */

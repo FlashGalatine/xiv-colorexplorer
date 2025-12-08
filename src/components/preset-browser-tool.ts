@@ -19,6 +19,7 @@ import { ToolHeader } from './tool-header';
 import {
   LanguageService,
   hybridPresetService,
+  dyeService,
   type UnifiedPreset,
   type UnifiedCategory,
   type PresetSortOption,

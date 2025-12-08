@@ -160,6 +160,10 @@ export class PresetCard extends BaseComponent {
     this.container.appendChild(this.element);
   }
 
+  bindEvents(): void {
+    // Events are attached inline during render
+  }
+
   /**
    * Update the preset data and re-render
    */
