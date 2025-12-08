@@ -343,9 +343,9 @@ export class ModalContainer extends BaseComponent {
     );
     if (topModalEl) {
       this.focusTrapElements = this.getFocusableElements(topModalEl as HTMLElement);
-      // Focus first focusable element
+      // Focus first focusable element (use safeTimeout for cleanup on destroy)
       if (this.focusTrapElements.length > 0) {
-        setTimeout(() => this.focusTrapElements[0].focus(), 50);
+        this.safeTimeout(() => this.focusTrapElements[0]?.focus(), 50);
       }
     }
 

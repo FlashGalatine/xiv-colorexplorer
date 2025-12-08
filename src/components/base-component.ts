@@ -54,6 +54,8 @@ export abstract class BaseComponent implements ComponentLifecycle {
   > = new Map();
   protected isInitialized: boolean = false;
   protected isDestroyed: boolean = false;
+  // Track pending timers for cleanup to prevent memory leaks
+  private pendingTimeouts: Set<ReturnType<typeof setTimeout>> = new Set();
 
   // Lifecycle hooks - optional for subclasses to override
   onMount?(): void;
@@ -124,12 +126,57 @@ export abstract class BaseComponent implements ComponentLifecycle {
 
     try {
       this.unbindAllEvents();
+      this.clearAllTimeouts();
       this.onUnmount?.();
       this.isDestroyed = true;
       this.element?.remove();
     } catch (error) {
       ErrorHandler.log(error);
     }
+  }
+
+  // ============================================================================
+  // Timer Management
+  // ============================================================================
+
+  /**
+   * Set a timeout that will be automatically cleaned up when the component is destroyed
+   * Use this instead of raw setTimeout to prevent memory leaks
+   */
+  protected safeTimeout(callback: () => void, delay: number): ReturnType<typeof setTimeout> {
+    // Don't schedule timeouts on destroyed components
+    if (this.isDestroyed) {
+      return setTimeout(() => {}, 0); // Return a dummy timeout ID
+    }
+
+    const timeoutId = setTimeout(() => {
+      this.pendingTimeouts.delete(timeoutId);
+      // Only execute callback if component isn't destroyed
+      if (!this.isDestroyed) {
+        callback();
+      }
+    }, delay);
+
+    this.pendingTimeouts.add(timeoutId);
+    return timeoutId;
+  }
+
+  /**
+   * Clear a specific timeout and remove it from tracking
+   */
+  protected clearSafeTimeout(timeoutId: ReturnType<typeof setTimeout>): void {
+    clearTimeout(timeoutId);
+    this.pendingTimeouts.delete(timeoutId);
+  }
+
+  /**
+   * Clear all pending timeouts - called automatically on destroy
+   */
+  private clearAllTimeouts(): void {
+    for (const timeoutId of this.pendingTimeouts) {
+      clearTimeout(timeoutId);
+    }
+    this.pendingTimeouts.clear();
   }
 
   // ============================================================================

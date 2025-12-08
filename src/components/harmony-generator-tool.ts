@@ -1140,8 +1140,8 @@ export class HarmonyGeneratorTool extends BaseComponent implements PricingState 
    * Initialize the tool
    */
   onMount(): void {
-    // Generate initial harmonies with default color
-    setTimeout(() => {
+    // Generate initial harmonies with default color (use safeTimeout for cleanup)
+    this.safeTimeout(() => {
       this.generateHarmonies();
     }, 100);
 

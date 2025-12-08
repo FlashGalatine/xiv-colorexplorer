@@ -224,8 +224,8 @@ export class PresetBrowserTool extends BaseComponent {
     const pendingId = sessionStorage.getItem('pendingPresetId');
     if (pendingId) {
       sessionStorage.removeItem('pendingPresetId');
-      // Use setTimeout to ensure render is complete
-      setTimeout(() => {
+      // Use safeTimeout to ensure render is complete and cleanup on destroy
+      this.safeTimeout(() => {
         void this.selectPresetById(pendingId);
       }, 100);
     }

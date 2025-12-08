@@ -141,7 +141,8 @@ export class DyePreviewOverlay extends BaseComponent {
     if (this.overlayElement) {
       this.overlayElement.style.opacity = '0';
       const element = this.overlayElement;
-      setTimeout(() => {
+      // Use safeTimeout for cleanup on destroy
+      this.safeTimeout(() => {
         element.remove();
       }, 150);
       this.overlayElement = null;
