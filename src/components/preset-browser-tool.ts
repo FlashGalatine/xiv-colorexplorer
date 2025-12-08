@@ -16,8 +16,9 @@
 
 import { BaseComponent } from './base-component';
 import { ToolHeader } from './tool-header';
-import { LanguageService } from '@services/index';
 import {
+  LanguageService,
+  dyeService,
   hybridPresetService,
   type UnifiedPreset,
   type UnifiedCategory,
@@ -27,13 +28,12 @@ import {
   ToastService,
 } from '@services/index';
 import { getCategoryIcon, ICON_ARROW_BACK } from '@shared/category-icons';
-import { DyeService, dyeDatabase, type Dye, type PresetCategory } from 'xivdyetools-core';
+import type { Dye, PresetCategory } from 'xivdyetools-core';
 import { AuthButton } from './auth-button';
 import { showPresetSubmissionForm } from './preset-submission-form';
 import { MySubmissionsPanel } from './my-submissions-panel';
 
-// Initialize dye service for resolving dye IDs
-const dyeService = new DyeService(dyeDatabase);
+// Use singleton dyeService from services (imported above)
 
 /**
  * Preset Browser Tool Component

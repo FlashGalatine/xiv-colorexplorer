@@ -8,15 +8,13 @@
  */
 
 import { BaseComponent } from './base-component';
-import { LanguageService } from '@services/index';
+import { LanguageService, dyeService } from '@services/index';
 import { presetSubmissionService, authService } from '@services/index';
 import type { CommunityPreset, PresetStatus } from '@services/community-preset-service';
-import { DyeService, dyeDatabase } from 'xivdyetools-core';
 import { getCategoryIcon } from '@shared/category-icons';
 import { showPresetEditForm } from './preset-edit-form';
 
-// Initialize dye service
-const dyeService = new DyeService(dyeDatabase);
+// Use singleton dyeService from services (imported above)
 
 /**
  * My Submissions Panel

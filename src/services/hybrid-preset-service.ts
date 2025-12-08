@@ -8,8 +8,6 @@
 
 import {
   PresetService,
-  DyeService,
-  dyeDatabase,
   presetData,
   type PresetPalette,
   type PresetCategory,
@@ -17,6 +15,7 @@ import {
   type CategoryMeta,
   type Dye,
 } from 'xivdyetools-core';
+import { dyeService as sharedDyeService } from './dye-service-wrapper';
 import {
   CommunityPresetService,
   communityPresetService,
@@ -94,14 +93,15 @@ export class HybridPresetService {
 
   private readonly localPresetService: PresetService;
   private readonly communityService: CommunityPresetService;
-  private readonly dyeService: DyeService;
+  // Use shared singleton dyeService to avoid duplicate instantiation
+  private readonly dyeService = sharedDyeService;
   private initialized = false;
   private apiAvailable = false;
 
   private constructor() {
     this.localPresetService = new PresetService(presetData as PresetData);
     this.communityService = communityPresetService;
-    this.dyeService = new DyeService(dyeDatabase);
+    // dyeService is initialized from shared singleton above
   }
 
   /**
