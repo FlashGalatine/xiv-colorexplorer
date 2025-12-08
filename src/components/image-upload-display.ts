@@ -146,6 +146,7 @@ export class ImageUploadDisplay extends BaseComponent {
     wrapper.appendChild(dropZone);
 
     // Privacy notice for camera uploads (mobile)
+    // Built programmatically to avoid innerHTML with translation strings (security)
     const privacyNotice = this.createElement('div', {
       className: 'mt-3 p-3 rounded-lg border text-xs md:hidden',
       attributes: {
@@ -155,8 +156,29 @@ export class ImageUploadDisplay extends BaseComponent {
           color: var(--theme-text);
         `,
       },
-      innerHTML: LanguageService.t('matcher.privacyNoticeHtml'),
     });
+    // Lock emoji
+    const lockEmoji = document.createTextNode('🔒 ');
+    privacyNotice.appendChild(lockEmoji);
+    // Strong title
+    const privacyTitle = this.createElement('strong', {
+      textContent: `${LanguageService.t('matcher.privacyTitle')}:`,
+    });
+    privacyNotice.appendChild(privacyTitle);
+    // Message text
+    const privacyMessage = document.createTextNode(` ${LanguageService.t('matcher.privacyMessage')} `);
+    privacyNotice.appendChild(privacyMessage);
+    // Learn more link (hardcoded URL is safe, only text is translated)
+    const privacyLink = this.createElement('a', {
+      textContent: LanguageService.t('matcher.privacyLearnMore'),
+      className: 'underline font-semibold',
+      attributes: {
+        href: 'https://github.com/FlashGalatine/xivdyetools-web-app/blob/main/docs/PRIVACY.md',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
+    });
+    privacyNotice.appendChild(privacyLink);
     wrapper.appendChild(privacyNotice);
 
     // Info text
