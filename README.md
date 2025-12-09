@@ -1,17 +1,18 @@
-# XIV Dye Tools v2.5.1
+# XIV Dye Tools v2.6.0
 
-**Status**: ✅ Production Ready | **Version**: 2.5.1 | **Release**: December 6, 2025 | **Phase**: Multi-Color Palette Extraction
+**Status**: ✅ Production Ready | **Version**: 2.6.0 | **Release**: December 7, 2025 | **Phase**: Preset Refinements
 
-A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
+A comprehensive web-based toolset for Final Fantasy XIV players to explore dye colors, create harmonious color palettes, match colors from images, find smooth color transitions, compare dyes side-by-side, browse community presets, and simulate how dye combinations appear to colorblind players for in-game gear and housing projects.
 
-> **v2.5.1 Release Notes**: Bug fix release. Multi-color palette extraction in Color Matcher - extract 3-5 dominant colors from any image using K-means++ clustering, with visual sampling indicators showing where colors were sampled. See [CHANGELOG.md](CHANGELOG.md) for detailed release information.
+> **v2.6.0 Release Notes**: Preset refinements - vote for community presets, edit your own submissions, share preset links, and improved facewear dye filtering. See [CHANGELOG.md](CHANGELOG.md) for detailed release information.
 
-**Five Powerful Tools:**
+**Six Powerful Tools:**
 - **Dye Mixer** - Find smooth color transitions between two dyes with HSV interpolation
 - **Color Accessibility Checker** - Simulate colorblindness and ensure your glamour is accessible to everyone
 - **Color Harmony Explorer** - Generate color palettes based on color theory principles
 - **Color Matcher** - Upload images and find the closest matching FFXIV dyes
 - **Dye Comparison** - Compare up to 4 dyes side-by-side with detailed color visualization
+- **Preset Browser** - Browse, vote on, edit, and share community dye palettes
 
 ## Features
 
@@ -202,6 +203,37 @@ Compare up to 4 FFXIV dyes side-by-side with advanced color visualization:
 
 **Display & Optimization**
 - 1080p display optimization with responsive typography
+
+### 🗳️ Preset Browser (v2.6.0)
+Browse, vote on, and share community-created dye palettes:
+
+**Browsing Features:**
+- **Category Tabs** - Filter by Jobs, Grand Companies, Seasons, Events, Aesthetics, or Community
+- **Sort Options** - Sort by popularity, recency, or name
+- **Search** - Search presets by name, description, or tags
+- **Curated vs Community** - Toggle between official curated presets and community submissions
+- **Detailed Preview** - Click any preset to see full color information with dye swatches
+
+**Voting System (v2.6.0):**
+- **Vote Button** - Toggle vote on/off in preset detail panel
+- **Real-time Vote Count** - See instant vote count updates
+- **Discord Authentication** - Requires login to vote (one vote per user per preset)
+
+**Sharing Features (v2.6.0):**
+- **Share Button** - Copy permalink to clipboard
+- **Deep Linking** - Direct URLs to specific presets (`/presets/:id`)
+- **Automatic Navigation** - Links navigate directly to preset detail view
+
+**Submission & Editing:**
+- **Submit Presets** - Create your own dye palette and share with the community
+- **Edit Own Submissions** - Modify your non-rejected presets (name, description, dyes, tags)
+- **Duplicate Detection** - System detects duplicate dye combinations and links to existing preset
+- **Content Moderation** - Automatic filtering for inappropriate content
+- **Facewear Filter** - Facewear dyes automatically excluded from submissions
+
+**Integration:**
+- **Discord Bot Sync** - Presets submitted via Discord bot appear in web browser
+- **Service Binding** - Direct worker-to-worker communication with presets API
 
 ### 💰 Market Board Integration
 Fetch real-time dye prices from the Universalis API:
@@ -462,6 +494,10 @@ All tools are production-ready stable versions with full feature support. The ap
    - HSV values can be used in other games like Monster Hunter Wilds
    - Hover over "HSV:" label to see the helpful tooltip
 7. **Dark Mode** - Toggle dark mode with button in header for comfortable viewing (charts adapt automatically)
+
+## Coming Soon
+
+**Budget-Aware Dye Suggestions** - Find affordable alternatives to expensive dyes based on current market prices. Features include a budget toggle with price slider in Color Matcher, sort options (Best Match/Lowest Price/Best Value), and smart recommendations that balance color accuracy with price. See [specification](../xivdyetools-docs/BUDGET_AWARE_SUGGESTIONS.md) for details.
 
 ## Data Sources
 
