@@ -150,11 +150,11 @@ export class MixerMockup extends BaseComponent {
     const section = this.createElement('div', { className: 'p-4 border-b', attributes: { style: 'border-color: var(--theme-border);' } });
     section.innerHTML = `
       <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color: var(--theme-text-muted);">${label}</h3>
-      <div class="flex items-center gap-3 p-3 rounded-lg" style="background: var(--theme-primary); color: var(--theme-text-header);">
+      <div class="flex items-center gap-3 p-3 rounded-lg" style="background: var(--theme-primary);">
         <div class="w-10 h-10 rounded border-2 border-white/30" style="background: ${dye.hex};"></div>
         <div>
-          <p class="font-medium">${dye.name}</p>
-          <p class="text-xs opacity-80 font-mono">${dye.hex}</p>
+          <p class="font-medium" style="color: var(--theme-text-header) !important;">${dye.name}</p>
+          <p class="text-xs opacity-80 font-mono" style="color: var(--theme-text-header) !important;">${dye.hex}</p>
         </div>
       </div>
       <button class="w-full mt-2 p-2 text-sm rounded-lg" style="background: var(--theme-background-secondary); color: var(--theme-text); border: 1px solid var(--theme-border);">
