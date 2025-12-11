@@ -88,6 +88,15 @@ async function initializeApp(): Promise<void> {
       throw new Error('Content container not found');
     }
 
+    // DEV ONLY: Load mockup system if ?mockup=true is in URL
+    if (import.meta.env.DEV && window.location.search.includes('mockup=true')) {
+      logger.info('🎨 Loading v3.0.0 mockup system...');
+      const { loadMockupSystem } = await import('@mockups/index');
+      loadMockupSystem(contentContainer);
+      logger.info('✅ Mockup system loaded. Access at: http://localhost:5173/?mockup=true');
+      return; // Skip normal tool initialization
+    }
+
     // Initialize tools dropdown in header (desktop navigation)
     const toolsDropdownContainer = document.getElementById('tools-dropdown-container');
     if (!toolsDropdownContainer) {
