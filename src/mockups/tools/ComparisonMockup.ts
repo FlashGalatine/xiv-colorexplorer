@@ -210,11 +210,11 @@ export class ComparisonMockup extends BaseComponent {
             <circle cx="${(d.h / 360) * 100}" cy="${100 - d.s}" r="4" fill="${d.hex}" stroke="white" stroke-width="1.5" />
           `).join('')}
           <!-- X-axis tick labels (Hue: 0° to 360°) -->
-          <text x="0" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">0°</text>
-          <text x="25" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">90°</text>
-          <text x="50" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">180°</text>
-          <text x="75" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">270°</text>
-          <text x="100" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">360°</text>
+          <text x="0" y="105" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">0°</text>
+          <text x="25" y="105" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">90°</text>
+          <text x="50" y="105" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">180°</text>
+          <text x="75" y="105" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">270°</text>
+          <text x="100" y="105" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">360°</text>
           <!-- Y-axis tick labels (Saturation: 0% to 100%) -->
           <text x="-4" y="102" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">0%</text>
           <text x="-4" y="77" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">25%</text>
