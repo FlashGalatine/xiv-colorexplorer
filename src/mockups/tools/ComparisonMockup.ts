@@ -221,7 +221,8 @@ export class ComparisonMockup extends BaseComponent {
     // Bar chart area
     const chart = this.createElement('div', { className: 'flex items-end gap-4 h-24' });
     this.selectedDyes.forEach(dye => {
-      const bar = this.createElement('div', { className: 'flex-1 flex flex-col items-center' });
+      // h-full required for percentage height to work on child element
+      const bar = this.createElement('div', { className: 'flex-1 h-full flex flex-col justify-end items-center' });
       bar.innerHTML = `
         <div class="w-full rounded-t" style="height: ${dye.b}%; background: ${dye.hex};"></div>
       `;
