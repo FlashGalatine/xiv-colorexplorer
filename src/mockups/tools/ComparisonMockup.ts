@@ -171,16 +171,20 @@ export class ComparisonMockup extends BaseComponent {
   }
 
   private createChart(title: string, content: HTMLElement): HTMLElement {
+    // Use flex column so content can expand to fill available height (for Grid alignment)
     const card = this.createElement('div', {
-      className: 'p-4 rounded-lg',
+      className: 'p-4 rounded-lg flex flex-col',
       attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
     });
     card.appendChild(this.createElement('h4', {
-      className: 'text-sm font-medium mb-3',
+      className: 'text-sm font-medium mb-3 flex-shrink-0',
       textContent: title,
       attributes: { style: 'color: var(--theme-text);' },
     }));
-    card.appendChild(content);
+    // Wrap content in flex-1 container to fill remaining space
+    const contentWrapper = this.createElement('div', { className: 'flex-1 flex flex-col min-h-0' });
+    contentWrapper.appendChild(content);
+    card.appendChild(contentWrapper);
     return card;
   }
 
@@ -216,24 +220,24 @@ export class ComparisonMockup extends BaseComponent {
   }
 
   private createBrightnessChart(): HTMLElement {
-    const container = this.createElement('div', { className: 'flex flex-col' });
+    // flex-1 h-full allows container to expand and fill parent space
+    const container = this.createElement('div', { className: 'flex flex-col flex-1 h-full' });
 
-    // Bar chart area - items-end aligns bars to bottom, h-52 = 13rem to fill panel
-    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-52' });
+    // Bar chart area - flex-1 expands to fill available space, items-end aligns bars to bottom
+    // h-full ensures it takes the flex-1 calculated height
+    const chart = this.createElement('div', { className: 'flex items-end gap-4 flex-1 h-full' });
     this.selectedDyes.forEach(dye => {
-      // Use calculated rem height instead of percentage (13rem = 100%)
-      // This allows items-end to work without h-full wrapper complexity
-      const heightRem = (dye.b / 100) * 13;
-      const bar = this.createElement('div', { className: 'flex-1' });
+      // h-full on wrapper + percentage height on bar = proportional bars that fill space
+      const bar = this.createElement('div', { className: 'flex-1 h-full flex items-end' });
       bar.innerHTML = `
-        <div class="w-full rounded-t" style="height: ${heightRem}rem; background: ${dye.hex};"></div>
+        <div class="w-full rounded-t" style="height: ${dye.b}%; background: ${dye.hex};"></div>
       `;
       chart.appendChild(bar);
     });
     container.appendChild(chart);
 
     // Labels row with name + percentage (bars already show color)
-    const labels = this.createElement('div', { className: 'flex gap-4 mt-2 pt-2 border-t', attributes: { style: 'border-color: var(--theme-border);' } });
+    const labels = this.createElement('div', { className: 'flex gap-4 mt-2 pt-2 border-t flex-shrink-0', attributes: { style: 'border-color: var(--theme-border);' } });
     this.selectedDyes.forEach(dye => {
       const label = this.createElement('div', { className: 'flex-1 text-center' });
       label.innerHTML = `
