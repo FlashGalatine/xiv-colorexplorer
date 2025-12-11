@@ -218,25 +218,26 @@ export class ComparisonMockup extends BaseComponent {
   private createBrightnessChart(): HTMLElement {
     const container = this.createElement('div', { className: 'flex flex-col' });
 
-    // Bar chart area
-    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-24' });
+    // Bar chart area - items-end aligns bars to bottom, h-36 = 9rem for taller bars
+    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-36' });
     this.selectedDyes.forEach(dye => {
-      // h-full required for percentage height to work on child element
-      const bar = this.createElement('div', { className: 'flex-1 h-full flex flex-col justify-end items-center' });
+      // Use calculated rem height instead of percentage (9rem = 100%)
+      // This allows items-end to work without h-full wrapper complexity
+      const heightRem = (dye.b / 100) * 9;
+      const bar = this.createElement('div', { className: 'flex-1' });
       bar.innerHTML = `
-        <div class="w-full rounded-t" style="height: ${dye.b}%; background: ${dye.hex};"></div>
+        <div class="w-full rounded-t" style="height: ${heightRem}rem; background: ${dye.hex};"></div>
       `;
       chart.appendChild(bar);
     });
     container.appendChild(chart);
 
-    // Labels row with swatch + name + percentage
-    const labels = this.createElement('div', { className: 'flex gap-4 mt-3 pt-2 border-t', attributes: { style: 'border-color: var(--theme-border);' } });
+    // Labels row with name + percentage (bars already show color)
+    const labels = this.createElement('div', { className: 'flex gap-4 mt-2 pt-2 border-t', attributes: { style: 'border-color: var(--theme-border);' } });
     this.selectedDyes.forEach(dye => {
-      const label = this.createElement('div', { className: 'flex-1 flex flex-col items-center text-center' });
+      const label = this.createElement('div', { className: 'flex-1 text-center' });
       label.innerHTML = `
-        <div class="w-5 h-5 rounded mb-1" style="background: ${dye.hex};"></div>
-        <span class="text-xs font-medium truncate w-full" style="color: var(--theme-text);">${dye.name}</span>
+        <span class="text-xs font-medium block truncate" style="color: var(--theme-text);">${dye.name}</span>
         <span class="text-xs" style="color: var(--theme-text-muted);">${dye.b}%</span>
       `;
       labels.appendChild(label);
