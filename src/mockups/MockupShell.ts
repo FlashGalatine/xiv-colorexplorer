@@ -2,19 +2,53 @@
  * XIV Dye Tools v3.0.0 - Mockup Shell Component
  *
  * Two-panel layout shell for the v3.0.0 UI mockups.
- * Desktop: Left sidebar + Right content
- * Mobile: Full-width content + Drawer trigger
+ * Desktop (≥768px): Left sidebar (nav + config) | Right content (results)
+ * Mobile (<768px): Full-width content + Drawer trigger
  *
  * @module mockups/MockupShell
  */
 
 import { BaseComponent } from '@components/base-component';
 import { StorageService, LanguageService } from '@services/index';
-import { MockupNav } from './MockupNav';
-import { IconRail } from './IconRail';
 import { MobileDrawer } from './MobileDrawer';
+import { getLocalizedMockupTools } from './MockupNav';
 
 export type MockupToolId = 'harmony' | 'matcher' | 'accessibility' | 'comparison' | 'mixer' | 'presets';
+
+// Tool icons for the navigation
+const TOOL_ICONS: Record<MockupToolId, string> = {
+  harmony: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a10 10 0 0 1 0 20"/>
+    <circle cx="12" cy="12" r="4"/>
+  </svg>`,
+  matcher: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M3 12h6m6 0h6"/>
+  </svg>`,
+  accessibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="12" cy="12" r="1"/>
+  </svg>`,
+  comparison: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="7" height="7"/>
+    <rect x="14" y="3" width="7" height="7"/>
+    <rect x="3" y="14" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/>
+  </svg>`,
+  mixer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 4h16v16H4z"/>
+    <path d="M4 12h16"/>
+    <circle cx="8" cy="8" r="2"/>
+    <circle cx="16" cy="16" r="2"/>
+  </svg>`,
+  presets: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/>
+    <path d="M9 9h6v6H9z"/>
+  </svg>`,
+};
 
 export interface MockupShellOptions {
   initialTool?: MockupToolId;
@@ -31,8 +65,6 @@ export class MockupShell extends BaseComponent {
   private activeToolId: MockupToolId;
 
   // Child components
-  private mockupNav: MockupNav | null = null;
-  private iconRail: IconRail | null = null;
   private mobileDrawer: MobileDrawer | null = null;
 
   // DOM references
@@ -40,7 +72,9 @@ export class MockupShell extends BaseComponent {
   private rightPanel: HTMLElement | null = null;
   private leftPanelContent: HTMLElement | null = null;
   private rightPanelContent: HTMLElement | null = null;
+  private toolNavContainer: HTMLElement | null = null;
   private mobileMenuBtn: HTMLElement | null = null;
+  private collapseBtn: HTMLElement | null = null;
 
   constructor(container: HTMLElement, options: MockupShellOptions = {}) {
     super(container);
@@ -57,31 +91,69 @@ export class MockupShell extends BaseComponent {
 
   render(): void {
     const shell = this.createElement('div', {
-      className: 'mockup-shell flex flex-col md:flex-row h-full min-h-[calc(100vh-200px)]',
+      className: 'mockup-shell flex flex-col md:flex-row min-h-[600px]',
       attributes: {
         style: 'background: var(--theme-background);',
       },
     });
 
-    // Left Panel (Desktop only - hidden on mobile)
+    // ========================
+    // LEFT PANEL (Desktop sidebar)
+    // ========================
     this.leftPanel = this.createElement('aside', {
-      className: 'hidden md:flex flex-shrink-0 transition-all duration-300',
+      className: 'hidden md:flex flex-col flex-shrink-0 border-r transition-all duration-300',
       attributes: {
-        style: this.isCollapsed
-          ? 'width: var(--panel-collapsed-width);'
-          : 'width: var(--panel-left-width);',
+        style: `
+          width: ${this.isCollapsed ? 'var(--panel-collapsed-width)' : 'var(--panel-left-width)'};
+          border-color: var(--theme-border);
+          background: var(--theme-card-background);
+        `.replace(/\s+/g, ' '),
       },
     });
 
-    // Navigation container (will hold MockupNav or IconRail)
-    const navContainer = this.createElement('div', {
-      className: 'nav-container h-full',
+    // Tool navigation (icons + labels or just icons when collapsed)
+    this.toolNavContainer = this.createElement('nav', {
+      className: 'flex-shrink-0 border-b',
+      attributes: {
+        style: 'border-color: var(--theme-border);',
+        'aria-label': 'Tool navigation',
+      },
     });
-    this.leftPanel.appendChild(navContainer);
+    this.renderToolNav();
+    this.leftPanel.appendChild(this.toolNavContainer);
+
+    // Left panel content area (tool-specific config)
+    this.leftPanelContent = this.createElement('div', {
+      className: 'flex-1 overflow-y-auto',
+      attributes: {
+        'data-panel': 'left-config',
+        style: this.isCollapsed ? 'display: none;' : '',
+      },
+    });
+    this.leftPanel.appendChild(this.leftPanelContent);
+
+    // Collapse toggle button at bottom
+    const collapseContainer = this.createElement('div', {
+      className: 'flex-shrink-0 border-t p-2',
+      attributes: { style: 'border-color: var(--theme-border);' },
+    });
+    this.collapseBtn = this.createElement('button', {
+      className: 'w-full flex items-center justify-center gap-2 p-2 rounded-lg transition-colors hover:brightness-90',
+      attributes: {
+        style: 'background: var(--theme-background-secondary); color: var(--theme-text);',
+        'aria-label': this.isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
+        type: 'button',
+      },
+    });
+    this.updateCollapseButton();
+    collapseContainer.appendChild(this.collapseBtn);
+    this.leftPanel.appendChild(collapseContainer);
 
     shell.appendChild(this.leftPanel);
 
-    // Right Panel (Main content area)
+    // ========================
+    // RIGHT PANEL (Main content)
+    // ========================
     this.rightPanel = this.createElement('main', {
       className: 'flex-1 flex flex-col min-w-0',
       attributes: {
@@ -109,78 +181,167 @@ export class MockupShell extends BaseComponent {
       </svg>`,
     });
 
-    const mobileTitle = this.createElement('h1', {
-      className: 'text-lg font-semibold',
-      textContent: 'v3.0.0 Layout Mockup',
-      attributes: {
-        style: 'color: var(--theme-text);',
-      },
+    // Active tool display in mobile header
+    const mobileToolDisplay = this.createElement('div', {
+      className: 'flex items-center gap-2 flex-1',
     });
+    const tools = getLocalizedMockupTools();
+    const activeTool = tools.find(t => t.id === this.activeToolId);
+    mobileToolDisplay.innerHTML = `
+      <span class="w-5 h-5" style="color: var(--theme-primary);">${TOOL_ICONS[this.activeToolId]}</span>
+      <span class="font-medium" style="color: var(--theme-text);">${activeTool?.name ?? this.activeToolId}</span>
+    `;
 
     mobileHeader.appendChild(this.mobileMenuBtn);
-    mobileHeader.appendChild(mobileTitle);
+    mobileHeader.appendChild(mobileToolDisplay);
     this.rightPanel.appendChild(mobileHeader);
 
-    // Right panel content area (two sections: tool config on left, results on right for desktop)
-    const contentWrapper = this.createElement('div', {
-      className: 'flex-1 flex flex-col lg:flex-row overflow-hidden',
-    });
-
-    // Left content area (tool-specific config) - visible on desktop when sidebar shows nav
-    this.leftPanelContent = this.createElement('div', {
-      className: 'lg:w-80 xl:w-96 flex-shrink-0 border-r overflow-y-auto',
-      attributes: {
-        style: 'border-color: var(--theme-border); background: var(--theme-card-background);',
-        'data-panel': 'left-config',
-      },
-    });
-
-    // Right content area (results/visualizations)
+    // Right panel content area (results/visualizations)
     this.rightPanelContent = this.createElement('div', {
-      className: 'flex-1 overflow-y-auto p-4 lg:p-6',
+      className: 'flex-1 overflow-y-auto p-4 md:p-6',
       attributes: {
-        style: 'background: var(--theme-background-secondary);',
         'data-panel': 'right-results',
       },
     });
-
-    contentWrapper.appendChild(this.leftPanelContent);
-    contentWrapper.appendChild(this.rightPanelContent);
-    this.rightPanel.appendChild(contentWrapper);
+    this.rightPanel.appendChild(this.rightPanelContent);
 
     shell.appendChild(this.rightPanel);
 
     this.element = shell;
     this.container.appendChild(this.element);
 
-    // Initialize child components
-    this.initializeNavigation(navContainer);
+    // Initialize mobile drawer
     this.initializeMobileDrawer();
   }
 
-  private initializeNavigation(navContainer: HTMLElement): void {
+  private renderToolNav(): void {
+    if (!this.toolNavContainer) return;
+
+    const tools = getLocalizedMockupTools();
+
     if (this.isCollapsed) {
-      this.iconRail = new IconRail(navContainer, {
-        activeToolId: this.activeToolId,
-        onToolSelect: (toolId) => this.handleToolSelect(toolId as MockupToolId),
-        onExpand: () => this.toggleCollapse(),
+      // Icon-only mode
+      this.toolNavContainer.className = 'flex-shrink-0 border-b flex flex-col items-center py-2 gap-1';
+      this.toolNavContainer.innerHTML = '';
+
+      tools.forEach(tool => {
+        const isActive = this.activeToolId === tool.id;
+        const btn = this.createElement('button', {
+          className: 'w-10 h-10 flex items-center justify-center rounded-lg transition-colors',
+          attributes: {
+            style: isActive
+              ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+              : 'background: transparent; color: var(--theme-text);',
+            'aria-label': tool.name,
+            ...(isActive && { 'aria-current': 'page' }),
+            title: tool.name,
+            type: 'button',
+          },
+          innerHTML: `<span class="w-5 h-5">${TOOL_ICONS[tool.id as MockupToolId]}</span>`,
+        });
+
+        btn.addEventListener('click', () => this.handleToolSelect(tool.id as MockupToolId));
+        this.toolNavContainer!.appendChild(btn);
       });
-      this.iconRail.init();
     } else {
-      this.mockupNav = new MockupNav(navContainer, {
-        activeToolId: this.activeToolId,
-        onToolSelect: (toolId) => this.handleToolSelect(toolId as MockupToolId),
-        onCollapse: () => this.toggleCollapse(),
+      // Full mode with icons + labels
+      this.toolNavContainer.className = 'flex-shrink-0 border-b p-2 space-y-1';
+      this.toolNavContainer.innerHTML = '';
+
+      tools.forEach(tool => {
+        const isActive = this.activeToolId === tool.id;
+        const btn = this.createElement('button', {
+          className: 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors text-sm',
+          attributes: {
+            style: isActive
+              ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+              : 'background: transparent; color: var(--theme-text);',
+            ...(isActive && { 'aria-current': 'page' }),
+            type: 'button',
+          },
+        });
+
+        const icon = this.createElement('span', {
+          className: 'w-5 h-5 flex-shrink-0',
+          innerHTML: TOOL_ICONS[tool.id as MockupToolId],
+        });
+        const name = this.createElement('span', {
+          className: 'truncate',
+          textContent: tool.name,
+        });
+
+        btn.appendChild(icon);
+        btn.appendChild(name);
+        btn.addEventListener('click', () => this.handleToolSelect(tool.id as MockupToolId));
+        this.toolNavContainer!.appendChild(btn);
       });
-      this.mockupNav.init();
+    }
+  }
+
+  private updateCollapseButton(): void {
+    if (!this.collapseBtn) return;
+
+    const chevronLeft = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>`;
+    const chevronRight = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>`;
+
+    if (this.isCollapsed) {
+      this.collapseBtn.innerHTML = chevronRight;
+      this.collapseBtn.setAttribute('aria-label', 'Expand sidebar');
+    } else {
+      this.collapseBtn.innerHTML = `${chevronLeft}<span class="text-sm">Collapse</span>`;
+      this.collapseBtn.setAttribute('aria-label', 'Collapse sidebar');
     }
   }
 
   private initializeMobileDrawer(): void {
-    // Create drawer in a temporary container (it appends to body)
     const drawerContainer = document.createElement('div');
     this.mobileDrawer = new MobileDrawer(drawerContainer);
     this.mobileDrawer.init();
+
+    // Add tool navigation to drawer content
+    this.updateMobileDrawerNav();
+  }
+
+  private updateMobileDrawerNav(): void {
+    const drawerContent = this.mobileDrawer?.getContentContainer();
+    if (!drawerContent) return;
+
+    // Create navigation section at top of drawer
+    const navSection = document.createElement('div');
+    navSection.className = 'p-3 border-b';
+    navSection.setAttribute('style', 'border-color: var(--theme-border);');
+
+    const tools = getLocalizedMockupTools();
+    tools.forEach(tool => {
+      const isActive = this.activeToolId === tool.id;
+      const btn = document.createElement('button');
+      btn.className = 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors text-sm mb-1';
+      btn.setAttribute('style', isActive
+        ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+        : 'background: transparent; color: var(--theme-text);');
+      btn.innerHTML = `
+        <span class="w-5 h-5 flex-shrink-0">${TOOL_ICONS[tool.id as MockupToolId]}</span>
+        <span class="truncate">${tool.name}</span>
+      `;
+      btn.addEventListener('click', () => {
+        this.handleToolSelect(tool.id as MockupToolId);
+        this.mobileDrawer?.close();
+      });
+      navSection.appendChild(btn);
+    });
+
+    // Insert nav at the beginning of drawer content
+    const existingNav = drawerContent.querySelector('[data-drawer-nav]');
+    if (existingNav) {
+      existingNav.replaceWith(navSection);
+    } else {
+      navSection.setAttribute('data-drawer-nav', '');
+      drawerContent.insertBefore(navSection, drawerContent.firstChild);
+    }
   }
 
   bindEvents(): void {
@@ -191,7 +352,14 @@ export class MockupShell extends BaseComponent {
       });
     }
 
-    // Resize handler for responsive behavior
+    // Collapse button
+    if (this.collapseBtn) {
+      this.on(this.collapseBtn, 'click', () => {
+        this.toggleCollapse();
+      });
+    }
+
+    // Resize handler
     this.on(window, 'resize', this.handleResize);
   }
 
@@ -199,9 +367,7 @@ export class MockupShell extends BaseComponent {
     const wasMobile = this.isMobile;
     this.isMobile = window.innerWidth < 768;
 
-    // If transitioning between mobile/desktop, update layout
     if (wasMobile !== this.isMobile) {
-      // Close mobile drawer when switching to desktop
       if (!this.isMobile && this.mobileDrawer?.getIsOpen()) {
         this.mobileDrawer.close();
       }
@@ -211,19 +377,25 @@ export class MockupShell extends BaseComponent {
   private handleToolSelect(toolId: MockupToolId): void {
     this.activeToolId = toolId;
 
-    // Update nav/rail active state
-    this.mockupNav?.setActiveToolId(toolId);
-    this.iconRail?.setActiveToolId(toolId);
+    // Update navigation
+    this.renderToolNav();
+    this.updateMobileDrawerNav();
 
-    // Close mobile drawer after selection
-    if (this.isMobile) {
-      this.mobileDrawer?.close();
+    // Update mobile header
+    const mobileToolDisplay = this.rightPanel?.querySelector('.md\\:hidden .flex-1');
+    if (mobileToolDisplay) {
+      const tools = getLocalizedMockupTools();
+      const activeTool = tools.find(t => t.id === toolId);
+      mobileToolDisplay.innerHTML = `
+        <span class="w-5 h-5" style="color: var(--theme-primary);">${TOOL_ICONS[toolId]}</span>
+        <span class="font-medium" style="color: var(--theme-text);">${activeTool?.name ?? toolId}</span>
+      `;
     }
 
     // Notify parent
     this.options.onToolChange?.(toolId);
 
-    // Emit event for tool change
+    // Emit event
     this.emit('tool-change', { toolId });
   }
 
@@ -243,35 +415,14 @@ export class MockupShell extends BaseComponent {
         : 'var(--panel-left-width)';
     }
 
-    // Swap navigation components
-    const navContainer = this.leftPanel?.querySelector('.nav-container');
-    if (navContainer) {
-      // Destroy current nav
-      this.mockupNav?.destroy();
-      this.iconRail?.destroy();
-      this.mockupNav = null;
-      this.iconRail = null;
-
-      // Clear container
-      navContainer.innerHTML = '';
-
-      // Create new nav
-      if (this.isCollapsed) {
-        this.iconRail = new IconRail(navContainer as HTMLElement, {
-          activeToolId: this.activeToolId,
-          onToolSelect: (toolId) => this.handleToolSelect(toolId as MockupToolId),
-          onExpand: () => this.toggleCollapse(),
-        });
-        this.iconRail.init();
-      } else {
-        this.mockupNav = new MockupNav(navContainer as HTMLElement, {
-          activeToolId: this.activeToolId,
-          onToolSelect: (toolId) => this.handleToolSelect(toolId as MockupToolId),
-          onCollapse: () => this.toggleCollapse(),
-        });
-        this.mockupNav.init();
-      }
+    // Toggle config content visibility
+    if (this.leftPanelContent) {
+      this.leftPanelContent.style.display = this.isCollapsed ? 'none' : '';
     }
+
+    // Update navigation
+    this.renderToolNav();
+    this.updateCollapseButton();
   }
 
   /**
@@ -324,15 +475,13 @@ export class MockupShell extends BaseComponent {
   }
 
   onMount(): void {
-    // Subscribe to language changes
     LanguageService.subscribe(() => {
-      this.mockupNav?.updateTools();
+      this.renderToolNav();
+      this.updateMobileDrawerNav();
     });
   }
 
   destroy(): void {
-    this.mockupNav?.destroy();
-    this.iconRail?.destroy();
     this.mobileDrawer?.destroy();
     super.destroy();
   }

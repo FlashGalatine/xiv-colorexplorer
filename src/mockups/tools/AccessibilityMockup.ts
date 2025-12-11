@@ -236,13 +236,25 @@ export class AccessibilityMockup extends BaseComponent {
       attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
     });
 
-    const n = this.selectedDyes.length;
     let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr><th></th>';
-    this.selectedDyes.forEach(d => { html += `<th class="p-2"><div class="w-6 h-6 rounded mx-auto" style="background: ${d.hex};"></div></th>`; });
+    // Column headers with swatch + name
+    this.selectedDyes.forEach(d => {
+      html += `<th class="p-2 text-center">
+        <div class="w-6 h-6 rounded mx-auto mb-1" style="background: ${d.hex};"></div>
+        <span class="text-xs font-normal block truncate max-w-20" style="color: var(--theme-text-muted);">${d.name}</span>
+      </th>`;
+    });
     html += '</tr></thead><tbody>';
 
     this.selectedDyes.forEach((dye, i) => {
-      html += `<tr><td class="p-2"><div class="w-6 h-6 rounded" style="background: ${dye.hex};"></div></td>`;
+      // Row header with swatch + name
+      html += `<tr>
+        <td class="p-2">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded shrink-0" style="background: ${dye.hex};"></div>
+            <span class="text-xs truncate max-w-20" style="color: var(--theme-text);">${dye.name}</span>
+          </div>
+        </td>`;
       this.selectedDyes.forEach((_, j) => {
         if (i === j) {
           html += '<td class="p-2 text-center" style="color: var(--theme-text-muted);">-</td>';

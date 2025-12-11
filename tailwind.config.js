@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   // Note: darkMode uses default 'media' query based on prefers-color-scheme
   // However, our custom theme system (CSS variables + theme classes) overrides this
   // and provides the actual dark/light mode behavior through CSS custom properties

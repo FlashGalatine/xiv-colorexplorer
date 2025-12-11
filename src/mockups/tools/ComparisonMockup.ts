@@ -186,35 +186,63 @@ export class ComparisonMockup extends BaseComponent {
 
   private createHueSatPlot(): HTMLElement {
     const plot = this.createElement('div', { className: 'relative aspect-square' });
+    // Origin at bottom-left: x=0 is left (Hue 0°), y=100 is bottom (Sat 0%)
+    // Hue maps to x-axis (0-360° → 0-100), Saturation maps to y-axis (0-100% → 100-0)
     plot.innerHTML = `
-      <svg viewBox="0 0 100 100" class="w-full h-full">
-        <rect width="100" height="100" fill="var(--theme-background-secondary)" rx="4" />
-        <line x1="50" y1="0" x2="50" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" />
-        <line x1="0" y1="50" x2="100" y2="50" stroke="var(--theme-border)" stroke-dasharray="2" />
-        ${this.selectedDyes.map(d => `
-          <circle cx="${(d.h / 360) * 100}" cy="${100 - d.s}" r="6" fill="${d.hex}" stroke="white" stroke-width="2" />
-        `).join('')}
-        <text x="50" y="98" text-anchor="middle" font-size="6" fill="var(--theme-text-muted)">Hue</text>
-        <text x="2" y="50" font-size="6" fill="var(--theme-text-muted)" transform="rotate(-90 5 50)">Saturation</text>
+      <svg viewBox="0 0 110 110" class="w-full h-full">
+        <!-- Chart area with padding for labels -->
+        <g transform="translate(10, 0)">
+          <!-- Background -->
+          <rect width="100" height="100" fill="var(--theme-background-secondary)" rx="4" />
+          <!-- Grid lines -->
+          <line x1="0" y1="25" x2="100" y2="25" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="0" y1="75" x2="100" y2="75" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="25" y1="0" x2="25" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="50" y1="0" x2="50" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="75" y1="0" x2="75" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <!-- Data points - smaller dots (r=4) -->
+          ${this.selectedDyes.map(d => `
+            <circle cx="${(d.h / 360) * 100}" cy="${100 - d.s}" r="4" fill="${d.hex}" stroke="white" stroke-width="1.5" />
+          `).join('')}
+          <!-- X-axis label -->
+          <text x="50" y="108" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)">Hue</text>
+        </g>
+        <!-- Y-axis label -->
+        <text x="4" y="50" font-size="5" fill="var(--theme-text-muted)" transform="rotate(-90 4 50)">Saturation</text>
       </svg>
     `;
     return plot;
   }
 
   private createBrightnessChart(): HTMLElement {
-    const chart = this.createElement('div', { className: 'flex items-end gap-2 h-32' });
+    const container = this.createElement('div', { className: 'flex flex-col' });
 
+    // Bar chart area
+    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-24' });
     this.selectedDyes.forEach(dye => {
       const bar = this.createElement('div', { className: 'flex-1 flex flex-col items-center' });
       bar.innerHTML = `
         <div class="w-full rounded-t" style="height: ${dye.b}%; background: ${dye.hex};"></div>
-        <div class="w-4 h-4 mt-2 rounded" style="background: ${dye.hex};"></div>
-        <span class="text-xs mt-1" style="color: var(--theme-text-muted);">${dye.b}%</span>
       `;
       chart.appendChild(bar);
     });
+    container.appendChild(chart);
 
-    return chart;
+    // Labels row with swatch + name + percentage
+    const labels = this.createElement('div', { className: 'flex gap-4 mt-3 pt-2 border-t', attributes: { style: 'border-color: var(--theme-border);' } });
+    this.selectedDyes.forEach(dye => {
+      const label = this.createElement('div', { className: 'flex-1 flex flex-col items-center text-center' });
+      label.innerHTML = `
+        <div class="w-5 h-5 rounded mb-1" style="background: ${dye.hex};"></div>
+        <span class="text-xs font-medium truncate w-full" style="color: var(--theme-text);">${dye.name}</span>
+        <span class="text-xs" style="color: var(--theme-text-muted);">${dye.b}%</span>
+      `;
+      labels.appendChild(label);
+    });
+    container.appendChild(labels);
+
+    return container;
   }
 
   private createDistanceMatrix(): HTMLElement {
@@ -223,12 +251,25 @@ export class ComparisonMockup extends BaseComponent {
       attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
     });
 
-    let html = '<table class="w-full text-sm"><thead><tr><th></th>';
-    this.selectedDyes.forEach(d => { html += `<th class="p-2"><div class="w-6 h-6 rounded mx-auto" style="background: ${d.hex};" title="${d.name}"></div></th>`; });
+    let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr><th></th>';
+    // Column headers with swatch + name
+    this.selectedDyes.forEach(d => {
+      html += `<th class="p-2 text-center">
+        <div class="w-6 h-6 rounded mx-auto mb-1" style="background: ${d.hex};"></div>
+        <span class="text-xs font-normal block truncate max-w-20" style="color: var(--theme-text-muted);">${d.name}</span>
+      </th>`;
+    });
     html += '</tr></thead><tbody>';
 
     this.selectedDyes.forEach((dye, i) => {
-      html += `<tr><td class="p-2"><div class="w-6 h-6 rounded" style="background: ${dye.hex};"></div></td>`;
+      // Row header with swatch + name
+      html += `<tr>
+        <td class="p-2">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded shrink-0" style="background: ${dye.hex};"></div>
+            <span class="text-xs truncate max-w-20" style="color: var(--theme-text);">${dye.name}</span>
+          </div>
+        </td>`;
       this.selectedDyes.forEach((_, j) => {
         if (i === j) {
           html += '<td class="p-2 text-center" style="color: var(--theme-text-muted);">-</td>';
@@ -240,7 +281,7 @@ export class ComparisonMockup extends BaseComponent {
       html += '</tr>';
     });
 
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     matrix.innerHTML = html;
     return matrix;
   }

@@ -1,13 +1,15 @@
 /**
- * XIV Dye Tools v2.0.0 - Tailwind CSS Output
+ * XIV Dye Tools v2.0.0 - Tailwind CSS Entry Point
  * Phase 12: Global utility styles
  *
- * This file is generated/populated during the build process
+ * Updated for Tailwind CSS v4 syntax
  */
 
-/* Import global styles (must precede @tailwind directives) */
+/* Import global styles first (must precede @import "tailwindcss") */
 @import './globals.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Import Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* Link to the config file for custom theme extensions */
+@config "../../tailwind.config.js";
