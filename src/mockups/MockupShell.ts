@@ -75,6 +75,7 @@ export class MockupShell extends BaseComponent {
   private toolNavContainer: HTMLElement | null = null;
   private mobileMenuBtn: HTMLElement | null = null;
   private collapseBtn: HTMLElement | null = null;
+  private mobileBottomNav: HTMLElement | null = null;
 
   constructor(container: HTMLElement, options: MockupShellOptions = {}) {
     super(container);
@@ -161,9 +162,9 @@ export class MockupShell extends BaseComponent {
       },
     });
 
-    // Mobile header with menu button
+    // Mobile header with menu button (sticky)
     const mobileHeader = this.createElement('div', {
-      className: 'md:hidden flex items-center gap-3 px-4 py-3 border-b',
+      className: 'md:hidden flex items-center gap-3 px-4 py-3 border-b sticky top-0 z-10',
       attributes: {
         style: 'border-color: var(--theme-border); background: var(--theme-card-background);',
       },
@@ -197,8 +198,9 @@ export class MockupShell extends BaseComponent {
     this.rightPanel.appendChild(mobileHeader);
 
     // Right panel content area (results/visualizations)
+    // Added pb-20 on mobile for bottom nav clearance
     this.rightPanelContent = this.createElement('div', {
-      className: 'flex-1 overflow-y-auto p-4 md:p-6',
+      className: 'flex-1 overflow-y-auto p-4 pb-20 md:p-6 md:pb-6',
       attributes: {
         'data-panel': 'right-results',
       },
@@ -212,6 +214,72 @@ export class MockupShell extends BaseComponent {
 
     // Initialize mobile drawer
     this.initializeMobileDrawer();
+
+    // Create mobile bottom navigation
+    this.createMobileBottomNav();
+  }
+
+  /**
+   * Create the mobile bottom navigation bar
+   */
+  private createMobileBottomNav(): void {
+    this.mobileBottomNav = this.createElement('nav', {
+      className: 'md:hidden fixed bottom-0 left-0 right-0 z-20 border-t',
+      attributes: {
+        style: 'background: var(--theme-card-background); border-color: var(--theme-border);',
+        'aria-label': 'Tool navigation',
+      },
+    });
+
+    this.renderMobileBottomNav();
+    document.body.appendChild(this.mobileBottomNav);
+  }
+
+  /**
+   * Render the mobile bottom nav buttons
+   */
+  private renderMobileBottomNav(): void {
+    if (!this.mobileBottomNav) return;
+
+    const tools = getLocalizedMockupTools();
+    this.mobileBottomNav.innerHTML = '';
+
+    const navContainer = this.createElement('div', {
+      className: 'flex items-center justify-around py-2 px-1',
+    });
+
+    tools.forEach(tool => {
+      const isActive = this.activeToolId === tool.id;
+      const btn = this.createElement('button', {
+        className: 'flex flex-col items-center justify-center px-2 py-1 rounded-lg transition-colors min-w-[48px]',
+        attributes: {
+          style: isActive
+            ? 'color: var(--theme-primary);'
+            : 'color: var(--theme-text-muted);',
+          'aria-label': tool.name,
+          ...(isActive && { 'aria-current': 'page' }),
+          type: 'button',
+        },
+      });
+
+      const icon = this.createElement('span', {
+        className: 'w-6 h-6 mb-0.5',
+        innerHTML: TOOL_ICONS[tool.id as MockupToolId],
+      });
+
+      const label = this.createElement('span', {
+        className: 'text-[10px] font-medium truncate max-w-[56px]',
+        textContent: tool.name.split(' ')[0], // First word only for space
+      });
+
+      btn.appendChild(icon);
+      btn.appendChild(label);
+
+      btn.addEventListener('click', () => this.handleToolSelect(tool.id as MockupToolId));
+      navContainer.appendChild(btn);
+    });
+
+    this.mobileBottomNav.appendChild(navContainer);
   }
 
   private renderToolNav(): void {
@@ -377,9 +445,10 @@ export class MockupShell extends BaseComponent {
   private handleToolSelect(toolId: MockupToolId): void {
     this.activeToolId = toolId;
 
-    // Update navigation
+    // Update all navigations
     this.renderToolNav();
     this.updateMobileDrawerNav();
+    this.renderMobileBottomNav();
 
     // Update mobile header
     const mobileToolDisplay = this.rightPanel?.querySelector('.md\\:hidden .flex-1');
@@ -478,11 +547,16 @@ export class MockupShell extends BaseComponent {
     LanguageService.subscribe(() => {
       this.renderToolNav();
       this.updateMobileDrawerNav();
+      this.renderMobileBottomNav();
     });
   }
 
   destroy(): void {
     this.mobileDrawer?.destroy();
+    // Remove mobile bottom nav from body
+    if (this.mobileBottomNav && this.mobileBottomNav.parentNode) {
+      this.mobileBottomNav.parentNode.removeChild(this.mobileBottomNav);
+    }
     super.destroy();
   }
 }
