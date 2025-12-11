@@ -136,7 +136,6 @@ async function loadToolMockup(shell: MockupShell, toolId: MockupToolId): Promise
     switch (toolId) {
       case 'harmony': {
         const { HarmonyMockup } = await import('./tools/HarmonyMockup');
-        // Create a container for the mockup
         const mockupContainer = document.createElement('div');
         activeMockup = new HarmonyMockup(mockupContainer, {
           leftPanel,
@@ -147,7 +146,66 @@ async function loadToolMockup(shell: MockupShell, toolId: MockupToolId): Promise
         logger.info('Harmony Mockup loaded');
         break;
       }
-      // Other tools use placeholder for now
+      case 'matcher': {
+        const { MatcherMockup } = await import('./tools/MatcherMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new MatcherMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Matcher Mockup loaded');
+        break;
+      }
+      case 'accessibility': {
+        const { AccessibilityMockup } = await import('./tools/AccessibilityMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new AccessibilityMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Accessibility Mockup loaded');
+        break;
+      }
+      case 'comparison': {
+        const { ComparisonMockup } = await import('./tools/ComparisonMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new ComparisonMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Comparison Mockup loaded');
+        break;
+      }
+      case 'mixer': {
+        const { MixerMockup } = await import('./tools/MixerMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new MixerMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Mixer Mockup loaded');
+        break;
+      }
+      case 'presets': {
+        const { PresetsMockup } = await import('./tools/PresetsMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new PresetsMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Presets Mockup loaded');
+        break;
+      }
       default:
         renderPlaceholderMockup(leftPanel, rightPanel, drawerContent, toolId);
         break;
