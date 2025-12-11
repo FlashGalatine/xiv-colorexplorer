@@ -10,44 +10,27 @@
 
 import { BaseComponent } from '@components/base-component';
 import { StorageService, LanguageService } from '@services/index';
+import {
+  ICON_TOOL_HARMONY,
+  ICON_TOOL_MATCHER,
+  ICON_TOOL_ACCESSIBILITY,
+  ICON_TOOL_COMPARISON,
+  ICON_TOOL_MIXER,
+  ICON_TOOL_PRESETS,
+} from '@shared/tool-icons';
 import { MobileDrawer } from './MobileDrawer';
 import { getLocalizedMockupTools } from './MockupNav';
 
 export type MockupToolId = 'harmony' | 'matcher' | 'accessibility' | 'comparison' | 'mixer' | 'presets';
 
-// Tool icons for the navigation
+// Map tool IDs to their v2.x SVG icons
 const TOOL_ICONS: Record<MockupToolId, string> = {
-  harmony: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a10 10 0 0 1 0 20"/>
-    <circle cx="12" cy="12" r="4"/>
-  </svg>`,
-  matcher: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M3 12h6m6 0h6"/>
-  </svg>`,
-  accessibility: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="12" cy="12" r="10"/>
-    <circle cx="12" cy="12" r="4"/>
-    <circle cx="12" cy="12" r="1"/>
-  </svg>`,
-  comparison: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="3" width="7" height="7"/>
-    <rect x="14" y="3" width="7" height="7"/>
-    <rect x="3" y="14" width="7" height="7"/>
-    <rect x="14" y="14" width="7" height="7"/>
-  </svg>`,
-  mixer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M4 4h16v16H4z"/>
-    <path d="M4 12h16"/>
-    <circle cx="8" cy="8" r="2"/>
-    <circle cx="16" cy="16" r="2"/>
-  </svg>`,
-  presets: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/>
-    <path d="M9 9h6v6H9z"/>
-  </svg>`,
+  harmony: ICON_TOOL_HARMONY,
+  matcher: ICON_TOOL_MATCHER,
+  accessibility: ICON_TOOL_ACCESSIBILITY,
+  comparison: ICON_TOOL_COMPARISON,
+  mixer: ICON_TOOL_MIXER,
+  presets: ICON_TOOL_PRESETS,
 };
 
 export interface MockupShellOptions {
