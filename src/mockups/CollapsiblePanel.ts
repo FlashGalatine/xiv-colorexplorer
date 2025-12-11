@@ -32,7 +32,7 @@ export class CollapsiblePanel extends BaseComponent {
 
     // Load persisted state or use default
     if (options.storageKey) {
-      const stored = StorageService.get<boolean>(`mockup_panel_${options.storageKey}`);
+      const stored = StorageService.getItem<boolean>(`mockup_panel_${options.storageKey}`);
       this.isOpen = stored !== null ? stored : (options.defaultOpen ?? true);
     } else {
       this.isOpen = options.defaultOpen ?? true;
@@ -199,7 +199,7 @@ export class CollapsiblePanel extends BaseComponent {
 
   private persistState(): void {
     if (this.options.storageKey) {
-      StorageService.set(`mockup_panel_${this.options.storageKey}`, this.isOpen);
+      StorageService.setItem(`mockup_panel_${this.options.storageKey}`, this.isOpen);
     }
   }
 }

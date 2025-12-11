@@ -21,30 +21,12 @@ export { IconRail } from './IconRail';
 export { MobileDrawer } from './MobileDrawer';
 export { CollapsiblePanel } from './CollapsiblePanel';
 
-/**
- * Tool mockup loader functions (lazy-loaded)
- */
-const toolMockupLoaders: Record<MockupToolId, () => Promise<void>> = {
-  harmony: async () => {
-    // Will be implemented in Phase 3
-    logger.info('Loading Harmony Mockup...');
-  },
-  matcher: async () => {
-    logger.info('Loading Matcher Mockup...');
-  },
-  accessibility: async () => {
-    logger.info('Loading Accessibility Mockup...');
-  },
-  comparison: async () => {
-    logger.info('Loading Comparison Mockup...');
-  },
-  mixer: async () => {
-    logger.info('Loading Mixer Mockup...');
-  },
-  presets: async () => {
-    logger.info('Loading Presets Mockup...');
-  },
-};
+// Import tool mockup types
+import type { HarmonyMockup } from './tools/HarmonyMockup';
+import type { BaseComponent } from '@components/base-component';
+
+// Track active mockup instance for cleanup
+let activeMockup: BaseComponent | null = null;
 
 /**
  * Load the mockup system into the content container
@@ -126,6 +108,12 @@ async function loadToolMockup(shell: MockupShell, toolId: MockupToolId): Promise
     return;
   }
 
+  // Cleanup previous mockup
+  if (activeMockup) {
+    activeMockup.destroy();
+    activeMockup = null;
+  }
+
   // Clear existing content
   clearContainer(leftPanel);
   clearContainer(rightPanel);
@@ -145,10 +133,25 @@ async function loadToolMockup(shell: MockupShell, toolId: MockupToolId): Promise
 
   // Load tool-specific mockup
   try {
-    await toolMockupLoaders[toolId]();
-
-    // For now, show placeholder content
-    renderPlaceholderMockup(leftPanel, rightPanel, drawerContent, toolId);
+    switch (toolId) {
+      case 'harmony': {
+        const { HarmonyMockup } = await import('./tools/HarmonyMockup');
+        // Create a container for the mockup
+        const mockupContainer = document.createElement('div');
+        activeMockup = new HarmonyMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Harmony Mockup loaded');
+        break;
+      }
+      // Other tools use placeholder for now
+      default:
+        renderPlaceholderMockup(leftPanel, rightPanel, drawerContent, toolId);
+        break;
+    }
   } catch (error) {
     logger.error(`Failed to load ${toolId} mockup:`, error);
     rightPanel.innerHTML = `

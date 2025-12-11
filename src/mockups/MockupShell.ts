@@ -48,7 +48,7 @@ export class MockupShell extends BaseComponent {
     this.activeToolId = options.initialTool ?? 'harmony';
 
     // Load collapsed state from storage
-    const storedCollapsed = StorageService.get<boolean>('mockup_sidebar_collapsed');
+    const storedCollapsed = StorageService.getItem<boolean>('mockup_sidebar_collapsed');
     this.isCollapsed = storedCollapsed ?? false;
 
     // Check if mobile
@@ -234,7 +234,7 @@ export class MockupShell extends BaseComponent {
     this.isCollapsed = !this.isCollapsed;
 
     // Persist state
-    StorageService.set('mockup_sidebar_collapsed', this.isCollapsed);
+    StorageService.setItem('mockup_sidebar_collapsed', this.isCollapsed);
 
     // Update left panel width
     if (this.leftPanel) {
