@@ -218,12 +218,12 @@ export class ComparisonMockup extends BaseComponent {
   private createBrightnessChart(): HTMLElement {
     const container = this.createElement('div', { className: 'flex flex-col' });
 
-    // Bar chart area - items-end aligns bars to bottom, h-36 = 9rem for taller bars
-    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-36' });
+    // Bar chart area - items-end aligns bars to bottom, h-52 = 13rem to fill panel
+    const chart = this.createElement('div', { className: 'flex items-end gap-4 h-52' });
     this.selectedDyes.forEach(dye => {
-      // Use calculated rem height instead of percentage (9rem = 100%)
+      // Use calculated rem height instead of percentage (13rem = 100%)
       // This allows items-end to work without h-full wrapper complexity
-      const heightRem = (dye.b / 100) * 9;
+      const heightRem = (dye.b / 100) * 13;
       const bar = this.createElement('div', { className: 'flex-1' });
       bar.innerHTML = `
         <div class="w-full rounded-t" style="height: ${heightRem}rem; background: ${dye.hex};"></div>
