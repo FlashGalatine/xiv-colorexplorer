@@ -193,9 +193,9 @@ export class ComparisonMockup extends BaseComponent {
     // Origin at bottom-left: x=0 is left (Hue 0°), y=100 is bottom (Sat 0%)
     // Hue maps to x-axis (0-360° → 0-100), Saturation maps to y-axis (0-100% → 100-0)
     plot.innerHTML = `
-      <svg viewBox="0 0 120 120" class="w-full h-full">
+      <svg viewBox="0 0 130 120" class="w-full h-full">
         <!-- Chart area with padding for axis labels -->
-        <g transform="translate(16, 4)">
+        <g transform="translate(26, 4)">
           <!-- Background -->
           <rect width="100" height="100" fill="var(--theme-background-secondary)" rx="4" />
           <!-- Grid lines -->
@@ -216,15 +216,16 @@ export class ComparisonMockup extends BaseComponent {
           <text x="75" y="112" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">270°</text>
           <text x="100" y="112" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">360°</text>
           <!-- Y-axis tick labels (Saturation: 0% to 100%) -->
-          <text x="-3" y="101" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">0%</text>
-          <text x="-3" y="76" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">25%</text>
-          <text x="-3" y="51" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">50%</text>
-          <text x="-3" y="26" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">75%</text>
-          <text x="-3" y="2" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">100%</text>
+          <text x="-4" y="102" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">0%</text>
+          <text x="-4" y="77" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">25%</text>
+          <text x="-4" y="52" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">50%</text>
+          <text x="-4" y="27" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">75%</text>
+          <text x="-4" y="2" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">100%</text>
         </g>
         <!-- Axis titles -->
-        <text x="66" y="118" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)">Hue</text>
-        <text x="5" y="54" font-size="5" fill="var(--theme-text-muted)" transform="rotate(-90 5 54)">Saturation</text>
+        <text x="76" y="118" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)">Hue</text>
+        <!-- Saturation title: centered at y=54 (middle of chart), rotated -90° -->
+        <text x="6" y="54" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)" transform="rotate(-90 6 54)">Saturation</text>
       </svg>
     `;
     return plot;
