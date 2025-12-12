@@ -172,15 +172,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'presets': {
-        const { PresetsMockup } = await import('@mockups/tools/PresetsMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new PresetsMockup(mockupContainer, {
+        // Phase 7: Production PresetTool
+        const { PresetTool } = await import('@components/tools/preset-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new PresetTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Presets tool loaded');
+        logger.info('[V3 Layout] Presets tool loaded (v3 production)');
         break;
       }
       case 'budget': {

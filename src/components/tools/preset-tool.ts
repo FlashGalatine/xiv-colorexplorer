@@ -1,0 +1,1076 @@
+/**
+ * XIV Dye Tools v3.0.0 - Preset Tool Component
+ *
+ * Phase 7: Preset Browser migration to v3 two-panel layout.
+ * Orchestrates preset browsing, filtering, voting, and submission.
+ *
+ * Left Panel: Search, category filters, sort options, auth section
+ * Right Panel: Featured presets, preset grid, pagination
+ *
+ * @module components/tools/preset-tool
+ */
+
+import { BaseComponent } from '@components/base-component';
+import { AuthButton } from '@components/auth-button';
+import { showPresetSubmissionForm } from '@components/preset-submission-form';
+import {
+  authService,
+  hybridPresetService,
+  presetSubmissionService,
+  LanguageService,
+  StorageService,
+} from '@services/index';
+import { ICON_TOOL_PRESETS } from '@shared/tool-icons';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
+import type { UnifiedPreset, PresetSortOption } from '@services/hybrid-preset-service';
+import type { PresetCategory } from 'xivdyetools-core';
+import type { AuthState } from '@services/auth-service';
+import type { CommunityPreset } from '@services/community-preset-service';
+
+// ============================================================================
+// Types and Constants
+// ============================================================================
+
+export interface PresetToolOptions {
+  leftPanel: HTMLElement;
+  rightPanel: HTMLElement;
+  drawerContent?: HTMLElement | null;
+}
+
+/**
+ * Storage keys for v3 preset tool
+ */
+const STORAGE_KEYS = {
+  category: 'v3_preset_category',
+  sortBy: 'v3_preset_sort',
+  tab: 'v3_preset_tab',
+} as const;
+
+/**
+ * Default values
+ */
+const DEFAULTS = {
+  category: 'all' as const,
+  sortBy: 'popular' as PresetSortOption,
+  tab: 'browse' as const,
+};
+
+/**
+ * Categories available for filtering
+ */
+const CATEGORIES: Array<{ id: string; labelKey: string; fallback: string }> = [
+  { id: 'all', labelKey: 'preset.categories.all', fallback: 'All' },
+  { id: 'jobs', labelKey: 'preset.categories.jobs', fallback: 'Jobs' },
+  { id: 'grand-companies', labelKey: 'preset.categories.grandCompanies', fallback: 'Grand Companies' },
+  { id: 'seasons', labelKey: 'preset.categories.seasons', fallback: 'Seasons' },
+  { id: 'events', labelKey: 'preset.categories.events', fallback: 'Events' },
+  { id: 'aesthetics', labelKey: 'preset.categories.aesthetics', fallback: 'Aesthetics' },
+  { id: 'community', labelKey: 'preset.categories.community', fallback: 'Community' },
+];
+
+/**
+ * Sort options
+ */
+const SORT_OPTIONS: Array<{ id: PresetSortOption; labelKey: string; fallback: string }> = [
+  { id: 'popular', labelKey: 'preset.sort.popular', fallback: 'Most Popular' },
+  { id: 'recent', labelKey: 'preset.sort.recent', fallback: 'Most Recent' },
+  { id: 'name', labelKey: 'preset.sort.name', fallback: 'Alphabetical' },
+];
+
+const ICON_STAR = `<svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+</svg>`;
+
+const ICON_SEARCH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+</svg>`;
+
+// ============================================================================
+// PresetTool Component
+// ============================================================================
+
+/**
+ * Preset Tool - v3 Two-Panel Layout
+ *
+ * Browse, search, and discover dye presets from curated and community sources.
+ */
+export class PresetTool extends BaseComponent {
+  private options: PresetToolOptions;
+
+  // State
+  private selectedCategory: string;
+  private sortBy: PresetSortOption;
+  private currentTab: 'browse' | 'my-submissions';
+  private searchQuery: string = '';
+  private authState: AuthState = {
+    isAuthenticated: false,
+    user: null,
+    token: null,
+    expiresAt: null,
+  };
+
+  // Data
+  private presets: UnifiedPreset[] = [];
+  private featuredPresets: UnifiedPreset[] = [];
+  private userSubmissions: CommunityPreset[] = [];
+  private isLoading = false;
+  private hasMorePresets = false;
+  private currentPage = 1;
+  private readonly pageSize = 12;
+
+  // Child components
+  private authButton: AuthButton | null = null;
+
+  // DOM References
+  private categoryContainer: HTMLElement | null = null;
+  private sortContainer: HTMLElement | null = null;
+  private searchInput: HTMLInputElement | null = null;
+  private emptyStateContainer: HTMLElement | null = null;
+  private featuredContainer: HTMLElement | null = null;
+  private presetsGridContainer: HTMLElement | null = null;
+  private loadMoreContainer: HTMLElement | null = null;
+  private tabContainer: HTMLElement | null = null;
+  private authSectionContainer: HTMLElement | null = null;
+
+  // Subscriptions
+  private languageUnsubscribe: (() => void) | null = null;
+  private authUnsubscribe: (() => void) | null = null;
+  private searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  constructor(container: HTMLElement, options: PresetToolOptions) {
+    super(container);
+    this.options = options;
+
+    // Load persisted settings
+    this.selectedCategory = StorageService.getItem<string>(STORAGE_KEYS.category) ?? DEFAULTS.category;
+    this.sortBy = StorageService.getItem<PresetSortOption>(STORAGE_KEYS.sortBy) ?? DEFAULTS.sortBy;
+    this.currentTab = StorageService.getItem<'browse' | 'my-submissions'>(STORAGE_KEYS.tab) ?? DEFAULTS.tab;
+  }
+
+  // ============================================================================
+  // Lifecycle Methods
+  // ============================================================================
+
+  render(): void {
+    this.renderLeftPanel();
+    this.renderRightPanel();
+
+    if (this.options.drawerContent) {
+      this.renderDrawerContent();
+    }
+
+    this.element = this.container;
+  }
+
+  bindEvents(): void {
+    // Subscribe to language changes
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+
+    // Subscribe to auth changes
+    this.authUnsubscribe = authService.subscribe((state) => {
+      this.authState = state;
+      this.updateAuthSection();
+      this.updateTabVisibility();
+      this.updateDrawerContent();
+
+      // If we just logged in, refresh my submissions
+      if (state.isAuthenticated && this.currentTab === 'my-submissions') {
+        void this.loadUserSubmissions();
+      }
+    });
+  }
+
+  async onMount(): Promise<void> {
+    // Get initial auth state
+    this.authState = authService.getState();
+
+    // Initialize hybrid preset service
+    await hybridPresetService.initialize();
+
+    // Load initial data
+    await this.loadPresets();
+
+    logger.info('[PresetTool] Mounted');
+  }
+
+  destroy(): void {
+    this.languageUnsubscribe?.();
+    this.authUnsubscribe?.();
+    this.authButton?.destroy();
+
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+    }
+
+    this.presets = [];
+    this.featuredPresets = [];
+    this.userSubmissions = [];
+
+    super.destroy();
+    logger.info('[PresetTool] Destroyed');
+  }
+
+  // ============================================================================
+  // Left Panel Rendering
+  // ============================================================================
+
+  private renderLeftPanel(): void {
+    const left = this.options.leftPanel;
+    clearContainer(left);
+
+    // Section 1: Search (with tabs if authenticated)
+    const searchSection = this.createSection(LanguageService.t('preset.search') || 'Search');
+    this.renderSearchAndTabs(searchSection);
+    left.appendChild(searchSection);
+
+    // Section 2: Categories
+    const categorySection = this.createSection(LanguageService.t('preset.categories') || 'Categories');
+    this.renderCategories(categorySection);
+    left.appendChild(categorySection);
+
+    // Section 3: Sort Options
+    const sortSection = this.createSection(LanguageService.t('preset.sortBy') || 'Sort By');
+    this.renderSortOptions(sortSection);
+    left.appendChild(sortSection);
+
+    // Section 4: Account
+    const authSection = this.createSection(LanguageService.t('preset.account') || 'Account');
+    this.authSectionContainer = this.createElement('div');
+    authSection.appendChild(this.authSectionContainer);
+    this.renderAuthSection();
+    left.appendChild(authSection);
+  }
+
+  /**
+   * Create a section with label
+   */
+  private createSection(label: string): HTMLElement {
+    const section = this.createElement('div', {
+      className: 'p-4 border-b',
+      attributes: { style: 'border-color: var(--theme-border);' },
+    });
+    const sectionLabel = this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: label,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    section.appendChild(sectionLabel);
+    return section;
+  }
+
+  /**
+   * Create a header for right panel sections
+   */
+  private createHeader(text: string): HTMLElement {
+    return this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: text,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+  }
+
+  /**
+   * Render search input and tab toggle
+   */
+  private renderSearchAndTabs(container: HTMLElement): void {
+    const wrapper = this.createElement('div', { className: 'space-y-3' });
+
+    // Tab toggle (only shown when authenticated)
+    this.tabContainer = this.createElement('div', { className: 'flex gap-2 mb-3' });
+    this.updateTabVisibility();
+    wrapper.appendChild(this.tabContainer);
+
+    // Search input with icon
+    const searchWrapper = this.createElement('div', {
+      className: 'relative',
+    });
+
+    const searchIcon = this.createElement('span', {
+      className: 'absolute left-3 top-1/2 -translate-y-1/2 opacity-50',
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+    searchIcon.innerHTML = ICON_SEARCH;
+    searchWrapper.appendChild(searchIcon);
+
+    this.searchInput = this.createElement('input', {
+      className: 'w-full pl-10 pr-3 py-2 rounded-lg border text-sm',
+      attributes: {
+        type: 'text',
+        placeholder: LanguageService.t('preset.searchPlaceholder') || 'Search presets...',
+        style: 'background: var(--theme-background); border-color: var(--theme-border); color: var(--theme-text);',
+      },
+    }) as HTMLInputElement;
+
+    this.on(this.searchInput, 'input', () => {
+      // Debounce search
+      if (this.searchDebounceTimeout) {
+        clearTimeout(this.searchDebounceTimeout);
+      }
+      this.searchDebounceTimeout = setTimeout(() => {
+        this.searchQuery = this.searchInput?.value || '';
+        this.currentPage = 1;
+        void this.loadPresets();
+        this.updateDrawerContent();
+      }, 300);
+    });
+
+    searchWrapper.appendChild(this.searchInput);
+    wrapper.appendChild(searchWrapper);
+
+    container.appendChild(wrapper);
+  }
+
+  /**
+   * Update tab visibility based on auth state
+   */
+  private updateTabVisibility(): void {
+    if (!this.tabContainer) return;
+    clearContainer(this.tabContainer);
+
+    if (!this.authState.isAuthenticated) {
+      this.tabContainer.classList.add('hidden');
+      // Reset to browse tab if not authenticated
+      if (this.currentTab === 'my-submissions') {
+        this.currentTab = 'browse';
+        StorageService.setItem(STORAGE_KEYS.tab, 'browse');
+      }
+      return;
+    }
+
+    this.tabContainer.classList.remove('hidden');
+
+    const browseBtn = this.createElement('button', {
+      className: 'flex-1 px-3 py-2 text-sm rounded-lg transition-colors',
+      textContent: LanguageService.t('preset.browse') || 'Browse',
+      attributes: {
+        style: this.currentTab === 'browse'
+          ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+          : 'background: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+
+    const mySubmissionsBtn = this.createElement('button', {
+      className: 'flex-1 px-3 py-2 text-sm rounded-lg transition-colors',
+      textContent: LanguageService.t('preset.mySubmissions') || 'My Submissions',
+      attributes: {
+        style: this.currentTab === 'my-submissions'
+          ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+          : 'background: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+
+    this.on(browseBtn, 'click', () => {
+      this.currentTab = 'browse';
+      StorageService.setItem(STORAGE_KEYS.tab, 'browse');
+      this.updateTabVisibility();
+      this.currentPage = 1;
+      void this.loadPresets();
+      this.updateDrawerContent();
+    });
+
+    this.on(mySubmissionsBtn, 'click', () => {
+      this.currentTab = 'my-submissions';
+      StorageService.setItem(STORAGE_KEYS.tab, 'my-submissions');
+      this.updateTabVisibility();
+      void this.loadUserSubmissions();
+      this.updateDrawerContent();
+    });
+
+    this.tabContainer.appendChild(browseBtn);
+    this.tabContainer.appendChild(mySubmissionsBtn);
+  }
+
+  /**
+   * Render category filters
+   */
+  private renderCategories(container: HTMLElement): void {
+    this.categoryContainer = this.createElement('div', { className: 'space-y-1' });
+
+    CATEGORIES.forEach(cat => {
+      const isSelected = this.selectedCategory === cat.id;
+      const btn = this.createElement('button', {
+        className: 'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
+        textContent: LanguageService.t(cat.labelKey) || cat.fallback,
+        attributes: {
+          style: isSelected
+            ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+            : 'background: transparent; color: var(--theme-text);',
+        },
+      });
+
+      this.on(btn, 'click', () => {
+        this.selectedCategory = cat.id;
+        StorageService.setItem(STORAGE_KEYS.category, cat.id);
+        this.updateCategoryButtons();
+        this.currentPage = 1;
+        void this.loadPresets();
+        this.updateDrawerContent();
+      });
+
+      this.categoryContainer!.appendChild(btn);
+    });
+
+    container.appendChild(this.categoryContainer);
+  }
+
+  /**
+   * Update category button styles
+   */
+  private updateCategoryButtons(): void {
+    if (!this.categoryContainer) return;
+    const buttons = this.categoryContainer.querySelectorAll('button');
+    buttons.forEach((btn, i) => {
+      const isSelected = this.selectedCategory === CATEGORIES[i].id;
+      btn.setAttribute(
+        'style',
+        isSelected
+          ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+          : 'background: transparent; color: var(--theme-text);'
+      );
+    });
+  }
+
+  /**
+   * Render sort options
+   */
+  private renderSortOptions(container: HTMLElement): void {
+    this.sortContainer = this.createElement('div', { className: 'space-y-2' });
+
+    SORT_OPTIONS.forEach(opt => {
+      const isSelected = this.sortBy === opt.id;
+      const label = this.createElement('label', {
+        className: 'flex items-center gap-2 cursor-pointer',
+      });
+
+      const radio = this.createElement('input', {
+        className: 'w-4 h-4',
+        attributes: {
+          type: 'radio',
+          name: 'preset-sort',
+          value: opt.id,
+          ...(isSelected && { checked: 'checked' }),
+        },
+      }) as HTMLInputElement;
+
+      this.on(radio, 'change', () => {
+        this.sortBy = opt.id;
+        StorageService.setItem(STORAGE_KEYS.sortBy, opt.id);
+        this.currentPage = 1;
+        void this.loadPresets();
+        this.updateDrawerContent();
+      });
+
+      const text = this.createElement('span', {
+        className: 'text-sm',
+        textContent: LanguageService.t(opt.labelKey) || opt.fallback,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+
+      label.appendChild(radio);
+      label.appendChild(text);
+      this.sortContainer!.appendChild(label);
+    });
+
+    container.appendChild(this.sortContainer);
+  }
+
+  /**
+   * Render auth section
+   */
+  private renderAuthSection(): void {
+    if (!this.authSectionContainer) return;
+    clearContainer(this.authSectionContainer);
+
+    const wrapper = this.createElement('div', { className: 'space-y-3' });
+
+    if (this.authState.isAuthenticated && this.authState.user) {
+      // Logged in state
+      const userCard = this.createElement('div', {
+        className: 'flex items-center gap-3 p-3 rounded-lg',
+        attributes: { style: 'background: var(--theme-background-secondary);' },
+      });
+
+      // Avatar
+      const avatar = this.createElement('div', {
+        className: 'w-10 h-10 rounded-full flex items-center justify-center text-white font-medium',
+        attributes: { style: 'background: var(--theme-primary);' },
+      });
+
+      if (this.authState.user.avatar_url) {
+        const img = this.createElement('img', {
+          className: 'w-full h-full rounded-full object-cover',
+          attributes: {
+            src: this.authState.user.avatar_url,
+            alt: this.authState.user.global_name || this.authState.user.username,
+          },
+        });
+        avatar.appendChild(img);
+      } else {
+        avatar.textContent = (this.authState.user.global_name || this.authState.user.username).charAt(0).toUpperCase();
+      }
+
+      userCard.appendChild(avatar);
+
+      // User info
+      const userInfo = this.createElement('div', { className: 'flex-1' });
+      const userName = this.createElement('p', {
+        className: 'text-sm font-medium',
+        textContent: this.authState.user.global_name || this.authState.user.username,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+      const submissionCount = this.createElement('p', {
+        className: 'text-xs',
+        textContent: `${this.userSubmissions.length} ${LanguageService.t('preset.submissions') || 'submissions'}`,
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      userInfo.appendChild(userName);
+      userInfo.appendChild(submissionCount);
+      userCard.appendChild(userInfo);
+
+      wrapper.appendChild(userCard);
+
+      // My Submissions button
+      const mySubmissionsBtn = this.createElement('button', {
+        className: 'w-full px-3 py-2 text-sm rounded-lg',
+        textContent: LanguageService.t('preset.viewMySubmissions') || 'My Submissions',
+        attributes: {
+          style: 'background: var(--theme-background-secondary); color: var(--theme-text); border: 1px solid var(--theme-border);',
+        },
+      });
+      this.on(mySubmissionsBtn, 'click', () => {
+        this.currentTab = 'my-submissions';
+        StorageService.setItem(STORAGE_KEYS.tab, 'my-submissions');
+        this.updateTabVisibility();
+        void this.loadUserSubmissions();
+      });
+      wrapper.appendChild(mySubmissionsBtn);
+
+      // Submit Preset button
+      const submitBtn = this.createElement('button', {
+        className: 'w-full px-3 py-2 text-sm rounded-lg',
+        textContent: `+ ${LanguageService.t('preset.submitPreset') || 'Submit Preset'}`,
+        attributes: { style: 'background: var(--theme-primary); color: var(--theme-text-header);' },
+      });
+      this.on(submitBtn, 'click', () => {
+        showPresetSubmissionForm((result) => {
+          if (result.success) {
+            void this.loadUserSubmissions();
+            void this.loadPresets();
+          }
+        });
+      });
+      wrapper.appendChild(submitBtn);
+
+      // Logout button
+      const logoutBtn = this.createElement('button', {
+        className: 'w-full px-3 py-2 text-sm rounded-lg text-red-500',
+        textContent: LanguageService.t('auth.logout') || 'Logout',
+        attributes: {
+          style: 'background: transparent; border: 1px solid var(--theme-border);',
+        },
+      });
+      this.on(logoutBtn, 'click', async () => {
+        await authService.logout();
+      });
+      wrapper.appendChild(logoutBtn);
+    } else {
+      // Logged out state
+      const message = this.createElement('p', {
+        className: 'text-sm mb-3',
+        textContent: LanguageService.t('preset.loginPrompt') || 'Log in to submit presets and vote',
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      wrapper.appendChild(message);
+
+      // Auth button
+      const authContainer = this.createElement('div');
+      this.authButton = new AuthButton(authContainer, { returnTool: 'presets' });
+      this.authButton.init();
+      wrapper.appendChild(authContainer);
+    }
+
+    this.authSectionContainer.appendChild(wrapper);
+  }
+
+  /**
+   * Update auth section without re-rendering entire left panel
+   */
+  private updateAuthSection(): void {
+    // Destroy existing auth button if any
+    this.authButton?.destroy();
+    this.authButton = null;
+    this.renderAuthSection();
+  }
+
+  // ============================================================================
+  // Right Panel Rendering
+  // ============================================================================
+
+  private renderRightPanel(): void {
+    const right = this.options.rightPanel;
+    clearContainer(right);
+
+    // Empty state (shown when no presets or loading)
+    this.emptyStateContainer = this.createElement('div');
+    this.renderEmptyState();
+    right.appendChild(this.emptyStateContainer);
+
+    // Featured section (hidden on my-submissions tab)
+    const featuredSection = this.createElement('div', { className: 'mb-6 hidden' });
+    featuredSection.setAttribute('data-section', 'featured');
+    featuredSection.appendChild(this.createHeader(LanguageService.t('preset.featured') || 'Featured Presets'));
+    this.featuredContainer = this.createElement('div', { className: 'grid gap-4 md:grid-cols-2' });
+    featuredSection.appendChild(this.featuredContainer);
+    right.appendChild(featuredSection);
+
+    // Presets grid section
+    const gridSection = this.createElement('div', { className: 'hidden' });
+    gridSection.setAttribute('data-section', 'grid');
+    gridSection.appendChild(this.createHeader(LanguageService.t('preset.allPresets') || 'All Presets'));
+    this.presetsGridContainer = this.createElement('div', {
+      className: 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3',
+    });
+    gridSection.appendChild(this.presetsGridContainer);
+    right.appendChild(gridSection);
+
+    // Load more section
+    this.loadMoreContainer = this.createElement('div', { className: 'hidden mt-6 text-center' });
+    right.appendChild(this.loadMoreContainer);
+  }
+
+  /**
+   * Render empty state
+   */
+  private renderEmptyState(): void {
+    if (!this.emptyStateContainer) return;
+    clearContainer(this.emptyStateContainer);
+
+    const empty = this.createElement('div', {
+      className: 'p-8 rounded-lg border-2 border-dashed text-center',
+      attributes: {
+        style: 'border-color: var(--theme-border); background: var(--theme-card-background);',
+      },
+    });
+
+    if (this.isLoading) {
+      empty.innerHTML = `
+        <div class="inline-block w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mb-3" style="border-color: var(--theme-primary); border-top-color: transparent;"></div>
+        <p style="color: var(--theme-text);">${LanguageService.t('preset.loading') || 'Loading presets...'}</p>
+      `;
+    } else {
+      empty.innerHTML = `
+        <span class="inline-block w-12 h-12 mx-auto mb-3 opacity-30" style="color: var(--theme-text);">${ICON_TOOL_PRESETS}</span>
+        <p style="color: var(--theme-text);">${LanguageService.t('preset.noPresets') || 'No presets found'}</p>
+        <p class="text-sm mt-2" style="color: var(--theme-text-muted);">${LanguageService.t('preset.tryDifferentFilters') || 'Try adjusting your filters'}</p>
+      `;
+    }
+
+    this.emptyStateContainer.appendChild(empty);
+  }
+
+  /**
+   * Show/hide empty state
+   */
+  private showEmptyState(show: boolean): void {
+    if (this.emptyStateContainer) {
+      this.emptyStateContainer.classList.toggle('hidden', !show);
+    }
+
+    // Toggle all result sections
+    const rightPanel = this.options.rightPanel;
+    const sections = rightPanel.querySelectorAll('[data-section]');
+    sections.forEach((section) => {
+      section.classList.toggle('hidden', show);
+    });
+  }
+
+  /**
+   * Render featured presets
+   */
+  private renderFeaturedPresets(): void {
+    if (!this.featuredContainer) return;
+    clearContainer(this.featuredContainer);
+
+    // Hide featured section on my-submissions tab
+    const featuredSection = this.options.rightPanel.querySelector('[data-section="featured"]');
+    if (featuredSection) {
+      featuredSection.classList.toggle('hidden', this.currentTab === 'my-submissions');
+    }
+
+    if (this.currentTab === 'my-submissions') return;
+
+    this.featuredPresets.slice(0, 2).forEach(preset => {
+      const card = this.createFeaturedCard(preset);
+      this.featuredContainer!.appendChild(card);
+    });
+  }
+
+  /**
+   * Create a featured preset card
+   */
+  private createFeaturedCard(preset: UnifiedPreset): HTMLElement {
+    const colors = this.getPresetColors(preset);
+    const card = this.createElement('div', {
+      className: 'relative p-4 rounded-lg overflow-hidden cursor-pointer transition-transform hover:scale-102',
+      attributes: {
+        style: `background: linear-gradient(135deg, ${colors[0]}40, ${colors[2] || colors[0]}40); border: 2px solid ${colors[0]};`,
+      },
+    });
+
+    this.on(card, 'click', () => this.handlePresetClick(preset));
+
+    // Featured badge
+    const badge = this.createElement('div', {
+      className: 'absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium',
+      textContent: LanguageService.t('preset.featured') || 'Featured',
+      attributes: { style: 'background: var(--theme-primary); color: var(--theme-text-header);' },
+    });
+    card.appendChild(badge);
+
+    // Name
+    const name = this.createElement('h4', {
+      className: 'font-bold text-lg mb-2',
+      textContent: preset.name,
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+    card.appendChild(name);
+
+    // Author
+    if (preset.author) {
+      const author = this.createElement('p', {
+        className: 'text-sm mb-3',
+        textContent: `by ${preset.author}`,
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      card.appendChild(author);
+    }
+
+    // Color swatches
+    const swatches = this.createElement('div', { className: 'flex gap-1 mb-3' });
+    colors.slice(0, 4).forEach(color => {
+      const swatch = this.createElement('div', {
+        className: 'w-8 h-8 rounded',
+        attributes: { style: `background: ${color};` },
+      });
+      swatches.appendChild(swatch);
+    });
+    card.appendChild(swatches);
+
+    // Vote count
+    const votes = this.createElement('div', {
+      className: 'flex items-center gap-1 text-sm',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    const starIcon = this.createElement('span', { className: 'w-4 h-4' });
+    starIcon.innerHTML = ICON_STAR;
+    votes.appendChild(starIcon);
+    votes.appendChild(document.createTextNode(preset.voteCount.toLocaleString()));
+    card.appendChild(votes);
+
+    return card;
+  }
+
+  /**
+   * Render preset grid
+   */
+  private renderPresetsGrid(): void {
+    if (!this.presetsGridContainer) return;
+    clearContainer(this.presetsGridContainer);
+
+    // Update header
+    const gridSection = this.options.rightPanel.querySelector('[data-section="grid"]');
+    const header = gridSection?.querySelector('h3');
+    if (header) {
+      header.textContent = this.currentTab === 'my-submissions'
+        ? LanguageService.t('preset.mySubmissions') || 'My Submissions'
+        : LanguageService.t('preset.allPresets') || 'All Presets';
+    }
+
+    const presetsToShow = this.currentTab === 'my-submissions'
+      ? this.userSubmissions.map(p => this.communityToUnified(p))
+      : this.presets;
+
+    presetsToShow.forEach(preset => {
+      const card = this.createPresetCard(preset);
+      this.presetsGridContainer!.appendChild(card);
+    });
+  }
+
+  /**
+   * Create a preset card
+   */
+  private createPresetCard(preset: UnifiedPreset): HTMLElement {
+    const colors = this.getPresetColors(preset);
+    const card = this.createElement('div', {
+      className: 'p-4 rounded-lg cursor-pointer transition-transform hover:scale-102',
+      attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
+    });
+
+    this.on(card, 'click', () => this.handlePresetClick(preset));
+
+    // Color bars
+    const colorBars = this.createElement('div', { className: 'flex gap-1 mb-3' });
+    colors.slice(0, 4).forEach((color, i) => {
+      const bar = this.createElement('div', {
+        className: 'flex-1 h-12',
+        attributes: {
+          style: `background: ${color}; ${i === 0 ? 'border-radius: 0.5rem 0 0 0.5rem;' : ''} ${i === colors.length - 1 || i === 3 ? 'border-radius: 0 0.5rem 0.5rem 0;' : ''}`,
+        },
+      });
+      colorBars.appendChild(bar);
+    });
+    card.appendChild(colorBars);
+
+    // Name
+    const name = this.createElement('h4', {
+      className: 'font-medium text-sm mb-1',
+      textContent: preset.name,
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+    card.appendChild(name);
+
+    // Author and votes
+    const meta = this.createElement('div', {
+      className: 'flex items-center justify-between text-xs',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+
+    const author = this.createElement('span', {
+      textContent: preset.author ? `by ${preset.author}` : '',
+    });
+    meta.appendChild(author);
+
+    const votesWrapper = this.createElement('span', { className: 'flex items-center gap-1' });
+    const starIcon = this.createElement('span', { className: 'w-3 h-3' });
+    starIcon.innerHTML = ICON_STAR;
+    votesWrapper.appendChild(starIcon);
+    votesWrapper.appendChild(document.createTextNode(String(preset.voteCount)));
+    meta.appendChild(votesWrapper);
+
+    card.appendChild(meta);
+
+    return card;
+  }
+
+  /**
+   * Render load more button
+   */
+  private renderLoadMore(): void {
+    if (!this.loadMoreContainer) return;
+    clearContainer(this.loadMoreContainer);
+
+    if (!this.hasMorePresets || this.currentTab === 'my-submissions') {
+      this.loadMoreContainer.classList.add('hidden');
+      return;
+    }
+
+    this.loadMoreContainer.classList.remove('hidden');
+
+    const loadMoreBtn = this.createElement('button', {
+      className: 'px-6 py-2 text-sm rounded-lg transition-colors',
+      textContent: LanguageService.t('preset.loadMore') || 'Load More',
+      attributes: { style: 'background: var(--theme-background-secondary); color: var(--theme-text); border: 1px solid var(--theme-border);' },
+    });
+
+    this.on(loadMoreBtn, 'click', async () => {
+      this.currentPage++;
+      await this.loadPresets(true);
+    });
+
+    this.loadMoreContainer.appendChild(loadMoreBtn);
+  }
+
+  /**
+   * Get preset colors as hex strings
+   */
+  private getPresetColors(preset: UnifiedPreset): string[] {
+    const dyes = hybridPresetService.resolveDyes(preset.dyes);
+    return dyes
+      .filter((d): d is NonNullable<typeof d> => d !== null)
+      .map(d => d.hex);
+  }
+
+  /**
+   * Convert CommunityPreset to UnifiedPreset
+   */
+  private communityToUnified(preset: CommunityPreset): UnifiedPreset {
+    return {
+      id: `community-${preset.id}`,
+      name: preset.name,
+      description: preset.description,
+      category: preset.category_id,
+      dyes: preset.dyes,
+      tags: preset.tags,
+      author: preset.author_name || undefined,
+      voteCount: preset.vote_count,
+      isCurated: preset.is_curated,
+      isFromAPI: true,
+      apiPresetId: preset.id,
+      createdAt: preset.created_at,
+    };
+  }
+
+  // ============================================================================
+  // Data Loading
+  // ============================================================================
+
+  /**
+   * Load presets based on current filters
+   */
+  private async loadPresets(append = false): Promise<void> {
+    this.isLoading = true;
+    if (!append) {
+      this.presets = [];
+    }
+    this.renderEmptyState();
+    this.showEmptyState(true);
+
+    try {
+      // Load featured presets (only on browse tab, first page)
+      if (this.currentTab === 'browse' && !append) {
+        this.featuredPresets = await hybridPresetService.getFeaturedPresets(4);
+      }
+
+      // Build filter options
+      const options: Parameters<typeof hybridPresetService.getPresets>[0] = {
+        sort: this.sortBy,
+        limit: this.pageSize,
+      };
+
+      if (this.selectedCategory !== 'all') {
+        options.category = this.selectedCategory as PresetCategory;
+      }
+
+      if (this.searchQuery) {
+        options.search = this.searchQuery;
+      }
+
+      const newPresets = await hybridPresetService.getPresets(options);
+
+      if (append) {
+        this.presets = [...this.presets, ...newPresets];
+      } else {
+        this.presets = newPresets;
+      }
+
+      // Check if there might be more presets
+      this.hasMorePresets = newPresets.length === this.pageSize;
+
+    } catch (error) {
+      logger.error('[PresetTool] Failed to load presets:', error);
+      this.presets = [];
+      this.featuredPresets = [];
+    }
+
+    this.isLoading = false;
+
+    // Update UI
+    if (this.presets.length === 0 && this.featuredPresets.length === 0) {
+      this.renderEmptyState();
+      this.showEmptyState(true);
+    } else {
+      this.showEmptyState(false);
+      this.renderFeaturedPresets();
+      this.renderPresetsGrid();
+      this.renderLoadMore();
+    }
+  }
+
+  /**
+   * Load user's submissions
+   */
+  private async loadUserSubmissions(): Promise<void> {
+    if (!this.authState.isAuthenticated) {
+      this.userSubmissions = [];
+      return;
+    }
+
+    this.isLoading = true;
+    this.renderEmptyState();
+    this.showEmptyState(true);
+
+    try {
+      const response = await presetSubmissionService.getMySubmissions();
+      this.userSubmissions = response.presets;
+    } catch (error) {
+      logger.error('[PresetTool] Failed to load user submissions:', error);
+      this.userSubmissions = [];
+    }
+
+    this.isLoading = false;
+
+    // Update auth section to show submission count
+    this.updateAuthSection();
+
+    // Update UI
+    if (this.userSubmissions.length === 0) {
+      this.renderEmptyState();
+      this.showEmptyState(true);
+    } else {
+      this.showEmptyState(false);
+      this.renderFeaturedPresets();
+      this.renderPresetsGrid();
+      this.renderLoadMore();
+    }
+  }
+
+  /**
+   * Handle preset card click
+   */
+  private handlePresetClick(preset: UnifiedPreset): void {
+    // For now, log the preset - future: open detail modal
+    logger.info('[PresetTool] Preset clicked:', preset.name);
+
+    // TODO: Implement detail view
+    // Could use: showPresetDetailView(preset) or inline modal
+  }
+
+  // ============================================================================
+  // Mobile Drawer Content
+  // ============================================================================
+
+  private renderDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    this.updateDrawerContent();
+  }
+
+  private updateDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    const drawer = this.options.drawerContent;
+    clearContainer(drawer);
+
+    const content = this.createElement('div', { className: 'p-4 space-y-3' });
+
+    // Current filters summary
+    const summary = this.createElement('div', {
+      className: 'text-sm space-y-1',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+
+    const categoryLabel = CATEGORIES.find(c => c.id === this.selectedCategory);
+    const sortLabel = SORT_OPTIONS.find(s => s.id === this.sortBy);
+
+    summary.innerHTML = `
+      <p><strong>${LanguageService.t('preset.category') || 'Category'}:</strong> ${categoryLabel ? (LanguageService.t(categoryLabel.labelKey) || categoryLabel.fallback) : this.selectedCategory}</p>
+      <p><strong>${LanguageService.t('preset.sortBy') || 'Sort'}:</strong> ${sortLabel ? (LanguageService.t(sortLabel.labelKey) || sortLabel.fallback) : this.sortBy}</p>
+      ${this.searchQuery ? `<p><strong>${LanguageService.t('preset.search') || 'Search'}:</strong> ${this.searchQuery}</p>` : ''}
+      ${this.authState.isAuthenticated ? `<p><strong>${LanguageService.t('preset.tab') || 'Tab'}:</strong> ${this.currentTab === 'browse' ? 'Browse' : 'My Submissions'}</p>` : ''}
+    `;
+    content.appendChild(summary);
+
+    // Auth status
+    const authStatus = this.createElement('div', {
+      className: 'pt-3 border-t text-sm',
+      attributes: { style: 'border-color: var(--theme-border); color: var(--theme-text);' },
+    });
+    authStatus.innerHTML = this.authState.isAuthenticated
+      ? `✓ ${LanguageService.t('auth.loggedInAs') || 'Logged in as'} ${this.authState.user?.global_name || this.authState.user?.username}`
+      : `○ ${LanguageService.t('auth.notLoggedIn') || 'Not logged in'}`;
+    content.appendChild(authStatus);
+
+    drawer.appendChild(content);
+  }
+}

@@ -12,7 +12,7 @@ export { MatcherTool, type MatcherToolOptions } from './matcher-tool';
 export { AccessibilityTool, type AccessibilityToolOptions } from './accessibility-tool';
 export { ComparisonTool, type ComparisonToolOptions } from './comparison-tool';
 export { MixerTool, type MixerToolOptions } from './mixer-tool';
+export { PresetTool, type PresetToolOptions } from './preset-tool';
 
-// Future tool exports (Phase 7+):
-// export { PresetsTool, type PresetsToolOptions } from './presets-tool';
+// Future tool exports (Phase 8+):
 // export { BudgetTool, type BudgetToolOptions } from './budget-tool';
