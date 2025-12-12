@@ -105,6 +105,19 @@ const ICON_BUDGET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
   <path d="M5 15v2c0 1.66 3.13 3 7 3s7-1.34 7-3v-2" />
 </svg>`;
 
+// Beaker icon for Base Dye
+const ICON_BEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 3h6v5l4 9a2 2 0 01-2 3H7a2 2 0 01-2-3l4-9V3z" />
+  <path d="M9 3h6" />
+  <path d="M7 17h10" />
+</svg>`;
+
+// Music note icon for Harmony Type
+const ICON_MUSIC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="8" cy="18" r="4" />
+  <path d="M12 18V2l7 4" />
+</svg>`;
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -307,17 +320,10 @@ export class HarmonyTool extends BaseComponent {
     left.appendChild(dyeContainer);
     this.renderBaseDyePanel(dyeContainer);
 
-    // Section 2: Harmony Type (Collapsible)
+    // Section 2: Harmony Type + Companion Slider (Collapsible)
     const harmonyContainer = this.createElement('div');
     left.appendChild(harmonyContainer);
     this.renderHarmonyTypePanel(harmonyContainer);
-
-    // Section 3: Companion Dyes Slider
-    const companionSection = this.createSection(
-      LanguageService.t('harmony.companionDyes') || 'Companion Dyes'
-    );
-    this.renderCompanionSlider(companionSection);
-    left.appendChild(companionSection);
 
     // Collapsible: Dye Filters
     const filtersContainer = this.createElement('div');
@@ -338,6 +344,7 @@ export class HarmonyTool extends BaseComponent {
       title: LanguageService.t('harmony.baseDye') || 'Base Dye',
       defaultOpen: true,
       storageKey: 'harmony_base_dye',
+      icon: ICON_BEAKER,
     });
     panel.init();
 
@@ -348,19 +355,34 @@ export class HarmonyTool extends BaseComponent {
   }
 
   /**
-   * Render collapsible Harmony Type panel
+   * Render collapsible Harmony Type panel (includes harmony selector and companion slider)
    */
   private renderHarmonyTypePanel(container: HTMLElement): void {
     const panel = new CollapsiblePanel(container, {
       title: LanguageService.t('harmony.harmonyType') || 'Harmony Type',
       defaultOpen: true,
       storageKey: 'harmony_type',
+      icon: ICON_MUSIC,
     });
     panel.init();
 
     const contentContainer = panel.getContentContainer();
     if (contentContainer) {
       this.renderHarmonyTypeSelector(contentContainer);
+
+      // Companion Dyes slider (inside Harmony Type panel)
+      const companionSection = this.createElement('div', {
+        className: 'mt-4 pt-4 border-t',
+        attributes: { style: 'border-color: var(--theme-border);' },
+      });
+      const companionLabel = this.createElement('div', {
+        className: 'text-sm mb-2',
+        textContent: LanguageService.t('harmony.companionDyes') || 'Additional Dyes Per Harmony Color',
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      companionSection.appendChild(companionLabel);
+      this.renderCompanionSlider(companionSection);
+      contentContainer.appendChild(companionSection);
     }
   }
 
@@ -604,6 +626,7 @@ export class HarmonyTool extends BaseComponent {
     const filtersContent = this.createElement('div');
     this.dyeFilters = new DyeFilters(filtersContent, {
       storageKeyPrefix: 'v3_harmony',
+      hideHeader: true, // Header is provided by the outer CollapsiblePanel
       onFilterChange: (filters) => {
         this.filterConfig = filters;
         this.generateHarmonies();
@@ -899,7 +922,10 @@ export class HarmonyTool extends BaseComponent {
     offsets.forEach((offset, index) => {
       const targetHue = (baseHsv.h + offset) % 360;
       const targetColor = ColorService.hsvToHex(targetHue, baseHsv.s, baseHsv.v);
-      const matches = this.findClosestDyesToHue(allDyes, targetHue, this.companionDyesCount + 1);
+
+      // Get extra candidates to allow for filter replacements, then apply filters
+      let matches = this.findClosestDyesToHue(allDyes, targetHue, this.companionDyesCount + 10);
+      matches = this.replaceExcludedDyes(matches, targetHue);
 
       // Use swapped dye if user has selected one, otherwise use best match
       const swappedDye = this.swappedDyes.get(index);
@@ -974,6 +1000,62 @@ export class HarmonyTool extends BaseComponent {
     const dyeHsv = ColorService.hexToHsv(dye.hex);
     const hueDiff = Math.abs(dyeHsv.h - targetHue);
     return Math.min(hueDiff, 360 - hueDiff);
+  }
+
+  /**
+   * Replace excluded dyes with alternatives that don't match exclusion criteria.
+   * This ensures harmony panels always show the expected number of qualifying dyes.
+   * Ported from v2 harmony-generator-tool.ts
+   */
+  private replaceExcludedDyes(
+    dyes: Array<{ dye: Dye; deviance: number }>,
+    targetHue: number
+  ): Array<{ dye: Dye; deviance: number }> {
+    if (!this.filterConfig || !this.dyeFilters) {
+      return dyes; // No filters active
+    }
+
+    const result: Array<{ dye: Dye; deviance: number }> = [];
+    const usedDyeIds = new Set<number>();
+    const allDyes = dyeService.getAllDyes();
+
+    for (const item of dyes) {
+      // If dye is not excluded, keep it
+      if (!this.dyeFilters.isDyeExcluded(item.dye)) {
+        result.push(item);
+        usedDyeIds.add(item.dye.itemID);
+        continue;
+      }
+
+      // Dye is excluded, find alternative using color distance
+      const targetColor = item.dye.hex;
+      let bestAlternative: Dye | null = null;
+      let bestDistance = Infinity;
+
+      for (const dye of allDyes) {
+        if (
+          usedDyeIds.has(dye.itemID) ||
+          dye.category === 'Facewear' ||
+          this.dyeFilters.isDyeExcluded(dye)
+        ) {
+          continue;
+        }
+
+        const distance = ColorService.getColorDistance(targetColor, dye.hex);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestAlternative = dye;
+        }
+      }
+
+      if (bestAlternative) {
+        const deviance = this.calculateHueDeviance(bestAlternative, targetHue);
+        result.push({ dye: bestAlternative, deviance });
+        usedDyeIds.add(bestAlternative.itemID);
+      }
+    }
+
+    return result;
   }
 
   /**

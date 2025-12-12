@@ -38,6 +38,11 @@ export interface DyeFiltersOptions {
    * Callback when filters change
    */
   onFilterChange?: (filters: DyeFilterConfig) => void;
+  /**
+   * Hide the internal collapsible header.
+   * Use this when wrapping DyeFilters in an external CollapsiblePanel.
+   */
+  hideHeader?: boolean;
 }
 
 /**
@@ -60,6 +65,7 @@ export class DyeFilters extends BaseComponent {
   private storageKeyExpanded: string;
   private onFilterChange?: (filters: DyeFilterConfig) => void;
   private languageUnsubscribe: (() => void) | null = null;
+  private hideHeader: boolean = false;
 
   constructor(container: HTMLElement, options: DyeFiltersOptions = {}) {
     super(container);
@@ -67,6 +73,7 @@ export class DyeFilters extends BaseComponent {
     this.storageKey = `xivdyetools_${prefix}_filters`;
     this.storageKeyExpanded = `xivdyetools_${prefix}_filters_expanded`;
     this.onFilterChange = options.onFilterChange;
+    this.hideHeader = options.hideHeader ?? false;
   }
 
   /**
@@ -82,44 +89,52 @@ export class DyeFilters extends BaseComponent {
     const containerId = `${this.container.id || 'filters'}-checkboxes-container`;
     const chevronId = `${this.container.id || 'filters'}-toggle-chevron`;
 
-    // Collapsible header with toggle button
-    const filtersHeader = this.createElement('button', {
-      attributes: {
-        type: 'button',
-        'aria-expanded': 'false', // Updated in updateFiltersUI
-        'aria-controls': containerId,
-      },
-      className:
-        'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
-    });
+    // Only render collapsible header if hideHeader is false
+    if (!this.hideHeader) {
+      // Collapsible header with toggle button
+      const filtersHeader = this.createElement('button', {
+        attributes: {
+          type: 'button',
+          'aria-expanded': 'false', // Updated in updateFiltersUI
+          'aria-controls': containerId,
+        },
+        className:
+          'w-full flex items-center justify-between p-2 -m-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
+      });
 
-    const filtersLabel = this.createElement('span', {
-      textContent: LanguageService.t('filters.advancedFilters'),
-      className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
-    });
+      const filtersLabel = this.createElement('span', {
+        textContent: LanguageService.t('filters.advancedFilters'),
+        className: 'text-sm font-semibold text-gray-700 dark:text-gray-300',
+      });
 
-    const toggleChevron = this.createElement('span', {
-      textContent: '▼',
-      className: 'text-gray-400 dark:text-gray-500 text-xs transition-transform',
-      attributes: {
-        id: chevronId,
-        'aria-hidden': 'true', // Decorative icon
-      },
-    });
+      const toggleChevron = this.createElement('span', {
+        textContent: '▼',
+        className: 'text-gray-400 dark:text-gray-500 text-xs transition-transform',
+        attributes: {
+          id: chevronId,
+          'aria-hidden': 'true', // Decorative icon
+        },
+      });
 
-    // Set initial collapsed state for chevron (rotated up)
-    toggleChevron.style.transform = 'rotate(-90deg)';
+      // Set initial collapsed state for chevron (rotated up)
+      toggleChevron.style.transform = 'rotate(-90deg)';
 
-    filtersHeader.appendChild(filtersLabel);
-    filtersHeader.appendChild(toggleChevron);
-    filtersSection.appendChild(filtersHeader);
+      filtersHeader.appendChild(filtersLabel);
+      filtersHeader.appendChild(toggleChevron);
+      filtersSection.appendChild(filtersHeader);
 
-    // Store toggle button reference
-    this.filterToggleButton = filtersHeader;
+      // Store toggle button reference
+      this.filterToggleButton = filtersHeader;
 
-    // Filter checkboxes container (collapsible)
+      // Add an id to the label for aria-labelledby
+      filtersLabel.id = `${this.container.id || 'filters'}-label`;
+    }
+
+    // Filter checkboxes container (collapsible only if header is shown)
     const checkboxesContainer = this.createElement('div', {
-      className: 'space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out',
+      className: this.hideHeader
+        ? 'space-y-2'
+        : 'space-y-2 max-h-96 overflow-hidden transition-all duration-300 ease-in-out',
       attributes: {
         id: containerId,
         role: 'region',
@@ -127,13 +142,12 @@ export class DyeFilters extends BaseComponent {
       },
     });
 
-    // Add an id to the label for aria-labelledby
-    filtersLabel.id = `${this.container.id || 'filters'}-label`;
-
-    // Set initial collapsed state (default: collapsed)
-    checkboxesContainer.style.maxHeight = '0px';
-    checkboxesContainer.style.opacity = '0';
-    checkboxesContainer.style.marginTop = '0';
+    // Set initial collapsed state only if header is shown (default: collapsed)
+    if (!this.hideHeader) {
+      checkboxesContainer.style.maxHeight = '0px';
+      checkboxesContainer.style.opacity = '0';
+      checkboxesContainer.style.marginTop = '0';
+    }
 
     // Store reference to checkboxes container
     this.filterCheckboxesContainer = checkboxesContainer;
