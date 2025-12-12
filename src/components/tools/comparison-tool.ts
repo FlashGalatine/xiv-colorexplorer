@@ -1,0 +1,924 @@
+/**
+ * XIV Dye Tools v3.0.0 - Comparison Tool Component
+ *
+ * Phase 5: Dye Comparison migration to v3 two-panel layout.
+ * Orchestrates dye comparison with visual charts and distance matrix.
+ *
+ * Left Panel: Dye selector (up to 4), comparison options, market board
+ * Right Panel: Statistics summary, Hue-Saturation plot, Brightness chart, Distance matrix
+ *
+ * @module components/tools/comparison-tool
+ */
+
+import { BaseComponent } from '@components/base-component';
+import { CollapsiblePanel } from '@components/collapsible-panel';
+import { DyeSelector } from '@components/dye-selector';
+import { MarketBoard } from '@components/market-board';
+import { ColorService, LanguageService, StorageService } from '@services/index';
+import { ICON_TOOL_COMPARISON } from '@shared/tool-icons';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
+import type { Dye } from '@shared/types';
+
+// ============================================================================
+// Types and Constants
+// ============================================================================
+
+export interface ComparisonToolOptions {
+  leftPanel: HTMLElement;
+  rightPanel: HTMLElement;
+  drawerContent?: HTMLElement | null;
+}
+
+/**
+ * Comparison options state
+ */
+interface ComparisonOptions {
+  showDistanceValues: boolean;
+  highlightClosestPair: boolean;
+  showPriceComparison: boolean;
+}
+
+/**
+ * Dye with HSV values for charting
+ */
+interface DyeWithHSV {
+  dye: Dye;
+  h: number;
+  s: number;
+  v: number;
+}
+
+/**
+ * Statistics summary
+ */
+interface ComparisonStats {
+  avgSaturation: number;
+  avgBrightness: number;
+  hueRange: number;
+  avgDistance: number;
+}
+
+/**
+ * Storage keys for v3 comparison tool
+ */
+const STORAGE_KEYS = {
+  showDistanceValues: 'v3_comparison_show_distance',
+  highlightClosestPair: 'v3_comparison_highlight_closest',
+  showPriceComparison: 'v3_comparison_show_prices',
+} as const;
+
+/**
+ * Default comparison options
+ */
+const DEFAULT_OPTIONS: ComparisonOptions = {
+  showDistanceValues: true,
+  highlightClosestPair: false,
+  showPriceComparison: false,
+};
+
+const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+</svg>`;
+
+// ============================================================================
+// ComparisonTool Component
+// ============================================================================
+
+/**
+ * Comparison Tool - v3 Two-Panel Layout
+ *
+ * Compares up to 4 selected dyes with visual charts and distance analysis.
+ */
+export class ComparisonTool extends BaseComponent {
+  private options: ComparisonToolOptions;
+
+  // State
+  private selectedDyes: Dye[] = [];
+  private dyesWithHSV: DyeWithHSV[] = [];
+  private comparisonOptions: ComparisonOptions;
+  private stats: ComparisonStats | null = null;
+  private closestPair: [number, number] | null = null;
+
+  // Child components
+  private dyeSelector: DyeSelector | null = null;
+  private marketBoard: MarketBoard | null = null;
+  private marketPanel: CollapsiblePanel | null = null;
+
+  // DOM References
+  private selectedDyesContainer: HTMLElement | null = null;
+  private optionsContainer: HTMLElement | null = null;
+  private emptyStateContainer: HTMLElement | null = null;
+  private statsContainer: HTMLElement | null = null;
+  private chartsContainer: HTMLElement | null = null;
+  private matrixContainer: HTMLElement | null = null;
+
+  // Subscriptions
+  private languageUnsubscribe: (() => void) | null = null;
+
+  constructor(container: HTMLElement, options: ComparisonToolOptions) {
+    super(container);
+    this.options = options;
+
+    // Load persisted options
+    this.comparisonOptions = {
+      showDistanceValues:
+        StorageService.getItem<boolean>(STORAGE_KEYS.showDistanceValues) ?? DEFAULT_OPTIONS.showDistanceValues,
+      highlightClosestPair:
+        StorageService.getItem<boolean>(STORAGE_KEYS.highlightClosestPair) ?? DEFAULT_OPTIONS.highlightClosestPair,
+      showPriceComparison:
+        StorageService.getItem<boolean>(STORAGE_KEYS.showPriceComparison) ?? DEFAULT_OPTIONS.showPriceComparison,
+    };
+  }
+
+  // ============================================================================
+  // Lifecycle Methods
+  // ============================================================================
+
+  render(): void {
+    this.renderLeftPanel();
+    this.renderRightPanel();
+
+    if (this.options.drawerContent) {
+      this.renderDrawerContent();
+    }
+
+    this.element = this.container;
+  }
+
+  bindEvents(): void {
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  onMount(): void {
+    logger.info('[ComparisonTool] Mounted');
+  }
+
+  destroy(): void {
+    this.languageUnsubscribe?.();
+    this.dyeSelector?.destroy();
+    this.marketBoard?.destroy();
+    this.marketPanel?.destroy();
+
+    this.selectedDyes = [];
+    this.dyesWithHSV = [];
+
+    super.destroy();
+    logger.info('[ComparisonTool] Destroyed');
+  }
+
+  // ============================================================================
+  // Left Panel Rendering
+  // ============================================================================
+
+  private renderLeftPanel(): void {
+    const left = this.options.leftPanel;
+    clearContainer(left);
+
+    // Section 1: Dye Selection
+    const dyeSection = this.createSection(LanguageService.t('comparison.compareDyes') || 'Compare Dyes');
+    this.renderDyeSelector(dyeSection);
+    left.appendChild(dyeSection);
+
+    // Section 2: Options
+    const optionsSection = this.createSection(LanguageService.t('common.options') || 'Options');
+    this.renderOptions(optionsSection);
+    left.appendChild(optionsSection);
+
+    // Section 3: Market Board (collapsible)
+    const marketContainer = this.createElement('div');
+    left.appendChild(marketContainer);
+    this.marketPanel = new CollapsiblePanel(marketContainer, {
+      title: LanguageService.t('marketBoard.title') || 'Market Board',
+      storageKey: 'v3_comparison_market',
+      defaultOpen: false,
+      icon: ICON_MARKET,
+    });
+    this.marketPanel.init();
+
+    const marketContent = this.createElement('div');
+    this.marketBoard = new MarketBoard(marketContent);
+    this.marketBoard.init();
+    this.marketPanel.setContent(marketContent);
+  }
+
+  /**
+   * Create a section with label
+   */
+  private createSection(label: string): HTMLElement {
+    const section = this.createElement('div', {
+      className: 'p-4 border-b',
+      attributes: { style: 'border-color: var(--theme-border);' },
+    });
+    const sectionLabel = this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: label,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    section.appendChild(sectionLabel);
+    return section;
+  }
+
+  /**
+   * Create a header for right panel sections
+   */
+  private createHeader(text: string): HTMLElement {
+    return this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: text,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+  }
+
+  /**
+   * Render dye selector section
+   */
+  private renderDyeSelector(container: HTMLElement): void {
+    const dyeContainer = this.createElement('div', { className: 'space-y-3' });
+
+    // Show selected dyes
+    this.selectedDyesContainer = this.createElement('div', {
+      className: 'selected-dyes-display space-y-2',
+    });
+    this.updateSelectedDyesDisplay();
+    dyeContainer.appendChild(this.selectedDyesContainer);
+
+    // Dye selector component
+    const selectorContainer = this.createElement('div');
+    dyeContainer.appendChild(selectorContainer);
+
+    this.dyeSelector = new DyeSelector(selectorContainer, {
+      maxSelections: 4,
+      allowMultiple: true,
+      allowDuplicates: false,
+      showCategories: true,
+      showPrices: false,
+      excludeFacewear: true,
+      showFavorites: true,
+    });
+    this.dyeSelector.init();
+
+    // Listen for selection changes
+    selectorContainer.addEventListener('selection-changed', () => {
+      if (this.dyeSelector) {
+        this.selectedDyes = this.dyeSelector.getSelectedDyes();
+        this.calculateHSVValues();
+        this.updateSelectedDyesDisplay();
+        this.updateResults();
+        this.updateDrawerContent();
+      }
+    });
+
+    container.appendChild(dyeContainer);
+  }
+
+  /**
+   * Update the selected dyes display
+   */
+  private updateSelectedDyesDisplay(): void {
+    if (!this.selectedDyesContainer) return;
+    clearContainer(this.selectedDyesContainer);
+
+    if (this.selectedDyes.length === 0) {
+      const placeholder = this.createElement('div', {
+        className: 'p-3 rounded-lg border-2 border-dashed text-center text-sm',
+        textContent: LanguageService.t('comparison.selectDyesToCompare') || 'Select dyes to compare',
+        attributes: {
+          style: 'border-color: var(--theme-border); color: var(--theme-text-muted);',
+        },
+      });
+      this.selectedDyesContainer.appendChild(placeholder);
+      return;
+    }
+
+    for (const dye of this.selectedDyes) {
+      const dyeItem = this.createElement('div', {
+        className: 'flex items-center gap-3 p-2 rounded-lg',
+        attributes: { style: 'background: var(--theme-background-secondary);' },
+      });
+
+      const swatch = this.createElement('div', {
+        className: 'w-8 h-8 rounded border',
+        attributes: {
+          style: `background: ${dye.hex}; border-color: var(--theme-border);`,
+        },
+      });
+
+      const name = this.createElement('span', {
+        className: 'flex-1 text-sm font-medium truncate',
+        textContent: LanguageService.getDyeName(dye.itemID) || dye.name,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+
+      const removeBtn = this.createElement('button', {
+        className: 'text-xs px-2 py-1 rounded transition-colors',
+        textContent: '\u00D7',
+        attributes: {
+          style: 'background: var(--theme-card-hover); color: var(--theme-text-muted);',
+        },
+      });
+
+      this.on(removeBtn, 'click', () => {
+        const newSelection = this.selectedDyes.filter((d) => d.id !== dye.id);
+        this.dyeSelector?.setSelectedDyes(newSelection);
+        this.selectedDyes = newSelection;
+        this.calculateHSVValues();
+        this.updateSelectedDyesDisplay();
+        this.updateResults();
+        this.updateDrawerContent();
+      });
+
+      dyeItem.appendChild(swatch);
+      dyeItem.appendChild(name);
+      dyeItem.appendChild(removeBtn);
+      this.selectedDyesContainer.appendChild(dyeItem);
+    }
+
+    // Add dye button if under max
+    if (this.selectedDyes.length < 4) {
+      const addBtn = this.createElement('button', {
+        className: 'w-full p-3 rounded-lg border-2 border-dashed text-sm',
+        textContent: `+ ${LanguageService.t('comparison.addDye') || 'Add Dye'}`,
+        attributes: { style: 'border-color: var(--theme-border); color: var(--theme-text-muted);' },
+      });
+      // The DyeSelector below handles actual adding
+      this.selectedDyesContainer.appendChild(addBtn);
+    }
+  }
+
+  /**
+   * Render comparison options
+   */
+  private renderOptions(container: HTMLElement): void {
+    this.optionsContainer = this.createElement('div', { className: 'space-y-2' });
+
+    const options = [
+      {
+        key: 'showDistanceValues' as const,
+        label: LanguageService.t('comparison.showDistanceValues') || 'Show Distance Values',
+      },
+      {
+        key: 'highlightClosestPair' as const,
+        label: LanguageService.t('comparison.highlightClosestPair') || 'Highlight Closest Pair',
+      },
+      {
+        key: 'showPriceComparison' as const,
+        label: LanguageService.t('comparison.showPriceComparison') || 'Show Price Comparison',
+      },
+    ];
+
+    for (const option of options) {
+      const label = this.createElement('label', {
+        className: 'flex items-center gap-2 cursor-pointer',
+      });
+
+      const checkbox = this.createElement('input', {
+        attributes: {
+          type: 'checkbox',
+          'data-option': option.key,
+        },
+        className: 'w-4 h-4 rounded',
+      }) as HTMLInputElement;
+      checkbox.checked = this.comparisonOptions[option.key];
+
+      this.on(checkbox, 'change', () => {
+        this.comparisonOptions[option.key] = checkbox.checked;
+        StorageService.setItem(STORAGE_KEYS[option.key], checkbox.checked);
+        this.updateResults();
+      });
+
+      const text = this.createElement('span', {
+        className: 'text-sm',
+        textContent: option.label,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+
+      label.appendChild(checkbox);
+      label.appendChild(text);
+      this.optionsContainer.appendChild(label);
+    }
+
+    container.appendChild(this.optionsContainer);
+  }
+
+  // ============================================================================
+  // Right Panel Rendering
+  // ============================================================================
+
+  private renderRightPanel(): void {
+    const right = this.options.rightPanel;
+    clearContainer(right);
+
+    // Empty state (shown when < 2 dyes selected)
+    this.emptyStateContainer = this.createElement('div');
+    this.renderEmptyState();
+    right.appendChild(this.emptyStateContainer);
+
+    // Statistics Summary
+    const statsSection = this.createElement('div', { className: 'mb-6 hidden' });
+    statsSection.appendChild(this.createHeader(LanguageService.t('comparison.statistics') || 'Statistics'));
+    this.statsContainer = this.createElement('div');
+    statsSection.appendChild(this.statsContainer);
+    right.appendChild(statsSection);
+
+    // Charts Grid
+    const chartsSection = this.createElement('div', { className: 'mb-6 hidden' });
+    this.chartsContainer = this.createElement('div', { className: 'grid gap-4 lg:grid-cols-2' });
+    chartsSection.appendChild(this.chartsContainer);
+    right.appendChild(chartsSection);
+
+    // Distance Matrix
+    const matrixSection = this.createElement('div', { className: 'hidden' });
+    matrixSection.appendChild(this.createHeader(LanguageService.t('comparison.colorDistanceMatrix') || 'Color Distance Matrix'));
+    this.matrixContainer = this.createElement('div');
+    matrixSection.appendChild(this.matrixContainer);
+    right.appendChild(matrixSection);
+  }
+
+  /**
+   * Render empty state
+   */
+  private renderEmptyState(): void {
+    if (!this.emptyStateContainer) return;
+    clearContainer(this.emptyStateContainer);
+
+    const empty = this.createElement('div', {
+      className: 'p-8 rounded-lg border-2 border-dashed text-center',
+      attributes: {
+        style: 'border-color: var(--theme-border); background: var(--theme-card-background);',
+      },
+    });
+
+    empty.innerHTML = `
+      <span class="inline-block w-12 h-12 mx-auto mb-3 opacity-30" style="color: var(--theme-text);">${ICON_TOOL_COMPARISON}</span>
+      <p style="color: var(--theme-text);">${LanguageService.t('comparison.selectAtLeastTwoDyes') || 'Select at least 2 dyes to compare'}</p>
+    `;
+
+    this.emptyStateContainer.appendChild(empty);
+  }
+
+  /**
+   * Update all results
+   */
+  private updateResults(): void {
+    if (this.selectedDyes.length < 2) {
+      this.showEmptyState(true);
+      return;
+    }
+
+    this.showEmptyState(false);
+    this.calculateStats();
+    this.findClosestPair();
+    this.renderStats();
+    this.renderCharts();
+    this.renderDistanceMatrix();
+  }
+
+  /**
+   * Show/hide empty state
+   */
+  private showEmptyState(show: boolean): void {
+    if (this.emptyStateContainer) {
+      this.emptyStateContainer.classList.toggle('hidden', !show);
+    }
+
+    // Toggle all result sections
+    const rightPanel = this.options.rightPanel;
+    const sections = rightPanel.querySelectorAll(':scope > div:not(:first-child)');
+    sections.forEach((section) => {
+      section.classList.toggle('hidden', show);
+    });
+  }
+
+  /**
+   * Calculate HSV values for all selected dyes
+   */
+  private calculateHSVValues(): void {
+    this.dyesWithHSV = this.selectedDyes.map((dye) => {
+      const hsv = ColorService.hexToHsv(dye.hex);
+      return {
+        dye,
+        h: hsv.h,
+        s: hsv.s,
+        v: hsv.v,
+      };
+    });
+  }
+
+  /**
+   * Calculate comparison statistics
+   */
+  private calculateStats(): void {
+    if (this.dyesWithHSV.length < 2) {
+      this.stats = null;
+      return;
+    }
+
+    // Calculate averages
+    const avgSaturation = this.dyesWithHSV.reduce((sum, d) => sum + d.s, 0) / this.dyesWithHSV.length;
+    const avgBrightness = this.dyesWithHSV.reduce((sum, d) => sum + d.v, 0) / this.dyesWithHSV.length;
+
+    // Calculate hue range (considering hue wrapping)
+    const hues = this.dyesWithHSV.map((d) => d.h).sort((a, b) => a - b);
+    let maxGap = 0;
+    let gapStart = 0;
+    for (let i = 0; i < hues.length; i++) {
+      const next = (i + 1) % hues.length;
+      const gap = next === 0 ? 360 - hues[i] + hues[0] : hues[next] - hues[i];
+      if (gap > maxGap) {
+        maxGap = gap;
+        gapStart = hues[next === 0 ? 0 : next];
+      }
+    }
+    const hueRange = 360 - maxGap;
+
+    // Calculate average pairwise distance
+    let totalDistance = 0;
+    let pairCount = 0;
+    for (let i = 0; i < this.selectedDyes.length; i++) {
+      for (let j = i + 1; j < this.selectedDyes.length; j++) {
+        totalDistance += ColorService.getColorDistance(this.selectedDyes[i].hex, this.selectedDyes[j].hex);
+        pairCount++;
+      }
+    }
+    const avgDistance = pairCount > 0 ? totalDistance / pairCount : 0;
+
+    this.stats = {
+      avgSaturation: Math.round(avgSaturation),
+      avgBrightness: Math.round(avgBrightness),
+      hueRange: Math.round(hueRange),
+      avgDistance: Math.round(avgDistance * 10) / 10,
+    };
+  }
+
+  /**
+   * Find the closest pair of dyes
+   */
+  private findClosestPair(): void {
+    if (this.selectedDyes.length < 2) {
+      this.closestPair = null;
+      return;
+    }
+
+    let minDistance = Infinity;
+    let closest: [number, number] = [0, 1];
+
+    for (let i = 0; i < this.selectedDyes.length; i++) {
+      for (let j = i + 1; j < this.selectedDyes.length; j++) {
+        const distance = ColorService.getColorDistance(this.selectedDyes[i].hex, this.selectedDyes[j].hex);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closest = [i, j];
+        }
+      }
+    }
+
+    this.closestPair = closest;
+  }
+
+  /**
+   * Render statistics summary
+   */
+  private renderStats(): void {
+    if (!this.statsContainer || !this.stats) return;
+    clearContainer(this.statsContainer);
+
+    const grid = this.createElement('div', {
+      className: 'grid grid-cols-2 gap-3 p-4 rounded-lg md:grid-cols-4',
+      attributes: {
+        style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);',
+      },
+    });
+
+    const statItems = [
+      { label: LanguageService.t('comparison.avgSaturation') || 'Avg Saturation', value: `${this.stats.avgSaturation}%` },
+      { label: LanguageService.t('comparison.avgBrightness') || 'Avg Brightness', value: `${this.stats.avgBrightness}%` },
+      { label: LanguageService.t('comparison.hueRange') || 'Hue Range', value: `${this.stats.hueRange}\u00B0` },
+      { label: LanguageService.t('comparison.avgDistance') || 'Avg Distance', value: this.stats.avgDistance.toFixed(1) },
+    ];
+
+    for (const stat of statItems) {
+      const item = this.createElement('div', { className: 'text-center' });
+      item.innerHTML = `
+        <p class="text-lg font-semibold" style="color: var(--theme-text);">${stat.value}</p>
+        <p class="text-xs" style="color: var(--theme-text-muted);">${stat.label}</p>
+      `;
+      grid.appendChild(item);
+    }
+
+    this.statsContainer.appendChild(grid);
+  }
+
+  /**
+   * Render charts (Hue-Saturation plot and Brightness distribution)
+   */
+  private renderCharts(): void {
+    if (!this.chartsContainer) return;
+    clearContainer(this.chartsContainer);
+
+    // Hue-Saturation Plot
+    this.chartsContainer.appendChild(this.createChartCard(
+      LanguageService.t('comparison.hueSaturationPlot') || 'Hue-Saturation Plot',
+      this.createHueSatPlot()
+    ));
+
+    // Brightness Distribution
+    this.chartsContainer.appendChild(this.createChartCard(
+      LanguageService.t('comparison.brightnessDistribution') || 'Brightness Distribution',
+      this.createBrightnessChart()
+    ));
+  }
+
+  /**
+   * Create a chart card wrapper
+   */
+  private createChartCard(title: string, content: HTMLElement): HTMLElement {
+    const card = this.createElement('div', {
+      className: 'p-4 rounded-lg flex flex-col',
+      attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
+    });
+    card.appendChild(this.createElement('h4', {
+      className: 'text-sm font-medium mb-3 flex-shrink-0',
+      textContent: title,
+      attributes: { style: 'color: var(--theme-text);' },
+    }));
+    const contentWrapper = this.createElement('div', { className: 'flex-1 flex flex-col min-h-0' });
+    contentWrapper.appendChild(content);
+    card.appendChild(contentWrapper);
+    return card;
+  }
+
+  /**
+   * Create Hue-Saturation SVG plot
+   */
+  private createHueSatPlot(): HTMLElement {
+    const plot = this.createElement('div', { className: 'relative aspect-square' });
+
+    // Generate data points
+    const points = this.dyesWithHSV.map((d, index) => {
+      const x = (d.h / 360) * 100;
+      const y = 100 - d.s;
+      const isClosest = this.comparisonOptions.highlightClosestPair &&
+        this.closestPair &&
+        (index === this.closestPair[0] || index === this.closestPair[1]);
+      return `
+        <circle
+          cx="${x}"
+          cy="${y}"
+          r="${isClosest ? 6 : 4}"
+          fill="${d.dye.hex}"
+          stroke="${isClosest ? 'var(--theme-primary)' : 'white'}"
+          stroke-width="${isClosest ? 2.5 : 1.5}"
+        />
+        <text
+          x="${x}"
+          y="${y - 8}"
+          text-anchor="middle"
+          font-size="4"
+          fill="var(--theme-text)"
+        >${index + 1}</text>
+      `;
+    }).join('');
+
+    plot.innerHTML = `
+      <svg viewBox="0 0 130 120" class="w-full h-full">
+        <!-- Chart area with padding for axis labels -->
+        <g transform="translate(26, 4)">
+          <!-- Background -->
+          <rect width="100" height="100" fill="var(--theme-background-secondary)" rx="4" />
+          <!-- Grid lines -->
+          <line x1="0" y1="25" x2="100" y2="25" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="0" y1="75" x2="100" y2="75" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="25" y1="0" x2="25" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="50" y1="0" x2="50" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <line x1="75" y1="0" x2="75" y2="100" stroke="var(--theme-border)" stroke-dasharray="2" opacity="0.5" />
+          <!-- Data points -->
+          ${points}
+          <!-- X-axis tick labels (Hue: 0° to 360°) -->
+          <text x="0" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">0\u00B0</text>
+          <text x="25" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">90\u00B0</text>
+          <text x="50" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">180\u00B0</text>
+          <text x="75" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">270\u00B0</text>
+          <text x="100" y="108" text-anchor="middle" font-size="4" fill="var(--theme-text-muted)">360\u00B0</text>
+          <!-- Y-axis tick labels (Saturation: 0% to 100%) -->
+          <text x="-4" y="102" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">0%</text>
+          <text x="-4" y="77" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">25%</text>
+          <text x="-4" y="52" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">50%</text>
+          <text x="-4" y="27" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">75%</text>
+          <text x="-4" y="2" text-anchor="end" font-size="4" fill="var(--theme-text-muted)">100%</text>
+        </g>
+        <!-- Axis titles -->
+        <text x="76" y="118" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)">Hue</text>
+        <text x="6" y="54" text-anchor="middle" font-size="5" fill="var(--theme-text-muted)" transform="rotate(-90 6 54)">Saturation</text>
+      </svg>
+    `;
+    return plot;
+  }
+
+  /**
+   * Create Brightness Distribution bar chart
+   */
+  private createBrightnessChart(): HTMLElement {
+    const container = this.createElement('div', { className: 'flex flex-col flex-1 h-full min-h-[150px]' });
+
+    // Bar chart area
+    const chart = this.createElement('div', { className: 'flex items-end gap-4 flex-1 h-full' });
+
+    for (let i = 0; i < this.dyesWithHSV.length; i++) {
+      const d = this.dyesWithHSV[i];
+      const isClosest = this.comparisonOptions.highlightClosestPair &&
+        this.closestPair &&
+        (i === this.closestPair[0] || i === this.closestPair[1]);
+
+      const bar = this.createElement('div', { className: 'flex-1 h-full flex items-end' });
+      bar.innerHTML = `
+        <div
+          class="w-full rounded-t transition-all"
+          style="height: ${d.v}%; background: ${d.dye.hex}; ${isClosest ? 'box-shadow: 0 0 0 3px var(--theme-primary);' : ''}"
+        ></div>
+      `;
+      chart.appendChild(bar);
+    }
+    container.appendChild(chart);
+
+    // Labels row
+    const labels = this.createElement('div', {
+      className: 'flex gap-4 mt-2 pt-2 border-t flex-shrink-0',
+      attributes: { style: 'border-color: var(--theme-border);' },
+    });
+
+    for (const d of this.dyesWithHSV) {
+      const dyeName = LanguageService.getDyeName(d.dye.itemID) || d.dye.name;
+      const label = this.createElement('div', { className: 'flex-1 text-center' });
+      label.innerHTML = `
+        <span class="text-xs font-medium block truncate" style="color: var(--theme-text);">${dyeName.split(' ')[0]}</span>
+        <span class="text-xs" style="color: var(--theme-text-muted);">${Math.round(d.v)}%</span>
+      `;
+      labels.appendChild(label);
+    }
+    container.appendChild(labels);
+
+    return container;
+  }
+
+  /**
+   * Render distance matrix
+   */
+  private renderDistanceMatrix(): void {
+    if (!this.matrixContainer) return;
+    clearContainer(this.matrixContainer);
+
+    if (this.selectedDyes.length < 2) return;
+
+    const matrix = this.createElement('div', {
+      className: 'rounded-lg overflow-hidden',
+      attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
+    });
+
+    // Build table HTML
+    let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr><th></th>';
+
+    // Column headers
+    for (const dye of this.selectedDyes) {
+      const dyeName = LanguageService.getDyeName(dye.itemID) || dye.name;
+      html += `
+        <th class="p-2 text-center">
+          <div class="w-6 h-6 rounded mx-auto mb-1" style="background: ${dye.hex};"></div>
+          <span class="text-xs font-normal block truncate max-w-20" style="color: var(--theme-text-muted);">${dyeName}</span>
+        </th>
+      `;
+    }
+    html += '</tr></thead><tbody>';
+
+    // Data rows
+    for (let i = 0; i < this.selectedDyes.length; i++) {
+      const rowDye = this.selectedDyes[i];
+      const rowDyeName = LanguageService.getDyeName(rowDye.itemID) || rowDye.name;
+      const isRowClosest = this.comparisonOptions.highlightClosestPair &&
+        this.closestPair &&
+        (i === this.closestPair[0] || i === this.closestPair[1]);
+
+      html += `
+        <tr>
+          <td class="p-2" ${isRowClosest ? 'style="background: var(--theme-background-secondary);"' : ''}>
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded shrink-0" style="background: ${rowDye.hex};"></div>
+              <span class="text-xs truncate max-w-20" style="color: var(--theme-text);">${rowDyeName}</span>
+            </div>
+          </td>
+      `;
+
+      for (let j = 0; j < this.selectedDyes.length; j++) {
+        const isColClosest = this.comparisonOptions.highlightClosestPair &&
+          this.closestPair &&
+          (j === this.closestPair[0] || j === this.closestPair[1]);
+        const isPair = this.comparisonOptions.highlightClosestPair &&
+          this.closestPair &&
+          ((i === this.closestPair[0] && j === this.closestPair[1]) ||
+           (i === this.closestPair[1] && j === this.closestPair[0]));
+
+        if (i === j) {
+          html += `<td class="p-2 text-center" style="color: var(--theme-text-muted);">-</td>`;
+        } else {
+          const distance = ColorService.getColorDistance(rowDye.hex, this.selectedDyes[j].hex);
+          const distStr = distance.toFixed(1);
+          const color = this.getDistanceColor(distance);
+          const bgStyle = isPair ? 'background: var(--theme-primary); color: var(--theme-text-header);' :
+            (isRowClosest && isColClosest ? 'background: var(--theme-background-secondary);' : '');
+
+          if (this.comparisonOptions.showDistanceValues) {
+            html += `<td class="p-2 text-center font-mono" style="${bgStyle || `color: ${color};`}">${distStr}</td>`;
+          } else {
+            html += `<td class="p-2 text-center"><div class="w-4 h-4 rounded mx-auto" style="background: ${color};"></div></td>`;
+          }
+        }
+      }
+
+      html += '</tr>';
+    }
+
+    html += '</tbody></table></div>';
+    matrix.innerHTML = html;
+    this.matrixContainer.appendChild(matrix);
+  }
+
+  /**
+   * Get color based on distance value
+   */
+  private getDistanceColor(distance: number): string {
+    // Normalize to 0-1 range (max theoretical distance is ~441.67)
+    const normalized = distance / 441.67;
+
+    if (normalized >= 0.6) return '#22c55e'; // Very different (green - good)
+    if (normalized >= 0.4) return '#3b82f6'; // Different (blue)
+    if (normalized >= 0.2) return '#eab308'; // Somewhat similar (yellow)
+    return '#ef4444'; // Very similar (red - warning)
+  }
+
+  // ============================================================================
+  // Mobile Drawer Content
+  // ============================================================================
+
+  private renderDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    this.updateDrawerContent();
+  }
+
+  private updateDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    const drawer = this.options.drawerContent;
+    clearContainer(drawer);
+
+    const content = this.createElement('div', { className: 'p-4 space-y-4' });
+
+    // Summary
+    const summary = this.createElement('p', {
+      className: 'text-sm',
+      textContent: `${LanguageService.t('comparison.comparing') || 'Comparing'} ${this.selectedDyes.length} ${LanguageService.t('common.dyes') || 'dyes'}`,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    content.appendChild(summary);
+
+    // Selected dyes preview
+    if (this.selectedDyes.length > 0) {
+      const dyesPreview = this.createElement('div', {
+        className: 'flex gap-2',
+      });
+
+      for (const dye of this.selectedDyes) {
+        const swatch = this.createElement('div', {
+          className: 'w-8 h-8 rounded border',
+          attributes: {
+            style: `background: ${dye.hex}; border-color: var(--theme-border);`,
+            title: LanguageService.getDyeName(dye.itemID) || dye.name,
+          },
+        });
+        dyesPreview.appendChild(swatch);
+      }
+
+      content.appendChild(dyesPreview);
+    }
+
+    // Options summary
+    if (this.selectedDyes.length >= 2) {
+      const optionsInfo = this.createElement('div', {
+        className: 'text-xs space-y-1',
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      const enabledOptions = [];
+      if (this.comparisonOptions.showDistanceValues) enabledOptions.push('Distance values');
+      if (this.comparisonOptions.highlightClosestPair) enabledOptions.push('Closest pair');
+      if (this.comparisonOptions.showPriceComparison) enabledOptions.push('Prices');
+
+      if (enabledOptions.length > 0) {
+        optionsInfo.textContent = enabledOptions.join(' \u2022 ');
+        content.appendChild(optionsInfo);
+      }
+    }
+
+    drawer.appendChild(content);
+  }
+}

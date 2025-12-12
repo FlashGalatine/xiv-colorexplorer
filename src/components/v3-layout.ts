@@ -146,15 +146,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'comparison': {
-        const { ComparisonMockup } = await import('@mockups/tools/ComparisonMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new ComparisonMockup(mockupContainer, {
+        // Phase 5: Production ComparisonTool
+        const { ComparisonTool } = await import('@components/tools/comparison-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new ComparisonTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Comparison tool loaded');
+        logger.info('[V3 Layout] Comparison tool loaded (v3 production)');
         break;
       }
       case 'mixer': {
