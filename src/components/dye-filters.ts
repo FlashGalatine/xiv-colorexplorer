@@ -59,6 +59,7 @@ export class DyeFilters extends BaseComponent {
   private storageKey: string;
   private storageKeyExpanded: string;
   private onFilterChange?: (filters: DyeFilterConfig) => void;
+  private languageUnsubscribe: (() => void) | null = null;
 
   constructor(container: HTMLElement, options: DyeFiltersOptions = {}) {
     super(container);
@@ -246,10 +247,21 @@ export class DyeFilters extends BaseComponent {
     this.loadFilterState();
     this.loadFiltersExpandedState();
 
-    // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes to update localized text (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.init(); // Re-render to update localized text
     });
+  }
+
+  /**
+   * Clean up subscriptions on destroy
+   */
+  override destroy(): void {
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+    super.destroy();
   }
 
   /**

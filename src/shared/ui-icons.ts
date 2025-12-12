@@ -127,6 +127,16 @@ export const ICON_DICE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 </svg>`;
 
 /**
+ * Coins icon - Budget/Gil (FFXIV-style stacked coins)
+ */
+export const ICON_COINS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <ellipse cx="12" cy="7" rx="7" ry="3" />
+  <path d="M5 7v4c0 1.66 3.13 3 7 3s7-1.34 7-3V7" />
+  <path d="M5 11v4c0 1.66 3.13 3 7 3s7-1.34 7-3v-4" />
+  <path d="M5 15v2c0 1.66 3.13 3 7 3s7-1.34 7-3v-2" />
+</svg>`;
+
+/**
  * Map of UI icon names to SVG strings
  */
 export const UI_ICONS: Record<string, string> = {
@@ -142,6 +152,7 @@ export const UI_ICONS: Record<string, string> = {
   upload: ICON_UPLOAD,
   warning: ICON_WARNING,
   dice: ICON_DICE,
+  coins: ICON_COINS,
 };
 
 /**

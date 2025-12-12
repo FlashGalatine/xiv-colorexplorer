@@ -108,6 +108,10 @@
     "companionDyesDesc": "Choose how many additional companion dyes to show",
     "baseColorSection": "Base Color",
     "harmonyResults": "Harmony Results",
+    "results": "Results",
+    "selectDye": "Select a dye",
+    "selectDyePrompt": "Select a base dye to generate color harmonies",
+    "noDyeSelected": "No dye selected",
     "selectBaseColor": "Select a base color to generate harmonies",
     "generatingHarmonies": "Generating harmonies...",
     "noMatchingDyes": "No matching dyes found",
@@ -122,6 +126,13 @@
     "selectColorPrompt": "Select a Base Color",
     "selectColorMessage": "Enter a hex color or pick a dye to generate harmonies.",
     "selectColorAction": "Enter color",
+    "base": "Base",
+    "harmony": "Harmony",
+    "fromIdeal": "from ideal",
+    "closestDyes": "Closest dyes:",
+    "acquisition": "Acquisition",
+    "baseDye": "Base Dye",
+    "harmonyType": "Harmony Type",
     "types": {
       "complementaryDesc": "Colors directly opposite on the color wheel for maximum contrast",
       "analogousDesc": "Colors adjacent on the wheel for a harmonious, unified look",
@@ -372,8 +383,13 @@
     "fetchingPrices": "Fetching prices...",
     "offlineWarning": "You are offline. Cannot refresh prices."
   },
+  "budget": {
+    "findCheaperTooltip": "Find cheaper alternatives",
+    "budgetOptions": "Budget Options"
+  },
   "export": {
     "title": "Export Palette",
+    "button": "Export",
     "format": "Format",
     "exportAsJson": "Export as JSON",
     "exportAsCss": "Export as CSS",

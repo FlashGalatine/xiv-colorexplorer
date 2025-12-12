@@ -488,8 +488,13 @@ export class TwoPanelShell extends BaseComponent {
 
   /**
    * Set active tool programmatically
+   * Guards against re-entrant calls to prevent infinite loops
    */
   setActiveToolId(toolId: ToolId): void {
+    // Guard: only process if tool actually changed
+    if (toolId === this.activeToolId) {
+      return;
+    }
     this.handleToolSelect(toolId);
   }
 

@@ -23,6 +23,7 @@ import {
   type UnifiedPreset,
 } from '@services/index';
 import { getCategoryIcon, ICON_ARROW_BACK } from '@shared/category-icons';
+import { ICON_CRYSTAL } from '@shared/ui-icons';
 import type { Dye } from 'xivdyetools-core';
 
 /**
@@ -351,8 +352,8 @@ export class PresetDetailView extends BaseComponent {
       });
 
       const voteIcon = this.createElement('span', {
-        innerHTML: '⭐',
-        className: 'vote-icon',
+        innerHTML: ICON_CRYSTAL,
+        className: 'vote-icon w-5 h-5 inline-block',
       });
       voteBtn.appendChild(voteIcon);
 
@@ -457,7 +458,7 @@ export class PresetDetailView extends BaseComponent {
             'text-indigo-700',
             'dark:text-indigo-300'
           );
-          voteIcon.innerHTML = '⭐';
+          voteIcon.innerHTML = ICON_CRYSTAL;
           voteText.textContent = `Vote (${result.new_vote_count})`;
           // Update preset object
           this.preset.voteCount = result.new_vote_count;

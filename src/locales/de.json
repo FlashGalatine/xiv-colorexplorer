@@ -108,6 +108,10 @@
     "companionDyesDesc": "Wähle, wie viele zusätzliche Begleitfarbstoffe angezeigt werden sollen",
     "baseColorSection": "Grundfarbe",
     "harmonyResults": "Harmonieergebnisse",
+    "results": "Ergebnisse",
+    "selectDye": "Farbstoff auswählen",
+    "selectDyePrompt": "Wähle einen Farbstoff um Farbharmonien zu generieren",
+    "noDyeSelected": "Kein Farbstoff ausgewählt",
     "selectBaseColor": "Wähle eine Grundfarbe, um Harmonien zu generieren",
     "generatingHarmonies": "Harmonien werden generiert...",
     "noMatchingDyes": "Keine passenden Farbstoffe gefunden",
@@ -369,8 +373,13 @@
     "fetchingPrices": "Preise werden abgerufen...",
     "offlineWarning": "Sie sind offline. Preise können nicht aktualisiert werden."
   },
+  "budget": {
+    "findCheaperTooltip": "Günstigere Alternativen finden",
+    "budgetOptions": "Budget-Optionen"
+  },
   "export": {
     "title": "Palette exportieren",
+    "button": "Exportieren",
     "format": "Format",
     "exportAsJson": "Als JSON exportieren",
     "exportAsCss": "Als CSS exportieren",

@@ -12,6 +12,7 @@ import { DyeService, LanguageService, CollectionService } from '@services/index'
 import type { Dye } from '@shared/types';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
+import { ICON_CRYSTAL } from '@shared/ui-icons';
 import { DyeSearchBox, SortOption } from './dye-search-box';
 import { DyeGrid } from './dye-grid';
 import { showCollectionManagerModal } from './collection-manager-modal';
@@ -27,6 +28,8 @@ export interface DyeSelectorOptions {
   showPrices?: boolean;
   excludeFacewear?: boolean;
   showFavorites?: boolean;
+  /** Use compact 3-column grid layout for narrow panels */
+  compactMode?: boolean;
 }
 
 /**
@@ -44,6 +47,7 @@ export class DyeSelector extends BaseComponent {
   private favoriteDyes: Dye[] = [];
   private favoritesExpanded: boolean = true;
   private unsubscribeFavorites: (() => void) | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
 
   // Sub-components
   private searchBox: DyeSearchBox | null = null;
@@ -59,6 +63,7 @@ export class DyeSelector extends BaseComponent {
       showPrices: options.showPrices ?? false,
       excludeFacewear: options.excludeFacewear ?? true,
       showFavorites: options.showFavorites ?? true,
+      compactMode: options.compactMode ?? false,
     };
     this.allowDuplicates = this.options.allowDuplicates ?? false;
 
@@ -142,6 +147,7 @@ export class DyeSelector extends BaseComponent {
       allowDuplicates: this.allowDuplicates,
       maxSelections: this.options.maxSelections,
       showCategories: this.options.showCategories,
+      compactMode: this.options.compactMode,
     });
     this.dyeGrid.init();
 
@@ -423,7 +429,8 @@ export class DyeSelector extends BaseComponent {
     // Initial update to populate the grid
     this.update();
 
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.update();
     });
   }
@@ -457,12 +464,12 @@ export class DyeSelector extends BaseComponent {
       className: 'flex items-center gap-2',
     });
 
-    // Star icon
-    const starIcon = this.createElement('span', {
-      textContent: '⭐',
-      className: 'text-yellow-500',
+    // Crystal icon (FFXIV-style favorites indicator)
+    const crystalIcon = this.createElement('span', {
+      className: 'w-5 h-5 inline-block text-yellow-500',
     });
-    headerLeft.appendChild(starIcon);
+    crystalIcon.innerHTML = ICON_CRYSTAL;
+    headerLeft.appendChild(crystalIcon);
 
     // Title with count
     const title = this.createElement('span', {
@@ -521,10 +528,13 @@ export class DyeSelector extends BaseComponent {
       emptyState.appendChild(emptyText);
       content.appendChild(emptyState);
     } else {
-      // Grid of favorite dyes
+      // Grid of favorite dyes - use compact 3-column layout when compactMode is enabled
+      const gridClasses = this.options.compactMode
+        ? 'grid grid-cols-3 gap-2'
+        : 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2';
       const grid = this.createElement('div', {
         id: 'favorites-grid',
-        className: 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2',
+        className: gridClasses,
       });
 
       this.favoriteDyes.forEach((dye) => {
@@ -648,6 +658,10 @@ export class DyeSelector extends BaseComponent {
     if (this.unsubscribeFavorites) {
       this.unsubscribeFavorites();
       this.unsubscribeFavorites = null;
+    }
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
     }
     super.destroy();
   }

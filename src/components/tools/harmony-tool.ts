@@ -16,6 +16,7 @@ import { DyeSelector } from '@components/dye-selector';
 import { DyeFilters, type DyeFilterConfig } from '@components/dye-filters';
 import { MarketBoard } from '@components/market-board';
 import { HarmonyType, type HarmonyTypeInfo } from '@components/harmony-type';
+import { HarmonyResultPanel } from '@components/harmony-result-panel';
 import { ColorWheelDisplay } from '@components/color-wheel-display';
 import { PaletteExporter, type PaletteData } from '@components/palette-exporter';
 import { ColorService, dyeService, LanguageService, RouterService, StorageService } from '@services/index';
@@ -81,6 +82,7 @@ const STORAGE_KEYS = {
   harmonyType: 'v3_harmony_type',
   companionCount: 'v3_harmony_companions',
   suggestionsMode: 'v3_harmony_mode',
+  selectedDyeId: 'v3_harmony_selected_dye',
 } as const;
 
 // SVG Icons
@@ -94,6 +96,13 @@ const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 const ICON_EXPORT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
   <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+</svg>`;
+
+const ICON_BUDGET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <ellipse cx="12" cy="7" rx="7" ry="3" />
+  <path d="M5 7v4c0 1.66 3.13 3 7 3s7-1.34 7-3V7" />
+  <path d="M5 11v4c0 1.66 3.13 3 7 3s7-1.34 7-3v-4" />
+  <path d="M5 15v2c0 1.66 3.13 3 7 3s7-1.34 7-3v-2" />
 </svg>`;
 
 // ============================================================================
@@ -137,6 +146,8 @@ export class HarmonyTool extends BaseComponent {
   private showPrices: boolean = false;
   private priceData: Map<number, PriceData> = new Map();
   private filterConfig: DyeFilterConfig | null = null;
+  /** Tracks user-swapped dyes per harmony slot (harmonyIndex -> swapped dye) */
+  private swappedDyes: Map<number, Dye> = new Map();
 
   // Child components
   private dyeSelector: DyeSelector | null = null;
@@ -146,6 +157,7 @@ export class HarmonyTool extends BaseComponent {
   private marketPanel: CollapsiblePanel | null = null;
   private colorWheel: ColorWheelDisplay | null = null;
   private harmonyDisplays: Map<string, HarmonyType> = new Map();
+  private resultPanels: HarmonyResultPanel[] = [];
   private paletteExporter: PaletteExporter | null = null;
 
   // DOM References
@@ -167,6 +179,36 @@ export class HarmonyTool extends BaseComponent {
     this.selectedHarmonyType = StorageService.getItem<string>(STORAGE_KEYS.harmonyType) ?? 'complementary';
     this.companionDyesCount = StorageService.getItem<number>(STORAGE_KEYS.companionCount) ?? COMPANION_DYES_DEFAULT;
     this.suggestionsMode = StorageService.getItem<SuggestionsMode>(STORAGE_KEYS.suggestionsMode) ?? 'simple';
+
+    // Load persisted selected dye
+    const savedDyeId = StorageService.getItem<number>(STORAGE_KEYS.selectedDyeId);
+    if (savedDyeId !== null) {
+      // Debug: Check database status
+      const allDyes = dyeService.getAllDyes();
+      const dyeCount = allDyes.length;
+      const minItemId = allDyes.length > 0 ? Math.min(...allDyes.map(d => d.itemID)) : 0;
+      const maxItemId = allDyes.length > 0 ? Math.max(...allDyes.map(d => d.itemID)) : 0;
+      logger.info(`[HarmonyTool] Database has ${dyeCount} dyes, itemID range: ${minItemId}-${maxItemId}`);
+      logger.info(`[HarmonyTool] Attempting to restore dye with ID: ${savedDyeId}`);
+
+      const dye = dyeService.getDyeById(savedDyeId);
+      if (dye) {
+        this.selectedDye = dye;
+        logger.info(`[HarmonyTool] Restored persisted dye: ${dye.name} (itemID=${dye.itemID})`);
+      } else {
+        // Check if dye exists with itemID lookup (diagnostic)
+        const foundBySearch = allDyes.find(d => d.itemID === savedDyeId);
+        if (foundBySearch) {
+          logger.warn(`[HarmonyTool] Dye found by search (${foundBySearch.name}) but getDyeById(${savedDyeId}) returned null!`);
+          // Use the dye we found manually
+          this.selectedDye = foundBySearch;
+          logger.info(`[HarmonyTool] Using fallback search to restore: ${foundBySearch.name}`);
+        } else {
+          logger.warn(`[HarmonyTool] Dye ID ${savedDyeId} not found in database (range: ${minItemId}-${maxItemId})`);
+          StorageService.removeItem(STORAGE_KEYS.selectedDyeId);
+        }
+      }
+    }
   }
 
   // ============================================================================
@@ -174,6 +216,10 @@ export class HarmonyTool extends BaseComponent {
   // ============================================================================
 
   render(): void {
+    // CRITICAL: Destroy existing child components before re-rendering
+    // This prevents orphaned components and memory leaks during update()
+    this.destroyChildComponents();
+
     this.renderLeftPanel();
     this.renderRightPanel();
 
@@ -182,6 +228,43 @@ export class HarmonyTool extends BaseComponent {
     }
 
     this.element = this.container;
+  }
+
+  /**
+   * Clean up child components before re-rendering
+   * Called automatically during render() to prevent memory leaks
+   */
+  private destroyChildComponents(): void {
+    this.dyeSelector?.destroy();
+    this.dyeSelector = null;
+
+    this.dyeFilters?.destroy();
+    this.dyeFilters = null;
+
+    this.marketBoard?.destroy();
+    this.marketBoard = null;
+
+    this.filtersPanel?.destroy();
+    this.filtersPanel = null;
+
+    this.marketPanel?.destroy();
+    this.marketPanel = null;
+
+    this.colorWheel?.destroy();
+    this.colorWheel = null;
+
+    this.paletteExporter?.destroy();
+    this.paletteExporter = null;
+
+    for (const display of this.harmonyDisplays.values()) {
+      display.destroy();
+    }
+    this.harmonyDisplays.clear();
+
+    for (const panel of this.resultPanels) {
+      panel.destroy();
+    }
+    this.resultPanels = [];
   }
 
   bindEvents(): void {
@@ -205,18 +288,7 @@ export class HarmonyTool extends BaseComponent {
     this.languageUnsubscribe?.();
 
     // Cleanup child components
-    this.dyeSelector?.destroy();
-    this.dyeFilters?.destroy();
-    this.marketBoard?.destroy();
-    this.filtersPanel?.destroy();
-    this.marketPanel?.destroy();
-    this.colorWheel?.destroy();
-    this.paletteExporter?.destroy();
-
-    for (const display of this.harmonyDisplays.values()) {
-      display.destroy();
-    }
-    this.harmonyDisplays.clear();
+    this.destroyChildComponents();
 
     super.destroy();
     logger.info('[HarmonyTool] Destroyed');
@@ -230,18 +302,20 @@ export class HarmonyTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Dye Selection
-    const dyeSection = this.createSection('Base Dye');
-    this.renderDyeSelector(dyeSection);
-    left.appendChild(dyeSection);
+    // Section 1: Base Dye (Collapsible)
+    const dyeContainer = this.createElement('div');
+    left.appendChild(dyeContainer);
+    this.renderBaseDyePanel(dyeContainer);
 
-    // Section 2: Harmony Type Selector
-    const harmonySection = this.createSection('Harmony Type');
-    this.renderHarmonyTypeSelector(harmonySection);
-    left.appendChild(harmonySection);
+    // Section 2: Harmony Type (Collapsible)
+    const harmonyContainer = this.createElement('div');
+    left.appendChild(harmonyContainer);
+    this.renderHarmonyTypePanel(harmonyContainer);
 
     // Section 3: Companion Dyes Slider
-    const companionSection = this.createSection('Companion Dyes');
+    const companionSection = this.createSection(
+      LanguageService.t('harmony.companionDyes') || 'Companion Dyes'
+    );
     this.renderCompanionSlider(companionSection);
     left.appendChild(companionSection);
 
@@ -254,6 +328,40 @@ export class HarmonyTool extends BaseComponent {
     const marketContainer = this.createElement('div');
     left.appendChild(marketContainer);
     this.renderMarketPanel(marketContainer);
+  }
+
+  /**
+   * Render collapsible Base Dye panel
+   */
+  private renderBaseDyePanel(container: HTMLElement): void {
+    const panel = new CollapsiblePanel(container, {
+      title: LanguageService.t('harmony.baseDye') || 'Base Dye',
+      defaultOpen: true,
+      storageKey: 'harmony_base_dye',
+    });
+    panel.init();
+
+    const contentContainer = panel.getContentContainer();
+    if (contentContainer) {
+      this.renderDyeSelector(contentContainer);
+    }
+  }
+
+  /**
+   * Render collapsible Harmony Type panel
+   */
+  private renderHarmonyTypePanel(container: HTMLElement): void {
+    const panel = new CollapsiblePanel(container, {
+      title: LanguageService.t('harmony.harmonyType') || 'Harmony Type',
+      defaultOpen: true,
+      storageKey: 'harmony_type',
+    });
+    panel.init();
+
+    const contentContainer = panel.getContentContainer();
+    if (contentContainer) {
+      this.renderHarmonyTypeSelector(contentContainer);
+    }
   }
 
   /**
@@ -297,12 +405,34 @@ export class HarmonyTool extends BaseComponent {
       showPrices: this.showPrices,
       excludeFacewear: true,
       showFavorites: true,
+      compactMode: true, // Use 3-column layout for narrow left panel
     });
     this.dyeSelector.init();
 
-    // Listen for dye selection (custom event)
-    selectorContainer.addEventListener('dyeSelected', ((event: CustomEvent<{ dye: Dye }>) => {
-      this.selectedDye = event.detail.dye;
+    // Pre-select persisted dye if available
+    if (this.selectedDye) {
+      this.dyeSelector.setSelectedDyes([this.selectedDye]);
+    }
+
+    // Listen for dye selection (custom event from DyeSelector)
+    selectorContainer.addEventListener('selection-changed', ((event: CustomEvent<{ selectedDyes: Dye[] }>) => {
+      const selectedDyes = event.detail.selectedDyes;
+      this.selectedDye = selectedDyes.length > 0 ? selectedDyes[0] : null;
+
+      // Persist selected dye itemID for restoration when returning to this tool
+      // Use itemID which is the FFXIV standard identifier (5729-48227 range)
+      if (this.selectedDye) {
+        const dyeIdToSave = this.selectedDye.itemID;
+        StorageService.setItem(STORAGE_KEYS.selectedDyeId, dyeIdToSave);
+        logger.info(`[HarmonyTool] Saved dye: ${this.selectedDye.name} (itemID=${dyeIdToSave})`);
+      } else {
+        StorageService.removeItem(STORAGE_KEYS.selectedDyeId);
+        logger.info('[HarmonyTool] Cleared saved dye');
+      }
+
+      // Clear swapped dyes when base dye changes
+      this.swappedDyes.clear();
+
       this.updateCurrentDyeDisplay(currentDisplay);
       this.generateHarmonies();
       this.updateDrawerContent();
@@ -397,6 +527,9 @@ export class HarmonyTool extends BaseComponent {
   private selectHarmonyType(typeId: string): void {
     this.selectedHarmonyType = typeId;
     StorageService.setItem(STORAGE_KEYS.harmonyType, typeId);
+
+    // Clear swapped dyes when harmony type changes
+    this.swappedDyes.clear();
 
     // Update button styles
     if (this.harmonyTypesContainer) {
@@ -550,7 +683,7 @@ export class HarmonyTool extends BaseComponent {
         style: 'background: var(--theme-background-secondary); color: var(--theme-text); border: 1px solid var(--theme-border);',
         title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
       },
-      innerHTML: `💰 ${LanguageService.t('budget.budgetOptions') || 'Budget Options'}`,
+      innerHTML: `<span class="w-4 h-4">${ICON_BUDGET}</span> ${LanguageService.t('budget.budgetOptions') || 'Budget Options'}`,
     });
 
     this.on(budgetBtn, 'click', () => {
@@ -576,9 +709,9 @@ export class HarmonyTool extends BaseComponent {
     resultsHeader.appendChild(btnGroup);
     right.appendChild(resultsHeader);
 
-    // Harmony Cards Grid
+    // Harmony Results Grid (2-column for larger result panels)
     this.harmonyGridContainer = this.createElement('div', {
-      className: 'grid gap-4 md:grid-cols-2 lg:grid-cols-3',
+      className: 'grid gap-4 md:grid-cols-2',
     });
     right.appendChild(this.harmonyGridContainer);
 
@@ -726,7 +859,8 @@ export class HarmonyTool extends BaseComponent {
   // ============================================================================
 
   /**
-   * Generate harmony results for all types
+   * Generate harmony results for the SELECTED harmony type only
+   * Displays Base panel + Harmony 1, 2, etc. panels
    */
   private generateHarmonies(): void {
     if (!this.selectedDye || !this.harmonyGridContainer) {
@@ -736,44 +870,110 @@ export class HarmonyTool extends BaseComponent {
 
     this.showEmptyState(false);
 
-    // Clear existing displays
-    for (const display of this.harmonyDisplays.values()) {
-      display.destroy();
+    // Clear existing result panels
+    for (const panel of this.resultPanels) {
+      panel.destroy();
     }
-    this.harmonyDisplays.clear();
+    this.resultPanels = [];
     clearContainer(this.harmonyGridContainer);
 
     // Update color wheel
     this.renderColorWheel();
 
-    // Generate harmony cards for each type
-    const harmonyTypes = getHarmonyTypes();
+    // Get offsets for the SELECTED harmony type only
+    const offsets = HARMONY_OFFSETS[this.selectedHarmonyType] || [];
+    const baseHsv = ColorService.hexToHsv(this.selectedDye.hex);
+    const allDyes = dyeService.getAllDyes();
 
-    for (const type of harmonyTypes) {
-      const matchedDyes = this.findHarmonyDyes(type.id);
-      const cardContainer = this.createElement('div', {
-        attributes: { 'data-harmony-card': type.id },
+    // Render Base panel (no closest dyes section)
+    this.renderResultPanel({
+      label: LanguageService.t('harmony.base') || 'Base',
+      matchedDye: this.selectedDye,
+      targetColor: this.selectedDye.hex,
+      deviance: 0,
+      closestDyes: [],
+      isBase: true,
+    });
+
+    // Render Harmony panels for each offset in the selected harmony type
+    offsets.forEach((offset, index) => {
+      const targetHue = (baseHsv.h + offset) % 360;
+      const targetColor = ColorService.hsvToHex(targetHue, baseHsv.s, baseHsv.v);
+      const matches = this.findClosestDyesToHue(allDyes, targetHue, this.companionDyesCount + 1);
+
+      // Use swapped dye if user has selected one, otherwise use best match
+      const swappedDye = this.swappedDyes.get(index);
+      const displayDye = swappedDye || matches[0].dye;
+      const deviance = swappedDye
+        ? this.calculateHueDeviance(swappedDye, targetHue)
+        : matches[0].deviance;
+
+      // Closest dyes excludes the currently displayed dye
+      const closestDyes = matches
+        .filter((m) => m.dye.itemID !== displayDye.itemID)
+        .slice(0, this.companionDyesCount)
+        .map((m) => m.dye);
+
+      this.renderResultPanel({
+        label: `${LanguageService.t('harmony.harmony') || 'Harmony'} ${index + 1}`,
+        matchedDye: displayDye,
+        targetColor,
+        deviance,
+        closestDyes,
+        isBase: false,
+        harmonyIndex: index,
+        onSwapDye: (dye) => this.handleSwapDye(index, dye),
       });
+    });
 
-      const harmonyDisplay = new HarmonyType(
-        cardContainer,
-        type,
-        this.selectedDye.hex,
-        matchedDyes,
-        this.showPrices
-      );
-      harmonyDisplay.init();
+    logger.info('[HarmonyTool] Generated harmonies for:', this.selectedDye.name, 'type:', this.selectedHarmonyType);
+  }
 
-      // Set price data if available
-      if (this.priceData.size > 0) {
-        harmonyDisplay.setPriceData(this.priceData);
-      }
+  /**
+   * Render an individual result panel (Base or Harmony N)
+   */
+  private renderResultPanel(options: {
+    label: string;
+    matchedDye: Dye;
+    targetColor: string;
+    deviance: number;
+    closestDyes: Dye[];
+    isBase: boolean;
+    harmonyIndex?: number;
+    onSwapDye?: (dye: Dye) => void;
+  }): void {
+    if (!this.harmonyGridContainer) return;
 
-      this.harmonyDisplays.set(type.id, harmonyDisplay);
-      this.harmonyGridContainer.appendChild(cardContainer);
-    }
+    const panelContainer = this.createElement('div', {
+      attributes: { 'data-harmony-panel': options.label },
+    });
 
-    logger.info('[HarmonyTool] Generated harmonies for:', this.selectedDye.name);
+    const panel = new HarmonyResultPanel(panelContainer, {
+      ...options,
+      showPrices: this.showPrices,
+      priceData: this.priceData,
+    });
+    panel.init();
+
+    this.resultPanels.push(panel);
+    this.harmonyGridContainer.appendChild(panelContainer);
+  }
+
+  /**
+   * Handle swap dye action from result panel
+   */
+  private handleSwapDye(harmonyIndex: number, dye: Dye): void {
+    this.swappedDyes.set(harmonyIndex, dye);
+    this.generateHarmonies(); // Re-render with new selection
+  }
+
+  /**
+   * Calculate hue deviance between a dye and target hue
+   */
+  private calculateHueDeviance(dye: Dye, targetHue: number): number {
+    const dyeHsv = ColorService.hexToHsv(dye.hex);
+    const hueDiff = Math.abs(dyeHsv.h - targetHue);
+    return Math.min(hueDiff, 360 - hueDiff);
   }
 
   /**
@@ -847,11 +1047,14 @@ export class HarmonyTool extends BaseComponent {
   }
 
   /**
-   * Update price data on harmony displays
+   * Update price data on harmony displays and result panels
    */
   private updateHarmonyDisplayPrices(): void {
     for (const display of this.harmonyDisplays.values()) {
       display.setPriceData(this.priceData);
+    }
+    for (const panel of this.resultPanels) {
+      panel.setPriceData(this.priceData);
     }
   }
 

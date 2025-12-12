@@ -12,6 +12,8 @@ export interface DyeGridOptions {
   maxSelections?: number;
   showCategories?: boolean;
   showFavorites?: boolean;
+  /** Use compact 3-column grid layout for narrow panels */
+  compactMode?: boolean;
 }
 
 export class DyeGrid extends BaseComponent {
@@ -32,6 +34,7 @@ export class DyeGrid extends BaseComponent {
       maxSelections: options.maxSelections ?? 4,
       showCategories: options.showCategories ?? true,
       showFavorites: options.showFavorites ?? true,
+      compactMode: options.compactMode ?? false,
     };
 
     // Subscribe to favorites changes
@@ -55,9 +58,13 @@ export class DyeGrid extends BaseComponent {
   }
 
   render(): void {
+    // Use compact 3-column layout when compactMode is enabled
+    const gridClasses = this.options.compactMode
+      ? 'grid grid-cols-3 gap-3 max-h-96 overflow-y-auto'
+      : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-96 overflow-y-auto';
+
     const wrapper = this.createElement('div', {
-      className:
-        'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-96 overflow-y-auto',
+      className: gridClasses,
       attributes: {
         role: 'grid',
         'aria-label': LanguageService.t('dyeSelector.gridAriaLabel') || 'Dye color selection',

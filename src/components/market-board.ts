@@ -39,6 +39,7 @@ export class MarketBoard extends BaseComponent {
   private showPrices: boolean = false;
   private priceCategories: PriceCategorySettings;
   private isRefreshing: boolean = false;
+  private languageUnsubscribe: (() => void) | null = null;
 
   constructor(container: HTMLElement) {
     super(container);
@@ -585,10 +586,21 @@ export class MarketBoard extends BaseComponent {
    * Initialize the component
    */
   onMount(): void {
-    // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes to update localized text (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.init(); // Re-render to update localized text
     });
+  }
+
+  /**
+   * Clean up subscriptions on destroy
+   */
+  override destroy(): void {
+    if (this.languageUnsubscribe) {
+      this.languageUnsubscribe();
+      this.languageUnsubscribe = null;
+    }
+    super.destroy();
   }
 
   /**
