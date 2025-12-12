@@ -11,8 +11,8 @@ export { HarmonyTool, type HarmonyToolOptions } from './harmony-tool';
 export { MatcherTool, type MatcherToolOptions } from './matcher-tool';
 export { AccessibilityTool, type AccessibilityToolOptions } from './accessibility-tool';
 export { ComparisonTool, type ComparisonToolOptions } from './comparison-tool';
+export { MixerTool, type MixerToolOptions } from './mixer-tool';
 
-// Future tool exports (Phase 6+):
-// export { MixerTool, type MixerToolOptions } from './mixer-tool';
+// Future tool exports (Phase 7+):
 // export { PresetsTool, type PresetsToolOptions } from './presets-tool';
 // export { BudgetTool, type BudgetToolOptions } from './budget-tool';

@@ -159,15 +159,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'mixer': {
-        const { MixerMockup } = await import('@mockups/tools/MixerMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new MixerMockup(mockupContainer, {
+        // Phase 6: Production MixerTool
+        const { MixerTool } = await import('@components/tools/mixer-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new MixerTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Mixer tool loaded');
+        logger.info('[V3 Layout] Mixer tool loaded (v3 production)');
         break;
       }
       case 'presets': {
