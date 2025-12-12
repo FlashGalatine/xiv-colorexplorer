@@ -133,15 +133,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'accessibility': {
-        const { AccessibilityMockup } = await import('@mockups/tools/AccessibilityMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new AccessibilityMockup(mockupContainer, {
+        // Phase 4: Production AccessibilityTool
+        const { AccessibilityTool } = await import('@components/tools/accessibility-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new AccessibilityTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Accessibility tool loaded');
+        logger.info('[V3 Layout] Accessibility tool loaded (v3 production)');
         break;
       }
       case 'comparison': {
