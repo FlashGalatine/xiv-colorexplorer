@@ -120,15 +120,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'matcher': {
-        const { MatcherMockup } = await import('@mockups/tools/MatcherMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new MatcherMockup(mockupContainer, {
+        // Phase 3: Production MatcherTool
+        const { MatcherTool } = await import('@components/tools/matcher-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new MatcherTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Matcher tool loaded');
+        logger.info('[V3 Layout] Matcher tool loaded (v3 production)');
         break;
       }
       case 'accessibility': {

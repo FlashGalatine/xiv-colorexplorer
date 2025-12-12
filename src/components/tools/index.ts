@@ -8,9 +8,9 @@
  */
 
 export { HarmonyTool, type HarmonyToolOptions } from './harmony-tool';
+export { MatcherTool, type MatcherToolOptions } from './matcher-tool';
 
-// Future tool exports (Phase 3+):
-// export { MatcherTool, type MatcherToolOptions } from './matcher-tool';
+// Future tool exports (Phase 4+):
 // export { AccessibilityTool, type AccessibilityToolOptions } from './accessibility-tool';
 // export { ComparisonTool, type ComparisonToolOptions } from './comparison-tool';
 // export { MixerTool, type MixerToolOptions } from './mixer-tool';
