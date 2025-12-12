@@ -17,11 +17,12 @@ import {
   ICON_TOOL_COMPARISON,
   ICON_TOOL_MIXER,
   ICON_TOOL_PRESETS,
+  ICON_TOOL_BUDGET,
 } from '@shared/tool-icons';
 import { MobileDrawer } from './MobileDrawer';
 import { getLocalizedMockupTools } from './MockupNav';
 
-export type MockupToolId = 'harmony' | 'matcher' | 'accessibility' | 'comparison' | 'mixer' | 'presets';
+export type MockupToolId = 'harmony' | 'matcher' | 'accessibility' | 'comparison' | 'mixer' | 'presets' | 'budget';
 
 // Map tool IDs to their v2.x SVG icons
 const TOOL_ICONS: Record<MockupToolId, string> = {
@@ -31,6 +32,7 @@ const TOOL_ICONS: Record<MockupToolId, string> = {
   comparison: ICON_TOOL_COMPARISON,
   mixer: ICON_TOOL_MIXER,
   presets: ICON_TOOL_PRESETS,
+  budget: ICON_TOOL_BUDGET,
 };
 
 export interface MockupShellOptions {

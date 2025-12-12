@@ -14,6 +14,56 @@ import { CollapsiblePanel } from './CollapsiblePanel';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 
+// Import mockup-only gradient themes (NOT loaded in production)
+import './mockup-gradient-themes.css';
+
+// Experimental mockup theme definitions
+const MOCKUP_GRADIENT_THEMES = [
+  { id: 'gradient-light', label: 'Gradient Light', description: 'Warm sunrise (coral → gold)' },
+  { id: 'gradient-dark', label: 'Gradient Dark', description: 'Cool twilight (purple → teal)' },
+] as const;
+
+type MockupGradientThemeId = typeof MOCKUP_GRADIENT_THEMES[number]['id'];
+
+// Track current mockup gradient theme
+let currentMockupGradientTheme: MockupGradientThemeId | null = null;
+
+/**
+ * Apply a mockup-only gradient theme
+ * These themes layer on top of the standard theme system
+ */
+function applyMockupGradientTheme(themeId: MockupGradientThemeId | null): void {
+  const root = document.documentElement;
+
+  // Remove all mockup gradient theme classes
+  MOCKUP_GRADIENT_THEMES.forEach(t => {
+    root.classList.remove(`theme-${t.id}`);
+  });
+
+  // Apply new theme if specified
+  if (themeId) {
+    root.classList.add(`theme-${themeId}`);
+    logger.info(`Applied mockup gradient theme: ${themeId}`);
+  } else {
+    logger.info('Removed mockup gradient theme, using standard theme');
+  }
+
+  currentMockupGradientTheme = themeId;
+  updateThemeSwitcherUI();
+}
+
+/**
+ * Update the theme switcher button states
+ */
+function updateThemeSwitcherUI(): void {
+  const buttons = document.querySelectorAll('.mockup-theme-btn');
+  buttons.forEach(btn => {
+    const btnTheme = btn.getAttribute('data-theme');
+    const isActive = btnTheme === currentMockupGradientTheme || (btnTheme === 'standard' && !currentMockupGradientTheme);
+    btn.classList.toggle('active', isActive);
+  });
+}
+
 // Re-export components for external use
 export { MockupShell, type MockupToolId } from './MockupShell';
 export { MockupNav, getLocalizedMockupTools } from './MockupNav';
@@ -50,7 +100,7 @@ export function loadMockupSystem(container: HTMLElement): void {
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
       </span>
-      <div>
+      <div class="flex-1">
         <h3 class="font-bold text-lg mb-1">v3.0.0 UI Mockup Mode</h3>
         <p class="text-sm opacity-80 mb-2">
           You're viewing the development mockups for the upcoming two-panel layout redesign.
@@ -69,10 +119,32 @@ export function loadMockupSystem(container: HTMLElement): void {
             Mobile: Drawer
           </span>
         </div>
+        <div class="mockup-theme-switcher">
+          <span class="mockup-theme-switcher-label">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Experimental:
+          </span>
+          <button class="mockup-theme-btn active" data-theme="standard" title="Use current theme (no gradient overlay)">Standard</button>
+          <button class="mockup-theme-btn gradient-light" data-theme="gradient-light" title="Warm sunrise gradient (coral → gold)">Gradient Light</button>
+          <button class="mockup-theme-btn gradient-dark" data-theme="gradient-dark" title="Cool twilight gradient (purple → teal)">Gradient Dark</button>
+        </div>
       </div>
     </div>
   `;
   container.appendChild(banner);
+
+  // Wire up theme switcher buttons
+  const themeBtns = banner.querySelectorAll('.mockup-theme-btn');
+  themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const themeId = btn.getAttribute('data-theme');
+      if (themeId === 'standard') {
+        applyMockupGradientTheme(null);
+      } else {
+        applyMockupGradientTheme(themeId as MockupGradientThemeId);
+      }
+    });
+  });
 
   // Create shell container
   const shellContainer = document.createElement('div');
@@ -206,6 +278,18 @@ async function loadToolMockup(shell: MockupShell, toolId: MockupToolId): Promise
         logger.info('Presets Mockup loaded');
         break;
       }
+      case 'budget': {
+        const { BudgetMockup } = await import('./tools/BudgetMockup');
+        const mockupContainer = document.createElement('div');
+        activeMockup = new BudgetMockup(mockupContainer, {
+          leftPanel,
+          rightPanel,
+          drawerContent,
+        });
+        activeMockup.init();
+        logger.info('Budget Mockup loaded');
+        break;
+      }
       default:
         renderPlaceholderMockup(leftPanel, rightPanel, drawerContent, toolId);
         break;
@@ -259,6 +343,10 @@ function renderPlaceholderMockup(
     presets: {
       leftItems: ['Category Filters', 'Sort Options', 'Auth Status', 'My Submissions'],
       rightItems: ['Featured Presets', 'Preset Grid', 'Preset Detail View'],
+    },
+    budget: {
+      leftItems: ['Target Dye', 'Quick Picks', 'Budget Slider', 'Sort Options', 'Dye Filters', 'Data Center'],
+      rightItems: ['Target Overview', 'Alternatives List', 'Savings Summary', 'Value Score'],
     },
   };
 

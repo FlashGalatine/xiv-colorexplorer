@@ -75,6 +75,16 @@ export const ICON_TOOL_PRESETS = `<svg viewBox="0 0 24 24" fill="none" stroke="c
 </svg>`;
 
 /**
+ * Budget Suggestions icon - Coin/currency with arrow
+ */
+export const ICON_TOOL_BUDGET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="9" opacity="0.3" />
+  <path d="M12 6v2m0 8v2" />
+  <path d="M9 10c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2s-.9 2-2 2h-2c-1.1 0-2 .9-2 2s.9 2 2 2h2c1.1 0 2-.9 2-2" />
+  <path d="M17 7l2-2m0 0l2 2m-2-2v5" opacity="0.7" />
+</svg>`;
+
+/**
  * Tools Menu icon - Toolbox
  */
 export const ICON_TOOL_MENU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -96,6 +106,7 @@ export const TOOL_ICONS: Record<string, string> = {
   comparison: ICON_TOOL_COMPARISON,
   mixer: ICON_TOOL_MIXER,
   presets: ICON_TOOL_PRESETS,
+  budget: ICON_TOOL_BUDGET,
   tools: ICON_TOOL_MENU,
 };
 

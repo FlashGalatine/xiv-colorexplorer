@@ -16,6 +16,7 @@ import {
   ICON_TOOL_COMPARISON,
   ICON_TOOL_MIXER,
   ICON_TOOL_PRESETS,
+  ICON_TOOL_BUDGET,
 } from '@shared/tool-icons';
 
 export interface MockupNavTool {
@@ -78,6 +79,13 @@ export function getLocalizedMockupTools(): MockupNavTool[] {
       shortName: LanguageService.t('tools.presets.shortName'),
       icon: ICON_TOOL_PRESETS,
       description: LanguageService.t('tools.presets.description'),
+    },
+    {
+      id: 'budget',
+      name: LanguageService.t('tools.budget.title') || 'Budget',
+      shortName: LanguageService.t('tools.budget.shortName') || 'Budget',
+      icon: ICON_TOOL_BUDGET,
+      description: LanguageService.t('tools.budget.description') || 'Find affordable dye alternatives',
     },
   ];
 }
