@@ -22,6 +22,8 @@ export { DyeService, dyeService } from './dye-service-wrapper';
 export { StorageService, appStorage, NamespacedStorage, SecureStorage } from './storage-service';
 export { ThemeService };
 export { LanguageService };
+export { FeatureFlagService } from './feature-flag-service';
+export type { UIVersion, FeatureFlagState } from './feature-flag-service';
 export { APIService, apiService } from './api-service-wrapper';
 export { ToastService } from './toast-service';
 export type { Toast, ToastType, ToastOptions } from './toast-service';
