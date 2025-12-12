@@ -137,6 +137,7 @@ export class AccessibilityCheckerTool extends BaseComponent {
         showCategories: true,
         showPrices: false,
         excludeFacewear: true,
+        compactMode: true,
       });
       this.dyeSelector.init();
 

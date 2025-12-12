@@ -346,6 +346,7 @@ export class DyeMixerTool extends BaseComponent {
         allowMultiple: true,
         showCategories: true,
         showPrices: true,
+        compactMode: true,
       });
       this.dyeSelector.init();
 
@@ -362,6 +363,7 @@ export class DyeMixerTool extends BaseComponent {
     if (filtersContainer && !this.dyeFilters) {
       this.dyeFilters = new DyeFilters(filtersContainer, {
         storageKeyPrefix: 'dyemixer',
+        hideHeader: true, // Header is provided by the outer CollapsiblePanel
         onFilterChange: () => {
           // Recalculate interpolation if we have selected dyes
           if (this.selectedDyes.length >= 2) {

@@ -281,6 +281,7 @@ export class MixerTool extends BaseComponent {
       showPrices: true,
       excludeFacewear: true,
       showFavorites: true,
+      compactMode: true,
     });
     selector.init();
 

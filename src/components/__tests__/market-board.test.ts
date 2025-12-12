@@ -215,12 +215,12 @@ describe('MarketBoard', () => {
       expect(priceSettings?.classList.contains('hidden')).toBe(false);
     });
 
-    it('should emit toggle-prices event', async () => {
+    it('should emit showPricesChanged event', async () => {
       component = new MarketBoard(container);
       component.init();
 
       const eventSpy = vi.fn();
-      container.addEventListener('toggle-prices', eventSpy);
+      container.addEventListener('showPricesChanged', eventSpy);
 
       const toggle = container.querySelector('#show-mb-prices-toggle') as HTMLInputElement;
       toggle.checked = true;

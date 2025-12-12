@@ -655,15 +655,34 @@ export class HarmonyTool extends BaseComponent {
     this.marketBoard.init();
 
     // Listen for price toggle changes (custom event)
-    marketContent.addEventListener('showPricesChanged', ((event: CustomEvent<{ showPrices: boolean }>) => {
-      this.showPrices = event.detail.showPrices;
+    marketContent.addEventListener('showPricesChanged', ((event: Event) => {
+      const customEvent = event as CustomEvent<{ showPrices: boolean }>;
+      this.showPrices = customEvent.detail.showPrices;
       this.generateHarmonies();
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
     }) as EventListener);
 
-    // Listen for price data updates (custom event)
-    marketContent.addEventListener('pricesLoaded', ((event: CustomEvent<{ prices: Map<number, PriceData> }>) => {
-      this.priceData = event.detail.prices;
-      this.updateHarmonyDisplayPrices();
+    // Listen for server changes - refetch prices when server selection changes
+    marketContent.addEventListener('server-changed', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
+    }) as EventListener);
+
+    // Listen for category changes - refetch prices when price categories change
+    marketContent.addEventListener('categories-changed', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
+    }) as EventListener);
+
+    // Listen for refresh requests - refetch prices when user clicks refresh
+    marketContent.addEventListener('refresh-requested', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
     }) as EventListener);
 
     this.marketPanel.setContent(marketContent);
@@ -953,6 +972,11 @@ export class HarmonyTool extends BaseComponent {
     });
 
     logger.info('[HarmonyTool] Generated harmonies for:', this.selectedDye.name, 'type:', this.selectedHarmonyType);
+
+    // Fetch prices for displayed dyes if prices are enabled
+    if (this.showPrices) {
+      this.fetchPricesForDisplayedDyes();
+    }
   }
 
   /**
@@ -1137,6 +1161,59 @@ export class HarmonyTool extends BaseComponent {
     }
     for (const panel of this.resultPanels) {
       panel.setPriceData(this.priceData);
+    }
+  }
+
+  /**
+   * Fetch prices for all displayed dyes (base + harmony dyes)
+   * Called when prices are enabled, server changes, or categories change
+   */
+  private async fetchPricesForDisplayedDyes(): Promise<void> {
+    if (!this.showPrices || !this.marketBoard || !this.selectedDye) {
+      return;
+    }
+
+    // Collect all dyes that need price fetching
+    const dyesToFetch: Dye[] = [this.selectedDye];
+
+    // Get harmony dyes from the current harmony type
+    const offsets = HARMONY_OFFSETS[this.selectedHarmonyType] || [];
+    const baseHsv = ColorService.hexToHsv(this.selectedDye.hex);
+    const allDyes = dyeService.getAllDyes();
+
+    for (let i = 0; i < offsets.length; i++) {
+      const offset = offsets[i];
+      const targetHue = (baseHsv.h + offset) % 360;
+
+      // Get matches (same logic as generateHarmonies)
+      let matches = this.findClosestDyesToHue(allDyes, targetHue, this.companionDyesCount + 10);
+      matches = this.replaceExcludedDyes(matches, targetHue);
+
+      // Use swapped dye if available, otherwise best match
+      const swappedDye = this.swappedDyes.get(i);
+      const displayDye = swappedDye || matches[0]?.dye;
+
+      if (displayDye) {
+        dyesToFetch.push(displayDye);
+      }
+
+      // Also add closest dyes (companion dyes)
+      const closestDyes = matches
+        .filter((m) => displayDye && m.dye.itemID !== displayDye.itemID)
+        .slice(0, this.companionDyesCount)
+        .map((m) => m.dye);
+
+      dyesToFetch.push(...closestDyes);
+    }
+
+    // Fetch prices from market board
+    try {
+      const prices = await this.marketBoard.fetchPricesForDyes(dyesToFetch);
+      this.priceData = prices;
+      this.updateHarmonyDisplayPrices();
+      logger.info(`[HarmonyTool] Fetched prices for ${prices.size} dyes`);
+    } catch (error) {
+      logger.error('[HarmonyTool] Failed to fetch prices:', error);
     }
   }
 

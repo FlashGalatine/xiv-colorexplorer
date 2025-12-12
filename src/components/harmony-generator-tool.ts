@@ -538,6 +538,7 @@ export class HarmonyGeneratorTool extends BaseComponent implements PricingState 
         allowMultiple: false,
         showCategories: true,
         showPrices: false,
+        compactMode: true,
       });
       this.dyeSelector.init();
 
@@ -563,6 +564,7 @@ export class HarmonyGeneratorTool extends BaseComponent implements PricingState 
     if (filtersContainer && !this.dyeFilters) {
       this.dyeFilters = new DyeFilters(filtersContainer, {
         storageKeyPrefix: 'harmony',
+        hideHeader: true, // Header is provided by the outer CollapsiblePanel
         onFilterChange: () => {
           this.generateHarmonies();
         },

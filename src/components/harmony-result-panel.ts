@@ -110,7 +110,7 @@ export class HarmonyResultPanel extends BaseComponent {
       if (priceInfo) {
         const priceEl = this.createElement('p', {
           className: 'text-sm font-medium',
-          textContent: `${APIService.formatPrice(priceInfo.currentAverage)} gil`,
+          textContent: APIService.formatPrice(priceInfo.currentAverage),
           attributes: { style: 'color: var(--theme-accent);' },
         });
         content.appendChild(priceEl);

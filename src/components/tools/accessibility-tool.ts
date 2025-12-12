@@ -284,6 +284,7 @@ export class AccessibilityTool extends BaseComponent {
       showPrices: false,
       excludeFacewear: true,
       showFavorites: true,
+      compactMode: true,
     });
     this.dyeSelector.init();
 

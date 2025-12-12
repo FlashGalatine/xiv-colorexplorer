@@ -323,6 +323,7 @@ export class BudgetTool extends BaseComponent {
       showPrices: true,
       excludeFacewear: true,
       showFavorites: true,
+      compactMode: true,
     });
     this.dyeSelector.init();
 

@@ -519,6 +519,7 @@ export class ColorMatcherTool extends BaseComponent implements PricingState {
     if (filtersContainer && !this.dyeFilters) {
       this.dyeFilters = new DyeFilters(filtersContainer, {
         storageKeyPrefix: 'colormatcher',
+        hideHeader: true, // Header is provided by the outer CollapsiblePanel
         onFilterChange: () => {
           // Re-match color if we have a current match - use original sampled color
           if (this.matchedDyes.length > 0 && this.lastSampledColor) {

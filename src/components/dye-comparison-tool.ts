@@ -162,6 +162,7 @@ export class DyeComparisonTool extends BaseComponent implements PricingState {
         allowMultiple: true,
         showCategories: true,
         showPrices: false,
+        compactMode: true,
       });
       this.dyeSelector.init();
 

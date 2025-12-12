@@ -107,12 +107,7 @@ export class MarketBoard extends BaseComponent {
       className: 'space-y-4',
     });
 
-    // Title
-    const title = this.createElement('h3', {
-      textContent: LanguageService.t('marketBoard.title'),
-      className: 'text-sm font-semibold text-gray-900 dark:text-white mb-3',
-    });
-    wrapper.appendChild(title);
+    // Note: Title is provided by the parent CollapsiblePanel, so we don't render one here
 
     const content = this.createElement('div', {
       className: 'space-y-4',
@@ -403,7 +398,7 @@ export class MarketBoard extends BaseComponent {
           priceSettings.classList.toggle('hidden', !this.showPrices);
         }
 
-        this.emit('toggle-prices', { showPrices: this.showPrices });
+        this.emit('showPricesChanged', { showPrices: this.showPrices });
       });
     }
 
@@ -586,6 +581,9 @@ export class MarketBoard extends BaseComponent {
    * Initialize the component
    */
   onMount(): void {
+    // Load server data (data centers and worlds) on mount
+    this.loadServerData();
+
     // Subscribe to language changes to update localized text (store unsubscribe for cleanup)
     this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.init(); // Re-render to update localized text
