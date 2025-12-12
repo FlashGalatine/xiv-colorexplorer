@@ -63,6 +63,14 @@
       "backToList": "Back to list",
       "colorsInPalette": "Colors in this Palette",
       "tags": "Tags"
+    },
+    "budget": {
+      "title": "Budget Suggestions",
+      "shortName": "Budget",
+      "description": "Find affordable dye alternatives",
+      "subtitle": "Discover cheaper alternatives to expensive dyes. Set your budget and find similar colors that won't break the bank.",
+      "findCheaperTooltip": "Find cheaper alternatives",
+      "budgetOptions": "Budget Options"
     }
   },
   "common": {

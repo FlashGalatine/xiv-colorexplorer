@@ -63,6 +63,14 @@
       "backToList": "목록으로 돌아가기",
       "colorsInPalette": "이 팔레트의 색상",
       "tags": "태그"
+    },
+    "budget": {
+      "title": "예산 제안",
+      "shortName": "예산",
+      "description": "저렴한 염료 대안 찾기",
+      "subtitle": "비싼 염료의 저렴한 대안을 발견하세요. 예산을 설정하고 지갑에 부담 없는 유사한 색상을 찾아보세요.",
+      "findCheaperTooltip": "더 저렴한 대안 찾기",
+      "budgetOptions": "예산 옵션"
     }
   },
   "common": {

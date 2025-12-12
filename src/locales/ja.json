@@ -63,6 +63,14 @@
       "backToList": "リストに戻る",
       "colorsInPalette": "このパレットの色",
       "tags": "タグ"
+    },
+    "budget": {
+      "title": "予算提案",
+      "shortName": "予算",
+      "description": "手頃な代替染料を見つける",
+      "subtitle": "高価な染料の安価な代替品を発見。予算を設定して、お財布に優しい類似色を見つけましょう。",
+      "findCheaperTooltip": "安価な代替品を探す",
+      "budgetOptions": "予算オプション"
     }
   },
   "common": {

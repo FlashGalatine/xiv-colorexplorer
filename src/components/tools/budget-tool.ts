@@ -1,0 +1,1087 @@
+/**
+ * XIV Dye Tools v3.0.0 - Budget Tool Component
+ *
+ * Phase 8: Budget Suggestions - Find affordable dye alternatives.
+ * Helps players find cheaper alternatives to expensive dyes within their budget.
+ *
+ * Left Panel: Target dye selector, quick picks, budget slider, sort options, filters, market board
+ * Right Panel: Target overview, alternatives list with price/savings display
+ *
+ * @module components/tools/budget-tool
+ */
+
+import { BaseComponent } from '@components/base-component';
+import { CollapsiblePanel } from '@components/collapsible-panel';
+import { DyeSelector } from '@components/dye-selector';
+import { DyeFilters } from '@components/dye-filters';
+import { MarketBoard } from '@components/market-board';
+import { ColorService, dyeService, LanguageService, StorageService, ToastService } from '@services/index';
+import { RouterService } from '@services/router-service';
+import { ICON_TOOL_BUDGET } from '@shared/tool-icons';
+import { logger } from '@shared/logger';
+import { clearContainer } from '@shared/utils';
+import type { Dye, PriceData } from '@shared/types';
+
+// ============================================================================
+// Types and Constants
+// ============================================================================
+
+export interface BudgetToolOptions {
+  leftPanel: HTMLElement;
+  rightPanel: HTMLElement;
+  drawerContent?: HTMLElement | null;
+}
+
+/**
+ * Alternative dye with price and savings data
+ */
+interface AlternativeDye {
+  dye: Dye;
+  distance: number;
+  price: number;
+  savings: number;
+  valueScore: number;
+}
+
+/**
+ * Storage keys for v3 budget tool
+ */
+const STORAGE_KEYS = {
+  targetDyeId: 'v3_budget_target',
+  budgetLimit: 'v3_budget_limit',
+  sortBy: 'v3_budget_sort',
+} as const;
+
+/**
+ * Default values
+ */
+const DEFAULTS = {
+  budgetLimit: 50000,
+  sortBy: 'match' as const,
+};
+
+/**
+ * Popular expensive dyes for quick picks
+ */
+const POPULAR_EXPENSIVE_DYE_NAMES = [
+  'Jet Black',
+  'Pure White',
+  'Metallic Gold',
+  'Metallic Silver',
+  'Gunmetal Black',
+  'Snow White',
+];
+
+const ICON_FILTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+</svg>`;
+
+const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+</svg>`;
+
+// ============================================================================
+// BudgetTool Component
+// ============================================================================
+
+/**
+ * Budget Tool - v3 Two-Panel Layout
+ *
+ * Find affordable alternatives to expensive dyes within budget constraints.
+ */
+export class BudgetTool extends BaseComponent {
+  private options: BudgetToolOptions;
+
+  // State
+  private targetDye: Dye | null = null;
+  private budgetLimit: number;
+  private sortBy: 'match' | 'price' | 'value';
+  private alternatives: AlternativeDye[] = [];
+  private priceData: Map<number, PriceData> = new Map();
+  private targetPrice: number = 0;
+  private isLoading: boolean = false;
+
+  // Child components
+  private dyeSelector: DyeSelector | null = null;
+  private dyeFilters: DyeFilters | null = null;
+  private marketBoard: MarketBoard | null = null;
+  private filtersPanel: CollapsiblePanel | null = null;
+  private marketPanel: CollapsiblePanel | null = null;
+
+  // DOM References
+  private targetDyeContainer: HTMLElement | null = null;
+  private budgetValueDisplay: HTMLElement | null = null;
+  private emptyStateContainer: HTMLElement | null = null;
+  private targetOverviewContainer: HTMLElement | null = null;
+  private alternativesHeaderContainer: HTMLElement | null = null;
+  private alternativesListContainer: HTMLElement | null = null;
+  private quickPickButtons: HTMLButtonElement[] = [];
+
+  // Subscriptions
+  private languageUnsubscribe: (() => void) | null = null;
+
+  constructor(container: HTMLElement, options: BudgetToolOptions) {
+    super(container);
+    this.options = options;
+
+    // Load persisted settings
+    this.budgetLimit = StorageService.getItem<number>(STORAGE_KEYS.budgetLimit) ?? DEFAULTS.budgetLimit;
+    this.sortBy = StorageService.getItem<'match' | 'price' | 'value'>(STORAGE_KEYS.sortBy) ?? DEFAULTS.sortBy;
+
+    // Load persisted target dye
+    const savedDyeId = StorageService.getItem<number>(STORAGE_KEYS.targetDyeId);
+    if (savedDyeId) {
+      this.targetDye = dyeService.getDyeById(savedDyeId) || null;
+    }
+  }
+
+  // ============================================================================
+  // Lifecycle Methods
+  // ============================================================================
+
+  render(): void {
+    this.renderLeftPanel();
+    this.renderRightPanel();
+
+    if (this.options.drawerContent) {
+      this.renderDrawerContent();
+    }
+
+    this.element = this.container;
+  }
+
+  bindEvents(): void {
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+  }
+
+  onMount(): void {
+    logger.info('[BudgetTool] Mounted');
+
+    // Handle deep linking
+    this.handleDeepLink();
+
+    // Load initial data if target dye is set
+    if (this.targetDye) {
+      this.findAlternatives();
+    }
+  }
+
+  destroy(): void {
+    this.languageUnsubscribe?.();
+    this.dyeSelector?.destroy();
+    this.dyeFilters?.destroy();
+    this.marketBoard?.destroy();
+    this.filtersPanel?.destroy();
+    this.marketPanel?.destroy();
+
+    this.targetDye = null;
+    this.alternatives = [];
+    this.priceData.clear();
+    this.quickPickButtons = [];
+
+    super.destroy();
+    logger.info('[BudgetTool] Destroyed');
+  }
+
+  // ============================================================================
+  // Deep Linking Support
+  // ============================================================================
+
+  /**
+   * Handle URL parameters for cross-tool navigation
+   */
+  private handleDeepLink(): void {
+    const params = new URLSearchParams(window.location.search);
+    const dyeName = params.get('dye');
+
+    if (dyeName) {
+      // Search for dye by name (exact match preferred)
+      const matches = dyeService.searchByName(dyeName);
+      const dye = matches.find(d => d.name.toLowerCase() === dyeName.toLowerCase()) || matches[0];
+      if (dye) {
+        this.targetDye = dye;
+        this.updateTargetDyeDisplay();
+        this.updateQuickPickSelection();
+        StorageService.setItem(STORAGE_KEYS.targetDyeId, dye.id);
+        this.findAlternatives();
+      }
+    }
+  }
+
+  // ============================================================================
+  // Left Panel Rendering
+  // ============================================================================
+
+  private renderLeftPanel(): void {
+    const left = this.options.leftPanel;
+    clearContainer(left);
+
+    // Section 1: Target Dye
+    const targetSection = this.createSection(LanguageService.t('budget.targetDye') || 'Target Dye');
+    this.renderTargetDyeSection(targetSection);
+    left.appendChild(targetSection);
+
+    // Section 2: Quick Picks
+    const quickSection = this.createSection(LanguageService.t('budget.quickPicks') || 'Quick Picks');
+    this.renderQuickPicksSection(quickSection);
+    left.appendChild(quickSection);
+
+    // Section 3: Budget Limit
+    const budgetSection = this.createSection(LanguageService.t('budget.budgetLimit') || 'Budget Limit');
+    this.renderBudgetSection(budgetSection);
+    left.appendChild(budgetSection);
+
+    // Section 4: Sort Options
+    const sortSection = this.createSection(LanguageService.t('budget.sortBy') || 'Sort By');
+    this.renderSortSection(sortSection);
+    left.appendChild(sortSection);
+
+    // Section 5: Dye Filters (collapsible)
+    const filtersContainer = this.createElement('div');
+    left.appendChild(filtersContainer);
+    this.filtersPanel = new CollapsiblePanel(filtersContainer, {
+      title: LanguageService.t('filters.title') || 'Dye Filters',
+      storageKey: 'v3_budget_filters',
+      defaultOpen: false,
+      icon: ICON_FILTER,
+    });
+    this.filtersPanel.init();
+
+    const filtersContent = this.createElement('div');
+    this.dyeFilters = new DyeFilters(filtersContent, {
+      storageKeyPrefix: 'v3_budget',
+      onFilterChange: () => {
+        this.findAlternatives();
+      },
+    });
+    this.dyeFilters.render();
+    this.dyeFilters.bindEvents();
+    this.filtersPanel.setContent(filtersContent);
+
+    // Section 6: Market Board (collapsible)
+    const marketContainer = this.createElement('div');
+    left.appendChild(marketContainer);
+    this.marketPanel = new CollapsiblePanel(marketContainer, {
+      title: LanguageService.t('marketBoard.title') || 'Market Board',
+      storageKey: 'v3_budget_market',
+      defaultOpen: false,
+      icon: ICON_MARKET,
+    });
+    this.marketPanel.init();
+
+    const marketContent = this.createElement('div');
+    this.marketBoard = new MarketBoard(marketContent);
+    this.marketBoard.init();
+
+    // Listen for server changes to refresh prices
+    marketContent.addEventListener('server-changed', () => {
+      this.findAlternatives();
+    });
+
+    this.marketPanel.setContent(marketContent);
+  }
+
+  /**
+   * Create a section with label
+   */
+  private createSection(label: string): HTMLElement {
+    const section = this.createElement('div', {
+      className: 'p-4 border-b',
+      attributes: { style: 'border-color: var(--theme-border);' },
+    });
+    const sectionLabel = this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: label,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    section.appendChild(sectionLabel);
+    return section;
+  }
+
+  /**
+   * Render target dye display and selector
+   */
+  private renderTargetDyeSection(container: HTMLElement): void {
+    const dyeContainer = this.createElement('div', { className: 'space-y-3' });
+
+    // Selected dye display
+    this.targetDyeContainer = this.createElement('div');
+    dyeContainer.appendChild(this.targetDyeContainer);
+    this.updateTargetDyeDisplay();
+
+    // Dye selector component
+    const selectorContainer = this.createElement('div', { className: 'mt-2' });
+    dyeContainer.appendChild(selectorContainer);
+
+    this.dyeSelector = new DyeSelector(selectorContainer, {
+      maxSelections: 1,
+      allowMultiple: false,
+      allowDuplicates: false,
+      showCategories: true,
+      showPrices: true,
+      excludeFacewear: true,
+      showFavorites: true,
+    });
+    this.dyeSelector.init();
+
+    // Listen for selection changes
+    selectorContainer.addEventListener('selection-changed', () => {
+      const selectedDyes = this.dyeSelector?.getSelectedDyes() || [];
+      this.targetDye = selectedDyes[0] || null;
+      this.updateTargetDyeDisplay();
+      this.updateQuickPickSelection();
+
+      if (this.targetDye) {
+        StorageService.setItem(STORAGE_KEYS.targetDyeId, this.targetDye.id);
+      }
+
+      this.findAlternatives();
+      this.updateDrawerContent();
+    });
+
+    container.appendChild(dyeContainer);
+  }
+
+  /**
+   * Update target dye display card
+   */
+  private updateTargetDyeDisplay(): void {
+    if (!this.targetDyeContainer) return;
+    clearContainer(this.targetDyeContainer);
+
+    if (!this.targetDye) {
+      // Empty state
+      const placeholder = this.createElement('div', {
+        className: 'p-4 rounded-lg border-2 border-dashed text-center',
+        textContent: LanguageService.t('budget.selectTargetDye') || 'Select a target dye',
+        attributes: {
+          style: 'border-color: var(--theme-border); color: var(--theme-text-muted);',
+        },
+      });
+      this.targetDyeContainer.appendChild(placeholder);
+      return;
+    }
+
+    // Display card with dye color as background
+    const textColor = this.isLightColor(this.targetDye.hex) ? '#1A1A1A' : '#FFFFFF';
+
+    const card = this.createElement('div', {
+      className: 'p-4 rounded-lg',
+      attributes: {
+        style: `background: ${this.targetDye.hex}; border: 1px solid var(--theme-border);`,
+      },
+    });
+
+    const name = this.createElement('p', {
+      className: 'font-semibold text-lg mb-1',
+      textContent: LanguageService.getDyeName(this.targetDye.itemID) || this.targetDye.name,
+      attributes: { style: `color: ${textColor};` },
+    });
+
+    const hex = this.createElement('p', {
+      className: 'text-sm font-mono mb-2',
+      textContent: this.targetDye.hex,
+      attributes: { style: `color: ${textColor}; opacity: 0.8;` },
+    });
+
+    const price = this.createElement('p', {
+      className: 'text-sm font-medium',
+      textContent: this.targetPrice > 0
+        ? `~${this.targetPrice.toLocaleString()} gil`
+        : LanguageService.t('budget.loadingPrice') || 'Loading price...',
+      attributes: { style: `color: ${textColor};` },
+    });
+
+    card.appendChild(name);
+    card.appendChild(hex);
+    card.appendChild(price);
+    this.targetDyeContainer.appendChild(card);
+  }
+
+  /**
+   * Render quick picks grid
+   */
+  private renderQuickPicksSection(container: HTMLElement): void {
+    const grid = this.createElement('div', {
+      className: 'grid grid-cols-3 gap-2',
+    });
+
+    this.quickPickButtons = [];
+
+    POPULAR_EXPENSIVE_DYE_NAMES.forEach(dyeName => {
+      const matches = dyeService.searchByName(dyeName);
+      const dye = matches.find(d => d.name === dyeName) || matches[0];
+      if (!dye) return;
+
+      const isSelected = this.targetDye?.id === dye.id;
+      const btn = this.createElement('button', {
+        className: 'flex flex-col items-center gap-1 p-2 rounded-lg transition-colors',
+        attributes: {
+          style: isSelected
+            ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+            : 'background: var(--theme-card-background); color: var(--theme-text);',
+          type: 'button',
+          title: LanguageService.getDyeName(dye.itemID) || dye.name,
+        },
+      }) as HTMLButtonElement;
+
+      const swatch = this.createElement('div', {
+        className: 'w-6 h-6 rounded',
+        attributes: { style: `background: ${dye.hex}; border: 1px solid var(--theme-border);` },
+      });
+
+      const label = this.createElement('span', {
+        className: 'text-xs truncate w-full text-center',
+        textContent: dyeName.split(' ')[0],
+      });
+
+      btn.appendChild(swatch);
+      btn.appendChild(label);
+
+      this.on(btn, 'click', () => {
+        this.targetDye = dye;
+        this.updateTargetDyeDisplay();
+        this.updateQuickPickSelection();
+        StorageService.setItem(STORAGE_KEYS.targetDyeId, dye.id);
+        this.findAlternatives();
+        this.updateDrawerContent();
+      });
+
+      this.quickPickButtons.push(btn);
+      grid.appendChild(btn);
+    });
+
+    container.appendChild(grid);
+  }
+
+  /**
+   * Update quick pick button selection state
+   */
+  private updateQuickPickSelection(): void {
+    this.quickPickButtons.forEach((btn, index) => {
+      const dyeName = POPULAR_EXPENSIVE_DYE_NAMES[index];
+      const matches = dyeService.searchByName(dyeName);
+      const dye = matches.find(d => d.name === dyeName) || matches[0];
+      const isSelected = dye && this.targetDye?.id === dye.id;
+
+      btn.setAttribute('style', isSelected
+        ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+        : 'background: var(--theme-card-background); color: var(--theme-text);');
+    });
+  }
+
+  /**
+   * Render budget limit slider
+   */
+  private renderBudgetSection(container: HTMLElement): void {
+    // Current value display
+    const valueDisplay = this.createElement('div', {
+      className: 'flex items-center justify-between mb-3',
+    });
+
+    const labelSpan = this.createElement('span', {
+      className: 'text-sm',
+      textContent: LanguageService.t('budget.maxPrice') || 'Max Price',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+
+    this.budgetValueDisplay = this.createElement('span', {
+      className: 'font-semibold',
+      textContent: `${this.budgetLimit.toLocaleString()} gil`,
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+
+    valueDisplay.appendChild(labelSpan);
+    valueDisplay.appendChild(this.budgetValueDisplay);
+    container.appendChild(valueDisplay);
+
+    // Slider
+    const slider = this.createElement('input', {
+      className: 'w-full',
+      attributes: {
+        type: 'range',
+        min: '0',
+        max: '1000000',
+        value: String(this.budgetLimit),
+        step: '1000',
+        style: 'accent-color: var(--theme-primary);',
+      },
+    }) as HTMLInputElement;
+
+    this.on(slider, 'input', () => {
+      this.budgetLimit = parseInt(slider.value, 10);
+      if (this.budgetValueDisplay) {
+        this.budgetValueDisplay.textContent = `${this.budgetLimit.toLocaleString()} gil`;
+      }
+      StorageService.setItem(STORAGE_KEYS.budgetLimit, this.budgetLimit);
+      this.filterAndSortAlternatives();
+      this.updateDrawerContent();
+    });
+
+    container.appendChild(slider);
+
+    // Tick labels
+    const ticksContainer = this.createElement('div', {
+      className: 'flex justify-between mt-1',
+    });
+    ['0', '100K', '500K', '1M'].forEach(tick => {
+      const tickLabel = this.createElement('span', {
+        className: 'text-xs',
+        textContent: tick,
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      ticksContainer.appendChild(tickLabel);
+    });
+    container.appendChild(ticksContainer);
+  }
+
+  /**
+   * Render sort options
+   */
+  private renderSortSection(container: HTMLElement): void {
+    const options = [
+      { id: 'match', label: LanguageService.t('budget.sortMatch') || 'Best Match', desc: LanguageService.t('budget.sortMatchDesc') || 'Closest color first' },
+      { id: 'price', label: LanguageService.t('budget.sortPrice') || 'Lowest Price', desc: LanguageService.t('budget.sortPriceDesc') || 'Cheapest first' },
+      { id: 'value', label: LanguageService.t('budget.sortValue') || 'Best Value', desc: LanguageService.t('budget.sortValueDesc') || 'Balance of match + price' },
+    ];
+
+    const optionsContainer = this.createElement('div', { className: 'space-y-2' });
+
+    options.forEach(opt => {
+      const isSelected = this.sortBy === opt.id;
+      const label = this.createElement('label', {
+        className: 'flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors',
+        attributes: {
+          style: isSelected
+            ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+            : 'background: transparent;',
+        },
+      });
+
+      const radio = this.createElement('input', {
+        className: 'mt-1',
+        attributes: {
+          type: 'radio',
+          name: 'sortBy',
+          value: opt.id,
+          ...(isSelected && { checked: '' }),
+        },
+      }) as HTMLInputElement;
+
+      const text = this.createElement('div');
+      const labelText = this.createElement('span', {
+        className: 'font-medium text-sm',
+        textContent: opt.label,
+      });
+      const descText = this.createElement('p', {
+        className: 'text-xs',
+        textContent: opt.desc,
+        attributes: { style: isSelected ? '' : 'color: var(--theme-text-muted);' },
+      });
+      text.appendChild(labelText);
+      text.appendChild(descText);
+
+      this.on(radio, 'change', () => {
+        this.sortBy = opt.id as 'match' | 'price' | 'value';
+        StorageService.setItem(STORAGE_KEYS.sortBy, this.sortBy);
+
+        // Update all label styles
+        optionsContainer.querySelectorAll('label').forEach((lbl, idx) => {
+          const selected = options[idx].id === opt.id;
+          lbl.setAttribute('style', selected
+            ? 'background: var(--theme-primary); color: var(--theme-text-header);'
+            : 'background: transparent;');
+          const pEl = lbl.querySelector('p');
+          if (pEl) {
+            pEl.setAttribute('style', selected ? '' : 'color: var(--theme-text-muted);');
+          }
+        });
+
+        this.filterAndSortAlternatives();
+        this.updateDrawerContent();
+      });
+
+      label.appendChild(radio);
+      label.appendChild(text);
+      optionsContainer.appendChild(label);
+    });
+
+    container.appendChild(optionsContainer);
+  }
+
+  // ============================================================================
+  // Right Panel Rendering
+  // ============================================================================
+
+  private renderRightPanel(): void {
+    const right = this.options.rightPanel;
+    clearContainer(right);
+
+    // Empty state
+    this.emptyStateContainer = this.createElement('div');
+    this.renderEmptyState();
+    right.appendChild(this.emptyStateContainer);
+
+    // Target Overview Card
+    this.targetOverviewContainer = this.createElement('div', { className: 'mb-6 hidden' });
+    right.appendChild(this.targetOverviewContainer);
+
+    // Alternatives Header
+    this.alternativesHeaderContainer = this.createElement('div', { className: 'mb-4 hidden' });
+    right.appendChild(this.alternativesHeaderContainer);
+
+    // Alternatives List
+    this.alternativesListContainer = this.createElement('div', { className: 'hidden' });
+    right.appendChild(this.alternativesListContainer);
+  }
+
+  /**
+   * Render empty state
+   */
+  private renderEmptyState(): void {
+    if (!this.emptyStateContainer) return;
+    clearContainer(this.emptyStateContainer);
+
+    const empty = this.createElement('div', {
+      className: 'p-8 rounded-lg border-2 border-dashed text-center',
+      attributes: {
+        style: 'border-color: var(--theme-border); background: var(--theme-card-background);',
+      },
+    });
+
+    empty.innerHTML = `
+      <span class="inline-block w-12 h-12 mx-auto mb-3 opacity-30" style="color: var(--theme-text);">${ICON_TOOL_BUDGET}</span>
+      <p style="color: var(--theme-text);">${LanguageService.t('budget.selectTargetToStart') || 'Select a target dye to find affordable alternatives'}</p>
+    `;
+
+    this.emptyStateContainer.appendChild(empty);
+  }
+
+  /**
+   * Show/hide empty state
+   */
+  private showEmptyState(show: boolean): void {
+    if (this.emptyStateContainer) {
+      this.emptyStateContainer.classList.toggle('hidden', !show);
+    }
+    if (this.targetOverviewContainer) {
+      this.targetOverviewContainer.classList.toggle('hidden', show);
+    }
+    if (this.alternativesHeaderContainer) {
+      this.alternativesHeaderContainer.classList.toggle('hidden', show);
+    }
+    if (this.alternativesListContainer) {
+      this.alternativesListContainer.classList.toggle('hidden', show);
+    }
+  }
+
+  /**
+   * Render target overview card
+   */
+  private renderTargetOverview(): void {
+    if (!this.targetOverviewContainer || !this.targetDye) return;
+    clearContainer(this.targetOverviewContainer);
+
+    const card = this.createElement('div', {
+      className: 'p-4 rounded-lg',
+      attributes: {
+        style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);',
+      },
+    });
+
+    const content = this.createElement('div', { className: 'flex items-center gap-4' });
+
+    // Color swatch
+    const swatch = this.createElement('div', {
+      className: 'w-16 h-16 rounded-lg flex-shrink-0',
+      attributes: { style: `background: ${this.targetDye.hex}; border: 2px solid var(--theme-border);` },
+    });
+
+    // Dye info
+    const info = this.createElement('div', { className: 'flex-1' });
+    const name = this.createElement('h3', {
+      className: 'font-semibold text-lg',
+      textContent: LanguageService.getDyeName(this.targetDye.itemID) || this.targetDye.name,
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+    const hex = this.createElement('p', {
+      className: 'text-sm font-mono',
+      textContent: this.targetDye.hex,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    info.appendChild(name);
+    info.appendChild(hex);
+
+    // Price info
+    const priceInfo = this.createElement('div', { className: 'text-right' });
+    const priceLabel = this.createElement('p', {
+      className: 'text-sm',
+      textContent: LanguageService.t('budget.marketPrice') || 'Market Price',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    const priceValue = this.createElement('p', {
+      className: 'font-semibold text-lg',
+      textContent: this.targetPrice > 0 ? `~${this.targetPrice.toLocaleString()} gil` : '---',
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+    priceInfo.appendChild(priceLabel);
+    priceInfo.appendChild(priceValue);
+
+    content.appendChild(swatch);
+    content.appendChild(info);
+    content.appendChild(priceInfo);
+    card.appendChild(content);
+    this.targetOverviewContainer.appendChild(card);
+  }
+
+  /**
+   * Render alternatives header
+   */
+  private renderAlternativesHeader(): void {
+    if (!this.alternativesHeaderContainer) return;
+    clearContainer(this.alternativesHeaderContainer);
+
+    const header = this.createElement('div', {
+      className: 'flex items-center justify-between',
+    });
+
+    const count = this.alternatives.length;
+    const countText = this.createElement('h3', {
+      className: 'font-semibold',
+      textContent: `${count} ${LanguageService.t('budget.alternativesWithinBudget') || 'alternatives within budget'}`,
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+
+    const sortLabels: Record<string, string> = {
+      match: LanguageService.t('budget.sortMatch') || 'Best Match',
+      price: LanguageService.t('budget.sortPrice') || 'Lowest Price',
+      value: LanguageService.t('budget.sortValue') || 'Best Value',
+    };
+
+    const sortBadge = this.createElement('span', {
+      className: 'text-sm px-2 py-1 rounded',
+      textContent: `${LanguageService.t('budget.sortedBy') || 'Sorted by'}: ${sortLabels[this.sortBy]}`,
+      attributes: { style: 'background: var(--theme-background-secondary); color: var(--theme-text-muted);' },
+    });
+
+    header.appendChild(countText);
+    header.appendChild(sortBadge);
+    this.alternativesHeaderContainer.appendChild(header);
+  }
+
+  /**
+   * Render alternatives list
+   */
+  private renderAlternativesList(): void {
+    if (!this.alternativesListContainer || !this.targetDye) return;
+    clearContainer(this.alternativesListContainer);
+
+    if (this.isLoading) {
+      const loading = this.createElement('div', {
+        className: 'text-center py-8',
+      });
+      loading.innerHTML = `
+        <p style="color: var(--theme-text-muted);">${LanguageService.t('budget.loading') || 'Loading alternatives...'}</p>
+      `;
+      this.alternativesListContainer.appendChild(loading);
+      return;
+    }
+
+    if (this.alternatives.length === 0) {
+      const emptyState = this.createElement('div', {
+        className: 'text-center py-8',
+      });
+      emptyState.innerHTML = `
+        <p class="text-lg font-medium mb-2" style="color: var(--theme-text);">${LanguageService.t('budget.noDyesWithinBudget') || 'No dyes within budget'}</p>
+        <p class="text-sm mb-4" style="color: var(--theme-text-muted);">${LanguageService.t('budget.tryIncreasingBudget') || 'Try increasing your budget limit'}</p>
+      `;
+      this.alternativesListContainer.appendChild(emptyState);
+      return;
+    }
+
+    const container = this.createElement('div', { className: 'space-y-3' });
+
+    this.alternatives.forEach((alt, index) => {
+      const card = this.createElement('div', {
+        className: 'flex items-center gap-3 p-3 rounded-lg transition-colors',
+        attributes: {
+          style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);',
+        },
+      });
+
+      // Rank badge
+      const rankBadge = this.createElement('div', {
+        className: 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0',
+        textContent: String(index + 1),
+        attributes: {
+          style: 'background: var(--theme-background-secondary); color: var(--theme-text-muted);',
+        },
+      });
+
+      // Color comparison
+      const colorCompare = this.createElement('div', {
+        className: 'flex gap-1 flex-shrink-0',
+      });
+      const targetSwatch = this.createElement('div', {
+        className: 'w-8 h-8 rounded',
+        attributes: {
+          style: `background: ${this.targetDye!.hex}; border: 1px solid var(--theme-border);`,
+          title: LanguageService.t('budget.target') || 'Target',
+        },
+      });
+      const altSwatch = this.createElement('div', {
+        className: 'w-8 h-8 rounded',
+        attributes: {
+          style: `background: ${alt.dye.hex}; border: 1px solid var(--theme-border);`,
+          title: LanguageService.getDyeName(alt.dye.itemID) || alt.dye.name,
+        },
+      });
+      colorCompare.appendChild(targetSwatch);
+      colorCompare.appendChild(altSwatch);
+
+      // Dye info
+      const info = this.createElement('div', {
+        className: 'flex-1 min-w-0',
+      });
+      const dyeName = this.createElement('p', {
+        className: 'font-medium truncate',
+        textContent: LanguageService.getDyeName(alt.dye.itemID) || alt.dye.name,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+      const dyeDetails = this.createElement('p', {
+        className: 'text-xs',
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      dyeDetails.innerHTML = `<span class="font-mono">${alt.dye.hex}</span> · Δ${alt.distance.toFixed(1)}`;
+      info.appendChild(dyeName);
+      info.appendChild(dyeDetails);
+
+      // Distance bar (hidden on mobile)
+      const distanceBar = this.createElement('div', {
+        className: 'w-20 flex-shrink-0 hidden sm:block',
+      });
+      const barWidth = Math.min(100, (alt.distance / 50) * 100);
+      const barOuter = this.createElement('div', {
+        className: 'h-2 rounded-full',
+        attributes: { style: 'background: var(--theme-background-secondary);' },
+      });
+      const barInner = this.createElement('div', {
+        className: 'h-full rounded-full',
+        attributes: { style: `background: var(--theme-primary); width: ${barWidth}%;` },
+      });
+      barOuter.appendChild(barInner);
+      distanceBar.appendChild(barOuter);
+
+      // Price & Savings
+      const priceInfo = this.createElement('div', {
+        className: 'text-right flex-shrink-0',
+      });
+      const priceText = this.createElement('p', {
+        className: 'font-semibold',
+        textContent: `${alt.price.toLocaleString()} gil`,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+      const savingsText = this.createElement('p', {
+        className: 'text-xs font-bold',
+        textContent: alt.savings > 0 ? `${LanguageService.t('budget.save') || 'Save'} ${alt.savings.toLocaleString()}` : '',
+        attributes: { style: 'color: #22C55E;' },
+      });
+      priceInfo.appendChild(priceText);
+      priceInfo.appendChild(savingsText);
+
+      card.appendChild(rankBadge);
+      card.appendChild(colorCompare);
+      card.appendChild(info);
+      card.appendChild(distanceBar);
+      card.appendChild(priceInfo);
+
+      container.appendChild(card);
+    });
+
+    this.alternativesListContainer.appendChild(container);
+  }
+
+  // ============================================================================
+  // Core Business Logic
+  // ============================================================================
+
+  /**
+   * Find alternatives for the target dye
+   */
+  private async findAlternatives(): Promise<void> {
+    if (!this.targetDye) {
+      this.showEmptyState(true);
+      this.alternatives = [];
+      return;
+    }
+
+    this.showEmptyState(false);
+    this.isLoading = true;
+    this.renderAlternativesList();
+
+    try {
+      // 1. Get all dyes within color distance threshold
+      const candidates = dyeService.findDyesWithinDistance(this.targetDye.hex, 50, 30);
+
+      // 2. Apply filters
+      let filtered = candidates.filter(dye => dye.id !== this.targetDye?.id);
+      if (this.dyeFilters) {
+        filtered = this.dyeFilters.filterDyes(filtered);
+      }
+
+      // 3. Fetch prices
+      await this.fetchPrices([this.targetDye, ...filtered]);
+
+      // 4. Get target price
+      const targetPriceData = this.priceData.get(this.targetDye.itemID);
+      this.targetPrice = targetPriceData?.currentMinPrice ?? 0;
+
+      // 5. Build alternatives with price data
+      this.alternatives = filtered.map(dye => {
+        const priceData = this.priceData.get(dye.itemID);
+        const price = priceData?.currentMinPrice ?? Infinity;
+        const distance = ColorService.getColorDistance(this.targetDye!.hex, dye.hex);
+        const savings = Math.max(0, this.targetPrice - price);
+        const valueScore = this.calculateValueScore(distance, price);
+
+        return { dye, distance, price, savings, valueScore };
+      });
+
+      // 6. Filter and sort
+      this.filterAndSortAlternatives();
+
+    } catch (error) {
+      logger.error('[BudgetTool] Error finding alternatives:', error);
+      ToastService.error(LanguageService.t('budget.errorFindingAlternatives') || 'Error finding alternatives');
+    } finally {
+      this.isLoading = false;
+      this.renderTargetOverview();
+      this.updateTargetDyeDisplay();
+    }
+  }
+
+  /**
+   * Filter by budget and sort alternatives
+   */
+  private filterAndSortAlternatives(): void {
+    // Filter by budget
+    const affordable = this.alternatives.filter(alt => alt.price <= this.budgetLimit);
+
+    // Sort by selected criteria
+    affordable.sort((a, b) => {
+      switch (this.sortBy) {
+        case 'price':
+          return a.price - b.price;
+        case 'value':
+          return a.valueScore - b.valueScore;
+        case 'match':
+        default:
+          return a.distance - b.distance;
+      }
+    });
+
+    this.alternatives = affordable;
+    this.renderAlternativesHeader();
+    this.renderAlternativesList();
+  }
+
+  /**
+   * Calculate value score (lower is better)
+   */
+  private calculateValueScore(distance: number, price: number): number {
+    const maxDistance = 50;
+    const maxPrice = 1000000;
+    const normalizedDistance = (distance / maxDistance) * 100;
+    const normalizedPrice = (price / maxPrice) * 100;
+    return (normalizedDistance * 0.7) + (normalizedPrice * 0.3);
+  }
+
+  /**
+   * Fetch prices for dyes
+   */
+  private async fetchPrices(dyes: Dye[]): Promise<void> {
+    if (!this.marketBoard) return;
+
+    try {
+      const prices = await this.marketBoard.fetchPricesForDyes(dyes);
+      prices.forEach((data, itemId) => {
+        this.priceData.set(itemId, data);
+      });
+    } catch (error) {
+      logger.warn('[BudgetTool] Error fetching prices:', error);
+    }
+  }
+
+  // ============================================================================
+  // Mobile Drawer Content
+  // ============================================================================
+
+  private renderDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    this.updateDrawerContent();
+  }
+
+  private updateDrawerContent(): void {
+    if (!this.options.drawerContent) return;
+    const drawer = this.options.drawerContent;
+    clearContainer(drawer);
+
+    const content = this.createElement('div', { className: 'p-4 space-y-3' });
+
+    // Quick summary
+    const summary = this.createElement('div', {
+      className: 'p-3 rounded-lg',
+      attributes: { style: 'background: var(--theme-card-background);' },
+    });
+
+    if (this.targetDye) {
+      const dyePreview = this.createElement('div', { className: 'flex items-center gap-2 mb-2' });
+      const swatch = this.createElement('div', {
+        className: 'w-6 h-6 rounded',
+        attributes: { style: `background: ${this.targetDye.hex}; border: 1px solid var(--theme-border);` },
+      });
+      const name = this.createElement('span', {
+        className: 'font-medium',
+        textContent: LanguageService.getDyeName(this.targetDye.itemID) || this.targetDye.name,
+        attributes: { style: 'color: var(--theme-text);' },
+      });
+      dyePreview.appendChild(swatch);
+      dyePreview.appendChild(name);
+      summary.appendChild(dyePreview);
+    }
+
+    const budgetText = this.createElement('p', {
+      className: 'text-sm',
+      textContent: `${LanguageService.t('budget.budget') || 'Budget'}: ${this.budgetLimit.toLocaleString()} gil`,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    summary.appendChild(budgetText);
+
+    const sortText = this.createElement('p', {
+      className: 'text-sm',
+      textContent: `${this.alternatives.length} ${LanguageService.t('budget.alternativesFound') || 'alternatives found'}`,
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    summary.appendChild(sortText);
+
+    content.appendChild(summary);
+    drawer.appendChild(content);
+  }
+
+  // ============================================================================
+  // Helpers
+  // ============================================================================
+
+  /**
+   * Check if a color is light (for text contrast)
+   */
+  private isLightColor(hex: string): boolean {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5;
+  }
+}

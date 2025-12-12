@@ -185,15 +185,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
         break;
       }
       case 'budget': {
-        const { BudgetMockup } = await import('@mockups/tools/BudgetMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new BudgetMockup(mockupContainer, {
+        // Phase 8: Production BudgetTool
+        const { BudgetTool } = await import('@components/tools/budget-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new BudgetTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Budget tool loaded');
+        logger.info('[V3 Layout] Budget tool loaded (v3 production)');
         break;
       }
       default:

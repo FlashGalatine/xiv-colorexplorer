@@ -14,7 +14,7 @@ import { BaseComponent } from '@components/base-component';
 import { CollapsiblePanel } from '@components/collapsible-panel';
 import { DyeSelector } from '@components/dye-selector';
 import { MarketBoard } from '@components/market-board';
-import { ColorService, LanguageService, StorageService } from '@services/index';
+import { ColorService, LanguageService, RouterService, StorageService } from '@services/index';
 import { ICON_TOOL_COMPARISON } from '@shared/tool-icons';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -312,6 +312,20 @@ export class ComparisonTool extends BaseComponent {
         attributes: { style: 'color: var(--theme-text);' },
       });
 
+      // Find Cheaper button
+      const budgetBtn = this.createElement('button', {
+        className: 'text-xs px-2 py-1 rounded transition-colors',
+        textContent: '💰',
+        attributes: {
+          style: 'background: var(--theme-card-hover); color: var(--theme-text);',
+          title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
+        },
+      });
+
+      this.on(budgetBtn, 'click', () => {
+        RouterService.navigateTo('budget', { dye: dye.name });
+      });
+
       const removeBtn = this.createElement('button', {
         className: 'text-xs px-2 py-1 rounded transition-colors',
         textContent: '\u00D7',
@@ -332,6 +346,7 @@ export class ComparisonTool extends BaseComponent {
 
       dyeItem.appendChild(swatch);
       dyeItem.appendChild(name);
+      dyeItem.appendChild(budgetBtn);
       dyeItem.appendChild(removeBtn);
       this.selectedDyesContainer.appendChild(dyeItem);
     }

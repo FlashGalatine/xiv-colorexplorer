@@ -63,6 +63,14 @@
       "backToList": "返回列表",
       "colorsInPalette": "此调色板中的颜色",
       "tags": "标签"
+    },
+    "budget": {
+      "title": "预算建议",
+      "shortName": "预算",
+      "description": "寻找实惠的染料替代品",
+      "subtitle": "发现昂贵染料的便宜替代品。设置预算，找到不会让钱包大出血的相似颜色。",
+      "findCheaperTooltip": "寻找更便宜的替代品",
+      "budgetOptions": "预算选项"
     }
   },
   "common": {

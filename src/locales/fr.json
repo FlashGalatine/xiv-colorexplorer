@@ -63,6 +63,14 @@
       "backToList": "Retour à la liste",
       "colorsInPalette": "Couleurs de cette Palette",
       "tags": "Tags"
+    },
+    "budget": {
+      "title": "Suggestions Budget",
+      "shortName": "Budget",
+      "description": "Trouver des alternatives de teintures abordables",
+      "subtitle": "Découvrez des alternatives moins chères aux teintures coûteuses. Définissez votre budget et trouvez des couleurs similaires qui ne videront pas votre bourse.",
+      "findCheaperTooltip": "Trouver des alternatives moins chères",
+      "budgetOptions": "Options Budget"
     }
   },
   "common": {

@@ -23,6 +23,7 @@ import {
   ColorService,
   dyeService,
   LanguageService,
+  RouterService,
   StorageService,
   ToastService,
 } from '@services/index';
@@ -681,7 +682,7 @@ export class MatcherTool extends BaseComponent {
    */
   private createDyeCard(dye: DyeWithDistance, index: number): HTMLElement {
     const card = this.createElement('div', {
-      className: 'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
+      className: 'group flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
       attributes: {
         style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);',
       },
@@ -728,6 +729,21 @@ export class MatcherTool extends BaseComponent {
     card.appendChild(rank);
     card.appendChild(swatches);
     card.appendChild(info);
+
+    // Find Cheaper button (visible on hover)
+    const findCheaperBtn = this.createElement('button', {
+      className: 'text-xs px-2 py-1 rounded transition-all opacity-0 group-hover:opacity-100 flex-shrink-0',
+      textContent: '💰',
+      attributes: {
+        title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
+        style: 'background: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+    this.on(findCheaperBtn, 'click', (e) => {
+      e.stopPropagation();
+      RouterService.navigateTo('budget', { dye: dye.name });
+    });
+    card.appendChild(findCheaperBtn);
 
     // Hover effect
     this.on(card, 'mouseenter', () => {

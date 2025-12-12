@@ -13,6 +13,4 @@ export { AccessibilityTool, type AccessibilityToolOptions } from './accessibilit
 export { ComparisonTool, type ComparisonToolOptions } from './comparison-tool';
 export { MixerTool, type MixerToolOptions } from './mixer-tool';
 export { PresetTool, type PresetToolOptions } from './preset-tool';
-
-// Future tool exports (Phase 8+):
-// export { BudgetTool, type BudgetToolOptions } from './budget-tool';
+export { BudgetTool, type BudgetToolOptions } from './budget-tool';

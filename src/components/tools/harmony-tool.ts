@@ -18,7 +18,7 @@ import { MarketBoard } from '@components/market-board';
 import { HarmonyType, type HarmonyTypeInfo } from '@components/harmony-type';
 import { ColorWheelDisplay } from '@components/color-wheel-display';
 import { PaletteExporter, type PaletteData } from '@components/palette-exporter';
-import { ColorService, dyeService, LanguageService, StorageService } from '@services/index';
+import { ColorService, dyeService, LanguageService, RouterService, StorageService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import type { Dye, PriceData } from '@shared/types';
@@ -538,6 +538,27 @@ export class HarmonyTool extends BaseComponent {
       attributes: { style: 'color: var(--theme-text-muted);' },
     });
 
+    // Button container for multiple actions
+    const btnGroup = this.createElement('div', {
+      className: 'flex items-center gap-2',
+    });
+
+    // Budget Options button
+    const budgetBtn = this.createElement('button', {
+      className: 'flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors',
+      attributes: {
+        style: 'background: var(--theme-background-secondary); color: var(--theme-text); border: 1px solid var(--theme-border);',
+        title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
+      },
+      innerHTML: `💰 ${LanguageService.t('budget.budgetOptions') || 'Budget Options'}`,
+    });
+
+    this.on(budgetBtn, 'click', () => {
+      if (this.selectedDye) {
+        RouterService.navigateTo('budget', { dye: this.selectedDye.name });
+      }
+    });
+
     const exportBtn = this.createElement('button', {
       className: 'flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors',
       attributes: {
@@ -548,8 +569,11 @@ export class HarmonyTool extends BaseComponent {
 
     this.on(exportBtn, 'click', () => this.handleExport());
 
+    btnGroup.appendChild(budgetBtn);
+    btnGroup.appendChild(exportBtn);
+
     resultsHeader.appendChild(resultsTitle);
-    resultsHeader.appendChild(exportBtn);
+    resultsHeader.appendChild(btnGroup);
     right.appendChild(resultsHeader);
 
     // Harmony Cards Grid
