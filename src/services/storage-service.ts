@@ -48,17 +48,14 @@ export class StorageService {
         return defaultValue || null;
       }
 
-      // Try to parse as JSON if it looks like JSON
-      if (item.startsWith('{') || item.startsWith('[')) {
-        try {
-          return JSON.parse(item) as T;
-        } catch {
-          // If JSON parsing fails, return as string
-          return item as T;
-        }
+      // Always try JSON.parse first for proper type restoration
+      // This correctly handles all JSON types: objects, arrays, numbers, booleans, and strings
+      try {
+        return JSON.parse(item) as T;
+      } catch {
+        // If parsing fails, return raw string (for legacy non-JSON string values)
+        return item as T;
       }
-
-      return item as T;
     } catch (error) {
       logger.warn(`Failed to get item from localStorage: ${key}`, error);
       return defaultValue || null;

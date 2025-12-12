@@ -66,9 +66,9 @@ describe('StorageService', () => {
       }
 
       StorageService.setItem('numKey', 42);
-      const result = StorageService.getItem('numKey');
-      // localStorage stores as strings, so retrieve as string
-      expect(result).toEqual('42');
+      const result = StorageService.getItem<number>('numKey');
+      // JSON.parse properly restores numbers from their stringified form
+      expect(result).toEqual(42);
     });
 
     it('should return null for non-existent keys', () => {
