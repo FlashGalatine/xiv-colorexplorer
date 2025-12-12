@@ -231,6 +231,7 @@ describe('Tool Icons', () => {
         'comparison',
         'mixer',
         'presets',
+        'budget',
         'tools',
       ]);
     });
