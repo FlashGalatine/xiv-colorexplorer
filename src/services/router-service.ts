@@ -98,13 +98,15 @@ export class RouterService {
   static initialize(): void {
     if (this.initialized) return;
 
+    // Set initialized FIRST to prevent recursion when handleInitialRoute calls replaceRoute
+    this.initialized = true;
+
     // Listen for browser back/forward
     window.addEventListener('popstate', this.handlePopState);
 
     // Handle initial route
     this.handleInitialRoute();
 
-    this.initialized = true;
     logger.info(`[RouterService] Initialized at route: ${this.currentToolId}`);
   }
 
