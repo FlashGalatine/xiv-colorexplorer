@@ -30,7 +30,7 @@ export class DyeSearchBox extends BaseComponent {
       showCategories: options.showCategories ?? true,
       excludeFacewear: options.excludeFacewear ?? true,
       initialSort: options.initialSort ?? 'alphabetical',
-      initialCategory: options.initialCategory ?? 'Neutral',
+      initialCategory: options.initialCategory ?? null,
       initialSearch: options.initialSearch ?? '',
     };
     this.sortOption = this.options.initialSort!;

@@ -307,11 +307,11 @@ describe('DyeSelector', () => {
     it('should remove highlight from previously active category', async () => {
       [component, container] = renderComponent(DyeSelector);
 
-      const neutralBtn = container.querySelector('[data-category="Neutral"]') as HTMLButtonElement;
+      const allBtn = container.querySelector('[data-category="all"]') as HTMLButtonElement;
       const redsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
 
-      // Neutral is highlighted by default
-      expectElement.toHaveClass(neutralBtn, 'bg-blue-500');
+      // All is highlighted by default
+      expectElement.toHaveClass(allBtn, 'bg-blue-500');
 
       // Click Reds
       redsBtn?.click();
@@ -319,13 +319,13 @@ describe('DyeSelector', () => {
       await waitForComponent(50);
 
       // Re-query buttons after component update
-      const updatedNeutralBtn = container.querySelector(
-        '[data-category="Neutral"]'
+      const updatedAllBtn = container.querySelector(
+        '[data-category="all"]'
       ) as HTMLButtonElement;
       const updatedRedsBtn = container.querySelector('[data-category="Reds"]') as HTMLButtonElement;
 
-      // Neutral should no longer be highlighted
-      expectElement.toNotHaveClass(updatedNeutralBtn, 'bg-blue-500');
+      // All should no longer be highlighted
+      expectElement.toNotHaveClass(updatedAllBtn, 'bg-blue-500');
       expectElement.toHaveClass(updatedRedsBtn, 'bg-blue-500');
     });
   });
