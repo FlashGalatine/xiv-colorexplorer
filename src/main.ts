@@ -13,6 +13,7 @@ import '@/styles/tailwind.css';
 
 // Import services
 import { initializeServices, getServicesStatus, LanguageService, consumeReturnTool } from '@services/index';
+import { FeatureFlagService } from '@services/feature-flag-service';
 import { ErrorHandler } from '@shared/error-handler';
 import { APP_VERSION } from '@shared/constants';
 import { logger } from '@shared/logger';
@@ -88,9 +89,18 @@ async function initializeApp(): Promise<void> {
       throw new Error('Content container not found');
     }
 
-    // DEV ONLY: Load mockup system if ?mockup=true is in URL
+    // V3 UI: Load two-panel layout if user opted into v3 (via ?ui=v3 or localStorage)
+    if (FeatureFlagService.isV3()) {
+      logger.info('🎨 Loading v3.0.0 two-panel layout...');
+      const { initializeV3Layout } = await import('@components/v3-layout');
+      await initializeV3Layout(contentContainer);
+      logger.info('✅ V3 layout loaded. Access via: ?ui=v3 or FeatureFlagService.setUIVersion("v3")');
+      return; // Skip v2 layout initialization
+    }
+
+    // DEV ONLY: Load raw mockup system if ?mockup=true is in URL (for testing mockups directly)
     if (import.meta.env.DEV && window.location.search.includes('mockup=true')) {
-      logger.info('🎨 Loading v3.0.0 mockup system...');
+      logger.info('🎨 Loading v3.0.0 mockup system (dev mode)...');
       const { loadMockupSystem } = await import('@mockups/index');
       loadMockupSystem(contentContainer);
       logger.info('✅ Mockup system loaded. Access at: http://localhost:5173/?mockup=true');

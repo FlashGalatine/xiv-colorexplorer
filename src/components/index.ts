@@ -74,3 +74,10 @@ export { MySubmissionsPanel } from './my-submissions-panel';
 export { PresetCard, type PresetCardCallback } from './preset-card';
 export { PresetDetailView, type PresetDetailViewCallbacks } from './preset-detail-view';
 export { FeaturedPresetsSection, type FeaturedPresetCallback } from './featured-presets-section';
+
+// V3.0.0 Two-Panel Layout Components
+export { TwoPanelShell, type TwoPanelShellOptions } from './two-panel-shell';
+export { MobileDrawer } from './mobile-drawer';
+export { CollapsiblePanel, type CollapsiblePanelOptions } from './collapsible-panel';
+export { getLocalizedTools, TOOL_ICONS, type NavTool } from './tool-nav';
+export { initializeV3Layout, destroyV3Layout } from './v3-layout';
