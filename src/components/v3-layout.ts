@@ -107,15 +107,16 @@ async function loadToolContent(toolId: ToolId): Promise<void> {
   try {
     switch (toolId) {
       case 'harmony': {
-        const { HarmonyMockup } = await import('@mockups/tools/HarmonyMockup');
-        const mockupContainer = document.createElement('div');
-        activeTool = new HarmonyMockup(mockupContainer, {
+        // Phase 2: Production HarmonyTool
+        const { HarmonyTool } = await import('@components/tools/harmony-tool');
+        const toolContainer = document.createElement('div');
+        activeTool = new HarmonyTool(toolContainer, {
           leftPanel,
           rightPanel,
           drawerContent,
         });
         activeTool.init();
-        logger.info('[V3 Layout] Harmony tool loaded');
+        logger.info('[V3 Layout] Harmony tool loaded (v3 production)');
         break;
       }
       case 'matcher': {

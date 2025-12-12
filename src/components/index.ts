@@ -81,3 +81,6 @@ export { MobileDrawer } from './mobile-drawer';
 export { CollapsiblePanel, type CollapsiblePanelOptions } from './collapsible-panel';
 export { getLocalizedTools, TOOL_ICONS, type NavTool } from './tool-nav';
 export { initializeV3Layout, destroyV3Layout } from './v3-layout';
+
+// V3.0.0 Tool Components
+export { HarmonyTool, type HarmonyToolOptions } from './tools/harmony-tool';
