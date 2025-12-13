@@ -50,6 +50,7 @@ const STORAGE_KEYS = {
   targetDyeId: 'v3_budget_target',
   budgetLimit: 'v3_budget_limit',
   sortBy: 'v3_budget_sort',
+  colorDistance: 'v3_budget_distance',
 } as const;
 
 /**
@@ -58,18 +59,19 @@ const STORAGE_KEYS = {
 const DEFAULTS = {
   budgetLimit: 50000,
   sortBy: 'match' as const,
+  colorDistance: 50,
 };
 
 /**
  * Popular expensive dyes for quick picks
  */
 const POPULAR_EXPENSIVE_DYE_NAMES = [
-  'Jet Black',
   'Pure White',
-  'Metallic Gold',
-  'Metallic Silver',
-  'Gunmetal Black',
-  'Snow White',
+  'Jet Black',
+  'Carmine Red',
+  'Violet Purple',
+  'Azure Blue',
+  'Bright Orange',
 ];
 
 const ICON_FILTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -78,6 +80,26 @@ const ICON_FILTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+</svg>`;
+
+const ICON_TARGET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+</svg>`;
+
+const ICON_SPARKLES = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+</svg>`;
+
+const ICON_COINS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+</svg>`;
+
+const ICON_SORT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h6M3 12h10M3 17h4m11-10l-4 4m0 0l4 4m-4-4h8"/>
+</svg>`;
+
+const ICON_DISTANCE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
 </svg>`;
 
 // ============================================================================
@@ -96,6 +118,7 @@ export class BudgetTool extends BaseComponent {
   private targetDye: Dye | null = null;
   private budgetLimit: number;
   private sortBy: 'match' | 'price' | 'value';
+  private colorDistance: number;
   private alternatives: AlternativeDye[] = [];
   private priceData: Map<number, PriceData> = new Map();
   private targetPrice: number = 0;
@@ -107,10 +130,16 @@ export class BudgetTool extends BaseComponent {
   private marketBoard: MarketBoard | null = null;
   private filtersPanel: CollapsiblePanel | null = null;
   private marketPanel: CollapsiblePanel | null = null;
+  private targetDyePanel: CollapsiblePanel | null = null;
+  private quickPicksPanel: CollapsiblePanel | null = null;
+  private budgetLimitPanel: CollapsiblePanel | null = null;
+  private sortByPanel: CollapsiblePanel | null = null;
+  private colorDistancePanel: CollapsiblePanel | null = null;
 
   // DOM References
   private targetDyeContainer: HTMLElement | null = null;
   private budgetValueDisplay: HTMLElement | null = null;
+  private distanceValueDisplay: HTMLElement | null = null;
   private emptyStateContainer: HTMLElement | null = null;
   private targetOverviewContainer: HTMLElement | null = null;
   private alternativesHeaderContainer: HTMLElement | null = null;
@@ -127,6 +156,7 @@ export class BudgetTool extends BaseComponent {
     // Load persisted settings
     this.budgetLimit = StorageService.getItem<number>(STORAGE_KEYS.budgetLimit) ?? DEFAULTS.budgetLimit;
     this.sortBy = StorageService.getItem<'match' | 'price' | 'value'>(STORAGE_KEYS.sortBy) ?? DEFAULTS.sortBy;
+    this.colorDistance = StorageService.getItem<number>(STORAGE_KEYS.colorDistance) ?? DEFAULTS.colorDistance;
 
     // Load persisted target dye
     const savedDyeId = StorageService.getItem<number>(STORAGE_KEYS.targetDyeId);
@@ -178,6 +208,11 @@ export class BudgetTool extends BaseComponent {
     this.marketBoard?.destroy();
     this.filtersPanel?.destroy();
     this.marketPanel?.destroy();
+    this.targetDyePanel?.destroy();
+    this.quickPicksPanel?.destroy();
+    this.budgetLimitPanel?.destroy();
+    this.sortByPanel?.destroy();
+    this.colorDistancePanel?.destroy();
 
     this.targetDye = null;
     this.alternatives = [];
@@ -221,27 +256,77 @@ export class BudgetTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Target Dye
-    const targetSection = this.createSection(LanguageService.t('budget.targetDye') || 'Target Dye');
-    this.renderTargetDyeSection(targetSection);
-    left.appendChild(targetSection);
+    // Section 1: Target Dye (collapsible, default open)
+    const targetContainer = this.createElement('div');
+    left.appendChild(targetContainer);
+    this.targetDyePanel = new CollapsiblePanel(targetContainer, {
+      title: LanguageService.t('budget.targetDye') || 'Target Dye',
+      storageKey: 'v3_budget_target_panel',
+      defaultOpen: true,
+      icon: ICON_TARGET,
+    });
+    this.targetDyePanel.init();
+    const targetContent = this.createElement('div');
+    this.renderTargetDyeSection(targetContent);
+    this.targetDyePanel.setContent(targetContent);
 
-    // Section 2: Quick Picks
-    const quickSection = this.createSection(LanguageService.t('budget.quickPicks') || 'Quick Picks');
-    this.renderQuickPicksSection(quickSection);
-    left.appendChild(quickSection);
+    // Section 2: Quick Picks (collapsible, default open)
+    const quickContainer = this.createElement('div');
+    left.appendChild(quickContainer);
+    this.quickPicksPanel = new CollapsiblePanel(quickContainer, {
+      title: LanguageService.t('budget.quickPicks') || 'Quick Picks',
+      storageKey: 'v3_budget_quickpicks_panel',
+      defaultOpen: true,
+      icon: ICON_SPARKLES,
+    });
+    this.quickPicksPanel.init();
+    const quickContent = this.createElement('div');
+    this.renderQuickPicksSection(quickContent);
+    this.quickPicksPanel.setContent(quickContent);
 
-    // Section 3: Budget Limit
-    const budgetSection = this.createSection(LanguageService.t('budget.budgetLimit') || 'Budget Limit');
-    this.renderBudgetSection(budgetSection);
-    left.appendChild(budgetSection);
+    // Section 3: Budget Limit (collapsible, default open)
+    const budgetContainer = this.createElement('div');
+    left.appendChild(budgetContainer);
+    this.budgetLimitPanel = new CollapsiblePanel(budgetContainer, {
+      title: LanguageService.t('budget.budgetLimit') || 'Budget Limit',
+      storageKey: 'v3_budget_limit_panel',
+      defaultOpen: true,
+      icon: ICON_COINS,
+    });
+    this.budgetLimitPanel.init();
+    const budgetContent = this.createElement('div');
+    this.renderBudgetSection(budgetContent);
+    this.budgetLimitPanel.setContent(budgetContent);
 
-    // Section 4: Sort Options
-    const sortSection = this.createSection(LanguageService.t('budget.sortBy') || 'Sort By');
-    this.renderSortSection(sortSection);
-    left.appendChild(sortSection);
+    // Section 4: Color Distance (collapsible, default closed)
+    const distanceContainer = this.createElement('div');
+    left.appendChild(distanceContainer);
+    this.colorDistancePanel = new CollapsiblePanel(distanceContainer, {
+      title: LanguageService.t('budget.colorDistance') || 'Color Distance',
+      storageKey: 'v3_budget_distance_panel',
+      defaultOpen: false,
+      icon: ICON_DISTANCE,
+    });
+    this.colorDistancePanel.init();
+    const distanceContent = this.createElement('div');
+    this.renderColorDistanceSection(distanceContent);
+    this.colorDistancePanel.setContent(distanceContent);
 
-    // Section 5: Dye Filters (collapsible)
+    // Section 5: Sort Options (collapsible, default closed)
+    const sortContainer = this.createElement('div');
+    left.appendChild(sortContainer);
+    this.sortByPanel = new CollapsiblePanel(sortContainer, {
+      title: LanguageService.t('budget.sortBy') || 'Sort By',
+      storageKey: 'v3_budget_sort_panel',
+      defaultOpen: false,
+      icon: ICON_SORT,
+    });
+    this.sortByPanel.init();
+    const sortContent = this.createElement('div');
+    this.renderSortSection(sortContent);
+    this.sortByPanel.setContent(sortContent);
+
+    // Section 6: Dye Filters (collapsible)
     const filtersContainer = this.createElement('div');
     left.appendChild(filtersContainer);
     this.filtersPanel = new CollapsiblePanel(filtersContainer, {
@@ -258,12 +343,13 @@ export class BudgetTool extends BaseComponent {
       onFilterChange: () => {
         this.findAlternatives();
       },
+      hideHeader: true, // Prevent double-nesting with external CollapsiblePanel
     });
     this.dyeFilters.render();
     this.dyeFilters.bindEvents();
     this.filtersPanel.setContent(filtersContent);
 
-    // Section 6: Market Board (collapsible)
+    // Section 7: Market Board (collapsible)
     const marketContainer = this.createElement('div');
     left.appendChild(marketContainer);
     this.marketPanel = new CollapsiblePanel(marketContainer, {
@@ -542,6 +628,79 @@ export class BudgetTool extends BaseComponent {
   }
 
   /**
+   * Render color distance (Delta-E) slider
+   */
+  private renderColorDistanceSection(container: HTMLElement): void {
+    // Current value display
+    const valueDisplay = this.createElement('div', {
+      className: 'flex items-center justify-between mb-3',
+    });
+
+    const labelSpan = this.createElement('span', {
+      className: 'text-sm',
+      textContent: LanguageService.t('budget.maxDistance') || 'Max Delta-E',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+
+    this.distanceValueDisplay = this.createElement('span', {
+      className: 'font-semibold',
+      textContent: String(this.colorDistance),
+      attributes: { style: 'color: var(--theme-text);' },
+    });
+
+    valueDisplay.appendChild(labelSpan);
+    valueDisplay.appendChild(this.distanceValueDisplay);
+    container.appendChild(valueDisplay);
+
+    // Description text
+    const description = this.createElement('p', {
+      className: 'text-xs mb-3',
+      textContent: LanguageService.t('budget.distanceDesc') || 'Higher values show more alternatives, lower values show closer matches',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    container.appendChild(description);
+
+    // Slider
+    const slider = this.createElement('input', {
+      className: 'w-full',
+      attributes: {
+        type: 'range',
+        min: '25',
+        max: '100',
+        value: String(this.colorDistance),
+        step: '5',
+        style: 'accent-color: var(--theme-primary);',
+      },
+    }) as HTMLInputElement;
+
+    this.on(slider, 'input', () => {
+      this.colorDistance = parseInt(slider.value, 10);
+      if (this.distanceValueDisplay) {
+        this.distanceValueDisplay.textContent = String(this.colorDistance);
+      }
+      StorageService.setItem(STORAGE_KEYS.colorDistance, this.colorDistance);
+      this.findAlternatives();
+      this.updateDrawerContent();
+    });
+
+    container.appendChild(slider);
+
+    // Tick labels
+    const ticksContainer = this.createElement('div', {
+      className: 'flex justify-between mt-1',
+    });
+    ['25', '50', '75', '100'].forEach(tick => {
+      const tickLabel = this.createElement('span', {
+        className: 'text-xs',
+        textContent: tick,
+        attributes: { style: 'color: var(--theme-text-muted);' },
+      });
+      ticksContainer.appendChild(tickLabel);
+    });
+    container.appendChild(ticksContainer);
+  }
+
+  /**
    * Render sort options
    */
   private renderSortSection(container: HTMLElement): void {
@@ -784,9 +943,13 @@ export class BudgetTool extends BaseComponent {
 
     if (this.isLoading) {
       const loading = this.createElement('div', {
-        className: 'text-center py-8',
+        className: 'text-center py-8 flex flex-col items-center gap-3',
       });
       loading.innerHTML = `
+        <svg class="animate-spin h-8 w-8" style="color: var(--theme-primary);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
         <p style="color: var(--theme-text-muted);">${LanguageService.t('budget.loading') || 'Loading alternatives...'}</p>
       `;
       this.alternativesListContainer.appendChild(loading);
@@ -866,7 +1029,7 @@ export class BudgetTool extends BaseComponent {
       const distanceBar = this.createElement('div', {
         className: 'w-20 flex-shrink-0 hidden sm:block',
       });
-      const barWidth = Math.min(100, (alt.distance / 50) * 100);
+      const barWidth = Math.min(100, (alt.distance / this.colorDistance) * 100);
       const barOuter = this.createElement('div', {
         className: 'h-2 rounded-full',
         attributes: { style: 'background: var(--theme-background-secondary);' },
@@ -926,8 +1089,8 @@ export class BudgetTool extends BaseComponent {
     this.renderAlternativesList();
 
     try {
-      // 1. Get all dyes within color distance threshold
-      const candidates = dyeService.findDyesWithinDistance(this.targetDye.hex, 50, 30);
+      // 1. Get all dyes within user-configurable color distance threshold
+      const candidates = dyeService.findDyesWithinDistance(this.targetDye.hex, this.colorDistance, 50);
 
       // 2. Apply filters
       let filtered = candidates.filter(dye => dye.id !== this.targetDye?.id);
@@ -953,14 +1116,18 @@ export class BudgetTool extends BaseComponent {
         return { dye, distance, price, savings, valueScore };
       });
 
-      // 6. Filter and sort
+      // 6. Mark loading complete before filtering/sorting (so render shows results, not spinner)
+      this.isLoading = false;
+
+      // 7. Filter and sort
       this.filterAndSortAlternatives();
 
     } catch (error) {
       logger.error('[BudgetTool] Error finding alternatives:', error);
       ToastService.error(LanguageService.t('budget.errorFindingAlternatives') || 'Error finding alternatives');
-    } finally {
       this.isLoading = false;
+      this.renderAlternativesList(); // Show error state, not loading spinner
+    } finally {
       this.renderTargetOverview();
       this.updateTargetDyeDisplay();
     }
