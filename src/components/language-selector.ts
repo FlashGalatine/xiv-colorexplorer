@@ -22,6 +22,10 @@ export class LanguageSelector extends BaseComponent {
   private isDropdownOpen: boolean = false;
   private closeOtherDropdownsHandler: EventListener | null = null;
 
+  // Subscriptions
+  private languageUnsubscribe: (() => void) | null = null;
+  private themeUnsubscribe: (() => void) | null = null;
+
   /**
    * Render the language selector component
    */
@@ -255,26 +259,32 @@ export class LanguageSelector extends BaseComponent {
   onMount(): void {
     this.currentLocale = LanguageService.getCurrentLocale();
 
-    // Subscribe to language changes
-    LanguageService.subscribe((locale) => {
+    // Subscribe to language changes (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe((locale) => {
       this.currentLocale = locale;
       this.update();
     });
 
-    // Subscribe to theme changes (for button styling)
-    ThemeService.subscribe(() => {
+    // Subscribe to theme changes (store unsubscribe for cleanup)
+    this.themeUnsubscribe = ThemeService.subscribe(() => {
       this.update();
     });
   }
 
   /**
-   * Cleanup event listeners
+   * Cleanup event listeners and subscriptions
    */
   onUnmount(): void {
     if (this.closeOtherDropdownsHandler) {
       document.removeEventListener('close-other-dropdowns', this.closeOtherDropdownsHandler);
       this.closeOtherDropdownsHandler = null;
     }
+
+    // Clean up subscriptions to prevent memory leaks
+    this.languageUnsubscribe?.();
+    this.languageUnsubscribe = null;
+    this.themeUnsubscribe?.();
+    this.themeUnsubscribe = null;
   }
 
   /**

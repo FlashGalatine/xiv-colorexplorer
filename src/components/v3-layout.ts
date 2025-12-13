@@ -17,6 +17,7 @@ import type { BaseComponent } from './base-component';
 // Track active tool instance for cleanup
 let activeTool: BaseComponent | null = null;
 let shellInstance: TwoPanelShell | null = null;
+let languageUnsubscribe: (() => void) | null = null;
 
 /**
  * Initialize the v3 two-panel layout
@@ -44,8 +45,8 @@ export async function initializeV3Layout(container: HTMLElement): Promise<void> 
     void loadToolContent(state.toolId);
   });
 
-  // Subscribe to language changes for re-rendering
-  LanguageService.subscribe(() => {
+  // Subscribe to language changes for re-rendering (store unsubscribe for cleanup)
+  languageUnsubscribe = LanguageService.subscribe(() => {
     // Shell handles its own language updates
     // Tool content may need to be reloaded
     logger.info('[V3 Layout] Language changed, tool may need refresh');
@@ -238,6 +239,12 @@ function renderPlaceholder(container: HTMLElement, toolId: string): void {
  * Cleanup the v3 layout
  */
 export function destroyV3Layout(): void {
+  // Clean up language subscription to prevent memory leaks
+  if (languageUnsubscribe) {
+    languageUnsubscribe();
+    languageUnsubscribe = null;
+  }
+
   if (activeTool) {
     activeTool.destroy();
     activeTool = null;

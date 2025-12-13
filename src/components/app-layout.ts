@@ -36,6 +36,8 @@ export class AppLayout extends BaseComponent {
   private toastContainer: ToastContainer | null = null;
   private modalContainer: ModalContainer | null = null;
   private contentContainer: HTMLElement | null = null;
+  private themeUnsubscribe: (() => void) | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
 
   /**
    * Render the application layout
@@ -293,13 +295,13 @@ export class AppLayout extends BaseComponent {
     // Initialize keyboard shortcuts (O4 - press "?" to show shortcuts, 1-5 for tools, etc.)
     KeyboardService.initialize();
 
-    // Subscribe to theme changes to update header text colors (without re-rendering entire layout)
-    ThemeService.subscribe(() => {
+    // Subscribe to theme changes to update header text colors (store unsubscribe for cleanup)
+    this.themeUnsubscribe = ThemeService.subscribe(() => {
       this.updateHeaderColors();
     });
 
-    // Subscribe to language changes to update text
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes to update text (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.updateLocalizedText();
     });
   }
@@ -385,6 +387,12 @@ export class AppLayout extends BaseComponent {
    * Destroy the layout and all child components
    */
   destroy(): void {
+    // Clean up service subscriptions
+    this.themeUnsubscribe?.();
+    this.themeUnsubscribe = null;
+    this.languageUnsubscribe?.();
+    this.languageUnsubscribe = null;
+
     if (this.languageSelector) {
       this.languageSelector.destroy();
     }

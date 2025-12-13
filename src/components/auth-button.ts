@@ -39,6 +39,7 @@ export class AuthButton extends BaseComponent {
   };
   private isDropdownOpen = false;
   private unsubscribe: (() => void) | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
   private returnTool: string | undefined;
 
   constructor(container: HTMLElement, options?: AuthButtonOptions) {
@@ -297,8 +298,8 @@ export class AuthButton extends BaseComponent {
       this.update();
     });
 
-    // Subscribe to language changes
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.update();
     });
   }
@@ -311,6 +312,9 @@ export class AuthButton extends BaseComponent {
       this.unsubscribe();
       this.unsubscribe = null;
     }
+    // Clean up language subscription to prevent memory leaks
+    this.languageUnsubscribe?.();
+    this.languageUnsubscribe = null;
   }
 
   /**

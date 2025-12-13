@@ -22,6 +22,8 @@ export class ThemeSwitcher extends BaseComponent {
   private currentTheme: ThemeName = 'standard-light';
   private isDropdownOpen: boolean = false;
   private closeOtherDropdownsHandler: EventListener | null = null;
+  private themeUnsubscribe: (() => void) | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
 
   /**
    * Render the theme switcher component
@@ -268,26 +270,31 @@ export class ThemeSwitcher extends BaseComponent {
   onMount(): void {
     this.currentTheme = ThemeService.getCurrentTheme();
 
-    // Subscribe to theme changes
-    ThemeService.subscribe((theme) => {
+    // Subscribe to theme changes (store unsubscribe for cleanup)
+    this.themeUnsubscribe = ThemeService.subscribe((theme) => {
       this.currentTheme = theme;
       this.update();
     });
 
-    // Subscribe to language changes
-    LanguageService.subscribe(() => {
+    // Subscribe to language changes (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.update();
     });
   }
 
   /**
-   * Cleanup event listeners
+   * Cleanup event listeners and subscriptions
    */
   onUnmount(): void {
     if (this.closeOtherDropdownsHandler) {
       document.removeEventListener('close-other-dropdowns', this.closeOtherDropdownsHandler);
       this.closeOtherDropdownsHandler = null;
     }
+    // Clean up service subscriptions
+    this.themeUnsubscribe?.();
+    this.themeUnsubscribe = null;
+    this.languageUnsubscribe?.();
+    this.languageUnsubscribe = null;
   }
 
   /**

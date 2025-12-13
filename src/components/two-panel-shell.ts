@@ -41,6 +41,9 @@ export class TwoPanelShell extends BaseComponent {
   private collapseBtn: HTMLElement | null = null;
   private mobileBottomNav: HTMLElement | null = null;
 
+  // Subscriptions
+  private languageUnsubscribe: (() => void) | null = null;
+
   constructor(container: HTMLElement, options: TwoPanelShellOptions = {}) {
     super(container);
     this.options = options;
@@ -513,7 +516,8 @@ export class TwoPanelShell extends BaseComponent {
   }
 
   onMount(): void {
-    LanguageService.subscribe(() => {
+    // Store unsubscribe function for cleanup in destroy()
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.renderToolNav();
       this.updateMobileDrawerNav();
       this.renderMobileBottomNav();
@@ -521,6 +525,9 @@ export class TwoPanelShell extends BaseComponent {
   }
 
   destroy(): void {
+    // Clean up language subscription to prevent memory leaks
+    this.languageUnsubscribe?.();
+
     this.mobileDrawer?.destroy();
     // Remove mobile bottom nav from body
     if (this.mobileBottomNav && this.mobileBottomNav.parentNode) {

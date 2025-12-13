@@ -164,12 +164,16 @@ export class PresetTool extends BaseComponent {
   }
 
   bindEvents(): void {
-    // Subscribe to language changes
+    // Event bindings handled in child components
+  }
+
+  async onMount(): Promise<void> {
+    // Subscribe to language changes (only in onMount, NOT bindEvents - avoids infinite loop)
     this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.update();
     });
 
-    // Subscribe to auth changes
+    // Subscribe to auth changes (only in onMount, NOT bindEvents - avoids infinite loop)
     this.authUnsubscribe = authService.subscribe((state) => {
       this.authState = state;
       this.updateAuthSection();
@@ -181,9 +185,7 @@ export class PresetTool extends BaseComponent {
         void this.loadUserSubmissions();
       }
     });
-  }
 
-  async onMount(): Promise<void> {
     // Get initial auth state
     this.authState = authService.getState();
 

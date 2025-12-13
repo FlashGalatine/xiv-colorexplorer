@@ -147,12 +147,15 @@ export class ComparisonTool extends BaseComponent {
   }
 
   bindEvents(): void {
-    this.languageUnsubscribe = LanguageService.subscribe(() => {
-      this.update();
-    });
+    // Event bindings handled in child components
   }
 
   onMount(): void {
+    // Subscribe to language changes (only in onMount, NOT bindEvents - avoids infinite loop)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+
     logger.info('[ComparisonTool] Mounted');
   }
 

@@ -281,13 +281,15 @@ export class HarmonyTool extends BaseComponent {
   }
 
   bindEvents(): void {
-    // Subscribe to language changes
-    this.languageUnsubscribe = LanguageService.subscribe(() => {
-      this.update();
-    });
+    // Event bindings handled in child components
   }
 
   onMount(): void {
+    // Subscribe to language changes (only in onMount, NOT bindEvents - avoids infinite loop)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+
     // Generate initial harmonies if a dye is selected
     if (this.selectedDye) {
       this.generateHarmonies();

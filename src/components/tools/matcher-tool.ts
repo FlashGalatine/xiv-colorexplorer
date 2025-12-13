@@ -139,11 +139,6 @@ export class MatcherTool extends BaseComponent {
   }
 
   bindEvents(): void {
-    // Subscribe to language changes
-    this.languageUnsubscribe = LanguageService.subscribe(() => {
-      this.update();
-    });
-
     // Image upload events
     this.onCustom('image-loaded', (event: CustomEvent) => {
       const { image } = event.detail;
@@ -184,6 +179,11 @@ export class MatcherTool extends BaseComponent {
   }
 
   onMount(): void {
+    // Subscribe to language changes (only in onMount, NOT bindEvents - avoids infinite loop)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update();
+    });
+
     logger.info('[MatcherTool] Mounted');
   }
 

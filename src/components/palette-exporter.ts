@@ -41,6 +41,7 @@ export class PaletteExporter extends BaseComponent {
   private cssBtn: HTMLButtonElement | null = null;
   private scssBtn: HTMLButtonElement | null = null;
   private copyBtn: HTMLButtonElement | null = null;
+  private languageUnsubscribe: (() => void) | null = null;
 
   constructor(container: HTMLElement, options: PaletteExporterOptions) {
     super(container);
@@ -439,16 +440,29 @@ export class PaletteExporter extends BaseComponent {
    * Initialize the component
    */
   onMount(): void {
-    // Subscribe to language changes to update localized text
-    LanguageService.subscribe(() => {
-      this.init(); // Re-render to update localized text
+    // Clean up existing subscription before creating a new one (prevents exponential leak)
+    this.languageUnsubscribe?.();
+
+    // Subscribe to language changes to update localized text (store unsubscribe for cleanup)
+    this.languageUnsubscribe = LanguageService.subscribe(() => {
+      this.update(); // Re-render to update localized text (NOT init() - avoids infinite loop)
     });
   }
 
   /**
-   * Update the exporter (refresh button states)
+   * Clean up subscriptions on destroy
+   */
+  override destroy(): void {
+    this.languageUnsubscribe?.();
+    this.languageUnsubscribe = null;
+    super.destroy();
+  }
+
+  /**
+   * Update the exporter (re-render and refresh button states)
    */
   update(): void {
+    super.update(); // Call parent update to re-render with new translations
     this.updateButtonStates();
   }
 
