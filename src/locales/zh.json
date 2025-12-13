@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "染剂",
+    "remove": "移除",
     "generate": "生成",
     "select": "选择",
     "copy": "复制",
@@ -194,6 +196,13 @@
     "noMatchingDyes": "未找到匹配的染剂"
   },
   "accessibility": {
+    "inspectDyes": "检查染剂",
+    "level": "级别",
+    "visionTypes": "视觉类型",
+    "displayOptions": "显示选项",
+    "showHexValues": "显示十六进制值",
+    "showLabels": "显示标签",
+    "highContrastMode": "高对比度模式",
     "selectDyes": "选择染剂",
     "selectUpTo": "选择最多 {count} 种染剂检查无障碍性",
     "selectDyesToSeeAnalysis": "选择染剂以查看无障碍性分析",

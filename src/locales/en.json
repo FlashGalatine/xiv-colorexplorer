@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "Dye",
+    "remove": "Remove",
     "generate": "Generate",
     "select": "Select",
     "copy": "Copy",
@@ -205,6 +207,13 @@
     "noImageForPalette": "Please upload an image first to extract palette"
   },
   "accessibility": {
+    "inspectDyes": "Inspect Dyes",
+    "level": "Level",
+    "visionTypes": "Vision Types",
+    "displayOptions": "Display Options",
+    "showHexValues": "Show Hex Values",
+    "showLabels": "Show Labels",
+    "highContrastMode": "High Contrast Mode",
     "selectDyes": "Select Dyes",
     "selectUpTo": "Select up to {count} dyes to check accessibility",
     "selectDyesToSeeAnalysis": "Select dyes to see accessibility analysis",

@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "Teinture",
+    "remove": "Retirer",
     "generate": "Générer",
     "select": "Sélectionner",
     "copy": "Copier",
@@ -194,6 +196,13 @@
     "noMatchingDyes": "Aucune teinture correspondante trouvée"
   },
   "accessibility": {
+    "inspectDyes": "Inspecter les Teintures",
+    "level": "Niveau",
+    "visionTypes": "Types de Vision",
+    "displayOptions": "Options d'Affichage",
+    "showHexValues": "Afficher les Valeurs Hex",
+    "showLabels": "Afficher les Étiquettes",
+    "highContrastMode": "Mode Contraste Élevé",
     "selectDyes": "Sélectionner des Teintures",
     "selectUpTo": "Sélectionnez jusqu'à {count} teintures pour vérifier l'accessibilité",
     "selectDyesToSeeAnalysis": "Sélectionnez des teintures pour voir l'analyse d'accessibilité",

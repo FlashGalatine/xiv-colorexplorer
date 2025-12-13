@@ -12,12 +12,33 @@
 
 import { BaseComponent } from '@components/base-component';
 import { DyeSelector } from '@components/dye-selector';
+import { CollapsiblePanel } from '@mockups/CollapsiblePanel';
 import { ColorService, LanguageService, StorageService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import type { Dye } from '@shared/types';
 import { ICON_TOOL_ACCESSIBILITY } from '@shared/tool-icons';
 import { ICON_WARNING } from '@shared/ui-icons';
+
+// Beaker icon for Inspect Dyes section
+const ICON_BEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 3h6v7l5 9a1 1 0 01-.9 1.4H4.9a1 1 0 01-.9-1.4l5-9V3z"/>
+  <path d="M9 3h6"/><path d="M12 14v3"/>
+</svg>`;
+
+// Eye icon for Vision Types section
+const ICON_EYE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+  <circle cx="12" cy="12" r="3"/>
+</svg>`;
+
+// Sliders icon for Display Options section
+const ICON_SLIDERS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+  <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+  <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+  <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+</svg>`;
 
 // ============================================================================
 // Types and Constants
@@ -144,6 +165,9 @@ export class AccessibilityTool extends BaseComponent {
 
   // Child components
   private dyeSelector: DyeSelector | null = null;
+  private dyePanel: CollapsiblePanel | null = null;
+  private visionPanel: CollapsiblePanel | null = null;
+  private displayPanel: CollapsiblePanel | null = null;
 
   // DOM References
   private visionTogglesContainer: HTMLElement | null = null;
@@ -199,6 +223,9 @@ export class AccessibilityTool extends BaseComponent {
   destroy(): void {
     this.languageUnsubscribe?.();
     this.dyeSelector?.destroy();
+    this.dyePanel?.destroy();
+    this.visionPanel?.destroy();
+    this.displayPanel?.destroy();
 
     this.selectedDyes = [];
     this.dyeResults = [];
@@ -216,22 +243,44 @@ export class AccessibilityTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Dye Selection
-    const dyeSection = this.createSection(
-      LanguageService.tInterpolate('accessibility.selectUpTo', { count: '4' })
-    );
-    this.renderDyeSelector(dyeSection);
-    left.appendChild(dyeSection);
+    // Section 1: Dye Selection (Collapsible with beaker icon)
+    this.dyePanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('accessibility.inspectDyes') || 'Inspect Dyes',
+      storageKey: 'accessibility_dyes',
+      defaultOpen: true,
+      icon: ICON_BEAKER,
+    });
+    this.dyePanel.init();
+    const dyeContent = this.dyePanel.getContentContainer();
+    if (dyeContent) {
+      this.renderDyeSelector(dyeContent);
+    }
 
-    // Section 2: Vision Types
-    const visionSection = this.createSection(LanguageService.t('accessibility.visionTypes') || 'Vision Types');
-    this.renderVisionToggles(visionSection);
-    left.appendChild(visionSection);
+    // Section 2: Vision Types (Collapsible with eye icon)
+    this.visionPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('accessibility.visionTypes') || 'Vision Types',
+      storageKey: 'accessibility_vision',
+      defaultOpen: true,
+      icon: ICON_EYE,
+    });
+    this.visionPanel.init();
+    const visionContent = this.visionPanel.getContentContainer();
+    if (visionContent) {
+      this.renderVisionToggles(visionContent);
+    }
 
-    // Section 3: Display Options
-    const optionsSection = this.createSection(LanguageService.t('accessibility.displayOptions') || 'Display Options');
-    this.renderDisplayOptions(optionsSection);
-    left.appendChild(optionsSection);
+    // Section 3: Display Options (Collapsible with sliders icon, default closed)
+    this.displayPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('accessibility.displayOptions') || 'Display Options',
+      storageKey: 'accessibility_display',
+      defaultOpen: false,
+      icon: ICON_SLIDERS,
+    });
+    this.displayPanel.init();
+    const displayContent = this.displayPanel.getContentContainer();
+    if (displayContent) {
+      this.renderDisplayOptions(displayContent);
+    }
   }
 
   /**
@@ -796,8 +845,8 @@ export class AccessibilityTool extends BaseComponent {
       for (const pair of allWarnings) {
         for (const warning of pair.warnings) {
           html += `
-            <div class="flex items-start gap-2 text-xs" style="color: var(--theme-warning, #eab308);">
-              <span class="w-4 h-4 shrink-0">${ICON_WARNING}</span>
+            <div class="flex items-start gap-2 text-xs" style="color: var(--theme-text-muted);">
+              <span class="w-4 h-4 shrink-0" style="color: #b45309;">${ICON_WARNING}</span>
               <span><strong>${pair.dye1Name}</strong> & <strong>${pair.dye2Name}</strong>: ${warning}</span>
             </div>
           `;

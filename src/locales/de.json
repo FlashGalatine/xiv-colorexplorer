@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "Farbstoff",
+    "remove": "Entfernen",
     "generate": "Generieren",
     "select": "Auswählen",
     "copy": "Kopieren",
@@ -198,6 +200,13 @@
     "noMatchingDyes": "Keine passenden Farben gefunden"
   },
   "accessibility": {
+    "inspectDyes": "Farbstoffe prüfen",
+    "level": "Stufe",
+    "visionTypes": "Sehtypen",
+    "displayOptions": "Anzeigeoptionen",
+    "showHexValues": "Hex-Werte anzeigen",
+    "showLabels": "Beschriftungen anzeigen",
+    "highContrastMode": "Hochkontrastmodus",
     "selectDyes": "Farbstoffe auswählen",
     "selectUpTo": "Wähle bis zu {count} Farbstoffe zur Barrierefreiheitsprüfung",
     "selectDyesToSeeAnalysis": "Wähle Farbstoffe, um die Barrierefreiheitsanalyse zu sehen",

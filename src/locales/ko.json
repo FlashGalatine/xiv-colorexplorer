@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "염료",
+    "remove": "제거",
     "generate": "생성",
     "select": "선택",
     "copy": "복사",
@@ -194,6 +196,13 @@
     "noMatchingDyes": "매칭되는 염료를 찾을 수 없습니다"
   },
   "accessibility": {
+    "inspectDyes": "염료 검사",
+    "level": "레벨",
+    "visionTypes": "시각 유형",
+    "displayOptions": "표시 옵션",
+    "showHexValues": "Hex 값 표시",
+    "showLabels": "라벨 표시",
+    "highContrastMode": "고대비 모드",
     "selectDyes": "염료 선택",
     "selectUpTo": "접근성을 확인할 염료를 최대 {count}개 선택하세요",
     "selectDyesToSeeAnalysis": "염료를 선택하여 접근성 분석 보기",

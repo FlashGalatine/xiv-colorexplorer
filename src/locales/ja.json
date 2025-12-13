@@ -74,6 +74,8 @@
     }
   },
   "common": {
+    "dye": "カララント",
+    "remove": "削除",
     "generate": "生成",
     "select": "選択",
     "copy": "コピー",
@@ -198,6 +200,13 @@
     "noMatchingDyes": "マッチするカララントが見つかりません"
   },
   "accessibility": {
+    "inspectDyes": "カララントを検査",
+    "level": "レベル",
+    "visionTypes": "色覚タイプ",
+    "displayOptions": "表示オプション",
+    "showHexValues": "16進値を表示",
+    "showLabels": "ラベルを表示",
+    "highContrastMode": "ハイコントラストモード",
     "selectDyes": "カララントを選択",
     "selectUpTo": "アクセシビリティをチェックするカララントを最大{count}個選択",
     "selectDyesToSeeAnalysis": "カララントを選択してアクセシビリティ分析を表示",
