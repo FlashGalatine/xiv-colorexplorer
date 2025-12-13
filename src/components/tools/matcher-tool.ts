@@ -49,7 +49,12 @@ const STORAGE_KEYS = {
   sampleSize: 'v3_matcher_sample_size',
   paletteMode: 'v3_matcher_palette_mode',
   paletteColorCount: 'v3_matcher_palette_count',
+  imageDataUrl: 'v3_matcher_image',
+  selectedColor: 'v3_matcher_color',
 } as const;
+
+// Maximum image size to store in localStorage (2MB to be safe)
+const MAX_IMAGE_STORAGE_SIZE = 2 * 1024 * 1024;
 
 // SVG Icons
 const ICON_FILTER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -62,6 +67,19 @@ const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 
 const ICON_UPLOAD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
   <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+</svg>`;
+
+const ICON_PALETTE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+</svg>`;
+
+const ICON_SETTINGS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+</svg>`;
+
+const ICON_COINS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
 </svg>`;
 
 // ============================================================================
@@ -87,6 +105,7 @@ export class MatcherTool extends BaseComponent {
   private priceData: Map<number, PriceData> = new Map();
   private filterConfig: DyeFilterConfig | null = null;
   private currentImage: HTMLImageElement | null = null;
+  private currentImageDataUrl: string | null = null;
 
   // Child components
   private imageUpload: ImageUploadDisplay | null = null;
@@ -99,13 +118,25 @@ export class MatcherTool extends BaseComponent {
   private marketPanel: CollapsiblePanel | null = null;
   private paletteService: PaletteService;
 
+  // Collapsible section panels
+  private imageSourcePanel: CollapsiblePanel | null = null;
+  private colorSelectionPanel: CollapsiblePanel | null = null;
+  private optionsPanel: CollapsiblePanel | null = null;
+
   // DOM References
   private sampleSlider: HTMLInputElement | null = null;
   private sampleDisplay: HTMLElement | null = null;
   private paletteModeCheckbox: HTMLInputElement | null = null;
+  private paletteOptionsContainer: HTMLElement | null = null;
+  private colorCountSlider: HTMLInputElement | null = null;
+  private colorCountDisplay: HTMLElement | null = null;
+  private extractPaletteBtn: HTMLButtonElement | null = null;
   private resultsContainer: HTMLElement | null = null;
   private canvasContainer: HTMLElement | null = null;
   private emptyStateContainer: HTMLElement | null = null;
+
+  // Palette extraction state
+  private lastPaletteResults: PaletteMatch[] = [];
 
   // Subscriptions
   private languageUnsubscribe: (() => void) | null = null;
@@ -139,10 +170,25 @@ export class MatcherTool extends BaseComponent {
   }
 
   bindEvents(): void {
-    // Image upload events
-    this.onCustom('image-loaded', (event: CustomEvent) => {
-      const { image } = event.detail;
+    // FIX: Events from child components bubble through leftPanel, not this.container
+    // The container is a detached div, so we must listen on the actual panel elements
+    const leftPanel = this.options.leftPanel;
+
+    // Image upload events - listen on leftPanel where ImageUploadDisplay is rendered
+    this.onPanelEvent(leftPanel, 'image-loaded', (event: CustomEvent) => {
+      const { image, dataUrl } = event.detail;
       this.currentImage = image;
+      this.currentImageDataUrl = dataUrl;
+
+      // Persist image to storage if it's small enough
+      if (dataUrl && dataUrl.length < MAX_IMAGE_STORAGE_SIZE) {
+        StorageService.setItem(STORAGE_KEYS.imageDataUrl, dataUrl);
+        logger.info('[MatcherTool] Image saved to storage');
+      } else if (dataUrl) {
+        // Clear any previously stored image if new one is too large
+        StorageService.removeItem(STORAGE_KEYS.imageDataUrl);
+        logger.info('[MatcherTool] Image too large to persist, cleared storage');
+      }
 
       ToastService.success(LanguageService.t('matcher.imageLoaded') || 'Image loaded');
 
@@ -154,27 +200,81 @@ export class MatcherTool extends BaseComponent {
       this.updateDrawerContent();
     });
 
-    this.onCustom('error', (event: CustomEvent) => {
+    this.onPanelEvent(leftPanel, 'error', (event: CustomEvent) => {
       const message = event.detail?.message || 'Failed to load image';
       logger.error('[MatcherTool] Image upload error:', event.detail);
       ToastService.error(message);
     });
 
     // Color picker events
-    this.onCustom('color-selected', (event: CustomEvent) => {
+    this.onPanelEvent(leftPanel, 'color-selected', (event: CustomEvent) => {
       const { color } = event.detail;
       this.matchColor(color);
     });
 
     // Market board events
-    this.onCustom('showPricesChanged', (event: CustomEvent) => {
+    this.onPanelEvent(leftPanel, 'showPricesChanged', (event: CustomEvent) => {
       this.showPrices = event.detail.showPrices;
-      this.renderMatchedResults();
+      if (this.showPrices) {
+        // Fetch prices when enabled
+        void this.fetchPricesForMatches();
+      } else {
+        // Clear prices when disabled and re-render
+        this.priceData.clear();
+        if (this.lastPaletteResults.length > 0) {
+          this.renderPaletteResults(this.lastPaletteResults);
+        } else {
+          this.renderMatchedResults();
+        }
+      }
     });
 
-    this.onCustom('pricesLoaded', (event: CustomEvent) => {
-      this.priceData = event.detail.prices;
-      this.renderMatchedResults();
+    // Re-fetch prices when server changes
+    this.onPanelEvent(leftPanel, 'server-changed', () => {
+      if (this.showPrices) {
+        void this.fetchPricesForMatches();
+      }
+    });
+
+    // Re-fetch prices when category filters change
+    this.onPanelEvent(leftPanel, 'categories-changed', () => {
+      if (this.showPrices) {
+        void this.fetchPricesForMatches();
+      }
+    });
+
+    // Re-fetch prices when refresh button is clicked
+    this.onPanelEvent(leftPanel, 'refresh-requested', () => {
+      if (this.showPrices) {
+        void this.fetchPricesForMatches();
+      }
+    });
+  }
+
+  /**
+   * Listen for custom events on a specific panel element
+   * This is needed because child components emit events that bubble through their
+   * panel containers, not through this.container (which may be detached from DOM)
+   */
+  private onPanelEvent(
+    panel: HTMLElement,
+    eventName: string,
+    handler: (event: CustomEvent) => void
+  ): void {
+    const boundHandler = (event: Event) => {
+      if (event instanceof CustomEvent) {
+        handler.call(this, event);
+      }
+    };
+
+    panel.addEventListener(eventName, boundHandler);
+
+    // Track for cleanup using unique key
+    const listenerKey = `panel_${eventName}_${Date.now()}_${this.listeners.size}`;
+    this.listeners.set(listenerKey, {
+      target: panel,
+      event: eventName,
+      handler: boundHandler,
     });
   }
 
@@ -184,7 +284,58 @@ export class MatcherTool extends BaseComponent {
       this.update();
     });
 
+    // Restore saved image from storage
+    const savedImageDataUrl = StorageService.getItem<string>(STORAGE_KEYS.imageDataUrl);
+    if (savedImageDataUrl) {
+      this.restoreSavedImage(savedImageDataUrl);
+    }
+
+    // Restore saved color from storage
+    const savedColor = StorageService.getItem<string>(STORAGE_KEYS.selectedColor);
+    if (savedColor) {
+      // Use safeTimeout to ensure components are fully initialized
+      this.safeTimeout(() => {
+        this.matchColor(savedColor);
+        logger.info('[MatcherTool] Restored saved color:', savedColor);
+      }, 100);
+    }
+
     logger.info('[MatcherTool] Mounted');
+  }
+
+  /**
+   * Restore a saved image from storage
+   */
+  private restoreSavedImage(dataUrl: string): void {
+    const img = new Image();
+
+    img.onload = () => {
+      this.currentImage = img;
+      this.currentImageDataUrl = dataUrl;
+
+      if (this.imageZoom) {
+        this.imageZoom.setImage(img);
+      }
+
+      this.showEmptyState(false);
+      this.updateDrawerContent();
+
+      logger.info('[MatcherTool] Restored saved image from storage');
+
+      // Clear handlers
+      img.onload = null;
+      img.onerror = null;
+    };
+
+    img.onerror = () => {
+      // Failed to load saved image, clear it from storage
+      StorageService.removeItem(STORAGE_KEYS.imageDataUrl);
+      logger.warn('[MatcherTool] Failed to restore saved image, cleared storage');
+      img.onload = null;
+      img.onerror = null;
+    };
+
+    img.src = dataUrl;
   }
 
   destroy(): void {
@@ -201,6 +352,11 @@ export class MatcherTool extends BaseComponent {
     this.filtersPanel?.destroy();
     this.marketPanel?.destroy();
 
+    // Cleanup collapsible section panels
+    this.imageSourcePanel?.destroy();
+    this.colorSelectionPanel?.destroy();
+    this.optionsPanel?.destroy();
+
     super.destroy();
     logger.info('[MatcherTool] Destroyed');
   }
@@ -213,20 +369,47 @@ export class MatcherTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Image Upload
-    const uploadSection = this.createSection(LanguageService.t('matcher.imageSource') || 'Image Source');
-    this.renderImageUpload(uploadSection);
-    left.appendChild(uploadSection);
+    // Section 1: Image Upload (Collapsible, default open)
+    const uploadContainer = this.createElement('div');
+    left.appendChild(uploadContainer);
+    this.imageSourcePanel = new CollapsiblePanel(uploadContainer, {
+      title: LanguageService.t('matcher.imageSource') || 'Image Source',
+      storageKey: 'matcher_imageSource',
+      defaultOpen: true,
+      icon: ICON_UPLOAD,
+    });
+    this.imageSourcePanel.init();
+    const uploadContent = this.createElement('div');
+    this.renderImageUpload(uploadContent);
+    this.imageSourcePanel.setContent(uploadContent);
 
-    // Section 2: Color Selection
-    const colorSection = this.createSection(LanguageService.t('matcher.colorSelection') || 'Color Selection');
-    this.renderColorPicker(colorSection);
-    left.appendChild(colorSection);
+    // Section 2: Color Selection (Collapsible, default open)
+    const colorContainer = this.createElement('div');
+    left.appendChild(colorContainer);
+    this.colorSelectionPanel = new CollapsiblePanel(colorContainer, {
+      title: LanguageService.t('matcher.colorSelection') || 'Color Selection',
+      storageKey: 'matcher_colorSelection',
+      defaultOpen: true,
+      icon: ICON_PALETTE,
+    });
+    this.colorSelectionPanel.init();
+    const colorContent = this.createElement('div');
+    this.renderColorPicker(colorContent);
+    this.colorSelectionPanel.setContent(colorContent);
 
-    // Section 3: Options
-    const optionsSection = this.createSection(LanguageService.t('matcher.options') || 'Options');
-    this.renderOptions(optionsSection);
-    left.appendChild(optionsSection);
+    // Section 3: Options (Collapsible, default closed)
+    const optionsContainer = this.createElement('div');
+    left.appendChild(optionsContainer);
+    this.optionsPanel = new CollapsiblePanel(optionsContainer, {
+      title: LanguageService.t('matcher.options') || 'Options',
+      storageKey: 'matcher_options',
+      defaultOpen: false,
+      icon: ICON_SETTINGS,
+    });
+    this.optionsPanel.init();
+    const optionsContent = this.createElement('div');
+    this.renderOptions(optionsContent);
+    this.optionsPanel.setContent(optionsContent);
 
     // Collapsible: Dye Filters
     const filtersContainer = this.createElement('div');
@@ -327,6 +510,7 @@ export class MatcherTool extends BaseComponent {
       if (this.paletteModeCheckbox) {
         this.paletteMode = this.paletteModeCheckbox.checked;
         StorageService.setItem(STORAGE_KEYS.paletteMode, this.paletteMode);
+        this.updatePaletteOptionsVisibility();
         this.updateDrawerContent();
       }
     });
@@ -341,7 +525,69 @@ export class MatcherTool extends BaseComponent {
     paletteToggle.appendChild(toggleText);
     optionsContainer.appendChild(paletteToggle);
 
+    // Palette options (color count slider + extract button) - shown when palette mode enabled
+    this.paletteOptionsContainer = this.createElement('div', {
+      className: 'space-y-3 pt-3 border-t',
+      attributes: {
+        id: 'palette-options-container',
+        style: `border-color: var(--theme-border); ${this.paletteMode ? '' : 'display: none;'}`,
+      },
+    });
+
+    // Color count slider
+    const colorCountGroup = this.createElement('div');
+    const colorCountLabel = this.createElement('label', {
+      className: 'flex items-center justify-between text-sm mb-2',
+    });
+    colorCountLabel.innerHTML = `
+      <span style="color: var(--theme-text);">${LanguageService.t('matcher.colorCount') || 'Colors to Extract'}</span>
+      <span class="font-mono font-bold" style="color: var(--theme-primary);">${this.paletteColorCount}</span>
+    `;
+    this.colorCountDisplay = colorCountLabel.querySelector('span:last-child') as HTMLElement;
+
+    this.colorCountSlider = this.createElement('input', {
+      attributes: { type: 'range', min: '3', max: '5', value: String(this.paletteColorCount) },
+      className: 'w-full',
+    }) as HTMLInputElement;
+
+    this.on(this.colorCountSlider, 'input', () => {
+      if (this.colorCountSlider && this.colorCountDisplay) {
+        this.paletteColorCount = parseInt(this.colorCountSlider.value, 10);
+        this.colorCountDisplay.textContent = String(this.paletteColorCount);
+        StorageService.setItem(STORAGE_KEYS.paletteColorCount, this.paletteColorCount);
+      }
+    });
+
+    colorCountGroup.appendChild(colorCountLabel);
+    colorCountGroup.appendChild(this.colorCountSlider);
+    this.paletteOptionsContainer.appendChild(colorCountGroup);
+
+    // Extract palette button
+    this.extractPaletteBtn = this.createElement('button', {
+      className: 'w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors',
+      textContent: LanguageService.t('matcher.extractPaletteBtn') || 'Extract Palette from Image',
+      attributes: {
+        style: 'background: var(--theme-primary); color: white;',
+      },
+    }) as HTMLButtonElement;
+
+    this.on(this.extractPaletteBtn, 'click', () => {
+      void this.extractPalette();
+    });
+
+    this.paletteOptionsContainer.appendChild(this.extractPaletteBtn);
+    optionsContainer.appendChild(this.paletteOptionsContainer);
+
     container.appendChild(optionsContainer);
+  }
+
+  /**
+   * Update palette options visibility based on paletteMode
+   */
+  private updatePaletteOptionsVisibility(): void {
+    if (this.paletteOptionsContainer) {
+      this.paletteOptionsContainer.style.display = this.paletteMode ? '' : 'none';
+    }
   }
 
   /**
@@ -360,6 +606,7 @@ export class MatcherTool extends BaseComponent {
     const filtersContent = this.createElement('div');
     this.dyeFilters = new DyeFilters(filtersContent, {
       storageKeyPrefix: 'v3_matcher',
+      hideHeader: true, // FIX: Prevent double-nested collapsible headers
       onFilterChange: (filters) => {
         this.filterConfig = filters;
         if (this.selectedColor) {
@@ -388,6 +635,10 @@ export class MatcherTool extends BaseComponent {
     const marketContent = this.createElement('div');
     this.marketBoard = new MarketBoard(marketContent);
     this.marketBoard.init();
+
+    // Load server data for the dropdown and get initial showPrices state
+    void this.marketBoard.loadServerData();
+    this.showPrices = this.marketBoard.getShowPrices();
 
     this.marketPanel.setContent(marketContent);
   }
@@ -581,6 +832,12 @@ export class MatcherTool extends BaseComponent {
     this.selectedColor = hex;
     this.showEmptyState(false);
 
+    // Clear palette results when doing single color match
+    this.lastPaletteResults = [];
+
+    // Persist selected color to storage
+    StorageService.setItem(STORAGE_KEYS.selectedColor, hex);
+
     // Add to recent colors
     if (this.recentColors) {
       this.recentColors.addRecentColor(hex);
@@ -588,7 +845,7 @@ export class MatcherTool extends BaseComponent {
 
     // Find closest dyes
     let closestDye = dyeService.findClosestDye(hex);
-    let withinDistance = dyeService.findDyesWithinDistance(hex, 100, 10);
+    let withinDistance = dyeService.findDyesWithinDistance(hex, 100, 9);
 
     // Apply filters if available
     if (this.dyeFilters) {
@@ -732,8 +989,8 @@ export class MatcherTool extends BaseComponent {
 
     // Find Cheaper button (visible on hover)
     const findCheaperBtn = this.createElement('button', {
-      className: 'text-xs px-2 py-1 rounded transition-all opacity-0 group-hover:opacity-100 flex-shrink-0',
-      textContent: '💰',
+      className: 'text-xs px-2 py-1 rounded transition-all opacity-0 group-hover:opacity-100 flex-shrink-0 flex items-center justify-center',
+      innerHTML: `<span class="w-4 h-4">${ICON_COINS}</span>`,
       attributes: {
         title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
         style: 'background: var(--theme-background-secondary); color: var(--theme-text);',
@@ -768,9 +1025,360 @@ export class MatcherTool extends BaseComponent {
       for (const [id, price] of prices.entries()) {
         this.priceData.set(id, price);
       }
-      this.renderMatchedResults();
+      // Re-render appropriate results based on mode
+      if (this.lastPaletteResults.length > 0) {
+        this.renderPaletteResults(this.lastPaletteResults);
+      } else {
+        this.renderMatchedResults();
+      }
     } catch (error) {
       logger.error('[MatcherTool] Failed to fetch prices:', error);
     }
+  }
+
+  // ============================================================================
+  // Palette Extraction
+  // ============================================================================
+
+  /**
+   * Extract palette from loaded image using K-Means clustering
+   */
+  private async extractPalette(): Promise<void> {
+    // Get canvas from ImageZoomController
+    const canvas = this.imageZoom?.getCanvas();
+
+    if (!canvas || !this.currentImage) {
+      ToastService.error(LanguageService.t('matcher.noImageForPalette') || 'Please load an image first');
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      ToastService.error('Could not get canvas context');
+      return;
+    }
+
+    // Update button to show loading state
+    if (this.extractPaletteBtn) {
+      this.extractPaletteBtn.textContent = LanguageService.t('matcher.extractingPalette') || 'Extracting...';
+      this.extractPaletteBtn.disabled = true;
+      this.extractPaletteBtn.style.opacity = '0.7';
+    }
+
+    try {
+      // Get pixel data from canvas
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = PaletteService.pixelDataToRGBFiltered(imageData.data);
+
+      if (pixels.length === 0) {
+        ToastService.error('No pixels to analyze');
+        return;
+      }
+
+      // Extract palette and match to dyes
+      const matches = this.paletteService.extractAndMatchPalette(pixels, dyeService, {
+        colorCount: this.paletteColorCount,
+      });
+
+      this.lastPaletteResults = matches;
+
+      // Find representative positions for each extracted color and draw indicators
+      const positions = this.findColorPositions(imageData, matches);
+      this.drawSampleIndicators(canvas, ctx, matches, positions);
+
+      // Render results
+      this.renderPaletteResults(matches);
+
+      // Hide empty state
+      this.showEmptyState(false);
+
+      // Fetch prices if enabled
+      if (this.showPrices && this.marketBoard) {
+        // Convert PaletteMatch to DyeWithDistance for price fetching
+        this.matchedDyes = matches.map((m: PaletteMatch) => ({
+          ...m.matchedDye,
+          distance: m.distance,
+        }));
+        void this.fetchPricesForMatches();
+      }
+
+      ToastService.success(
+        LanguageService.tInterpolate('matcher.paletteExtracted', { count: String(matches.length) }) ||
+          `Extracted ${matches.length} colors from image`
+      );
+
+      logger.info('[MatcherTool] Palette extracted:', matches.length, 'colors');
+    } catch (error) {
+      logger.error('[MatcherTool] Palette extraction failed:', error);
+      ToastService.error('Failed to extract palette');
+    } finally {
+      // Restore button state
+      if (this.extractPaletteBtn) {
+        this.extractPaletteBtn.textContent =
+          LanguageService.t('matcher.extractPaletteBtn') || 'Extract Palette from Image';
+        this.extractPaletteBtn.disabled = false;
+        this.extractPaletteBtn.style.opacity = '1';
+      }
+    }
+  }
+
+  /**
+   * Find representative pixel positions for each extracted color
+   * Scans the image to find pixels closest to each centroid
+   */
+  private findColorPositions(
+    imageData: ImageData,
+    matches: PaletteMatch[]
+  ): Array<{ x: number; y: number }> {
+    const { data, width, height } = imageData;
+    const positions: Array<{ x: number; y: number; distance: number }> = matches.map(() => ({
+      x: 0,
+      y: 0,
+      distance: Infinity,
+    }));
+
+    // Sample grid (every 4th pixel for performance on large images)
+    const step = Math.max(1, Math.floor(Math.sqrt((width * height) / 10000)));
+
+    for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += step) {
+        const idx = (y * width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const a = data[idx + 3];
+
+        // Skip transparent pixels
+        if (a < 128) continue;
+
+        // Check each extracted color
+        for (let i = 0; i < matches.length; i++) {
+          const extracted = matches[i].extracted;
+          const dr = r - extracted.r;
+          const dg = g - extracted.g;
+          const db = b - extracted.b;
+          const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+
+          if (dist < positions[i].distance) {
+            positions[i] = { x, y, distance: dist };
+          }
+        }
+      }
+    }
+
+    return positions.map((p) => ({ x: p.x, y: p.y }));
+  }
+
+  /**
+   * Draw sample indicator circles on the canvas
+   */
+  private drawSampleIndicators(
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    matches: PaletteMatch[],
+    positions: Array<{ x: number; y: number }>
+  ): void {
+    // First redraw the original image to clear any previous indicators
+    if (this.currentImage) {
+      ctx.drawImage(this.currentImage, 0, 0);
+    }
+
+    // Calculate circle radius based on image size (2-4% of smaller dimension)
+    const minDimension = Math.min(canvas.width, canvas.height);
+    const radius = Math.max(15, Math.min(50, minDimension * 0.03));
+
+    // Draw each indicator
+    for (let i = 0; i < matches.length; i++) {
+      const pos = positions[i];
+      const match = matches[i];
+
+      // Outer white circle (for visibility on dark backgrounds)
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Inner colored circle matching the extracted color
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Small center dot
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b})`;
+      ctx.fill();
+
+      // Number label
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 3;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeText(String(i + 1), pos.x, pos.y - radius - 10);
+      ctx.fillText(String(i + 1), pos.x, pos.y - radius - 10);
+    }
+  }
+
+  /**
+   * Render extracted palette results
+   */
+  private renderPaletteResults(matches: PaletteMatch[]): void {
+    if (!this.resultsContainer) return;
+
+    // Clear existing results (keep header)
+    const header = this.resultsContainer.querySelector('h3');
+    clearContainer(this.resultsContainer);
+
+    // Update header text
+    const newHeader = this.createElement('h3', {
+      className: 'text-sm font-semibold uppercase tracking-wider mb-3',
+      textContent: LanguageService.t('matcher.paletteResults') || 'Extracted Palette',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    this.resultsContainer.appendChild(newHeader);
+
+    if (matches.length === 0) {
+      return;
+    }
+
+    // Color bar (visual overview) showing dominance
+    const colorBar = this.createElement('div', {
+      className: 'flex h-10 rounded-lg overflow-hidden mb-4',
+      attributes: { style: 'border: 1px solid var(--theme-border);' },
+    });
+
+    for (const match of matches) {
+      const colorSegment = this.createElement('div', {
+        className: 'transition-all hover:opacity-80 cursor-pointer',
+        attributes: {
+          style: `flex: ${match.dominance}; background-color: rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b});`,
+          title: `${match.matchedDye.name} (${match.dominance}%)`,
+        },
+      });
+      colorBar.appendChild(colorSegment);
+    }
+    this.resultsContainer.appendChild(colorBar);
+
+    // Individual palette entries
+    const entriesContainer = this.createElement('div', { className: 'space-y-3' });
+
+    matches.forEach((match, index) => {
+      const entry = this.renderPaletteEntry(match, index);
+      entriesContainer.appendChild(entry);
+    });
+
+    this.resultsContainer.appendChild(entriesContainer);
+  }
+
+  /**
+   * Render a single palette entry showing extracted color → matched dye
+   */
+  private renderPaletteEntry(match: PaletteMatch, index: number): HTMLElement {
+    const entry = this.createElement('div', {
+      className: 'flex items-center gap-3 p-3 rounded-lg',
+      attributes: {
+        style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);',
+      },
+    });
+
+    // Index badge
+    const badge = this.createElement('span', {
+      className: 'w-6 h-6 flex items-center justify-center text-xs font-bold rounded-full flex-shrink-0',
+      textContent: String(index + 1),
+      attributes: {
+        style: 'background: var(--theme-primary); color: white;',
+      },
+    });
+    entry.appendChild(badge);
+
+    // Extracted color swatch
+    const extractedSwatch = this.createElement('div', {
+      className: 'w-8 h-8 rounded border-2 flex-shrink-0',
+      attributes: {
+        style: `background-color: rgb(${match.extracted.r}, ${match.extracted.g}, ${match.extracted.b}); border-color: var(--theme-border);`,
+        title: LanguageService.t('matcher.extractedColor') || 'Extracted Color',
+      },
+    });
+    entry.appendChild(extractedSwatch);
+
+    // Arrow
+    const arrow = this.createElement('span', {
+      className: 'text-lg flex-shrink-0',
+      textContent: '→',
+      attributes: { style: 'color: var(--theme-text-muted);' },
+    });
+    entry.appendChild(arrow);
+
+    // Matched dye swatch
+    const matchedSwatch = this.createElement('div', {
+      className: 'w-8 h-8 rounded border-2 flex-shrink-0',
+      attributes: {
+        style: `background-color: ${match.matchedDye.hex}; border-color: var(--theme-border);`,
+        title: match.matchedDye.name,
+      },
+    });
+    entry.appendChild(matchedSwatch);
+
+    // Dye info
+    const dyeName = LanguageService.getDyeName(match.matchedDye.itemID) ?? match.matchedDye.name;
+    const info = this.createElement('div', { className: 'flex-1 min-w-0' });
+
+    // Build info text with optional price
+    let detailsText = `${match.dominance}% · Δ${match.distance.toFixed(1)} · ${match.matchedDye.hex.toUpperCase()}`;
+    if (this.showPrices && this.priceData.has(match.matchedDye.itemID)) {
+      const price = this.priceData.get(match.matchedDye.itemID)!;
+      detailsText += ` · ${price.currentMinPrice.toLocaleString()} gil`;
+    }
+
+    info.innerHTML = `
+      <p class="text-sm font-medium truncate" style="color: var(--theme-text);">${dyeName}</p>
+      <p class="text-xs" style="color: var(--theme-text-muted);">
+        ${detailsText}
+      </p>
+    `;
+    entry.appendChild(info);
+
+    // Copy button
+    const copyBtn = this.createElement('button', {
+      className: 'text-xs px-2 py-1 rounded transition-colors flex-shrink-0',
+      textContent: LanguageService.t('matcher.copyHex') || 'Copy',
+      attributes: {
+        style: 'background: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+    this.on(copyBtn, 'click', async () => {
+      try {
+        await navigator.clipboard.writeText(match.matchedDye.hex);
+        ToastService.success(`✓ ${LanguageService.t('matcher.copiedHex') || 'Copied'} ${match.matchedDye.hex}`);
+      } catch {
+        ToastService.error('Failed to copy hex code');
+      }
+    });
+    entry.appendChild(copyBtn);
+
+    // Find Cheaper button
+    const cheaperBtn = this.createElement('button', {
+      className: 'text-xs px-2 py-1 rounded transition-colors flex-shrink-0 flex items-center justify-center',
+      innerHTML: `<span class="w-4 h-4">${ICON_COINS}</span>`,
+      attributes: {
+        title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
+        style: 'background: var(--theme-background-secondary); color: var(--theme-text);',
+      },
+    });
+    this.on(cheaperBtn, 'click', () => {
+      RouterService.navigateTo('budget', { dye: match.matchedDye.name });
+    });
+    entry.appendChild(cheaperBtn);
+
+    return entry;
   }
 }

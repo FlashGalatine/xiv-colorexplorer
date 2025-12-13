@@ -196,7 +196,18 @@
     "matchedDye": "Teinture correspondante",
     "noImageForPalette": "Veuillez d'abord charger une image pour extraire la palette",
     "similarDyesCount": "Teintures similaires ({count} correspondances dans la distance 100)",
-    "noMatchingDyes": "Aucune teinture correspondante trouvée"
+    "noMatchingDyes": "Aucune teinture correspondante trouvée",
+    "uploadPrompt": "Chargez une image pour commencer le matching",
+    "orEnterHex": "Ou entrez une couleur hex manuellement",
+    "imageSource": "Source d'Image",
+    "colorSelection": "Sélection de Couleur",
+    "options": "Options",
+    "extractPaletteDesc": "Extraire les couleurs dominantes de l'image entière",
+    "extractPaletteBtn": "Extraire la Palette de l'Image",
+    "paletteExtracted": "{count} couleurs extraites de l'image",
+    "copiedHex": "Copié",
+    "imageLoaded": "Image chargée avec succès",
+    "imageTooLarge": "Image trop grande pour être sauvegardée"
   },
   "accessibility": {
     "inspectDyes": "Inspecter les Teintures",

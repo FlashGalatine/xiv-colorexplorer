@@ -207,7 +207,18 @@
     "dominance": "Dominance",
     "extractedColor": "Extracted",
     "matchedDye": "Matched Dye",
-    "noImageForPalette": "Please upload an image first to extract palette"
+    "noImageForPalette": "Please upload an image first to extract palette",
+    "uploadPrompt": "Upload an image to start matching",
+    "orEnterHex": "Or enter a hex color manually",
+    "imageSource": "Image Source",
+    "colorSelection": "Color Selection",
+    "options": "Options",
+    "extractPaletteDesc": "Extract dominant colors from the entire image",
+    "extractPaletteBtn": "Extract Palette from Image",
+    "paletteExtracted": "Extracted {count} colors from image",
+    "copiedHex": "Copied",
+    "imageLoaded": "Image loaded successfully",
+    "imageTooLarge": "Image too large to save for later"
   },
   "accessibility": {
     "inspectDyes": "Inspect Dyes",

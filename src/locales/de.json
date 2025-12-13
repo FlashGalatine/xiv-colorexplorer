@@ -200,7 +200,18 @@
     "matchedDye": "Passende Farbe",
     "noImageForPalette": "Bitte lade zuerst ein Bild hoch, um die Palette zu extrahieren",
     "similarDyesCount": "Ähnliche Farben ({count} Treffer innerhalb Distanz 100)",
-    "noMatchingDyes": "Keine passenden Farben gefunden"
+    "noMatchingDyes": "Keine passenden Farben gefunden",
+    "uploadPrompt": "Lade ein Bild hoch, um mit dem Matching zu beginnen",
+    "orEnterHex": "Oder gib eine Hex-Farbe manuell ein",
+    "imageSource": "Bildquelle",
+    "colorSelection": "Farbauswahl",
+    "options": "Optionen",
+    "extractPaletteDesc": "Dominante Farben aus dem gesamten Bild extrahieren",
+    "extractPaletteBtn": "Palette aus Bild extrahieren",
+    "paletteExtracted": "{count} Farben aus Bild extrahiert",
+    "copiedHex": "Kopiert",
+    "imageLoaded": "Bild erfolgreich geladen",
+    "imageTooLarge": "Bild zu groß zum Speichern"
   },
   "accessibility": {
     "inspectDyes": "Farbstoffe prüfen",

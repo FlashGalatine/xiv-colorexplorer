@@ -196,7 +196,18 @@
     "matchedDye": "매칭된 염료",
     "noImageForPalette": "팔레트를 추출하려면 먼저 이미지를 업로드하세요",
     "similarDyesCount": "유사한 염료 (거리 100 이내 {count}개)",
-    "noMatchingDyes": "매칭되는 염료를 찾을 수 없습니다"
+    "noMatchingDyes": "매칭되는 염료를 찾을 수 없습니다",
+    "uploadPrompt": "이미지를 업로드하여 매칭 시작",
+    "orEnterHex": "또는 16진수 색상을 수동으로 입력",
+    "imageSource": "이미지 소스",
+    "colorSelection": "색상 선택",
+    "options": "옵션",
+    "extractPaletteDesc": "전체 이미지에서 주요 색상 추출",
+    "extractPaletteBtn": "이미지에서 팔레트 추출",
+    "paletteExtracted": "이미지에서 {count}개 색상 추출됨",
+    "copiedHex": "복사됨",
+    "imageLoaded": "이미지가 성공적으로 로드되었습니다",
+    "imageTooLarge": "이미지가 너무 커서 저장할 수 없습니다"
   },
   "accessibility": {
     "inspectDyes": "염료 검사",

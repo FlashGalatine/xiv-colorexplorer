@@ -196,7 +196,18 @@
     "matchedDye": "匹配染剂",
     "noImageForPalette": "请先上传图片以提取调色板",
     "similarDyesCount": "相似染剂（距离100内{count}个匹配）",
-    "noMatchingDyes": "未找到匹配的染剂"
+    "noMatchingDyes": "未找到匹配的染剂",
+    "uploadPrompt": "上传图片以开始匹配",
+    "orEnterHex": "或手动输入十六进制颜色",
+    "imageSource": "图片来源",
+    "colorSelection": "颜色选择",
+    "options": "选项",
+    "extractPaletteDesc": "从整个图片中提取主要颜色",
+    "extractPaletteBtn": "从图片提取调色板",
+    "paletteExtracted": "已从图片提取 {count} 种颜色",
+    "copiedHex": "已复制",
+    "imageLoaded": "图片加载成功",
+    "imageTooLarge": "图片太大无法保存"
   },
   "accessibility": {
     "inspectDyes": "检查染剂",
