@@ -270,7 +270,7 @@ export class PresetTool extends BaseComponent {
 
     // Section 2: Categories
     const categoriesPanel = new CollapsiblePanel(left, {
-      title: LanguageService.t('preset.categories') || 'Categories',
+      title: LanguageService.t('preset.categoriesTitle') || 'Categories',
       storageKey: 'preset_categories',
       defaultOpen: true,
       icon: ICON_GRID,
