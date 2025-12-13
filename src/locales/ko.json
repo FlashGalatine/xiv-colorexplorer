@@ -639,5 +639,48 @@
         "description": "WCAG 대비 등급과 색맹 호환성을 확인하세요."
       }
     }
+  },
+  "preset": {
+    "featured": "추천",
+    "allPresets": "모든 프리셋",
+    "loadMore": "더 보기",
+    "search": "검색",
+    "browse": "둘러보기",
+    "mySubmissions": "내 제출물",
+    "searchPlaceholder": "프리셋 검색...",
+    "categories": "카테고리",
+    "sortBy": "정렬",
+    "account": "계정",
+    "submissions": "제출물",
+    "viewMySubmissions": "내 제출물 보기",
+    "submitPreset": "프리셋 제출",
+    "loginPrompt": "프리셋을 제출하고 투표하려면 로그인하세요",
+    "loading": "프리셋 로딩 중...",
+    "noPresets": "프리셋을 찾을 수 없습니다",
+    "tryDifferentFilters": "필터를 조정해 보세요",
+    "category": "카테고리",
+    "tab": "탭",
+    "edit": "편집",
+    "delete": "삭제",
+    "confirmDelete": "이 프리셋을 삭제하시겠습니까?",
+    "categories": {
+      "all": "전체",
+      "jobs": "직업",
+      "grandCompanies": "총사령부",
+      "seasons": "계절",
+      "events": "이벤트",
+      "aesthetics": "미학",
+      "community": "커뮤니티"
+    },
+    "sort": {
+      "popular": "인기순",
+      "recent": "최신순",
+      "name": "이름순"
+    }
+  },
+  "auth": {
+    "logout": "로그아웃",
+    "loggedInAs": "로그인됨:",
+    "notLoggedIn": "로그인되지 않음"
   }
 }

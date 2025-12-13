@@ -697,5 +697,48 @@
         "description": "View WCAG contrast ratings and colorblindness compatibility for your color choices."
       }
     }
+  },
+  "preset": {
+    "featured": "Featured",
+    "allPresets": "All Presets",
+    "loadMore": "Load More",
+    "search": "Search",
+    "browse": "Browse",
+    "mySubmissions": "My Submissions",
+    "searchPlaceholder": "Search presets...",
+    "categories": "Categories",
+    "sortBy": "Sort By",
+    "account": "Account",
+    "submissions": "submissions",
+    "viewMySubmissions": "View My Submissions",
+    "submitPreset": "Submit Preset",
+    "loginPrompt": "Log in to submit presets and vote",
+    "loading": "Loading presets...",
+    "noPresets": "No presets found",
+    "tryDifferentFilters": "Try adjusting your filters",
+    "category": "Category",
+    "tab": "Tab",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this preset?",
+    "categories": {
+      "all": "All",
+      "jobs": "Jobs",
+      "grandCompanies": "Grand Companies",
+      "seasons": "Seasons",
+      "events": "Events",
+      "aesthetics": "Aesthetics",
+      "community": "Community"
+    },
+    "sort": {
+      "popular": "Most Popular",
+      "recent": "Most Recent",
+      "name": "Alphabetical"
+    }
+  },
+  "auth": {
+    "logout": "Logout",
+    "loggedInAs": "Logged in as",
+    "notLoggedIn": "Not logged in"
   }
 }

@@ -639,5 +639,48 @@
         "description": "Consultez les évaluations de contraste WCAG et la compatibilité daltonisme."
       }
     }
+  },
+  "preset": {
+    "featured": "En vedette",
+    "allPresets": "Tous les préréglages",
+    "loadMore": "Charger plus",
+    "search": "Rechercher",
+    "browse": "Parcourir",
+    "mySubmissions": "Mes soumissions",
+    "searchPlaceholder": "Rechercher des préréglages...",
+    "categories": "Catégories",
+    "sortBy": "Trier par",
+    "account": "Compte",
+    "submissions": "soumissions",
+    "viewMySubmissions": "Voir mes soumissions",
+    "submitPreset": "Soumettre un préréglage",
+    "loginPrompt": "Connectez-vous pour soumettre des préréglages et voter",
+    "loading": "Chargement des préréglages...",
+    "noPresets": "Aucun préréglage trouvé",
+    "tryDifferentFilters": "Essayez d'ajuster vos filtres",
+    "category": "Catégorie",
+    "tab": "Onglet",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce préréglage?",
+    "categories": {
+      "all": "Tous",
+      "jobs": "Classes",
+      "grandCompanies": "Grandes Compagnies",
+      "seasons": "Saisons",
+      "events": "Événements",
+      "aesthetics": "Esthétique",
+      "community": "Communauté"
+    },
+    "sort": {
+      "popular": "Plus populaires",
+      "recent": "Plus récents",
+      "name": "Alphabétique"
+    }
+  },
+  "auth": {
+    "logout": "Déconnexion",
+    "loggedInAs": "Connecté en tant que",
+    "notLoggedIn": "Non connecté"
   }
 }

@@ -12,7 +12,9 @@
 
 import { BaseComponent } from '@components/base-component';
 import { AuthButton } from '@components/auth-button';
+import { CollapsiblePanel } from '@components/collapsible-panel';
 import { showPresetSubmissionForm } from '@components/preset-submission-form';
+import { showPresetEditForm } from '@components/preset-edit-form';
 import {
   authService,
   hybridPresetService,
@@ -86,6 +88,26 @@ const ICON_SEARCH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
   <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
 </svg>`;
 
+const ICON_GRID = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+</svg>`;
+
+const ICON_SORT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+</svg>`;
+
+const ICON_USER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+</svg>`;
+
+const ICON_EDIT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+</svg>`;
+
+const ICON_TRASH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+</svg>`;
+
 // ============================================================================
 // PresetTool Component
 // ============================================================================
@@ -121,6 +143,7 @@ export class PresetTool extends BaseComponent {
 
   // Child components
   private authButton: AuthButton | null = null;
+  private collapsiblePanels: CollapsiblePanel[] = [];
 
   // DOM References
   private categoryContainer: HTMLElement | null = null;
@@ -203,6 +226,10 @@ export class PresetTool extends BaseComponent {
     this.authUnsubscribe?.();
     this.authButton?.destroy();
 
+    // Clean up collapsible panels
+    this.collapsiblePanels.forEach(panel => panel.destroy());
+    this.collapsiblePanels = [];
+
     if (this.searchDebounceTimeout) {
       clearTimeout(this.searchDebounceTimeout);
     }
@@ -223,27 +250,67 @@ export class PresetTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
+    // Clean up existing panels before re-rendering
+    this.collapsiblePanels.forEach(panel => panel.destroy());
+    this.collapsiblePanels = [];
+
     // Section 1: Search (with tabs if authenticated)
-    const searchSection = this.createSection(LanguageService.t('preset.search') || 'Search');
-    this.renderSearchAndTabs(searchSection);
-    left.appendChild(searchSection);
+    const searchPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('preset.search') || 'Search',
+      storageKey: 'preset_search',
+      defaultOpen: true,
+      icon: ICON_SEARCH,
+    });
+    searchPanel.init();
+    this.collapsiblePanels.push(searchPanel);
+    const searchContent = searchPanel.getContentContainer();
+    if (searchContent) {
+      this.renderSearchAndTabs(searchContent);
+    }
 
     // Section 2: Categories
-    const categorySection = this.createSection(LanguageService.t('preset.categories') || 'Categories');
-    this.renderCategories(categorySection);
-    left.appendChild(categorySection);
+    const categoriesPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('preset.categories') || 'Categories',
+      storageKey: 'preset_categories',
+      defaultOpen: true,
+      icon: ICON_GRID,
+    });
+    categoriesPanel.init();
+    this.collapsiblePanels.push(categoriesPanel);
+    const categoriesContent = categoriesPanel.getContentContainer();
+    if (categoriesContent) {
+      this.renderCategories(categoriesContent);
+    }
 
     // Section 3: Sort Options
-    const sortSection = this.createSection(LanguageService.t('preset.sortBy') || 'Sort By');
-    this.renderSortOptions(sortSection);
-    left.appendChild(sortSection);
+    const sortPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('preset.sortBy') || 'Sort By',
+      storageKey: 'preset_sort',
+      defaultOpen: true,
+      icon: ICON_SORT,
+    });
+    sortPanel.init();
+    this.collapsiblePanels.push(sortPanel);
+    const sortContent = sortPanel.getContentContainer();
+    if (sortContent) {
+      this.renderSortOptions(sortContent);
+    }
 
     // Section 4: Account
-    const authSection = this.createSection(LanguageService.t('preset.account') || 'Account');
-    this.authSectionContainer = this.createElement('div');
-    authSection.appendChild(this.authSectionContainer);
-    this.renderAuthSection();
-    left.appendChild(authSection);
+    const accountPanel = new CollapsiblePanel(left, {
+      title: LanguageService.t('preset.account') || 'Account',
+      storageKey: 'preset_account',
+      defaultOpen: true,
+      icon: ICON_USER,
+    });
+    accountPanel.init();
+    this.collapsiblePanels.push(accountPanel);
+    const accountContent = accountPanel.getContentContainer();
+    if (accountContent) {
+      this.authSectionContainer = this.createElement('div');
+      accountContent.appendChild(this.authSectionContainer);
+      this.renderAuthSection();
+    }
   }
 
   /**
@@ -811,7 +878,12 @@ export class PresetTool extends BaseComponent {
       attributes: { style: 'background: var(--theme-card-background); border: 1px solid var(--theme-border);' },
     });
 
-    this.on(card, 'click', () => this.handlePresetClick(preset));
+    this.on(card, 'click', (e: MouseEvent) => {
+      // Don't trigger preset click if clicking action buttons
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-action]')) return;
+      this.handlePresetClick(preset);
+    });
 
     // Color bars
     const colorBars = this.createElement('div', { className: 'flex gap-1 mb-3' });
@@ -853,6 +925,57 @@ export class PresetTool extends BaseComponent {
     meta.appendChild(votesWrapper);
 
     card.appendChild(meta);
+
+    // Show Edit/Delete buttons for user-owned presets
+    const isOwnPreset = this.currentTab === 'my-submissions' ||
+      (this.authState.isAuthenticated &&
+        this.authState.user &&
+        preset.author === (this.authState.user.global_name || this.authState.user.username));
+
+    if (isOwnPreset && preset.isFromAPI && preset.apiPresetId) {
+      const actionsRow = this.createElement('div', {
+        className: 'flex gap-2 mt-3 pt-3 border-t',
+        attributes: { style: 'border-color: var(--theme-border);' },
+      });
+
+      // Edit button
+      const editBtn = this.createElement('button', {
+        className: 'flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors',
+        attributes: {
+          style: 'background: var(--theme-primary); color: var(--theme-text-header);',
+          'data-action': 'edit',
+        },
+      });
+      const editIcon = this.createElement('span', { className: 'w-3 h-3' });
+      editIcon.innerHTML = ICON_EDIT;
+      editBtn.appendChild(editIcon);
+      editBtn.appendChild(document.createTextNode(LanguageService.t('preset.edit') || 'Edit'));
+      this.on(editBtn, 'click', (e: MouseEvent) => {
+        e.stopPropagation();
+        this.handleEditPreset(preset);
+      });
+      actionsRow.appendChild(editBtn);
+
+      // Delete button
+      const deleteBtn = this.createElement('button', {
+        className: 'flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors text-red-500',
+        attributes: {
+          style: 'background: transparent; border: 1px solid var(--theme-border);',
+          'data-action': 'delete',
+        },
+      });
+      const deleteIcon = this.createElement('span', { className: 'w-3 h-3' });
+      deleteIcon.innerHTML = ICON_TRASH;
+      deleteBtn.appendChild(deleteIcon);
+      deleteBtn.appendChild(document.createTextNode(LanguageService.t('preset.delete') || 'Delete'));
+      this.on(deleteBtn, 'click', (e: MouseEvent) => {
+        e.stopPropagation();
+        this.handleDeletePreset(preset);
+      });
+      actionsRow.appendChild(deleteBtn);
+
+      card.appendChild(actionsRow);
+    }
 
     return card;
   }
@@ -1028,6 +1151,66 @@ export class PresetTool extends BaseComponent {
 
     // TODO: Implement detail view
     // Could use: showPresetDetailView(preset) or inline modal
+  }
+
+  /**
+   * Handle edit button click on user's preset
+   */
+  private handleEditPreset(preset: UnifiedPreset): void {
+    if (!preset.apiPresetId) {
+      logger.warn('[PresetTool] Cannot edit preset without API ID');
+      return;
+    }
+
+    // Find the original CommunityPreset from userSubmissions
+    const communityPreset = this.userSubmissions.find(p => p.id === preset.apiPresetId);
+    if (!communityPreset) {
+      logger.warn('[PresetTool] Cannot find original community preset for editing');
+      return;
+    }
+
+    showPresetEditForm(communityPreset, (result) => {
+      if (result.success) {
+        logger.info('[PresetTool] Preset updated successfully');
+        // Refresh the lists
+        void this.loadUserSubmissions();
+        if (this.currentTab === 'browse') {
+          void this.loadPresets();
+        }
+      }
+    });
+  }
+
+  /**
+   * Handle delete button click on user's preset
+   */
+  private async handleDeletePreset(preset: UnifiedPreset): Promise<void> {
+    if (!preset.apiPresetId) {
+      logger.warn('[PresetTool] Cannot delete preset without API ID');
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmMessage = LanguageService.t('preset.confirmDelete') ||
+      'Are you sure you want to delete this preset?';
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      await presetSubmissionService.deletePreset(preset.apiPresetId);
+      logger.info('[PresetTool] Preset deleted successfully');
+
+      // Refresh the lists
+      void this.loadUserSubmissions();
+      if (this.currentTab === 'browse') {
+        void this.loadPresets();
+      }
+    } catch (error) {
+      logger.error('[PresetTool] Failed to delete preset:', error);
+      // Could show an error toast here
+    }
   }
 
   // ============================================================================

@@ -648,5 +648,48 @@
         "description": "Sehen Sie WCAG-Kontrastwerte und Farbblindheitskompatibilität."
       }
     }
+  },
+  "preset": {
+    "featured": "Empfohlen",
+    "allPresets": "Alle Voreinstellungen",
+    "loadMore": "Mehr laden",
+    "search": "Suche",
+    "browse": "Durchsuchen",
+    "mySubmissions": "Meine Einreichungen",
+    "searchPlaceholder": "Voreinstellungen suchen...",
+    "categories": "Kategorien",
+    "sortBy": "Sortieren nach",
+    "account": "Konto",
+    "submissions": "Einreichungen",
+    "viewMySubmissions": "Meine Einreichungen ansehen",
+    "submitPreset": "Voreinstellung einreichen",
+    "loginPrompt": "Anmelden um Voreinstellungen einzureichen und abzustimmen",
+    "loading": "Voreinstellungen werden geladen...",
+    "noPresets": "Keine Voreinstellungen gefunden",
+    "tryDifferentFilters": "Versuchen Sie andere Filter",
+    "category": "Kategorie",
+    "tab": "Tab",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie diese Voreinstellung löschen möchten?",
+    "categories": {
+      "all": "Alle",
+      "jobs": "Jobs",
+      "grandCompanies": "Staatliche Gesellschaften",
+      "seasons": "Jahreszeiten",
+      "events": "Events",
+      "aesthetics": "Ästhetik",
+      "community": "Community"
+    },
+    "sort": {
+      "popular": "Beliebteste",
+      "recent": "Neueste",
+      "name": "Alphabetisch"
+    }
+  },
+  "auth": {
+    "logout": "Abmelden",
+    "loggedInAs": "Angemeldet als",
+    "notLoggedIn": "Nicht angemeldet"
   }
 }

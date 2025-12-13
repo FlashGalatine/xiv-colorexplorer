@@ -639,5 +639,48 @@
         "description": "查看WCAG对比度评级和色盲兼容性。"
       }
     }
+  },
+  "preset": {
+    "featured": "精选",
+    "allPresets": "所有预设",
+    "loadMore": "加载更多",
+    "search": "搜索",
+    "browse": "浏览",
+    "mySubmissions": "我的提交",
+    "searchPlaceholder": "搜索预设...",
+    "categories": "类别",
+    "sortBy": "排序方式",
+    "account": "账户",
+    "submissions": "提交",
+    "viewMySubmissions": "查看我的提交",
+    "submitPreset": "提交预设",
+    "loginPrompt": "登录以提交预设和投票",
+    "loading": "正在加载预设...",
+    "noPresets": "未找到预设",
+    "tryDifferentFilters": "尝试调整筛选条件",
+    "category": "类别",
+    "tab": "标签",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirmDelete": "您确定要删除此预设吗？",
+    "categories": {
+      "all": "全部",
+      "jobs": "职业",
+      "grandCompanies": "大国防联军",
+      "seasons": "季节",
+      "events": "活动",
+      "aesthetics": "美学",
+      "community": "社区"
+    },
+    "sort": {
+      "popular": "最热门",
+      "recent": "最新",
+      "name": "按字母顺序"
+    }
+  },
+  "auth": {
+    "logout": "登出",
+    "loggedInAs": "已登录为",
+    "notLoggedIn": "未登录"
   }
 }

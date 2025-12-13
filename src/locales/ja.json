@@ -687,5 +687,48 @@
         "description": "WCAGコントラスト評価と色覚異常との互換性を確認します。"
       }
     }
+  },
+  "preset": {
+    "featured": "おすすめ",
+    "allPresets": "すべてのプリセット",
+    "loadMore": "もっと読み込む",
+    "search": "検索",
+    "browse": "閲覧",
+    "mySubmissions": "マイ投稿",
+    "searchPlaceholder": "プリセットを検索...",
+    "categories": "カテゴリ",
+    "sortBy": "並び替え",
+    "account": "アカウント",
+    "submissions": "投稿",
+    "viewMySubmissions": "マイ投稿を見る",
+    "submitPreset": "プリセットを投稿",
+    "loginPrompt": "プリセットの投稿や投票にはログインが必要です",
+    "loading": "プリセットを読み込み中...",
+    "noPresets": "プリセットが見つかりません",
+    "tryDifferentFilters": "フィルターを変更してみてください",
+    "category": "カテゴリ",
+    "tab": "タブ",
+    "edit": "編集",
+    "delete": "削除",
+    "confirmDelete": "このプリセットを削除してもよろしいですか？",
+    "categories": {
+      "all": "すべて",
+      "jobs": "ジョブ",
+      "grandCompanies": "グランドカンパニー",
+      "seasons": "季節",
+      "events": "イベント",
+      "aesthetics": "美学",
+      "community": "コミュニティ"
+    },
+    "sort": {
+      "popular": "人気順",
+      "recent": "新着順",
+      "name": "名前順"
+    }
+  },
+  "auth": {
+    "logout": "ログアウト",
+    "loggedInAs": "ログイン中:",
+    "notLoggedIn": "未ログイン"
   }
 }
