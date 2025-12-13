@@ -4,7 +4,7 @@
  * Phase 5: Dye Comparison migration to v3 two-panel layout.
  * Orchestrates dye comparison with visual charts and distance matrix.
  *
- * Left Panel: Dye selector (up to 4), comparison options, market board
+ * Left Panel: Dye selector (up to 4), comparison options
  * Right Panel: Statistics summary, Hue-Saturation plot, Brightness chart, Distance matrix
  *
  * @module components/tools/comparison-tool
@@ -13,8 +13,7 @@
 import { BaseComponent } from '@components/base-component';
 import { CollapsiblePanel } from '@components/collapsible-panel';
 import { DyeSelector } from '@components/dye-selector';
-import { MarketBoard } from '@components/market-board';
-import { ColorService, LanguageService, RouterService, StorageService } from '@services/index';
+import { ColorService, DyeService, LanguageService, RouterService, StorageService } from '@services/index';
 import { ICON_TOOL_COMPARISON } from '@shared/tool-icons';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
@@ -36,7 +35,6 @@ export interface ComparisonToolOptions {
 interface ComparisonOptions {
   showDistanceValues: boolean;
   highlightClosestPair: boolean;
-  showPriceComparison: boolean;
 }
 
 /**
@@ -65,7 +63,7 @@ interface ComparisonStats {
 const STORAGE_KEYS = {
   showDistanceValues: 'v3_comparison_show_distance',
   highlightClosestPair: 'v3_comparison_highlight_closest',
-  showPriceComparison: 'v3_comparison_show_prices',
+  selectedDyes: 'v3_comparison_selected_dyes',
 } as const;
 
 /**
@@ -74,11 +72,19 @@ const STORAGE_KEYS = {
 const DEFAULT_OPTIONS: ComparisonOptions = {
   showDistanceValues: true,
   highlightClosestPair: false,
-  showPriceComparison: false,
 };
 
-const ICON_MARKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+const ICON_BEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.057.814a2.25 2.25 0 0 1-2.686 0L15 15.3m4.8 0l.041-.02a.75.75 0 0 0 .359-.64V14.5M5 14.5l-.798.704a2.25 2.25 0 0 0-.452.896l-.89 4.452A.75.75 0 0 0 3.591 21h16.818a.75.75 0 0 0 .731-.948l-.89-4.452a2.25 2.25 0 0 0-.452-.896L19.8 14.5" />
+</svg>`;
+
+const ICON_SETTINGS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+</svg>`;
+
+const ICON_COINS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
 </svg>`;
 
 // ============================================================================
@@ -102,8 +108,8 @@ export class ComparisonTool extends BaseComponent {
 
   // Child components
   private dyeSelector: DyeSelector | null = null;
-  private marketBoard: MarketBoard | null = null;
-  private marketPanel: CollapsiblePanel | null = null;
+  private dyeSelectorPanel: CollapsiblePanel | null = null;
+  private optionsPanel: CollapsiblePanel | null = null;
 
   // DOM References
   private selectedDyesContainer: HTMLElement | null = null;
@@ -126,8 +132,6 @@ export class ComparisonTool extends BaseComponent {
         StorageService.getItem<boolean>(STORAGE_KEYS.showDistanceValues) ?? DEFAULT_OPTIONS.showDistanceValues,
       highlightClosestPair:
         StorageService.getItem<boolean>(STORAGE_KEYS.highlightClosestPair) ?? DEFAULT_OPTIONS.highlightClosestPair,
-      showPriceComparison:
-        StorageService.getItem<boolean>(STORAGE_KEYS.showPriceComparison) ?? DEFAULT_OPTIONS.showPriceComparison,
     };
   }
 
@@ -156,14 +160,48 @@ export class ComparisonTool extends BaseComponent {
       this.update();
     });
 
+    // Load persisted dyes after DyeSelector is initialized
+    this.loadPersistedDyes();
+
     logger.info('[ComparisonTool] Mounted');
+  }
+
+  /**
+   * Load persisted dyes from LocalStorage
+   */
+  private loadPersistedDyes(): void {
+    const savedIds = StorageService.getItem<number[]>(STORAGE_KEYS.selectedDyes);
+    if (savedIds && savedIds.length > 0 && this.dyeSelector) {
+      const dyeService = DyeService.getInstance();
+      const dyes = savedIds
+        .map((id) => dyeService.getDyeById(id))
+        .filter((d): d is Dye => d !== undefined);
+
+      if (dyes.length > 0) {
+        this.dyeSelector.setSelectedDyes(dyes);
+        this.selectedDyes = dyes;
+        this.calculateHSVValues();
+        this.updateSelectedDyesDisplay();
+        this.updateResults();
+        this.updateDrawerContent();
+        logger.info(`[ComparisonTool] Loaded ${dyes.length} persisted dyes`);
+      }
+    }
+  }
+
+  /**
+   * Save selected dyes to LocalStorage
+   */
+  private saveSelectedDyes(): void {
+    const dyeIds = this.selectedDyes.map((d) => d.id);
+    StorageService.setItem(STORAGE_KEYS.selectedDyes, dyeIds);
   }
 
   destroy(): void {
     this.languageUnsubscribe?.();
     this.dyeSelector?.destroy();
-    this.marketBoard?.destroy();
-    this.marketPanel?.destroy();
+    this.dyeSelectorPanel?.destroy();
+    this.optionsPanel?.destroy();
 
     this.selectedDyes = [];
     this.dyesWithHSV = [];
@@ -180,31 +218,33 @@ export class ComparisonTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Dye Selection
-    const dyeSection = this.createSection(LanguageService.t('comparison.compareDyes') || 'Compare Dyes');
-    this.renderDyeSelector(dyeSection);
-    left.appendChild(dyeSection);
-
-    // Section 2: Options
-    const optionsSection = this.createSection(LanguageService.t('common.options') || 'Options');
-    this.renderOptions(optionsSection);
-    left.appendChild(optionsSection);
-
-    // Section 3: Market Board (collapsible)
-    const marketContainer = this.createElement('div');
-    left.appendChild(marketContainer);
-    this.marketPanel = new CollapsiblePanel(marketContainer, {
-      title: LanguageService.t('marketBoard.title') || 'Market Board',
-      storageKey: 'v3_comparison_market',
-      defaultOpen: false,
-      icon: ICON_MARKET,
+    // Section 1: Dye Selection (Collapsible)
+    const dyeContainer = this.createElement('div');
+    left.appendChild(dyeContainer);
+    this.dyeSelectorPanel = new CollapsiblePanel(dyeContainer, {
+      title: LanguageService.t('comparison.compareDyes') || 'Compare Dyes',
+      storageKey: 'v3_comparison_dyes',
+      defaultOpen: true,
+      icon: ICON_BEAKER,
     });
-    this.marketPanel.init();
+    this.dyeSelectorPanel.init();
+    const dyeContent = this.createElement('div');
+    this.renderDyeSelector(dyeContent);
+    this.dyeSelectorPanel.setContent(dyeContent);
 
-    const marketContent = this.createElement('div');
-    this.marketBoard = new MarketBoard(marketContent);
-    this.marketBoard.init();
-    this.marketPanel.setContent(marketContent);
+    // Section 2: Options (Collapsible)
+    const optionsContainer = this.createElement('div');
+    left.appendChild(optionsContainer);
+    this.optionsPanel = new CollapsiblePanel(optionsContainer, {
+      title: LanguageService.t('common.options') || 'Options',
+      storageKey: 'v3_comparison_options',
+      defaultOpen: true,
+      icon: ICON_SETTINGS,
+    });
+    this.optionsPanel.init();
+    const optionsContent = this.createElement('div');
+    this.renderOptions(optionsContent);
+    this.optionsPanel.setContent(optionsContent);
   }
 
   /**
@@ -272,6 +312,7 @@ export class ComparisonTool extends BaseComponent {
         this.updateSelectedDyesDisplay();
         this.updateResults();
         this.updateDrawerContent();
+        this.saveSelectedDyes();
       }
     });
 
@@ -318,13 +359,13 @@ export class ComparisonTool extends BaseComponent {
 
       // Find Cheaper button
       const budgetBtn = this.createElement('button', {
-        className: 'text-xs px-2 py-1 rounded transition-colors',
-        textContent: '💰',
+        className: 'w-6 h-6 flex items-center justify-center rounded transition-colors',
         attributes: {
           style: 'background: var(--theme-card-hover); color: var(--theme-text);',
           title: LanguageService.t('budget.findCheaperTooltip') || 'Find cheaper alternatives',
         },
       });
+      budgetBtn.innerHTML = `<span class="w-4 h-4">${ICON_COINS}</span>`;
 
       this.on(budgetBtn, 'click', () => {
         RouterService.navigateTo('budget', { dye: dye.name });
@@ -346,6 +387,7 @@ export class ComparisonTool extends BaseComponent {
         this.updateSelectedDyesDisplay();
         this.updateResults();
         this.updateDrawerContent();
+        this.saveSelectedDyes();
       });
 
       dyeItem.appendChild(swatch);
@@ -381,10 +423,6 @@ export class ComparisonTool extends BaseComponent {
       {
         key: 'highlightClosestPair' as const,
         label: LanguageService.t('comparison.highlightClosestPair') || 'Highlight Closest Pair',
-      },
-      {
-        key: 'showPriceComparison' as const,
-        label: LanguageService.t('comparison.showPriceComparison') || 'Show Price Comparison',
       },
     ];
 
@@ -771,9 +809,9 @@ export class ComparisonTool extends BaseComponent {
 
     for (const d of this.dyesWithHSV) {
       const dyeName = LanguageService.getDyeName(d.dye.itemID) || d.dye.name;
-      const label = this.createElement('div', { className: 'flex-1 text-center' });
+      const label = this.createElement('div', { className: 'flex-1 text-center min-w-0' });
       label.innerHTML = `
-        <span class="text-xs font-medium block truncate" style="color: var(--theme-text);">${dyeName.split(' ')[0]}</span>
+        <span class="text-xs font-medium block truncate max-w-20 mx-auto" style="color: var(--theme-text);" title="${dyeName}">${dyeName}</span>
         <span class="text-xs" style="color: var(--theme-text-muted);">${Math.round(d.v)}%</span>
       `;
       labels.appendChild(label);
@@ -930,7 +968,6 @@ export class ComparisonTool extends BaseComponent {
       const enabledOptions = [];
       if (this.comparisonOptions.showDistanceValues) enabledOptions.push('Distance values');
       if (this.comparisonOptions.highlightClosestPair) enabledOptions.push('Closest pair');
-      if (this.comparisonOptions.showPriceComparison) enabledOptions.push('Prices');
 
       if (enabledOptions.length > 0) {
         optionsInfo.textContent = enabledOptions.join(' \u2022 ');
