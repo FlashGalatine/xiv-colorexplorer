@@ -100,7 +100,8 @@
     "showMore": "Afficher plus",
     "showLess": "Afficher moins",
     "selectDye": "Sélectionner une teinture",
-    "noDyeSelected": "Aucune teinture sélectionnée"
+    "noDyeSelected": "Aucune teinture sélectionnée",
+    "download": "Télécharger"
   },
   "harmony": {
     "suggestionMode": "Mode de Suggestion",
@@ -329,7 +330,17 @@
     "matched": "correspondues",
     "avgDistance": "Distance Moyenne :",
     "maxDistance": "Distance Max :",
-    "clickStopHint": "Cliquez sur un marqueur d'arrêt pour mettre en surbrillance la teinture correspondante"
+    "clickStopHint": "Cliquez sur un marqueur d'arrêt pour mettre en surbrillance la teinture correspondante",
+    "startDye": "Teinture de départ",
+    "endDye": "Teinture de fin",
+    "steps": "Étapes",
+    "interpolationPreview": "Aperçu de l'interpolation",
+    "intermediateDyeMatches": "Correspondances de teintures intermédiaires",
+    "selectDye": "Sélectionner une teinture",
+    "selectStartEndDyes": "Sélectionnez les teintures de départ et de fin pour créer une transition de couleur",
+    "targetColor": "Couleur Cible",
+    "bestMatch": "Meilleure Correspondance",
+    "exportPalette": "Exporter la Palette"
   },
   "dyeSelector": {
     "searchPlaceholder": "Rechercher des teintures par nom...",

@@ -19,7 +19,7 @@ import { ColorService, dyeService, LanguageService, StorageService, ToastService
 import { ICON_TOOL_MIXER } from '@shared/tool-icons';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
-import type { Dye } from '@shared/types';
+import type { Dye, PriceData } from '@shared/types';
 
 // ============================================================================
 // Types and Constants
@@ -47,6 +47,8 @@ interface InterpolationStep {
 const STORAGE_KEYS = {
   stepCount: 'v3_mixer_steps',
   colorSpace: 'v3_mixer_color_space',
+  startDyeId: 'v3_mixer_start_dye_id',
+  endDyeId: 'v3_mixer_end_dye_id',
 } as const;
 
 /**
@@ -69,6 +71,27 @@ const ICON_EXPORT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
   <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
 </svg>`;
 
+// Test tube icon for Start Dye
+const ICON_TEST_TUBE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2"/>
+  <path d="M8.5 2h7"/>
+  <path d="M14.5 16h-5"/>
+</svg>`;
+
+// Beaker with pipe icon for End Dye
+const ICON_BEAKER_PIPE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.5 3h10"/>
+  <path d="M6 3v11a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4V3"/>
+  <path d="M14 10h5a2 2 0 0 1 2 2v5"/>
+  <circle cx="21" cy="19" r="2"/>
+</svg>`;
+
+// Staircase icon for Interpolation Settings
+const ICON_STAIRS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 20h4v-4h4v-4h4v-4h4"/>
+  <path d="M4 20v-4h4v-4h4v-4h4v-4h4"/>
+</svg>`;
+
 // ============================================================================
 // MixerTool Component
 // ============================================================================
@@ -87,12 +110,17 @@ export class MixerTool extends BaseComponent {
   private stepCount: number;
   private colorSpace: 'rgb' | 'hsv';
   private currentSteps: InterpolationStep[] = [];
+  private showPrices: boolean = false;
+  private priceData: Map<number, PriceData> = new Map();
 
   // Child components
   private startDyeSelector: DyeSelector | null = null;
   private endDyeSelector: DyeSelector | null = null;
   private dyeFilters: DyeFilters | null = null;
   private marketBoard: MarketBoard | null = null;
+  private startDyePanel: CollapsiblePanel | null = null;
+  private endDyePanel: CollapsiblePanel | null = null;
+  private settingsPanel: CollapsiblePanel | null = null;
   private filtersPanel: CollapsiblePanel | null = null;
   private marketPanel: CollapsiblePanel | null = null;
 
@@ -115,6 +143,16 @@ export class MixerTool extends BaseComponent {
     // Load persisted settings
     this.stepCount = StorageService.getItem<number>(STORAGE_KEYS.stepCount) ?? DEFAULTS.stepCount;
     this.colorSpace = StorageService.getItem<'rgb' | 'hsv'>(STORAGE_KEYS.colorSpace) ?? DEFAULTS.colorSpace;
+
+    // Load persisted dye selections
+    const startDyeId = StorageService.getItem<number>(STORAGE_KEYS.startDyeId);
+    const endDyeId = StorageService.getItem<number>(STORAGE_KEYS.endDyeId);
+    if (startDyeId) {
+      this.startDye = dyeService.getDyeById(startDyeId) || null;
+    }
+    if (endDyeId) {
+      this.endDye = dyeService.getDyeById(endDyeId) || null;
+    }
   }
 
   // ============================================================================
@@ -142,6 +180,12 @@ export class MixerTool extends BaseComponent {
       this.update();
     });
 
+    // If dyes were loaded from storage, calculate interpolation
+    if (this.startDye && this.endDye) {
+      this.updateInterpolation();
+      this.updateDrawerContent();
+    }
+
     logger.info('[MixerTool] Mounted');
   }
 
@@ -151,6 +195,9 @@ export class MixerTool extends BaseComponent {
     this.endDyeSelector?.destroy();
     this.dyeFilters?.destroy();
     this.marketBoard?.destroy();
+    this.startDyePanel?.destroy();
+    this.endDyePanel?.destroy();
+    this.settingsPanel?.destroy();
     this.filtersPanel?.destroy();
     this.marketPanel?.destroy();
 
@@ -170,26 +217,53 @@ export class MixerTool extends BaseComponent {
     const left = this.options.leftPanel;
     clearContainer(left);
 
-    // Section 1: Start Dye
-    const startSection = this.createSection(LanguageService.t('mixer.startDye') || 'Start Dye');
-    this.renderDyeSelector(startSection, 'start');
-    left.appendChild(startSection);
+    // Section 1: Start Dye (collapsible)
+    const startContainer = this.createElement('div');
+    left.appendChild(startContainer);
+    this.startDyePanel = new CollapsiblePanel(startContainer, {
+      title: LanguageService.t('mixer.startDye') || 'Start Dye',
+      storageKey: 'v3_mixer_start_dye_panel',
+      defaultOpen: true,
+      icon: ICON_TEST_TUBE,
+    });
+    this.startDyePanel.init();
+    const startContent = this.createElement('div', { className: 'p-4' });
+    this.renderDyeSelector(startContent, 'start');
+    this.startDyePanel.setContent(startContent);
 
-    // Section 2: End Dye
-    const endSection = this.createSection(LanguageService.t('mixer.endDye') || 'End Dye');
-    this.renderDyeSelector(endSection, 'end');
-    left.appendChild(endSection);
+    // Section 2: End Dye (collapsible)
+    const endContainer = this.createElement('div');
+    left.appendChild(endContainer);
+    this.endDyePanel = new CollapsiblePanel(endContainer, {
+      title: LanguageService.t('mixer.endDye') || 'End Dye',
+      storageKey: 'v3_mixer_end_dye_panel',
+      defaultOpen: true,
+      icon: ICON_BEAKER_PIPE,
+    });
+    this.endDyePanel.init();
+    const endContent = this.createElement('div', { className: 'p-4' });
+    this.renderDyeSelector(endContent, 'end');
+    this.endDyePanel.setContent(endContent);
 
-    // Section 3: Interpolation Settings
-    const settingsSection = this.createSection(LanguageService.t('mixer.interpolationSettings') || 'Interpolation');
-    this.renderSettings(settingsSection);
-    left.appendChild(settingsSection);
+    // Section 3: Interpolation Settings (collapsible)
+    const settingsContainer = this.createElement('div');
+    left.appendChild(settingsContainer);
+    this.settingsPanel = new CollapsiblePanel(settingsContainer, {
+      title: LanguageService.t('mixer.interpolationSettings') || 'Interpolation Settings',
+      storageKey: 'v3_mixer_settings_panel',
+      defaultOpen: true,
+      icon: ICON_STAIRS,
+    });
+    this.settingsPanel.init();
+    const settingsContent = this.createElement('div', { className: 'p-4' });
+    this.renderSettings(settingsContent);
+    this.settingsPanel.setContent(settingsContent);
 
     // Section 4: Dye Filters (collapsible)
     const filtersContainer = this.createElement('div');
     left.appendChild(filtersContainer);
     this.filtersPanel = new CollapsiblePanel(filtersContainer, {
-      title: LanguageService.t('filters.title') || 'Dye Filters',
+      title: LanguageService.t('filters.advancedFilters') || 'Advanced Dye Filters',
       storageKey: 'v3_mixer_filters',
       defaultOpen: false,
       icon: ICON_FILTER,
@@ -199,6 +273,7 @@ export class MixerTool extends BaseComponent {
     const filtersContent = this.createElement('div');
     this.dyeFilters = new DyeFilters(filtersContent, {
       storageKeyPrefix: 'v3_mixer',
+      hideHeader: true,
       onFilterChange: () => {
         this.updateInterpolation();
       },
@@ -221,6 +296,44 @@ export class MixerTool extends BaseComponent {
     const marketContent = this.createElement('div');
     this.marketBoard = new MarketBoard(marketContent);
     this.marketBoard.init();
+
+    // Listen for price toggle changes
+    marketContent.addEventListener('showPricesChanged', ((event: Event) => {
+      const customEvent = event as CustomEvent<{ showPrices: boolean }>;
+      this.showPrices = customEvent.detail.showPrices;
+      if (this.showPrices) {
+        // Fetch prices - this will update displays after fetching
+        void this.fetchPricesForDisplayedDyes();
+      } else {
+        // Prices disabled - clear price data and update displays to remove prices
+        this.priceData.clear();
+        this.updateDyeDisplay('start');
+        this.updateDyeDisplay('end');
+        this.renderIntermediateMatches();
+      }
+    }) as EventListener);
+
+    // Listen for server changes
+    marketContent.addEventListener('server-changed', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
+    }) as EventListener);
+
+    // Listen for category changes
+    marketContent.addEventListener('categories-changed', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
+    }) as EventListener);
+
+    // Listen for refresh requests
+    marketContent.addEventListener('refresh-requested', (() => {
+      if (this.showPrices) {
+        this.fetchPricesForDisplayedDyes();
+      }
+    }) as EventListener);
+
     this.marketPanel.setContent(marketContent);
   }
 
@@ -300,13 +413,31 @@ export class MixerTool extends BaseComponent {
       const selectedDyes = selector.getSelectedDyes();
       if (type === 'start') {
         this.startDye = selectedDyes[0] || null;
+        // Persist to localStorage
+        if (this.startDye) {
+          StorageService.setItem(STORAGE_KEYS.startDyeId, this.startDye.id);
+        } else {
+          StorageService.removeItem(STORAGE_KEYS.startDyeId);
+        }
       } else {
         this.endDye = selectedDyes[0] || null;
+        // Persist to localStorage
+        if (this.endDye) {
+          StorageService.setItem(STORAGE_KEYS.endDyeId, this.endDye.id);
+        } else {
+          StorageService.removeItem(STORAGE_KEYS.endDyeId);
+        }
       }
       this.updateDyeDisplay(type);
       this.updateInterpolation();
       this.updateDrawerContent();
     });
+
+    // Set initial selection if dye was loaded from storage
+    const persistedDye = type === 'start' ? this.startDye : this.endDye;
+    if (persistedDye) {
+      selector.setSelectedDyes([persistedDye]);
+    }
 
     container.appendChild(dyeContainer);
   }
@@ -358,6 +489,17 @@ export class MixerTool extends BaseComponent {
     });
     info.appendChild(name);
     info.appendChild(hex);
+
+    // Add price if enabled
+    const priceText = this.formatPrice(dye);
+    if (priceText) {
+      const price = this.createElement('p', {
+        className: 'text-xs opacity-80',
+        textContent: priceText,
+        attributes: { style: 'color: var(--theme-text-header) !important;' },
+      });
+      info.appendChild(price);
+    }
 
     card.appendChild(swatch);
     card.appendChild(info);
@@ -737,6 +879,18 @@ export class MixerTool extends BaseComponent {
         });
         info.appendChild(dyeName);
         info.appendChild(distance);
+
+        // Add price if enabled
+        const priceText = this.formatPrice(step.matchedDye);
+        if (priceText) {
+          const price = this.createElement('p', {
+            className: 'text-xs',
+            textContent: priceText,
+            attributes: { style: 'color: var(--theme-text-muted);' },
+          });
+          info.appendChild(price);
+        }
+
         row.appendChild(info);
       } else {
         // No match found
@@ -950,5 +1104,67 @@ export class MixerTool extends BaseComponent {
     content.appendChild(summary);
 
     drawer.appendChild(content);
+  }
+
+  // ============================================================================
+  // Market Board Integration
+  // ============================================================================
+
+  /**
+   * Fetch prices for all displayed dyes (start, end, and intermediate matches)
+   */
+  private async fetchPricesForDisplayedDyes(): Promise<void> {
+    if (!this.showPrices || !this.marketBoard) {
+      return;
+    }
+
+    const dyesToFetch: Dye[] = [];
+
+    // Add start dye if selected
+    if (this.startDye && this.marketBoard.shouldFetchPrice(this.startDye)) {
+      dyesToFetch.push(this.startDye);
+    }
+
+    // Add end dye if selected
+    if (this.endDye && this.marketBoard.shouldFetchPrice(this.endDye)) {
+      dyesToFetch.push(this.endDye);
+    }
+
+    // Add intermediate dyes from interpolation steps
+    for (const step of this.currentSteps) {
+      if (step.matchedDye && this.marketBoard.shouldFetchPrice(step.matchedDye)) {
+        // Avoid duplicates
+        if (!dyesToFetch.some((d) => d.id === step.matchedDye!.id)) {
+          dyesToFetch.push(step.matchedDye);
+        }
+      }
+    }
+
+    if (dyesToFetch.length > 0) {
+      try {
+        const prices = await this.marketBoard.fetchPricesForDyes(dyesToFetch);
+        this.priceData = prices;
+        logger.info(`[MixerTool] Fetched prices for ${prices.size} dyes`);
+      } catch (error) {
+        logger.error('[MixerTool] Failed to fetch prices:', error);
+      }
+    }
+
+    // Always update displays (even if no prices were fetched)
+    this.updateDyeDisplay('start');
+    this.updateDyeDisplay('end');
+    this.renderIntermediateMatches();
+  }
+
+  /**
+   * Format price for display
+   */
+  private formatPrice(dye: Dye): string | null {
+    if (!this.showPrices) return null;
+
+    const price = this.priceData.get(dye.itemID);
+    if (!price) return null;
+
+    return MarketBoard.formatPrice(price.currentMinPrice);
   }
 }

@@ -100,7 +100,8 @@
     "showMore": "显示更多",
     "showLess": "收起",
     "selectDye": "选择染剂",
-    "noDyeSelected": "未选择染剂"
+    "noDyeSelected": "未选择染剂",
+    "download": "下载"
   },
   "harmony": {
     "suggestionMode": "建议模式",
@@ -329,7 +330,17 @@
     "matched": "已匹配",
     "avgDistance": "平均距离：",
     "maxDistance": "最大距离：",
-    "clickStopHint": "点击停止标记以突出显示对应的染剂"
+    "clickStopHint": "点击停止标记以突出显示对应的染剂",
+    "startDye": "起始染剂",
+    "endDye": "结束染剂",
+    "steps": "步骤",
+    "interpolationPreview": "插值预览",
+    "intermediateDyeMatches": "中间染剂匹配",
+    "selectDye": "选择染剂",
+    "selectStartEndDyes": "选择起始和结束染剂以创建颜色过渡",
+    "targetColor": "目标颜色",
+    "bestMatch": "最佳匹配",
+    "exportPalette": "导出调色板"
   },
   "dyeSelector": {
     "searchPlaceholder": "按名称搜索染剂...",

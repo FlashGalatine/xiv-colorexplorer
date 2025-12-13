@@ -100,7 +100,8 @@
     "showMore": "Mehr anzeigen",
     "showLess": "Weniger anzeigen",
     "selectDye": "Farbstoff auswählen",
-    "noDyeSelected": "Kein Farbstoff ausgewählt"
+    "noDyeSelected": "Kein Farbstoff ausgewählt",
+    "download": "Herunterladen"
   },
   "harmony": {
     "suggestionMode": "Vorschlagsmodus",
@@ -333,7 +334,17 @@
     "matched": "zugeordnet",
     "avgDistance": "Durchschnittlicher Abstand:",
     "maxDistance": "Maximaler Abstand:",
-    "clickStopHint": "Klicke auf einen Stop-Marker, um den entsprechenden Farbstoff hervorzuheben"
+    "clickStopHint": "Klicke auf einen Stop-Marker, um den entsprechenden Farbstoff hervorzuheben",
+    "startDye": "Startfarbe",
+    "endDye": "Endfarbe",
+    "steps": "Schritte",
+    "interpolationPreview": "Interpolationsvorschau",
+    "intermediateDyeMatches": "Zwischenfarbstoff-Übereinstimmungen",
+    "selectDye": "Farbstoff auswählen",
+    "selectStartEndDyes": "Wähle Start- und Endfarbstoffe, um einen Farbübergang zu erstellen",
+    "targetColor": "Zielfarbe",
+    "bestMatch": "Beste Übereinstimmung",
+    "exportPalette": "Palette exportieren"
   },
   "dyeSelector": {
     "searchPlaceholder": "Farbstoffe nach Name suchen...",

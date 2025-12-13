@@ -100,7 +100,8 @@
     "showMore": "더 보기",
     "showLess": "접기",
     "selectDye": "염료 선택",
-    "noDyeSelected": "선택된 염료 없음"
+    "noDyeSelected": "선택된 염료 없음",
+    "download": "다운로드"
   },
   "harmony": {
     "suggestionMode": "제안 모드",
@@ -329,7 +330,17 @@
     "matched": "매칭됨",
     "avgDistance": "평균 거리:",
     "maxDistance": "최대 거리:",
-    "clickStopHint": "스톱 마커를 클릭하여 해당 염료를 강조 표시"
+    "clickStopHint": "스톱 마커를 클릭하여 해당 염료를 강조 표시",
+    "startDye": "시작 염료",
+    "endDye": "끝 염료",
+    "steps": "단계",
+    "interpolationPreview": "보간 미리보기",
+    "intermediateDyeMatches": "중간 염료 일치",
+    "selectDye": "염료 선택",
+    "selectStartEndDyes": "색상 전환을 만들려면 시작 및 끝 염료를 선택하세요",
+    "targetColor": "대상 색상",
+    "bestMatch": "최적 매치",
+    "exportPalette": "팔레트 내보내기"
   },
   "dyeSelector": {
     "searchPlaceholder": "염료 이름으로 검색...",

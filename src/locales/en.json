@@ -100,7 +100,8 @@
     "showMore": "Show More",
     "showLess": "Show Less",
     "selectDye": "Select a dye",
-    "noDyeSelected": "No dye selected"
+    "noDyeSelected": "No dye selected",
+    "download": "Download"
   },
   "harmony": {
     "suggestionMode": "Suggestion Mode",
@@ -340,7 +341,17 @@
     "matched": "matched",
     "avgDistance": "Average Distance:",
     "maxDistance": "Max Distance:",
-    "clickStopHint": "Click a stop marker to highlight the corresponding dye"
+    "clickStopHint": "Click a stop marker to highlight the corresponding dye",
+    "startDye": "Start Dye",
+    "endDye": "End Dye",
+    "steps": "Steps",
+    "interpolationPreview": "Interpolation Preview",
+    "intermediateDyeMatches": "Intermediate Dye Matches",
+    "selectDye": "Select a dye",
+    "selectStartEndDyes": "Select start and end dyes to create a color transition",
+    "targetColor": "Target Color",
+    "bestMatch": "Best Match",
+    "exportPalette": "Export Palette"
   },
   "dyeSelector": {
     "searchPlaceholder": "Search dyes by name...",

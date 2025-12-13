@@ -100,7 +100,8 @@
     "showMore": "もっと見る",
     "showLess": "折りたたむ",
     "selectDye": "カララントを選択",
-    "noDyeSelected": "カララント未選択"
+    "noDyeSelected": "カララント未選択",
+    "download": "ダウンロード"
   },
   "harmony": {
     "suggestionMode": "提案モード",
@@ -333,7 +334,17 @@
     "matched": "マッチ",
     "avgDistance": "平均距離:",
     "maxDistance": "最大距離:",
-    "clickStopHint": "ストップマーカーをクリックして対応するカララントをハイライト"
+    "clickStopHint": "ストップマーカーをクリックして対応するカララントをハイライト",
+    "startDye": "開始カララント",
+    "endDye": "終了カララント",
+    "steps": "ステップ",
+    "interpolationPreview": "補間プレビュー",
+    "intermediateDyeMatches": "中間カララントマッチ",
+    "selectDye": "カララントを選択",
+    "selectStartEndDyes": "色のトランジションを作成するには開始と終了のカララントを選択",
+    "targetColor": "ターゲットカラー",
+    "bestMatch": "ベストマッチ",
+    "exportPalette": "パレットをエクスポート"
   },
   "dyeSelector": {
     "searchPlaceholder": "カララント名で検索...",
