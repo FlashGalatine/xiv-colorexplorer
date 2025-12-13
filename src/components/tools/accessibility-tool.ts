@@ -13,7 +13,7 @@
 import { BaseComponent } from '@components/base-component';
 import { DyeSelector } from '@components/dye-selector';
 import { CollapsiblePanel } from '@mockups/CollapsiblePanel';
-import { ColorService, LanguageService, StorageService } from '@services/index';
+import { ColorService, LanguageService, StorageService, dyeService } from '@services/index';
 import { logger } from '@shared/logger';
 import { clearContainer } from '@shared/utils';
 import type { Dye } from '@shared/types';
@@ -125,6 +125,7 @@ type VisionTypeId = (typeof VISION_TYPES)[number]['id'];
  * Storage keys for v3 accessibility tool
  */
 const STORAGE_KEYS = {
+  selectedDyes: 'v3_accessibility_selected_dyes',
   enabledVisionTypes: 'v3_accessibility_vision_types',
   displayOptions: 'v3_accessibility_display_options',
 } as const;
@@ -216,6 +217,13 @@ export class AccessibilityTool extends BaseComponent {
     this.languageUnsubscribe = LanguageService.subscribe(() => {
       this.update();
     });
+
+    // If dyes were restored from localStorage, update results now that containers exist
+    if (this.selectedDyes.length > 0) {
+      this.updateResults();
+      this.updateDrawerContent();
+      logger.info(`[AccessibilityTool] Populated results for ${this.selectedDyes.length} restored dyes`);
+    }
 
     logger.info('[AccessibilityTool] Mounted');
   }
@@ -340,10 +348,30 @@ export class AccessibilityTool extends BaseComponent {
     });
     this.dyeSelector.init();
 
+    // Restore saved dye selection from localStorage (UI only - results update in onMount)
+    const savedDyeIds = StorageService.getItem<number[]>(STORAGE_KEYS.selectedDyes);
+    if (savedDyeIds && savedDyeIds.length > 0) {
+      const allDyes = dyeService.getAllDyes();
+      const restoredDyes = savedDyeIds
+        .map((id) => allDyes.find((d) => d.id === id))
+        .filter((d): d is Dye => d !== undefined);
+
+      if (restoredDyes.length > 0) {
+        this.dyeSelector.setSelectedDyes(restoredDyes);
+        this.selectedDyes = restoredDyes;
+        this.updateSelectedDyesDisplay(selectedDisplay);
+        // NOTE: updateResults() called in onMount() after right panel containers exist
+        logger.info(`[AccessibilityTool] Restored ${restoredDyes.length} saved dyes from localStorage`);
+      }
+    }
+
     // Listen for selection changes
     selectorContainer.addEventListener('selection-changed', () => {
       if (this.dyeSelector) {
         this.selectedDyes = this.dyeSelector.getSelectedDyes();
+        // Save selected dye IDs to localStorage
+        const dyeIds = this.selectedDyes.map((d) => d.id);
+        StorageService.setItem(STORAGE_KEYS.selectedDyes, dyeIds);
         this.updateSelectedDyesDisplay(selectedDisplay);
         this.updateResults();
         this.updateDrawerContent();
@@ -403,6 +431,9 @@ export class AccessibilityTool extends BaseComponent {
         const newSelection = this.selectedDyes.filter((d) => d.id !== dye.id);
         this.dyeSelector?.setSelectedDyes(newSelection);
         this.selectedDyes = newSelection;
+        // Save updated selection to localStorage
+        const dyeIds = newSelection.map((d) => d.id);
+        StorageService.setItem(STORAGE_KEYS.selectedDyes, dyeIds);
         this.updateSelectedDyesDisplay(container);
         this.updateResults();
         this.updateDrawerContent();
