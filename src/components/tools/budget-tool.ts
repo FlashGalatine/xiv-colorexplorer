@@ -455,7 +455,13 @@ export class BudgetTool extends BaseComponent {
     }
 
     // Display card with dye color as background
-    const textColor = this.isLightColor(this.targetDye.hex) ? '#1A1A1A' : '#FFFFFF';
+    // Dynamically set text color based on background luminance for optimal readability
+    const isLight = this.isLightColor(this.targetDye.hex);
+    const textColor = isLight ? '#1A1A1A' : '#FFFFFF';
+    // Add subtle text shadow for better contrast on mid-range colors
+    const textShadow = isLight
+      ? '0 1px 2px rgba(255, 255, 255, 0.3)'
+      : '0 1px 2px rgba(0, 0, 0, 0.3)';
 
     const card = this.createElement('div', {
       className: 'p-4 rounded-lg',
@@ -467,13 +473,13 @@ export class BudgetTool extends BaseComponent {
     const name = this.createElement('p', {
       className: 'font-semibold text-lg mb-1',
       textContent: LanguageService.getDyeName(this.targetDye.itemID) || this.targetDye.name,
-      attributes: { style: `color: ${textColor};` },
+      attributes: { style: `color: ${textColor} !important; text-shadow: ${textShadow};` },
     });
 
     const hex = this.createElement('p', {
       className: 'text-sm font-mono mb-2',
       textContent: this.targetDye.hex,
-      attributes: { style: `color: ${textColor}; opacity: 0.8;` },
+      attributes: { style: `color: ${textColor} !important; opacity: 0.8; text-shadow: ${textShadow};` },
     });
 
     const price = this.createElement('p', {
@@ -481,7 +487,7 @@ export class BudgetTool extends BaseComponent {
       textContent: this.targetPrice > 0
         ? `~${this.targetPrice.toLocaleString()} gil`
         : LanguageService.t('budget.loadingPrice') || 'Loading price...',
-      attributes: { style: `color: ${textColor};` },
+      attributes: { style: `color: ${textColor} !important; text-shadow: ${textShadow};` },
     });
 
     card.appendChild(name);

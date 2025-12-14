@@ -130,6 +130,7 @@ export class PresetTool extends BaseComponent {
     user: null,
     token: null,
     expiresAt: null,
+    provider: null,
   };
 
   // Data
