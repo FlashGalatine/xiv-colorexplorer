@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Status**: ✅ BETA
 **Focus**: Add XIVAuth as a second OAuth provider alongside Discord, enabling FFXIV character-based authentication.
 
+> ⚠️ **Beta Note**: Mobile support has not been fully tested yet. Desktop browsers are the primary target for this release.
+
 #### New Features ✅
 
 **XIVAuth OAuth Provider**
