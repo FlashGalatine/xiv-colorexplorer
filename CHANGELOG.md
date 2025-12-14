@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0-beta] - 2025-12-13
+
+### 🔐 XIVAuth Integration (Multi-Provider Authentication)
+
+**Status**: ✅ BETA
+**Focus**: Add XIVAuth as a second OAuth provider alongside Discord, enabling FFXIV character-based authentication.
+
+#### New Features ✅
+
+**XIVAuth OAuth Provider**
+- Login with XIVAuth button alongside existing Discord login
+- FFXIV character display for authenticated users (name, server, verification status)
+- PKCE-secured OAuth flow matching Discord implementation
+- Support for both confidential and public client modes
+
+**Multi-Provider Authentication**
+- Users can now authenticate via Discord OR XIVAuth
+- Account merging when same Discord ID is linked to both providers
+- Internal user database (D1) for unified user management
+- Provider-specific user info in JWT tokens
+
+**User Interface Updates**
+- Dual login buttons: Discord (Blurple) and XIVAuth (Blue)
+- Character info display in user dropdown for XIVAuth users
+- Verification badge for verified FFXIV characters
+
+#### Technical Changes
+
+**Auth Service Enhancements**
+- Added `loginWithXIVAuth()` method mirroring Discord flow
+- Provider detection from URL and sessionStorage
+- Dynamic callback endpoint selection based on provider
+- Extended JWT payload with `auth_provider`, `discord_id`, `xivauth_id`, `primary_character`
+
+**Auth Button Component**
+- Added XIVAuth icon (shield SVG)
+- Dual button rendering in logged-out state
+- Character info rendering in logged-in dropdown
+
+#### Files Modified
+- `src/services/auth-service.ts` - Multi-provider authentication logic
+- `src/components/auth-button.ts` - XIVAuth button and character display
+
+---
+
 ## [2.6.0] - 2025-12-07
 
 ### 🎨 Preset Refinements

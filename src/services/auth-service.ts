@@ -1,6 +1,7 @@
 /**
- * Discord OAuth Authentication Service
+ * OAuth Authentication Service
  * Handles login, logout, and token management for web app authentication
+ * Supports multiple OAuth providers: Discord and XIVAuth
  *
  * Uses PKCE (Proof Key for Code Exchange) for secure OAuth flow in SPAs
  *
@@ -13,12 +14,28 @@ import { logger } from '@shared/logger';
 // Types
 // ============================================
 
+/**
+ * Supported authentication providers
+ */
+export type AuthProvider = 'discord' | 'xivauth';
+
+/**
+ * Primary FFXIV character info (XIVAuth only)
+ */
+export interface PrimaryCharacter {
+  name: string;
+  server: string;
+  verified: boolean;
+}
+
 export interface AuthUser {
   id: string;
   username: string;
   global_name: string | null;
   avatar: string | null;
   avatar_url: string | null;
+  auth_provider?: AuthProvider;
+  primary_character?: PrimaryCharacter;
 }
 
 export interface AuthState {
@@ -26,6 +43,7 @@ export interface AuthState {
   user: AuthUser | null;
   token: string | null;
   expiresAt: number | null;
+  provider: AuthProvider | null;
 }
 
 export type AuthStateListener = (state: AuthState) => void;
@@ -38,6 +56,10 @@ interface JWTPayload {
   username: string;
   global_name: string | null;
   avatar: string | null;
+  auth_provider?: AuthProvider;
+  discord_id?: string;
+  xivauth_id?: string;
+  primary_character?: PrimaryCharacter;
 }
 
 interface AuthResponse {
@@ -81,6 +103,12 @@ const PKCE_VERIFIER_KEY = 'xivdyetools_pkce_verifier';
 const OAUTH_STATE_KEY = 'xivdyetools_oauth_state';
 const OAUTH_RETURN_PATH_KEY = 'xivdyetools_oauth_return_path';
 const OAUTH_RETURN_TOOL_KEY = 'xivdyetools_oauth_return_tool';
+const OAUTH_PROVIDER_KEY = 'xivdyetools_oauth_provider';
+
+/**
+ * Storage key for auth provider
+ */
+const PROVIDER_STORAGE_KEY = 'xivdyetools_auth_provider';
 
 /**
  * Validate and sanitize return path to prevent open redirect attacks
@@ -144,6 +172,7 @@ class AuthServiceImpl {
     user: null,
     token: null,
     expiresAt: null,
+    provider: null,
   };
 
   private listeners: Set<AuthStateListener> = new Set();
@@ -166,9 +195,15 @@ class AuthServiceImpl {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       const error = urlParams.get('error');
+      const providerFromUrl = urlParams.get('provider') as AuthProvider | null;
+
+      // If provider is in URL (from XIVAuth callback), store it for handleCallbackCode
+      if (providerFromUrl) {
+        sessionStorage.setItem(OAUTH_PROVIDER_KEY, providerFromUrl);
+      }
 
       if (import.meta.env.DEV) {
-        console.log('🔐 [AuthService] URL params:', { hasCode: !!code, hasError: !!error });
+        console.log('🔐 [AuthService] URL params:', { hasCode: !!code, hasError: !!error, provider: providerFromUrl });
       }
 
       if (code) {
@@ -243,16 +278,33 @@ class AuthServiceImpl {
         return;
       }
 
+      // Get stored provider or infer from payload
+      const storedProvider = localStorage.getItem(PROVIDER_STORAGE_KEY) as AuthProvider | null;
+      const provider = storedProvider || payload.auth_provider || 'discord';
+
+      // Build avatar URL based on provider
+      let avatarUrl: string | null = null;
+      if (provider === 'discord' && payload.discord_id && payload.avatar) {
+        avatarUrl = this.getAvatarUrl(payload.discord_id, payload.avatar);
+      } else if (provider === 'xivauth') {
+        // XIVAuth avatar URL is stored directly (no CDN construction needed)
+        // We'll get it from the auth response, for now use null
+        avatarUrl = null;
+      }
+
       this.state = {
         isAuthenticated: true,
         token,
         expiresAt,
+        provider,
         user: {
           id: payload.sub,
           username: payload.username,
           global_name: payload.global_name,
           avatar: payload.avatar,
-          avatar_url: this.getAvatarUrl(payload.sub, payload.avatar),
+          avatar_url: avatarUrl,
+          auth_provider: payload.auth_provider,
+          primary_character: payload.primary_character,
         },
       };
     } catch (err) {
@@ -271,10 +323,12 @@ class AuthServiceImpl {
     // Retrieve the stored code_verifier (stored during login initiation)
     const codeVerifier = sessionStorage.getItem(PKCE_VERIFIER_KEY);
     const storedState = sessionStorage.getItem(OAUTH_STATE_KEY);
+    const provider = (sessionStorage.getItem(OAUTH_PROVIDER_KEY) as AuthProvider) || 'discord';
 
     // Clean up PKCE session storage
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
     sessionStorage.removeItem(OAUTH_STATE_KEY);
+    sessionStorage.removeItem(OAUTH_PROVIDER_KEY);
 
     if (!codeVerifier) {
       logger.error('Missing code_verifier - OAuth flow may have been tampered with');
@@ -288,8 +342,18 @@ class AuthServiceImpl {
     }
 
     try {
+      // Determine endpoint based on provider
+      const callbackEndpoint =
+        provider === 'xivauth'
+          ? `${OAUTH_WORKER_URL}/auth/xivauth/callback`
+          : `${OAUTH_WORKER_URL}/auth/callback`;
+
+      if (import.meta.env.DEV) {
+        console.log(`🔐 [AuthService] Exchanging code via ${provider} endpoint`);
+      }
+
       // Exchange code for token via POST (code_verifier sent directly, not through redirect)
-      const response = await fetch(`${OAUTH_WORKER_URL}/auth/callback`, {
+      const response = await fetch(callbackEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -314,6 +378,9 @@ class AuthServiceImpl {
         return;
       }
 
+      // Store provider for future reference
+      localStorage.setItem(PROVIDER_STORAGE_KEY, provider);
+
       // Process the received token
       await this.handleCallbackToken(data.token, data.expires_at?.toString() || null);
     } catch (err) {
@@ -333,28 +400,45 @@ class AuthServiceImpl {
     }
 
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : payload.exp;
+    const provider = payload.auth_provider || 'discord';
 
     // Store token
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
     localStorage.setItem(EXPIRY_STORAGE_KEY, expiresAt.toString());
+    localStorage.setItem(PROVIDER_STORAGE_KEY, provider);
     logger.info(`Token stored, expires: ${new Date(expiresAt * 1000).toISOString()}`);
+
+    // Build avatar URL based on provider
+    let avatarUrl: string | null = null;
+    if (provider === 'discord' && payload.discord_id && payload.avatar) {
+      avatarUrl = this.getAvatarUrl(payload.discord_id, payload.avatar);
+    }
 
     // Update state
     this.state = {
       isAuthenticated: true,
       token,
       expiresAt,
+      provider,
       user: {
         id: payload.sub,
         username: payload.username,
         global_name: payload.global_name,
         avatar: payload.avatar,
-        avatar_url: this.getAvatarUrl(payload.sub, payload.avatar),
+        avatar_url: avatarUrl,
+        auth_provider: payload.auth_provider,
+        primary_character: payload.primary_character,
       },
     };
 
     this.notifyListeners();
-    logger.info(`Logged in as ${this.state.user?.global_name || this.state.user?.username}`);
+
+    // Log with character info for XIVAuth users
+    if (provider === 'xivauth' && payload.primary_character) {
+      logger.info(`Logged in via XIVAuth as ${payload.username} (${payload.primary_character.name} @ ${payload.primary_character.server})`);
+    } else {
+      logger.info(`Logged in as ${this.state.user?.global_name || this.state.user?.username}`);
+    }
 
     // Refresh author name on all user's presets (fire-and-forget)
     // This keeps preset attribution in sync with the user's current Discord display name
@@ -411,6 +495,7 @@ class AuthServiceImpl {
       user: null,
       token: null,
       expiresAt: null,
+      provider: null,
     };
   }
 
@@ -420,6 +505,7 @@ class AuthServiceImpl {
   private clearStorage(): void {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(EXPIRY_STORAGE_KEY);
+    localStorage.removeItem(PROVIDER_STORAGE_KEY);
   }
 
   // ============================================
@@ -506,6 +592,50 @@ class AuthServiceImpl {
       window.location.href = authUrl.toString();
     } catch (err) {
       logger.error('Failed to initiate OAuth login:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Initiate XIVAuth OAuth login
+   * @param returnPath - Path to return to after login
+   * @param returnTool - Tool ID to return to after login (e.g., 'presets')
+   *
+   * XIVAuth is an FFXIV community authentication provider that supports
+   * character verification and can link to Discord accounts.
+   */
+  async loginWithXIVAuth(returnPath?: string, returnTool?: string): Promise<void> {
+    logger.info('Initiating XIVAuth OAuth login...');
+
+    try {
+      // Generate PKCE code verifier and challenge
+      const codeVerifier = this.generateRandomString(64);
+      const codeChallenge = await this.sha256Base64Url(codeVerifier);
+      const state = this.generateRandomString(32);
+
+      // Store for callback verification
+      sessionStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
+      sessionStorage.setItem(OAUTH_STATE_KEY, state);
+      sessionStorage.setItem(OAUTH_RETURN_PATH_KEY, returnPath || window.location.pathname);
+      sessionStorage.setItem(OAUTH_PROVIDER_KEY, 'xivauth'); // Mark as XIVAuth flow
+      if (returnTool) {
+        sessionStorage.setItem(OAUTH_RETURN_TOOL_KEY, returnTool);
+      }
+
+      // Build XIVAuth auth URL (via our worker)
+      const authUrl = new URL(`${OAUTH_WORKER_URL}/auth/xivauth`);
+      authUrl.searchParams.set('code_challenge', codeChallenge);
+      authUrl.searchParams.set('code_challenge_method', 'S256');
+      authUrl.searchParams.set('state', state);
+      authUrl.searchParams.set('redirect_uri', `${window.location.origin}/auth/callback`);
+      if (returnPath) {
+        authUrl.searchParams.set('return_path', returnPath);
+      }
+
+      // Redirect to XIVAuth OAuth
+      window.location.href = authUrl.toString();
+    } catch (err) {
+      logger.error('Failed to initiate XIVAuth login:', err);
       throw err;
     }
   }

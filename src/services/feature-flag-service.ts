@@ -2,7 +2,8 @@
  * XIV Dye Tools v3.0.0 - Feature Flag Service
  *
  * Manages the v2/v3 UI toggle with LocalStorage persistence.
- * Enables gradual rollout of the new two-panel layout.
+ * v3 (two-panel layout) is now the default. Users can still access
+ * v2 via URL parameter (?ui=v2) or by setting their preference.
  *
  * @module services/feature-flag-service
  */
@@ -32,7 +33,7 @@ const STORAGE_KEY = 'xivdyetools_feature_flags';
 const URL_PARAM = 'ui';
 
 const DEFAULT_STATE: FeatureFlagState = {
-  uiVersion: 'v2',
+  uiVersion: 'v3',
   hasSeenV3Prompt: false,
   v3OptInDate: null,
 };
